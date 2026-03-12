@@ -12,15 +12,17 @@ namespace InteriorElevations.Services
         {
             Document doc = uidoc.Document;
 
-            IList<Reference> pickedLines = uidoc.Selection.PickObjects(
-                ObjectType.Element,
-                new DetailLineSelectionFilter(),
-                "Выберите линии для создания разверток");
+            IList<Reference> pickedLines =
+                uidoc.Selection.PickObjects(
+                    ObjectType.Element,
+                    new DetailLineSelectionFilter(),
+                    "Выберите линии для создания разверток");
 
             if (pickedLines.Count == 0)
                 return new List<DetailLine>();
 
-            List<DetailLine> lines = pickedLines
+            List<DetailLine> lines =
+                pickedLines
                 .Select(r => doc.GetElement(r) as DetailLine)
                 .Where(l => l != null)
                 .OrderBy(l => l.Id.IntegerValue)
@@ -32,6 +34,7 @@ namespace InteriorElevations.Services
         private class DetailLineSelectionFilter : ISelectionFilter
         {
             public bool AllowElement(Element elem) => elem is DetailLine;
+
             public bool AllowReference(Reference reference, XYZ position) => false;
         }
     }

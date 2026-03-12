@@ -2,13 +2,10 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
-using InteriorElevations.Models;
 using InteriorElevations.Services;
-using InteriorElevations.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-//using InteriorElevations.UI;
 
 namespace InteriorElevations.Commands
 {
@@ -25,7 +22,10 @@ namespace InteriorElevations.Commands
                 //---------------------------------------------------------
                 // 1. Пользователь выбирает линии
                 //---------------------------------------------------------
-                List<DetailLine> selectedLines = LineCollector.CollectSelectedLines(uidoc);
+
+                List<DetailLine> selectedLines =
+                    LineCollector.CollectSelectedLines(uidoc);
+
                 if (selectedLines.Count == 0)
                 {
                     TaskDialog.Show("Информация", "Линии не выбраны.");
@@ -35,13 +35,16 @@ namespace InteriorElevations.Commands
                 //---------------------------------------------------------
                 // 2. Проверяем что активный вид — план
                 //---------------------------------------------------------
+
                 ViewPlan planView = doc.ActiveView as ViewPlan;
+
                 if (planView == null)
                     throw new Exception("Активный вид должен быть планом.");
 
                 //---------------------------------------------------------
                 // 3. Получаем тип Elevation
                 //---------------------------------------------------------
+
                 ViewFamilyType elevationType =
                     new FilteredElementCollector(doc)
                     .OfClass(typeof(ViewFamilyType))
@@ -51,7 +54,10 @@ namespace InteriorElevations.Commands
                 //---------------------------------------------------------
                 // 4. Пользователь выбирает помещение
                 //---------------------------------------------------------
-                Room pickedRoom = RoomDetector.PickRoom(uidoc);
+
+                Room pickedRoom =
+                    RoomDetector.PickRoom(uidoc);
+
                 if (pickedRoom == null)
                 {
                     TaskDialog.Show("Информация", "Помещение не выбрано.");
@@ -59,16 +65,9 @@ namespace InteriorElevations.Commands
                 }
 
                 //---------------------------------------------------------
-                // 5. Настройки через WPF-панель
+                // 5. Создаём развертки
                 //---------------------------------------------------------
-                ElevationSettingsWindow settingsWindow = new ElevationSettingsWindow();
-                if (settingsWindow.ShowDialog() != true)
-                    return Result.Cancelled;
-                ElevationSettings settings = settingsWindow.Settings;
 
-                //---------------------------------------------------------
-                // 6. Создаём развертки
-                //---------------------------------------------------------
                 using (Transaction t = new Transaction(doc, "Create Interior Elevations"))
                 {
                     t.Start();
@@ -84,7 +83,6 @@ namespace InteriorElevations.Commands
                             elevationType,
                             line,
                             pickedRoom,
-                            settings,
                             lineIndex,
                             pointCounter);
 
