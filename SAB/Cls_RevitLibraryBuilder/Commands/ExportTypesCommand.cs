@@ -1,12 +1,17 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using RevitLibraryBuilder.Services;
+using RevitLibraryBuilder.Services.Csv;
+using RevitLibraryBuilder.Services.Revit;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace RevitLibraryBuilder.Commands
 {
+    /// <summary>
+    /// Команда экспорта типов элементов в CSV
+    /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportTypesCommand : IExternalCommand
     {
@@ -14,31 +19,36 @@ namespace RevitLibraryBuilder.Commands
         {
             try
             {
+                // Получаем документ Revit
                 UIDocument uidoc = commandData.Application.ActiveUIDocument;
                 Document doc = uidoc.Document;
 
+                // Собираем все типы
                 TypeCollectorService collector = new TypeCollectorService();
                 var types = collector.CollectAllTypes(doc);
 
+                // Проверка на пустоту
                 if (types == null || types.Count == 0)
                 {
                     TaskDialog.Show("Экспорт", "Типы элементов не найдены.");
                     return Result.Cancelled;
                 }
 
-                SaveFileDialog saveFileDialog = new SaveFileDialog
+                // Диалог сохранения файла
+                SaveFileDialog dialog = new SaveFileDialog
                 {
-                    Filter = "CSV Files (*.csv)|*.csv",
-                    FileName = "RevitLibraryExport.csv"
+                    Filter = "CSV (*.csv)|*.csv",
+                    FileName = "RevitExport.csv"
                 };
 
-                if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                if (dialog.ShowDialog() != DialogResult.OK)
                     return Result.Cancelled;
 
-                CsvExportService exportService = new CsvExportService();
-                exportService.ExportToCsv(types, saveFileDialog.FileName);
+                // Экспорт в CSV
+                CsvExportService export = new CsvExportService();
+                export.ExportToCsv(types, dialog.FileName);
 
-                TaskDialog.Show("Экспорт завершен", $"CSV файл создан:\n{saveFileDialog.FileName}");
+                TaskDialog.Show("Готово", "CSV успешно создан");
 
                 return Result.Succeeded;
             }

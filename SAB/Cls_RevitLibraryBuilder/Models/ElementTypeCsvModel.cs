@@ -1,7 +1,7 @@
 ﻿namespace RevitLibraryBuilder.Models
 {
     /// <summary>
-    /// Модель элемента для импорта/экспорта CSV
+    /// Модель строки CSV
     /// </summary>
     public class ElementTypeCsvModel
     {

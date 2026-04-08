@@ -21,7 +21,7 @@ namespace InteriorElevations.UI
                 CropOffsetSide = double.TryParse(SideOffsetTextBox.Text, out double side) ? side : 100,
                 CropOffsetLine = double.TryParse(LineOffsetTextBox.Text, out double line) ? line : 150,
                 ViewNameFormat = (ViewNameTemplateComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString()
-                    ?? "Развертка пом {0}_{1}-{2}"
+                                 ?? "Развертка пом {0}_{1}-{2}"
             };
             DialogResult = true;
             Close();

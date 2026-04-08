@@ -1,0 +1,43 @@
+﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using RevitLibraryBuilder.Services.Csv;
+using RevitLibraryBuilder.Services.Placement;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace RevitLibraryBuilder.Commands
+{
+    /// <summary>
+    /// Импорт и размещение по линии
+    /// </summary>
+    [Transaction(TransactionMode.Manual)]
+    public class ImportByLineCommand : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData data, ref string message, ElementSet elements)
+        {
+            Document doc = data.Application.ActiveUIDocument.Document;
+
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Filter = "CSV (*.csv)|*.csv"
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return Result.Cancelled;
+
+            var csv = new CsvImportService().ImportFromCsv(dialog.FileName);
+
+            Level level = new FilteredElementCollector(doc)
+                .OfClass(typeof(Level))
+                .Cast<Level>()
+                .FirstOrDefault();
+
+            var service = PlacementServiceFactory.Create("Line", doc);
+
+            service.Place(csv, level);
+
+            return Result.Succeeded;
+        }
+    }
+}
