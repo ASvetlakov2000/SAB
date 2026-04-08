@@ -1,0 +1,55 @@
+﻿string outputFolder = @"C:\Projects\Export";
+
+// --- Простые уведомления с копируемым текстом ---
+ToastNotifier.ShowInfo(
+    "Информация",
+    "Процесс выполнен успешно.\nПроверьте данные в Revit.",
+    durationSeconds: 5
+);
+
+ToastNotifier.ShowSuccess(
+    "Экспорт завершен",
+    $"CSV файлы сохранены в папке:\n{outputFolder}",
+    durationSeconds: 10
+);
+
+ToastNotifier.ShowWarning(
+    "Внимание",
+    "Некоторые элементы не были экспортированы.\nПроверьте журнал ошибок.",
+    durationSeconds: 7
+);
+
+ToastNotifier.ShowError(
+    "Ошибка",
+    "Произошла критическая ошибка при экспорте.\nОбратитесь к администратору.",
+    durationSeconds: 10
+);
+
+// --- Уведомления с ссылкой на папку ---
+ToastNotifier.ShowFolderLinkInfo(
+    "Информация",
+    "\nФайлы сохранены в папке:\n",
+    outputFolder,
+    durationSeconds: 8
+);
+
+ToastNotifier.ShowFolderLinkSuccess(
+    "Экспорт завершен",
+    "\nCSV файлы сохранены в папке:\n",
+    outputFolder,
+    durationSeconds: 10
+);
+
+ToastNotifier.ShowFolderLinkWarning(
+    "Внимание",
+    "\nНекоторые файлы не были сохранены в папке:\n",
+    outputFolder,
+    durationSeconds: 7
+);
+
+ToastNotifier.ShowFolderLinkError(
+    "Ошибка",
+    "\nПроизошла ошибка при сохранении файлов в папку:\n",
+    outputFolder,
+    durationSeconds: 10
+);

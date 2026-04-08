@@ -1,17 +1,14 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using RevitLibraryBuilder.Services.Csv;
-using RevitLibraryBuilder.Services.Revit;
+using RevitLibraryBuilder.Services;
 using System;
-using System.Linq;
 using System.Windows.Forms;
+using Helpers.Notifications.ToastNotifications;
+using RevitLibraryBuilder.Services.Revit;
 
 namespace RevitLibraryBuilder.Commands
 {
-    /// <summary>
-    /// Команда экспорта типов элементов в CSV
-    /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportTypesCommand : IExternalCommand
     {
@@ -19,36 +16,42 @@ namespace RevitLibraryBuilder.Commands
         {
             try
             {
-                // Получаем документ Revit
                 UIDocument uidoc = commandData.Application.ActiveUIDocument;
                 Document doc = uidoc.Document;
 
-                // Собираем все типы
+                // Собираем все типы элементов
                 TypeCollectorService collector = new TypeCollectorService();
                 var types = collector.CollectAllTypes(doc);
 
-                // Проверка на пустоту
                 if (types == null || types.Count == 0)
                 {
-                    TaskDialog.Show("Экспорт", "Типы элементов не найдены.");
+                    MessageBox.Show("Типы элементов не найдены.", "Экспорт", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return Result.Cancelled;
                 }
 
-                // Диалог сохранения файла
-                SaveFileDialog dialog = new SaveFileDialog
+                // Выбор папки для сохранения CSV
+                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
-                    Filter = "CSV (*.csv)|*.csv",
-                    FileName = "RevitExport.csv"
-                };
+                    folderDialog.Description = "Выберите папку для экспорта CSV файлов";
 
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return Result.Cancelled;
+                    if (folderDialog.ShowDialog() != DialogResult.OK)
+                        return Result.Cancelled;
 
-                // Экспорт в CSV
-                CsvExportService export = new CsvExportService();
-                export.ExportToCsv(types, dialog.FileName);
+                    string outputFolder = folderDialog.SelectedPath;
 
-                TaskDialog.Show("Готово", "CSV успешно создан");
+                    // Экспортируем CSV с разделением по категориям из AllCategoriesByPlacement
+                    CsvExportService exportService = new CsvExportService();
+                    exportService.ExportToCsv(types, doc, outputFolder);
+                    
+                    
+                    // Кликабельная ссылка для открытия папки
+                    ToastNotifier.ShowFolderLinkSuccess(
+                        "Экспорт завершен",
+                        "\nCSV файлы сохранены в папке:\n",
+                        outputFolder,
+                        durationSeconds: 10
+                    );
+                }
 
                 return Result.Succeeded;
             }

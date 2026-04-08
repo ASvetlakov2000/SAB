@@ -1,51 +1,41 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace Helpers.Notifications.ToastNotifications
 {
-    /// <summary>
-    /// Статический класс для отображения Toast уведомлений в Revit.
-    /// Позволяет показывать уведомления с иконкой, заголовком и текстом.
-    /// Всплывает слева внизу экрана.
-    /// </summary>
     public static class ToastNotifier
     {
-        // Невидимое окно, создающее WPF-контекст для Revit
         private static Window _dummyWindow;
-
-        // Хост уведомлений, внутри которого располагаются все Toast
         private static ToastHost _host;
 
-        // Статический конструктор выполняется один раз при первом использовании класса
         static ToastNotifier()
         {
-            // Создаем невидимое окно для работы WPF
             _dummyWindow = new Window
             {
-                Width = 0, // нулевая ширина
-                Height = 0, // нулевая высота
-                ShowInTaskbar = false, // не отображать в панели задач
-                WindowStyle = WindowStyle.None, // без рамок
-                AllowsTransparency = true, // поддержка прозрачности
-                Opacity = 0 // полностью прозрачное
+                Width = 0,
+                Height = 0,
+                ShowInTaskbar = false,
+                WindowStyle = WindowStyle.None,
+                AllowsTransparency = true,
+                Opacity = 0
             };
-            _dummyWindow.Show(); // показываем окно, чтобы WPF-контекст был активен
+            _dummyWindow.Show();
 
-            // Создаем хост уведомлений
             _host = new ToastHost
             {
                 Owner = _dummyWindow,
-                Left = 10, // смещение слева
-                Top = SystemParameters.WorkArea.Bottom - 260 - 10 // смещение от нижнего края экрана
+                Left = SystemParameters.WorkArea.Right - 544 - 10, // ширина + 20%
+                Top = SystemParameters.WorkArea.Bottom - (SystemParameters.WorkArea.Height * 2 / 3) - 10
             };
-            _host.Show(); // показываем хост
+            _host.Show();
         }
 
-        // Методы для показа уведомлений разных типов
         public static void ShowInfo(string title, string message, int durationSeconds = 5) =>
             _host.ShowToast(title, message, ToastType.Info, durationSeconds);
 
@@ -57,185 +47,238 @@ namespace Helpers.Notifications.ToastNotifications
 
         public static void ShowError(string title, string message, int durationSeconds = 5) =>
             _host.ShowToast(title, message, ToastType.Error, durationSeconds);
+
+        public static void ShowFolderLinkInfo(string title, string message, string folderLink, int durationSeconds = 10) =>
+            _host.ShowToastWithLink(title, message, folderLink, ToastType.Info, durationSeconds);
+
+        public static void ShowFolderLinkSuccess(string title, string message, string folderLink, int durationSeconds = 10) =>
+            _host.ShowToastWithLink(title, message, folderLink, ToastType.Success, durationSeconds);
+
+        public static void ShowFolderLinkWarning(string title, string message, string folderLink, int durationSeconds = 10) =>
+            _host.ShowToastWithLink(title, message, folderLink, ToastType.Warning, durationSeconds);
+
+        public static void ShowFolderLinkError(string title, string message, string folderLink, int durationSeconds = 10) =>
+            _host.ShowToastWithLink(title, message, folderLink, ToastType.Error, durationSeconds);
     }
 
-    /// <summary>
-    /// Перечисление типов уведомлений
-    /// </summary>
     public enum ToastType { Info, Success, Warning, Error }
 
-    /// <summary>
-    /// Окно-хост для уведомлений
-    /// </summary>
     public class ToastHost : Window
     {
-        // StackPanel для хранения всех активных уведомлений
         private StackPanel _stackPanel;
+        private ScrollViewer _scrollViewer;
+        private const double TextMaxWidth = 400; // немного увеличили, чтобы текст не обрезался
+        private const double IconSize = 26;
 
         public ToastHost()
         {
-            Width = 340; // ширина хоста
-            Height = 260; // высота хоста
-            Topmost = true; // всегда поверх других окон
-            AllowsTransparency = true; // поддержка прозрачности
-            WindowStyle = WindowStyle.None; // без рамок
-            Background = Brushes.Transparent; // прозрачный фон
-            ShowInTaskbar = false; // не показывать в панели задач
+            Width = 544; // увеличено на 20%
+            Topmost = true;
+            AllowsTransparency = true;
+            WindowStyle = WindowStyle.None;
+            Background = Brushes.Transparent;
+            ShowInTaskbar = false;
+            MaxHeight = SystemParameters.WorkArea.Height * 2 / 3;
 
-            // Инициализация StackPanel для уведомлений
             _stackPanel = new StackPanel
             {
-                VerticalAlignment = VerticalAlignment.Bottom, // уведомления снизу
-                HorizontalAlignment = HorizontalAlignment.Left, // слева
-                Margin = new Thickness(10) // отступы от краев хоста
+                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(10)
             };
 
-            Content = _stackPanel; // устанавливаем StackPanel как содержимое окна
+            _scrollViewer = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Content = _stackPanel,
+                Background = Brushes.Transparent
+            };
+
+            Content = _scrollViewer;
         }
 
-        /// <summary>
-        /// Метод показа уведомления
-        /// </summary>
-        /// <param name="title">Заголовок уведомления</param>
-        /// <param name="message">Текст уведомления</param>
-        /// <param name="type">Тип уведомления (Info, Success, Warning, Error)</param>
-        /// <param name="durationSeconds">Время отображения в секундах</param>
         public void ShowToast(string title, string message, ToastType type, int durationSeconds)
         {
-            // Создаем основной контейнер уведомления (Border)
-            var border = new Border
+            var border = CreateToastBorder(type);
+            var grid = CreateToastGrid(border, title, message, type, link: null);
+            border.Child = grid;
+            AddToast(border, durationSeconds);
+        }
+
+        public void ShowToastWithLink(string title, string message, string link, ToastType type, int durationSeconds)
+        {
+            var border = CreateToastBorder(type);
+            var grid = CreateToastGrid(border, title, message, type, link);
+            border.Child = grid;
+            AddToast(border, durationSeconds);
+        }
+
+        private Border CreateToastBorder(ToastType type)
+        {
+            return new Border
             {
-                Background = GetBackground(type), // цвет фона в зависимости от типа
-                CornerRadius = new CornerRadius(8), // закругленные углы
-                Margin = new Thickness(0, 0, 0, 5), // отступ между уведомлениями
-                Padding = new Thickness(10), // внутренние отступы
-                HorizontalAlignment = HorizontalAlignment.Left
+                Background = GetBackground(type),
+                CornerRadius = new CornerRadius(8),
+                Margin = new Thickness(0, 0, 0, 5),
+                Padding = new Thickness(10),
+                HorizontalAlignment = HorizontalAlignment.Right
             };
+        }
 
-            // Grid вместо StackPanel для корректного растягивания и контроля размеров
-            var grid = new Grid { HorizontalAlignment = HorizontalAlignment.Left };
+        private Grid CreateToastGrid(Border border, string title, string message, ToastType type, string link)
+        {
+            var grid = new Grid { HorizontalAlignment = HorizontalAlignment.Right };
 
-            // Определяем колонки: иконка, отступ, разделитель, отступ, текст
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // иконка
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5) }); // отступ
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1) }); // разделитель
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) }); // отступ
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto }); // текст
+            // Расстановка колонок
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(IconSize) });   // значок
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });       // отступ между значком и левым разделителем
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5) });      // левый разделитель
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });       // отступ от разделителя до текста
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // текст
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(15) });      // правый разделитель
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });           // кнопка закрытия
 
-            // Иконка уведомления
+            // Иконка
             var icon = new TextBlock
             {
-                Text = GetIcon(type), // символ для типа уведомления
-                FontSize = 26, // размер иконки
-                Foreground = Brushes.White, // цвет иконки
-                VerticalAlignment = VerticalAlignment.Center, // выравнивание по центру рамки
-                TextAlignment = TextAlignment.Center,
-                Margin = new Thickness(0)
+                Text = GetIcon(type),
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.White,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center
             };
             Grid.SetColumn(icon, 0);
 
-            // Вертикальный разделитель между иконкой и текстом
+            // Левый разделитель
             var separator = new Rectangle
             {
-                Width = 1.5, // толщина линии
-                Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)), // полупрозрачный белый
-                VerticalAlignment = VerticalAlignment.Stretch // растягиваем по высоте Border
+                Width = 1.5,
+                Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)),
+                VerticalAlignment = VerticalAlignment.Stretch
             };
             Grid.SetColumn(separator, 2);
 
-            // StackPanel для текста (заголовок + сообщение)
+            // Текстовая часть
             var textStack = new StackPanel
             {
                 Orientation = Orientation.Vertical,
-                HorizontalAlignment = HorizontalAlignment.Left
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 10, 0)
             };
 
-            // Заголовок уведомления с подчеркиванием
             var titleBlock = new TextBlock
             {
                 Text = title,
-                FontWeight = FontWeights.Bold, // жирный
-                Foreground = Brushes.White, // цвет текста
-                FontSize = 16, // размер
-                TextWrapping = TextWrapping.Wrap, // перенос строк
-                TextDecorations = TextDecorations.Underline // подчёркивание
+                FontWeight = FontWeights.Bold,
+                FontSize = 16,
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap
             };
+            textStack.Children.Add(titleBlock);
 
-            // Основной текст уведомления
             var messageBlock = new TextBlock
             {
                 Text = message,
-                Foreground = Brushes.White, // цвет текста
-                FontSize = 14, // размер текста
-                TextWrapping = TextWrapping.Wrap, // перенос строк
-                MaxWidth = 240, // максимальная ширина текста для переноса
-                Margin = new Thickness(0, 2, 0, 0) // небольшой отступ сверху
+                FontSize = 14,
+                Foreground = Brushes.White,
+                TextWrapping = TextWrapping.Wrap,
+                MaxWidth = TextMaxWidth,
+                Margin = new Thickness(0, 2, 0, 0)
             };
-
-            // Добавляем заголовок и текст в вертикальный стек
-            textStack.Children.Add(titleBlock);
             textStack.Children.Add(messageBlock);
+
+            if (!string.IsNullOrEmpty(link))
+            {
+                var linkBlock = new TextBlock
+                {
+                    Text = link,
+                    FontSize = 14,
+                    Foreground = Brushes.White,
+                    TextWrapping = TextWrapping.Wrap,
+                    MaxWidth = TextMaxWidth,
+                    Cursor = Cursors.Hand,
+                    Margin = new Thickness(0, 2, 0, 0),
+                    TextDecorations = TextDecorations.Underline
+                };
+                linkBlock.MouseLeftButtonUp += (_, __) =>
+                {
+                    try { Process.Start(new ProcessStartInfo(link) { UseShellExecute = true }); }
+                    catch { }
+                };
+                textStack.Children.Add(linkBlock);
+            }
+
             Grid.SetColumn(textStack, 4);
 
-            // Добавляем иконку, разделитель и текст в Grid
+            // Правый разделитель
+            var separatorRight = new Rectangle
+            {
+                Width = 1.5,
+                Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)),
+                VerticalAlignment = VerticalAlignment.Stretch
+            };
+            Grid.SetColumn(separatorRight, 5);
+
+            // Кнопка закрытия
+            var closeButton = new Button
+            {
+                Content = "✖",
+                Width = 24,
+                Height = 24,
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Foreground = Brushes.White,
+                Cursor = Cursors.Hand,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0)
+            };
+            closeButton.Click += (_, __) => _stackPanel.Children.Remove(border);
+            Grid.SetColumn(closeButton, 6);
+
             grid.Children.Add(icon);
             grid.Children.Add(separator);
             grid.Children.Add(textStack);
+            grid.Children.Add(separatorRight);
+            grid.Children.Add(closeButton);
 
-            // Размещаем Grid в Border
-            border.Child = grid;
+            return grid;
+        }
 
-            // Вставляем уведомление в начало списка (сверху StackPanel)
+        private void AddToast(Border border, int durationSeconds)
+        {
             _stackPanel.Children.Insert(0, border);
 
-            // Анимация появления (плавное проявление)
             var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300));
             border.BeginAnimation(UIElement.OpacityProperty, fadeIn);
 
-            // Таймер для автоматического закрытия уведомления
-            var timer = new System.Windows.Threading.DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(durationSeconds)
-            };
+            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(durationSeconds) };
             timer.Tick += (s, e) =>
             {
-                timer.Stop(); // остановка таймера
-                // Анимация скрытия (плавное исчезновение)
+                timer.Stop();
                 var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300));
-                fadeOut.Completed += (s2, e2) => _stackPanel.Children.Remove(border); // удаляем уведомление после анимации
+                fadeOut.Completed += (s2, e2) => _stackPanel.Children.Remove(border);
                 border.BeginAnimation(UIElement.OpacityProperty, fadeOut);
             };
             timer.Start();
         }
 
-        /// <summary>
-        /// Возвращает цвет фона уведомления в зависимости от типа
-        /// </summary>
-        private Brush GetBackground(ToastType type)
+        private Brush GetBackground(ToastType type) => type switch
         {
-            return type switch
-            {
-                ToastType.Info => new SolidColorBrush(Color.FromRgb(52, 152, 219)), // синий
-                ToastType.Success => new SolidColorBrush(Color.FromRgb(46, 204, 113)), // зеленый
-                ToastType.Warning => new SolidColorBrush(Color.FromRgb(241, 196, 15)), // желтый
-                ToastType.Error => new SolidColorBrush(Color.FromRgb(231, 76, 60)), // красный
-                _ => Brushes.Gray
-            };
-        }
+            ToastType.Info => new SolidColorBrush(Color.FromRgb(116, 155, 184)),
+            ToastType.Success => new SolidColorBrush(Color.FromRgb(116, 155, 184)),
+            ToastType.Warning => new SolidColorBrush(Color.FromRgb(255, 193, 94)),
+            ToastType.Error => new SolidColorBrush(Color.FromRgb(255, 128, 128)),
+            _ => Brushes.Gray
+        };
 
-        /// <summary>
-        /// Возвращает символ иконки уведомления
-        /// </summary>
-        private string GetIcon(ToastType type)
+        private string GetIcon(ToastType type) => type switch
         {
-            return type switch
-            {
-                ToastType.Info => "ℹ",        // информация
-                ToastType.Success => "✔",     // галочка
-                ToastType.Warning => "!",     // восклицательный знак
-                ToastType.Error => "✖",       // крестик
-                _ => "?"
-            };
-        }
+            ToastType.Info => "ℹ",
+            ToastType.Success => "✔",
+            ToastType.Warning => "❗",
+            ToastType.Error => "✖",
+            _ => "?"
+        };
     }
 }
