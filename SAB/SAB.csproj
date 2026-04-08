@@ -57,12 +57,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="ToastNotifications, Version=2.5.1.0, Culture=neutral, PublicKeyToken=e89d9d7314a7c797, processorArchitecture=MSIL">
-      <HintPath>..\packages\ToastNotifications.2.5.1\lib\net40\ToastNotifications.dll</HintPath>
-    </Reference>
-    <Reference Include="ToastNotifications.Messages, Version=2.5.1.0, Culture=neutral, PublicKeyToken=e89d9d7314a7c797, processorArchitecture=MSIL">
-      <HintPath>..\packages\ToastNotifications.Messages.2.5.1\lib\net40\ToastNotifications.Messages.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -81,12 +75,12 @@
     <Compile Include="Cls_InteriorElevations\UI\ElevationSettingsWindow.xaml.cs">
       <DependentUpon>ElevationSettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Notifications\ToastNotifications\ToastNotifier.cs" />
     <Compile Include="Helpers\Service\FileOpenSave.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cls_ElementPlacer\Utils\" />
-    <Folder Include="Helpers\Notifications\ToastNotifications\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Cls_InteriorElevations\UI\ElevationSettingsWindow.xaml">

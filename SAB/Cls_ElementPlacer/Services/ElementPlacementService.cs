@@ -4,6 +4,7 @@ using RevitLibraryBuilder.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Helpers.Notifications.ToastNotifications;
 
 namespace RevitLibraryBuilder.Services
 {
@@ -65,11 +66,11 @@ namespace RevitLibraryBuilder.Services
 
                 trans.Commit();
 
-                string logMessage = $"Элементов размещено: {placedCount}";
+                string logMessage = $"ЭлементовЭлементовЭлементовЭлементовЭлементовЭлементовЭлементов: {placedCount}";
                 if (skippedElements.Count > 0)
                     logMessage += $"\nПропущено: {skippedElements.Count}\n{string.Join("\n", skippedElements)}";
 
-                TaskDialog.Show("Результаты расстановки", logMessage);
+                ToastNotifier.ShowSuccess("Результаты расстановки", logMessage);
             }
         }
 
