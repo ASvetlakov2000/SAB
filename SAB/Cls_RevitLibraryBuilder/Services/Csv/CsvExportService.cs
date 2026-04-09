@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using asBIM; // подключаем класс AllCategoriesByPlacement
+using SAB; // подключаем класс AllCategoriesByPlacement
 
 namespace RevitLibraryBuilder.Services
 {

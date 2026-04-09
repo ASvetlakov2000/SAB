@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
-namespace asBIM
+namespace SAB
 {
     internal class AllUsedCategoryList
     {
-        public IEnumerable<BuiltInCategory> categoryList = new BuiltInCategory[]
+        public static IEnumerable<BuiltInCategory> categoryList = new BuiltInCategory[]
         {
             BuiltInCategory.OST_Walls,                  // Стены
             BuiltInCategory.OST_Floors,                 // Полы

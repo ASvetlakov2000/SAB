@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
-namespace asBIM
+namespace SAB
 {
     internal static class AllCategoriesByPlacement
     {
