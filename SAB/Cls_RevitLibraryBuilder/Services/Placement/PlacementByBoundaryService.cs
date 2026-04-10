@@ -91,7 +91,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 if (skippedElements.Count > 0)
                     logMessage += $"\nПропущено: {skippedElements.Count}\n{string.Join("\n", skippedElements)}";
 
-                ToastNotifier.ShowSuccess("Результаты размещения по границе", logMessage, 10);
+                ToastNotifier.ShowSuccess("Результаты PlacementByBoundary", logMessage);
             }
         }
 
