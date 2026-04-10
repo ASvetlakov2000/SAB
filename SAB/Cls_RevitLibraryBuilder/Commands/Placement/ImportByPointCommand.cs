@@ -1,8 +1,6 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using RevitLibraryBuilder.Services.Csv;
-using RevitLibraryBuilder.Services.Placement;
 using System.Linq;
 using System.Windows.Forms;
 

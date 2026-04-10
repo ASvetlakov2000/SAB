@@ -3,7 +3,6 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Services.Placement;
 using UI.Dialogs;
-using Services.Views;
 
 [Transaction(TransactionMode.Manual)]
 public class PlaceFillPatternsCommand : IExternalCommand

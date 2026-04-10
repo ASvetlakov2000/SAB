@@ -4,7 +4,6 @@ using Autodesk.Revit.UI;
 using System;
 using System.Windows.Forms;
 using Helpers.Notifications.ToastNotifications;
-using RevitLibraryBuilder.Services.Csv;
 
 namespace RevitLibraryBuilder.Commands
 {
