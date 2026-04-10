@@ -2,6 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System.Linq;
+using RevitLibraryBuilder.Services.PostActions;
 
 namespace Commands
 {
@@ -13,20 +14,11 @@ namespace Commands
             ref string message,
             ElementSet elements)
         {
-            // ------------------------------------------------------------
-            // 1. Получаем документ
-            // ------------------------------------------------------------
             UIDocument uidoc = commandData.Application.ActiveUIDocument;
             Document doc = uidoc.Document;
 
-            // ------------------------------------------------------------
-            // 2. Получаем активный вид
-            // ------------------------------------------------------------
             View view = doc.ActiveView;
 
-            // ------------------------------------------------------------
-            // 3. Собираем все DetailCurve на виде
-            // ------------------------------------------------------------
             var curves = new FilteredElementCollector(doc, view.Id)
                 .OfClass(typeof(DetailCurve))
                 .Cast<DetailCurve>()
@@ -35,24 +27,15 @@ namespace Commands
             if (!curves.Any())
                 return Result.Succeeded;
 
-            // ------------------------------------------------------------
-            // 4. Получаем категорию Line Styles (OST_Lines)
-            // ------------------------------------------------------------
             Category linesCategory = doc.Settings.Categories
                 .get_Item(BuiltInCategory.OST_Lines);
 
-            // ------------------------------------------------------------
-            // 5. Создаём транзакцию
-            // ------------------------------------------------------------
             using (Transaction t = new Transaction(doc, "Apply Line Styles"))
             {
                 t.Start();
 
                 foreach (var dc in curves)
                 {
-                    // ------------------------------------------------------------
-                    // 6. Берём текущий стиль линии
-                    // ------------------------------------------------------------
                     GraphicsStyle gs = dc.LineStyle as GraphicsStyle;
 
                     if (gs == null)
@@ -63,9 +46,6 @@ namespace Commands
                     if (string.IsNullOrEmpty(styleName))
                         continue;
 
-                    // ------------------------------------------------------------
-                    // 7. Ищем соответствующий subcategory в OST_Lines
-                    // ------------------------------------------------------------
                     Category targetSubCategory = linesCategory
                         .SubCategories
                         .Cast<Category>()
@@ -74,23 +54,22 @@ namespace Commands
                     if (targetSubCategory == null)
                         continue;
 
-                    // ------------------------------------------------------------
-                    // 8. Получаем GraphicsStyle из категории
-                    // ------------------------------------------------------------
                     GraphicsStyle targetGs =
                         targetSubCategory.GetGraphicsStyle(GraphicsStyleType.Projection);
 
                     if (targetGs == null)
                         continue;
 
-                    // ------------------------------------------------------------
-                    // 9. ПРИМЕНЯЕМ СТИЛЬ (правильный API способ)
-                    // ------------------------------------------------------------
                     dc.LineStyle = targetGs;
                 }
 
                 t.Commit();
             }
+
+            Category category =
+                doc.Settings.Categories.get_Item(BuiltInCategory.OST_Lines);
+
+            PostActionViewService.AskAndCreateView(doc, category);
 
             return Result.Succeeded;
         }

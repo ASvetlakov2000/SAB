@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace UI.Dialogs
+namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
 {
     public partial class ConfirmViewCreationDialog : Window
     {
@@ -11,7 +11,7 @@ namespace UI.Dialogs
             InitializeComponent();
 
             TitleText.Text = "Создание вида";
-            MessageText.Text = $"Создать план вида для:\n\n{categoryName}?";
+            MessageText.Text = $"Создать план вида для категории:\n\n{categoryName}?";
         }
 
         private void Yes_Click(object sender, RoutedEventArgs e)

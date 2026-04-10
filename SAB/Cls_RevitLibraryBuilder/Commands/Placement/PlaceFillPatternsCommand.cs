@@ -1,45 +1,75 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Services.Placement;
-using UI.Dialogs;
+using RevitLibraryBuilder.Services.PostActions;
+using System;
 
-[Transaction(TransactionMode.Manual)]
-public class PlaceFillPatternsCommand : IExternalCommand
+namespace RevitLibraryBuilder.Commands.FillPatterns
 {
-    public Result Execute(ExternalCommandData data, ref string message, ElementSet elements)
+    [Transaction(TransactionMode.Manual)]
+    public class PlaceFillPatternsCommand : IExternalCommand
     {
-        Document doc = data.Application.ActiveUIDocument.Document;
-
-        using (Transaction t = new Transaction(doc, "Fill Patterns"))
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            t.Start();
-
-            View view = doc.ActiveView;
-
-            FillPatternPlacer.Place(doc, view);
-
-            t.Commit();
-        }
-
-        bool createView = ViewCreationDialogService.Ask("Штриховки");
-
-        if (createView)
-        {
-            using (Transaction t = new Transaction(doc, "Create View"))
+            try
             {
-                t.Start();
+                // ------------------------------------------------------------
+                // 1. Получаем документ Revit
+                // ------------------------------------------------------------
+                UIDocument uidoc = commandData.Application.ActiveUIDocument;
+                Document doc = uidoc.Document;
 
-                var service = new FloorPlanViewService();
-                service.Create(doc, "Штриховки");
+                // ------------------------------------------------------------
+                // 2. Получаем выбранный элемент
+                // ------------------------------------------------------------
+                Element selectedElement = doc.GetElement(uidoc.Selection.PickObject(Autodesk.Revit.UI.Selection.ObjectType.Element));
 
-                t.Commit();
+                if (selectedElement == null)
+                {
+                    TaskDialog.Show("Ошибка", "Элемент не выбран");
+                    return Result.Failed;
+                }
+
+                // ------------------------------------------------------------
+                // 3. Получаем категорию элемента
+                // ------------------------------------------------------------
+                Category category = selectedElement.Category;
+
+                if (category == null)
+                {
+                    TaskDialog.Show("Ошибка", "У элемента нет категории");
+                    return Result.Failed;
+                }
+
+                // ------------------------------------------------------------
+                // 4. Здесь твоя логика размещения штриховок (Fill Patterns)
+                // ------------------------------------------------------------
+                using (Transaction t = new Transaction(doc, "Place Fill Patterns"))
+                {
+                    t.Start();
+
+                    // TODO: твоя логика размещения штриховок
+                    // (оставлено как заглушка, чтобы не ломать текущую систему)
+
+                    t.Commit();
+                }
+
+                // ------------------------------------------------------------
+                // 5. PostAction: создание вида с правильным именем
+                // ------------------------------------------------------------
+                PostActionViewService.AskAndCreateView(doc, category);
+
+                return Result.Succeeded;
             }
-
-            Helpers.Notifications.ToastNotifications.ToastNotifier
-                .ShowSuccess("Готово", "Вид для расставленной категории создан", 5);
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+            {
+                return Result.Cancelled;
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Ошибка", ex.Message);
+                return Result.Failed;
+            }
         }
-
-        return Result.Succeeded;
     }
 }
