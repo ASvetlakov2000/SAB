@@ -1,4 +1,4 @@
-﻿<Window x:Class="InteriorElevations.UI.ElevationSettingsWindow"
+﻿<Window x:Class="InteriorElevations.UI.ConfirmViewCreationDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Настройки развертки" Height="300" Width="350" WindowStartupLocation="CenterScreen">
