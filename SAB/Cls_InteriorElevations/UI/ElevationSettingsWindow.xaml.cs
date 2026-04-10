@@ -3,11 +3,11 @@ using InteriorElevations.Models;
 
 namespace InteriorElevations.UI
 {
-    public partial class ElevationSettingsWindow : Window
+    public partial class ConfirmViewCreationDialog1 : Window
     {
         public ElevationSettings Settings { get; private set; }
 
-        public ElevationSettingsWindow()
+        public ConfirmViewCreationDialog1()
         {
             InitializeComponent();
         }
