@@ -66,10 +66,7 @@ namespace Commands
                 t.Commit();
             }
 
-            Category category =
-                doc.Settings.Categories.get_Item(BuiltInCategory.OST_Lines);
-
-            PostActionViewService.AskAndCreateView(doc, category);
+            PostActionViewService.AskAndCreateView(doc);
 
             return Result.Succeeded;
         }

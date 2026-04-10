@@ -78,6 +78,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\CreateFloorPlanFromPlacementCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Helpers\PlacementMath.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Model\ElementTypeCsvModel.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Model\PlacementResult.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvFillPatternExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvGraphicsStyleExportService.cs" />

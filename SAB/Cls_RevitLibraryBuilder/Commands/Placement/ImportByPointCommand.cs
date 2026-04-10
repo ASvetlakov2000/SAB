@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Placement;
+using RevitLibraryBuilder.Services.PostActions;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -26,20 +27,17 @@ namespace RevitLibraryBuilder.Commands
             if (dialog.ShowDialog() != DialogResult.OK)
                 return Result.Cancelled;
 
-            // Импорт CSV
             var csv = new CsvImportService().ImportFromCsv(dialog.FileName);
 
-            // Получаем уровень
             Level level = new FilteredElementCollector(doc)
                 .OfClass(typeof(Level))
                 .Cast<Level>()
                 .FirstOrDefault();
 
-            // Получаем сервис
             var service = PlacementServiceFactory.Create("Point", doc);
-
-            // Выполняем размещение
             service.Place(csv, level);
+
+            PostActionViewService.AskAndCreateView(doc);
 
             return Result.Succeeded;
         }

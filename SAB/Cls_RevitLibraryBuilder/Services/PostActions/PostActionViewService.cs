@@ -1,57 +1,43 @@
 ﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+
 using SAB.Cls_RevitLibraryBuilder.UI.Dialogs;
-using System;
 using Services.Views;
 
 namespace RevitLibraryBuilder.Services.PostActions
 {
+    /// <summary>
+    /// Единый post-action: вызывается после всех команд размещения
+    /// </summary>
     public static class PostActionViewService
     {
-        // ------------------------------------------------------------
-        // СТАРАЯ ВЕРСИЯ (для совместимости)
-        // ------------------------------------------------------------
         public static void AskAndCreateView(Document doc)
         {
-            Category fallback = doc.Settings.Categories.get_Item(BuiltInCategory.OST_GenericModel);
-            AskAndCreateView(doc, fallback);
-        }
+            // ------------------------------------------------------------
+            // 1. Диалог пользователя
+            // ------------------------------------------------------------
+            bool createView = ViewCreationDialogService.Ask("Результат размещения");
 
-        // ------------------------------------------------------------
-        // ОСНОВНАЯ ВЕРСИЯ
-        // ------------------------------------------------------------
-        public static void AskAndCreateView(Document doc, Category category)
-        {
-            try
+            if (!createView)
+                return;
+
+            // ------------------------------------------------------------
+            // 2. Создание вида
+            // ------------------------------------------------------------
+            using (Transaction t = new Transaction(doc, "Create View"))
             {
-                if (doc == null)
-                    return;
+                t.Start();
 
-                string categoryName = category?.Name ?? "БезКатегории";
-                string viewName = $"Категория_{categoryName}";
+                var service = new FloorPlanViewService();
+                service.Create(doc, "Результат размещения");
 
-                bool createView = ViewCreationDialogService.Ask(viewName);
-
-                if (!createView)
-                    return;
-
-                using (Transaction t = new Transaction(doc, "Create View"))
-                {
-                    t.Start();
-
-                    var service = new FloorPlanViewService();
-                    service.Create(doc, viewName);
-
-                    t.Commit();
-                }
-
-                Helpers.Notifications.ToastNotifications.ToastNotifier
-                    .ShowSuccess("Готово", $"Вид '{viewName}' создан", 5);
+                t.Commit();
             }
-            catch (Exception ex)
-            {
-                TaskDialog.Show("PostAction", ex.Message);
-            }
+
+            // ------------------------------------------------------------
+            // 3. Уведомление
+            // ------------------------------------------------------------
+            Helpers.Notifications.ToastNotifications.ToastNotifier
+                .ShowSuccess("Готово", "Создан вид результата размещения", 5);
         }
     }
 }

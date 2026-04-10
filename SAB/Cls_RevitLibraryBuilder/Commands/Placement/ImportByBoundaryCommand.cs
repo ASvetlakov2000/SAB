@@ -5,12 +5,10 @@ using System.Linq;
 using System.Windows.Forms;
 using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Placement;
+using RevitLibraryBuilder.Services.PostActions;
 
 namespace RevitLibraryBuilder.Commands
 {
-    /// <summary>
-    /// Импорт и размещение по границе
-    /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ImportByBoundaryCommand : IExternalCommand
     {
@@ -34,8 +32,9 @@ namespace RevitLibraryBuilder.Commands
                 .FirstOrDefault();
 
             var service = PlacementServiceFactory.Create("Boundary", doc);
-
             service.Place(csv, level);
+
+            PostActionViewService.AskAndCreateView(doc);
 
             return Result.Succeeded;
         }

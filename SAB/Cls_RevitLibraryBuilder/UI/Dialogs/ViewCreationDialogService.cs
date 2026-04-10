@@ -1,30 +1,22 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
 {
     public static class ViewCreationDialogService
     {
-        public static bool Ask(string categoryName)
+        public static bool Ask(string name)
         {
-            // ------------------------------------------------------------
-            // Защищённый вызов диалога (никогда не падает)
-            // ------------------------------------------------------------
+            var dialog = new ConfirmViewCreationDialog(name);
 
-            try
-            {
-                var result = MessageBox.Show(
-                    $"Создать вид для: {categoryName}?",
-                    "Создание вида",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
+            var helper = new WindowInteropHelper(dialog);
 
-                return result == DialogResult.Yes;
-            }
-            catch
-            {
-                // Если UI сломался — просто НЕ создаём вид
-                return false;
-            }
+            helper.Owner = System.Diagnostics.Process
+                .GetCurrentProcess()
+                .MainWindowHandle;
+
+            return dialog.ShowDialog() == true && dialog.Result;
         }
     }
 }
