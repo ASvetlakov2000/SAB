@@ -9,45 +9,49 @@ using RevitLibraryBuilder.Services.Revit;
 
 namespace RevitLibraryBuilder.Commands
 {
+    /// <summary>
+    /// Экспорт типов — ОТДЕЛЬНЫЕ CSV по категориям
+    /// </summary>
     [Transaction(TransactionMode.Manual)]
-    public class ExportTypesCommand : IExternalCommand
+    public class ExportTypesByCategoryCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
             {
+                // 🔹 Получаем документ
                 UIDocument uidoc = commandData.Application.ActiveUIDocument;
                 Document doc = uidoc.Document;
 
-                // Собираем все типы элементов
+                // 🔹 Сбор типов
                 TypeCollectorService collector = new TypeCollectorService();
                 var types = collector.CollectAllTypes(doc);
 
+                // 🔹 Проверка
                 if (types == null || types.Count == 0)
                 {
                     MessageBox.Show("Типы элементов не найдены.", "Экспорт", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return Result.Cancelled;
                 }
 
-                // Выбор папки для сохранения CSV
+                // 🔹 Выбор папки
                 using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
-                    folderDialog.Description = "Выберите папку для экспорта CSV файлов";
+                    folderDialog.Description = "Выберите папку для экспорта CSV (по категориям)";
 
                     if (folderDialog.ShowDialog() != DialogResult.OK)
                         return Result.Cancelled;
 
                     string outputFolder = folderDialog.SelectedPath;
 
-                    // Экспортируем CSV с разделением по категориям из AllCategoriesByPlacement
+                    // 🔹 Экспорт
                     CsvExportService exportService = new CsvExportService();
                     exportService.ExportToCsv(types, doc, outputFolder);
-                    
-                    
-                    // Кликабельная ссылка для открытия папки
+
+                    // 🔹 Уведомление
                     ToastNotifier.ShowFolderLinkSuccess(
                         "Экспорт завершен",
-                        "\nCSV файлы сохранены в папке:\n",
+                        "\nCSV файлы (по категориям) сохранены:\n",
                         outputFolder,
                         durationSeconds: 10
                     );
