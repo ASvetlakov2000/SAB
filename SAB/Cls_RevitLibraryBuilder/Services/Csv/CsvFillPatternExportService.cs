@@ -41,11 +41,11 @@ namespace RevitLibraryBuilder.Services.Csv
                 }
 
                 ExportLineStyles(document, folderPath);
-                ExportFilledRegionTypes(document, folderPath);
+                ExportFillPatterns(document, folderPath);
 
                 ShowFolderSuccessNotification(
-                    "Экспорт завершён",
-                    "Line Styles и FilledRegionTypes экспортированы:",
+                    "Export completed",
+                    "Line Styles and Fill Patterns were exported:",
                     folderPath);
 
                 return Result.Succeeded;
@@ -62,7 +62,7 @@ namespace RevitLibraryBuilder.Services.Csv
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Title = "Select CSV file with filled region types";
+                dialog.Title = "Select CSV file with fill patterns";
                 dialog.Filter = "CSV (*.csv)|*.csv";
                 dialog.Multiselect = false;
 
@@ -77,41 +77,9 @@ namespace RevitLibraryBuilder.Services.Csv
             }
         }
 
-        public void ExportFilledRegionTypes(Document document, string folderPath)
+        public List<FillPatternCsvRecord> ImportFillPatternRows(string csvFilePath)
         {
-            string filePath = Path.Combine(folderPath, "FilledRegionTypes.csv");
-            StringBuilder stringBuilder = new StringBuilder();
-
-            stringBuilder.AppendLine("Name,ForegroundPattern,BackgroundPattern,IsMasking");
-
-            FilteredElementCollector collector = new FilteredElementCollector(document);
-            collector.OfClass(typeof(FilledRegionType));
-
-            foreach (Element element in collector)
-            {
-                FilledRegionType filledRegionType = element as FilledRegionType;
-
-                if (filledRegionType == null)
-                {
-                    continue;
-                }
-
-                string foregroundPatternName = GetFillPatternName(document, filledRegionType.ForegroundPatternId);
-                string backgroundPatternName = GetFillPatternName(document, filledRegionType.BackgroundPatternId);
-
-                stringBuilder.AppendLine(
-                    Escape(filledRegionType.Name) + "," +
-                    Escape(foregroundPatternName) + "," +
-                    Escape(backgroundPatternName) + "," +
-                    filledRegionType.IsMasking);
-            }
-
-            File.WriteAllText(filePath, stringBuilder.ToString(), Encoding.UTF8);
-        }
-
-        public List<FilledRegionTypeCsvModel> ImportFilledRegionTypes(string csvFilePath)
-        {
-            List<FilledRegionTypeCsvModel> result = new List<FilledRegionTypeCsvModel>();
+            List<FillPatternCsvRecord> result = new List<FillPatternCsvRecord>();
 
             if (string.IsNullOrWhiteSpace(csvFilePath) || !File.Exists(csvFilePath))
             {
@@ -136,26 +104,80 @@ namespace RevitLibraryBuilder.Services.Csv
 
                 List<string> values = ParseCsvLine(line);
 
-                if (values.Count == 0)
+                if (values.Count < 5)
                 {
                     continue;
                 }
 
-                FilledRegionTypeCsvModel model = new FilledRegionTypeCsvModel();
-                model.Name = GetValue(values, 0);
-                model.ForegroundPatternName = GetValue(values, 1);
-                model.BackgroundPatternName = GetValue(values, 2);
-                model.IsMasking = ParseBoolean(GetValue(values, 3));
+                FillPatternCsvRecord record = new FillPatternCsvRecord();
+                record.RowIndex = i + 1;
+                record.Name = GetValue(values, 0);
+                record.ForegroundPattern = GetValue(values, 1);
+                record.BackgroundPattern = GetValue(values, 2);
+                record.IsMasking = ParseBoolean(GetValue(values, 3));
+                record.Target = NormalizeTarget(GetValue(values, 4));
 
-                if (string.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(record.Name))
                 {
                     continue;
                 }
 
-                result.Add(model);
+                if (string.IsNullOrWhiteSpace(record.ForegroundPattern))
+                {
+                    record.ForegroundPattern = record.Name;
+                }
+
+                result.Add(record);
             }
 
             return result;
+        }
+
+        // Block responsible for exporting fill patterns to the required stable CSV schema
+        public void ExportFillPatterns(Document document, string folderPath)
+        {
+            string filePath = Path.Combine(folderPath, "FillPatterns.csv");
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine("Name,ForegroundPattern,BackgroundPattern,IsMasking,Target");
+            List<FilledRegionType> regionTypes = CollectFilledRegionTypes(document);
+
+            List<FillPatternElement> draftingPatterns = new List<FillPatternElement>();
+            List<FillPatternElement> modelPatterns = new List<FillPatternElement>();
+
+            FilteredElementCollector collector = new FilteredElementCollector(document);
+            collector.OfClass(typeof(FillPatternElement));
+
+            foreach (Element element in collector)
+            {
+                FillPatternElement fillPatternElement = element as FillPatternElement;
+
+                if (fillPatternElement == null)
+                {
+                    continue;
+                }
+
+                FillPattern fillPattern = fillPatternElement.GetFillPattern();
+
+                if (fillPattern == null)
+                {
+                    continue;
+                }
+
+                if (fillPattern.Target == FillPatternTarget.Drafting)
+                {
+                    draftingPatterns.Add(fillPatternElement);
+                }
+                else
+                {
+                    modelPatterns.Add(fillPatternElement);
+                }
+            }
+
+            WritePatternRows(stringBuilder, draftingPatterns, "Drafting", regionTypes, document);
+            WritePatternRows(stringBuilder, modelPatterns, "Model", regionTypes, document);
+
+            File.WriteAllText(filePath, stringBuilder.ToString(), Encoding.UTF8);
         }
 
         // Block responsible for exporting line styles into CSV using the current project structure
@@ -233,12 +255,104 @@ namespace RevitLibraryBuilder.Services.Csv
             File.WriteAllText(filePath, stringBuilder.ToString(), Encoding.UTF8);
         }
 
+        private static void WritePatternRows(
+            StringBuilder stringBuilder,
+            List<FillPatternElement> patterns,
+            string target,
+            List<FilledRegionType> regionTypes,
+            Document document)
+        {
+            for (int i = 0; i < patterns.Count; i++)
+            {
+                FillPatternElement pattern = patterns[i];
+                string name = pattern.Name;
+                string foregroundPattern = name;
+                string backgroundPattern = string.Empty;
+                bool isMasking = false;
+
+                FilledRegionType relatedType = FindRelatedFilledRegionType(regionTypes, pattern.Id);
+
+                if (relatedType != null)
+                {
+                    foregroundPattern = GetPatternName(document, relatedType.ForegroundPatternId, name);
+                    backgroundPattern = GetPatternName(document, relatedType.BackgroundPatternId, string.Empty);
+                    isMasking = relatedType.IsMasking;
+                }
+
+                stringBuilder.AppendLine(
+                    Escape(name) + "," +
+                    Escape(foregroundPattern) + "," +
+                    Escape(backgroundPattern) + "," +
+                    isMasking.ToString().ToLowerInvariant() + "," +
+                    Escape(target));
+            }
+        }
+
+        private static List<FilledRegionType> CollectFilledRegionTypes(Document document)
+        {
+            List<FilledRegionType> types = new List<FilledRegionType>();
+
+            FilteredElementCollector collector = new FilteredElementCollector(document);
+            collector.OfClass(typeof(FilledRegionType));
+
+            foreach (Element element in collector)
+            {
+                FilledRegionType type = element as FilledRegionType;
+
+                if (type != null)
+                {
+                    types.Add(type);
+                }
+            }
+
+            return types;
+        }
+
+        private static FilledRegionType FindRelatedFilledRegionType(
+            List<FilledRegionType> regionTypes,
+            ElementId patternId)
+        {
+            if (patternId == null || patternId == ElementId.InvalidElementId)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < regionTypes.Count; i++)
+            {
+                FilledRegionType type = regionTypes[i];
+
+                if (type.ForegroundPatternId == patternId || type.BackgroundPatternId == patternId)
+                {
+                    return type;
+                }
+            }
+
+            return null;
+        }
+
+        private static string GetPatternName(Document document, ElementId patternId, string fallback)
+        {
+            if (patternId == null || patternId == ElementId.InvalidElementId)
+            {
+                return fallback;
+            }
+
+            FillPatternElement pattern = document.GetElement(patternId) as FillPatternElement;
+
+            if (pattern == null)
+            {
+                return fallback;
+            }
+
+            return pattern.Name;
+        }
+
         // Block responsible for selecting the folder for CSV export
         private static string RequestExportFolderPath()
         {
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
-                dialog.Description = "Выберите папку для экспорта Line Styles и Filled Region Types";
+                dialog.Description = "Select folder for Line Styles and Fill Patterns export";
 
                 if (dialog.ShowDialog() != DialogResult.OK)
                 {
@@ -247,23 +361,6 @@ namespace RevitLibraryBuilder.Services.Csv
 
                 return dialog.SelectedPath;
             }
-        }
-
-        private static string GetFillPatternName(Document document, ElementId patternId)
-        {
-            if (patternId == null || patternId == ElementId.InvalidElementId)
-            {
-                return string.Empty;
-            }
-
-            FillPatternElement fillPatternElement = document.GetElement(patternId) as FillPatternElement;
-
-            if (fillPatternElement == null)
-            {
-                return string.Empty;
-            }
-
-            return fillPatternElement.Name;
         }
 
         private static string GetValue(List<string> values, int index)
@@ -295,6 +392,16 @@ namespace RevitLibraryBuilder.Services.Csv
             return normalizedValue == "1" ||
                    normalizedValue == "TRUE" ||
                    normalizedValue == "YES";
+        }
+
+        private static string NormalizeTarget(string value)
+        {
+            if (string.Equals(value, "Model", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Model";
+            }
+
+            return "Drafting";
         }
 
         // Block responsible for parsing CSV lines with quoted values
@@ -367,14 +474,18 @@ namespace RevitLibraryBuilder.Services.Csv
         }
     }
 
-    public class FilledRegionTypeCsvModel
+    public class FillPatternCsvRecord
     {
+        public int RowIndex { get; set; }
+
         public string Name { get; set; }
 
-        public string ForegroundPatternName { get; set; }
+        public string ForegroundPattern { get; set; }
 
-        public string BackgroundPatternName { get; set; }
+        public string BackgroundPattern { get; set; }
 
         public bool IsMasking { get; set; }
+
+        public string Target { get; set; }
     }
 }

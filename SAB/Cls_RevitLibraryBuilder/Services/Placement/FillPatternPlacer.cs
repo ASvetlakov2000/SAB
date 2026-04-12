@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
@@ -11,6 +13,8 @@ namespace RevitLibraryBuilder.Services.Placement
     {
         private const string TargetViewName = "Библиотека_Штриховки";
         private const int TargetViewScale = 20;
+        private const string InvalidNamesReportFileName = "Штриховки с запрещенными символами.csv";
+        private static readonly char[] ProhibitedNameCharacters = new char[] { '{', '}', '[', ']', ';', '<', '>', '?', '^', '~' };
 
         public Result Execute(ExternalCommandData commandData, ref string message)
         {
@@ -34,35 +38,24 @@ namespace RevitLibraryBuilder.Services.Placement
                     return Result.Failed;
                 }
 
-                // Block responsible for preparing the drafting view before filled region placement
+                // Block responsible for checking/creating Drafting View before placement logic
                 ViewDrafting draftingView = GetOrCreateDraftingView(document);
 
                 if (draftingView == null)
                 {
-                    message = "Не удалось получить или создать вид \"" + TargetViewName + "\".";
+                    message = "Failed to get or create drafting view: " + TargetViewName;
                     TaskDialog.Show("Place Fill Patterns", message);
                     return Result.Failed;
                 }
 
-                // Block responsible for activating the prepared drafting view in Revit UI
+                // Block responsible for switching Revit UI to the target view
                 ActivateView(uiDocument, draftingView);
 
                 View activeView = uiDocument.ActiveView;
 
-                if (activeView == null)
+                if (activeView == null || activeView.ViewType != ViewType.DraftingView)
                 {
-                    message = "Active view is not available.";
-                    TaskDialog.Show("Place Fill Patterns", message);
-                    return Result.Failed;
-                }
-
-                if (activeView.ViewType != ViewType.DraftingView)
-                {
-                    TaskDialog.Show(
-                        "Place Fill Patterns",
-                        "Команда работает только в Drafting View.\n" +
-                        "Текущий вид: " + activeView.Name + "\n" +
-                        "Тип вида: " + activeView.ViewType);
+                    TaskDialog.Show("Place Fill Patterns", "Active view must be a Drafting View.");
                     return Result.Cancelled;
                 }
 
@@ -74,68 +67,64 @@ namespace RevitLibraryBuilder.Services.Placement
                     return Result.Cancelled;
                 }
 
-                List<FilledRegionTypeCsvModel> importedTypes = csvService.ImportFilledRegionTypes(csvFilePath);
+                List<FillPatternCsvRecord> importedRecords = csvService.ImportFillPatternRows(csvFilePath);
 
-                if (importedTypes.Count == 0)
+                if (importedRecords.Count == 0)
                 {
-                    TaskDialog.Show(
-                        "Place Fill Patterns",
-                        "В выбранном CSV не найдено ни одного FilledRegionType.");
+                    TaskDialog.Show("Place Fill Patterns", "No valid fill pattern rows were found in CSV.");
                     return Result.Cancelled;
                 }
 
+                List<FillPatternCsvRecord> orderedRecords = OrderRecordsByTarget(importedRecords);
                 TextNoteType textNoteType = GetTextNoteType(document);
+                FilledRegionType baseFilledRegionType = GetBaseFilledRegionType(document);
 
                 if (textNoteType == null)
                 {
-                    TaskDialog.Show(
-                        "Place Fill Patterns",
-                        "В проекте не найден TextNoteType для создания подписей.");
+                    TaskDialog.Show("Place Fill Patterns", "TextNoteType not found.");
                     return Result.Failed;
                 }
-
-                FilledRegionType baseFilledRegionType = GetBaseFilledRegionType(document);
 
                 if (baseFilledRegionType == null)
                 {
-                    TaskDialog.Show(
-                        "Place Fill Patterns",
-                        "В проекте не найден базовый FilledRegionType.");
+                    TaskDialog.Show("Place Fill Patterns", "Base FilledRegionType not found.");
                     return Result.Failed;
                 }
 
-                List<FilledRegionType> resolvedFilledRegionTypes = new List<FilledRegionType>();
+                List<FilledRegionType> newlyCreatedTypes = new List<FilledRegionType>();
+                List<InvalidNameReportRow> invalidNameReportRows = new List<InvalidNameReportRow>();
 
                 using (Transaction transaction = new Transaction(document, "Place Fill Patterns From CSV"))
                 {
                     transaction.Start();
 
-                    // Block responsible for ensuring that all imported types exist in the document
-                    for (int i = 0; i < importedTypes.Count; i++)
+                    // Block responsible for creating only missing FilledRegionType objects
+                    for (int i = 0; i < orderedRecords.Count; i++)
                     {
-                        FilledRegionTypeCsvModel importedType = importedTypes[i];
-                        FilledRegionType resolvedType = GetOrCreateFilledRegionType(
+                        FillPatternCsvRecord record = orderedRecords[i];
+                        FilledRegionType createdType = CreateFilledRegionTypeIfMissing(
                             document,
                             baseFilledRegionType,
-                            importedType);
+                            record,
+                            invalidNameReportRows);
 
-                        if (resolvedType != null)
+                        if (createdType != null)
                         {
-                            resolvedFilledRegionTypes.Add(resolvedType);
+                            newlyCreatedTypes.Add(createdType);
                         }
                     }
 
-                    // Block responsible for base placement coordinates and fixed geometry parameters
+                    // Block responsible for geometry values that can be tuned later
                     XYZ basePoint = XYZ.Zero;
                     double regionSize = ConvertMillimetersToInternalUnits(1000.0);
                     double regionSpacing = ConvertMillimetersToInternalUnits(500.0);
                     double textOffsetBelow = ConvertMillimetersToInternalUnits(250.0);
 
-                    for (int index = 0; index < resolvedFilledRegionTypes.Count; index++)
+                    for (int index = 0; index < newlyCreatedTypes.Count; index++)
                     {
-                        FilledRegionType filledRegionType = resolvedFilledRegionTypes[index];
+                        FilledRegionType filledRegionType = newlyCreatedTypes[index];
 
-                        // Block responsible for horizontal placement of filled regions
+                        // Block responsible for horizontal spacing between FilledRegions
                         double currentX = (regionSize + regionSpacing) * index;
 
                         XYZ p1 = new XYZ(basePoint.X + currentX, basePoint.Y, basePoint.Z);
@@ -143,22 +132,17 @@ namespace RevitLibraryBuilder.Services.Placement
                         XYZ p3 = new XYZ(basePoint.X + currentX + regionSize, basePoint.Y + regionSize, basePoint.Z);
                         XYZ p4 = new XYZ(basePoint.X + currentX, basePoint.Y + regionSize, basePoint.Z);
 
-                        CurveLoop curveLoop = new CurveLoop();
-                        curveLoop.Append(Line.CreateBound(p1, p2));
-                        curveLoop.Append(Line.CreateBound(p2, p3));
-                        curveLoop.Append(Line.CreateBound(p3, p4));
-                        curveLoop.Append(Line.CreateBound(p4, p1));
+                        CurveLoop loop = new CurveLoop();
+                        loop.Append(Line.CreateBound(p1, p2));
+                        loop.Append(Line.CreateBound(p2, p3));
+                        loop.Append(Line.CreateBound(p3, p4));
+                        loop.Append(Line.CreateBound(p4, p1));
 
-                        IList<CurveLoop> boundaries = new List<CurveLoop>();
-                        boundaries.Add(curveLoop);
+                        IList<CurveLoop> loops = new List<CurveLoop>();
+                        loops.Add(loop);
 
-                        FilledRegion.Create(
-                            document,
-                            filledRegionType.Id,
-                            activeView.Id,
-                            boundaries);
+                        FilledRegion.Create(document, filledRegionType.Id, activeView.Id, loops);
 
-                        // Block responsible for placing text annotation below the filled region
                         XYZ textPoint = new XYZ(
                             basePoint.X + currentX + (regionSize / 2.0),
                             basePoint.Y - textOffsetBelow,
@@ -175,9 +159,14 @@ namespace RevitLibraryBuilder.Services.Placement
                     transaction.Commit();
                 }
 
+                if (invalidNameReportRows.Count > 0)
+                {
+                    WriteInvalidNamesReport(csvFilePath, invalidNameReportRows);
+                }
+
                 ShowSuccessNotification(
                     "Place Fill Patterns",
-                    "Создано FilledRegion: " + resolvedFilledRegionTypes.Count);
+                    "Created FilledRegion instances: " + newlyCreatedTypes.Count);
 
                 return Result.Succeeded;
             }
@@ -189,7 +178,197 @@ namespace RevitLibraryBuilder.Services.Placement
             }
         }
 
-        // Block responsible for checking the existence of the drafting view and creating it when needed
+        // Block responsible for ordering rows: Drafting first, Model second
+        private static List<FillPatternCsvRecord> OrderRecordsByTarget(List<FillPatternCsvRecord> importedRecords)
+        {
+            List<FillPatternCsvRecord> ordered = new List<FillPatternCsvRecord>();
+
+            for (int i = 0; i < importedRecords.Count; i++)
+            {
+                FillPatternCsvRecord record = importedRecords[i];
+
+                if (IsDraftingTarget(record.Target))
+                {
+                    ordered.Add(record);
+                }
+            }
+
+            for (int i = 0; i < importedRecords.Count; i++)
+            {
+                FillPatternCsvRecord record = importedRecords[i];
+
+                if (!IsDraftingTarget(record.Target))
+                {
+                    ordered.Add(record);
+                }
+            }
+
+            return ordered;
+        }
+
+        // Block responsible for creating a new FilledRegionType only when no duplicate exists
+        private static FilledRegionType CreateFilledRegionTypeIfMissing(
+            Document document,
+            FilledRegionType baseFilledRegionType,
+            FillPatternCsvRecord record,
+            List<InvalidNameReportRow> invalidNameReportRows)
+        {
+            if (record == null || string.IsNullOrWhiteSpace(record.Name))
+            {
+                return null;
+            }
+
+            string originalName = record.Name;
+            string invalidCharactersFound = GetInvalidCharactersFound(originalName);
+            string sanitizedName = SanitizeTypeName(originalName);
+
+            InvalidNameReportRow reportRow = null;
+
+            if (!string.IsNullOrWhiteSpace(invalidCharactersFound))
+            {
+                reportRow = new InvalidNameReportRow();
+                reportRow.RowIndex = record.RowIndex;
+                reportRow.OriginalName = originalName;
+                reportRow.SanitizedName = sanitizedName;
+                reportRow.InvalidCharactersFound = invalidCharactersFound;
+            }
+
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+            {
+                if (reportRow != null)
+                {
+                    reportRow.SkipReason = "Sanitized name is empty";
+                    invalidNameReportRows.Add(reportRow);
+                }
+
+                TaskDialog.Show(
+                    "Place Fill Patterns",
+                    "Skipped row because sanitized name is empty.\nOriginal: " + originalName + "\nSanitized: " + sanitizedName);
+
+                return null;
+            }
+
+            FilledRegionType existingType = FindFilledRegionTypeByName(document, sanitizedName);
+
+            if (existingType != null)
+            {
+                if (reportRow != null)
+                {
+                    reportRow.SkipReason = "FilledRegionType already exists";
+                    invalidNameReportRows.Add(reportRow);
+                }
+
+                return null;
+            }
+
+            FillPatternTarget target = IsDraftingTarget(record.Target)
+                ? FillPatternTarget.Drafting
+                : FillPatternTarget.Model;
+
+            FillPatternElement foregroundPattern = GetOrCreateFillPatternElement(
+                document,
+                record.ForegroundPattern,
+                target);
+
+            FillPatternElement backgroundPattern = null;
+
+            if (!string.IsNullOrWhiteSpace(record.BackgroundPattern))
+            {
+                backgroundPattern = GetOrCreateFillPatternElement(
+                    document,
+                    record.BackgroundPattern,
+                    target);
+            }
+
+            if (foregroundPattern == null)
+            {
+                if (reportRow != null)
+                {
+                    reportRow.SkipReason = "Foreground FillPattern not found or not created";
+                    invalidNameReportRows.Add(reportRow);
+                }
+
+                return null;
+            }
+
+            FilledRegionType newType = baseFilledRegionType.Duplicate(sanitizedName) as FilledRegionType;
+
+            if (newType == null)
+            {
+                if (reportRow != null)
+                {
+                    reportRow.SkipReason = "FilledRegionType duplication failed";
+                    invalidNameReportRows.Add(reportRow);
+                }
+
+                return null;
+            }
+
+            newType.ForegroundPatternId = foregroundPattern.Id;
+
+            if (backgroundPattern != null)
+            {
+                newType.BackgroundPatternId = backgroundPattern.Id;
+            }
+
+            try
+            {
+                newType.IsMasking = record.IsMasking;
+            }
+            catch
+            {
+            }
+
+            if (reportRow != null)
+            {
+                reportRow.SkipReason = "Processed with sanitized name";
+                invalidNameReportRows.Add(reportRow);
+            }
+
+            return newType;
+        }
+
+        // Block responsible for finding or creating FillPatternElement
+        private static FillPatternElement GetOrCreateFillPatternElement(
+            Document document,
+            string patternName,
+            FillPatternTarget target)
+        {
+            if (string.IsNullOrWhiteSpace(patternName))
+            {
+                return null;
+            }
+
+            FillPatternElement existing = FillPatternElement.GetFillPatternElementByName(
+                document,
+                target,
+                patternName);
+
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            double defaultSpacing = ConvertMillimetersToInternalUnits(5.0);
+
+            FillPattern fillPattern = new FillPattern(
+                patternName,
+                target,
+                FillPatternHostOrientation.ToView,
+                0.0,
+                defaultSpacing);
+
+            try
+            {
+                return FillPatternElement.Create(document, fillPattern);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Block responsible for checking the existence of Drafting View and creating it when needed
         private static ViewDrafting GetOrCreateDraftingView(Document document)
         {
             ViewDrafting existingView = FindDraftingViewByName(document, TargetViewName);
@@ -209,11 +388,10 @@ namespace RevitLibraryBuilder.Services.Placement
                 return existingView;
             }
 
-            ViewFamilyType draftingViewFamilyType = GetDraftingViewFamilyType(document);
+            ViewFamilyType draftingType = GetDraftingViewFamilyType(document);
 
-            if (draftingViewFamilyType == null)
+            if (draftingType == null)
             {
-                TaskDialog.Show("Place Fill Patterns", "Не найден ViewFamilyType для Drafting View.");
                 return null;
             }
 
@@ -221,24 +399,22 @@ namespace RevitLibraryBuilder.Services.Placement
             {
                 transaction.Start();
 
-                ViewDrafting draftingView = ViewDrafting.Create(document, draftingViewFamilyType.Id);
+                ViewDrafting newView = ViewDrafting.Create(document, draftingType.Id);
 
-                if (draftingView == null)
+                if (newView == null)
                 {
                     transaction.RollBack();
                     return null;
                 }
 
-                draftingView.Name = TargetViewName;
-                draftingView.Scale = TargetViewScale;
+                newView.Name = TargetViewName;
+                newView.Scale = TargetViewScale;
 
                 transaction.Commit();
-
-                return draftingView;
+                return newView;
             }
         }
 
-        // Block responsible for finding a drafting view by exact name
         private static ViewDrafting FindDraftingViewByName(Document document, string viewName)
         {
             FilteredElementCollector collector = new FilteredElementCollector(document);
@@ -246,28 +422,22 @@ namespace RevitLibraryBuilder.Services.Placement
 
             foreach (Element element in collector)
             {
-                ViewDrafting draftingView = element as ViewDrafting;
+                ViewDrafting viewDrafting = element as ViewDrafting;
 
-                if (draftingView == null)
+                if (viewDrafting == null || viewDrafting.IsTemplate)
                 {
                     continue;
                 }
 
-                if (draftingView.IsTemplate)
+                if (string.Equals(viewDrafting.Name, viewName, StringComparison.OrdinalIgnoreCase))
                 {
-                    continue;
-                }
-
-                if (string.Equals(draftingView.Name, viewName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return draftingView;
+                    return viewDrafting;
                 }
             }
 
             return null;
         }
 
-        // Block responsible for finding the required ViewFamilyType for Drafting View creation
         private static ViewFamilyType GetDraftingViewFamilyType(Document document)
         {
             FilteredElementCollector collector = new FilteredElementCollector(document);
@@ -291,11 +461,9 @@ namespace RevitLibraryBuilder.Services.Placement
             return null;
         }
 
-        // Block responsible for switching Revit UI to the target drafting view
         private static void ActivateView(UIDocument uiDocument, ViewDrafting draftingView)
         {
-            if (uiDocument.ActiveView != null &&
-                uiDocument.ActiveView.Id == draftingView.Id)
+            if (uiDocument.ActiveView != null && uiDocument.ActiveView.Id == draftingView.Id)
             {
                 return;
             }
@@ -303,56 +471,6 @@ namespace RevitLibraryBuilder.Services.Placement
             uiDocument.ActiveView = draftingView;
         }
 
-        // Block responsible for resolving an imported type to an existing or newly created FilledRegionType
-        private static FilledRegionType GetOrCreateFilledRegionType(
-            Document document,
-            FilledRegionType baseFilledRegionType,
-            FilledRegionTypeCsvModel importedType)
-        {
-            if (importedType == null || string.IsNullOrWhiteSpace(importedType.Name))
-            {
-                return null;
-            }
-
-            FilledRegionType existingType = FindFilledRegionTypeByName(document, importedType.Name);
-
-            if (existingType != null)
-            {
-                return existingType;
-            }
-
-            FilledRegionType newType = baseFilledRegionType.Duplicate(importedType.Name) as FilledRegionType;
-
-            if (newType == null)
-            {
-                return null;
-            }
-
-            FillPatternElement foregroundPattern = FindFillPatternByName(document, importedType.ForegroundPatternName);
-            FillPatternElement backgroundPattern = FindFillPatternByName(document, importedType.BackgroundPatternName);
-
-            if (foregroundPattern != null)
-            {
-                newType.ForegroundPatternId = foregroundPattern.Id;
-            }
-
-            if (backgroundPattern != null)
-            {
-                newType.BackgroundPatternId = backgroundPattern.Id;
-            }
-
-            try
-            {
-                newType.IsMasking = importedType.IsMasking;
-            }
-            catch
-            {
-            }
-
-            return newType;
-        }
-
-        // Block responsible for finding a FilledRegionType by exact name
         private static FilledRegionType FindFilledRegionTypeByName(Document document, string typeName)
         {
             FilteredElementCollector collector = new FilteredElementCollector(document);
@@ -376,7 +494,6 @@ namespace RevitLibraryBuilder.Services.Placement
             return null;
         }
 
-        // Block responsible for locating a base FilledRegionType for duplication
         private static FilledRegionType GetBaseFilledRegionType(Document document)
         {
             FilteredElementCollector collector = new FilteredElementCollector(document);
@@ -395,36 +512,6 @@ namespace RevitLibraryBuilder.Services.Placement
             return null;
         }
 
-        // Block responsible for locating a fill pattern by exact name
-        private static FillPatternElement FindFillPatternByName(Document document, string patternName)
-        {
-            if (string.IsNullOrWhiteSpace(patternName))
-            {
-                return null;
-            }
-
-            FilteredElementCollector collector = new FilteredElementCollector(document);
-            collector.OfClass(typeof(FillPatternElement));
-
-            foreach (Element element in collector)
-            {
-                FillPatternElement fillPatternElement = element as FillPatternElement;
-
-                if (fillPatternElement == null)
-                {
-                    continue;
-                }
-
-                if (string.Equals(fillPatternElement.Name, patternName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return fillPatternElement;
-                }
-            }
-
-            return null;
-        }
-
-        // Block responsible for retrieving a valid text note type
         private static TextNoteType GetTextNoteType(Document document)
         {
             FilteredElementCollector collector = new FilteredElementCollector(document);
@@ -443,6 +530,127 @@ namespace RevitLibraryBuilder.Services.Placement
             return null;
         }
 
+        // Block responsible for converting imported CSV names into valid Revit type names
+        private static string SanitizeTypeName(string originalName)
+        {
+            if (string.IsNullOrWhiteSpace(originalName))
+            {
+                return string.Empty;
+            }
+
+            string sanitized = originalName.Trim();
+
+            for (int i = 0; i < ProhibitedNameCharacters.Length; i++)
+            {
+                sanitized = sanitized.Replace(ProhibitedNameCharacters[i].ToString(), "_");
+            }
+
+            while (sanitized.Contains("__"))
+            {
+                sanitized = sanitized.Replace("__", "_");
+            }
+
+            return sanitized.Trim();
+        }
+
+        private static string GetInvalidCharactersFound(string originalName)
+        {
+            if (string.IsNullOrEmpty(originalName))
+            {
+                return string.Empty;
+            }
+
+            StringBuilder found = new StringBuilder();
+
+            for (int i = 0; i < originalName.Length; i++)
+            {
+                char character = originalName[i];
+
+                if (!IsProhibitedCharacter(character))
+                {
+                    continue;
+                }
+
+                if (found.ToString().IndexOf(character) >= 0)
+                {
+                    continue;
+                }
+
+                found.Append(character);
+            }
+
+            return found.ToString();
+        }
+
+        private static bool IsProhibitedCharacter(char character)
+        {
+            for (int i = 0; i < ProhibitedNameCharacters.Length; i++)
+            {
+                if (ProhibitedNameCharacters[i] == character)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void WriteInvalidNamesReport(
+            string sourceCsvFilePath,
+            List<InvalidNameReportRow> invalidRows)
+        {
+            if (invalidRows == null || invalidRows.Count == 0)
+            {
+                return;
+            }
+
+            string sourceFolder = Path.GetDirectoryName(sourceCsvFilePath);
+
+            if (string.IsNullOrWhiteSpace(sourceFolder))
+            {
+                return;
+            }
+
+            string reportPath = Path.Combine(sourceFolder, InvalidNamesReportFileName);
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine("RowIndex,OriginalName,SanitizedName,InvalidCharactersFound,SkipReason");
+
+            for (int i = 0; i < invalidRows.Count; i++)
+            {
+                InvalidNameReportRow row = invalidRows[i];
+
+                stringBuilder.AppendLine(
+                    row.RowIndex + "," +
+                    EscapeCsv(row.OriginalName) + "," +
+                    EscapeCsv(row.SanitizedName) + "," +
+                    EscapeCsv(row.InvalidCharactersFound) + "," +
+                    EscapeCsv(row.SkipReason));
+            }
+
+            File.WriteAllText(reportPath, stringBuilder.ToString(), Encoding.UTF8);
+        }
+
+        private static string EscapeCsv(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
+
+            if (value.Contains(",") || value.Contains("\""))
+            {
+                return "\"" + value.Replace("\"", "\"\"") + "\"";
+            }
+
+            return value;
+        }
+
+        private static bool IsDraftingTarget(string target)
+        {
+            return !string.Equals(target, "Model", StringComparison.OrdinalIgnoreCase);
+        }
+
         private static double ConvertMillimetersToInternalUnits(double valueInMillimeters)
         {
             return UnitUtils.ConvertToInternalUnits(valueInMillimeters, UnitTypeId.Millimeters);
@@ -459,6 +667,19 @@ namespace RevitLibraryBuilder.Services.Placement
             {
                 TaskDialog.Show(title, message);
             }
+        }
+
+        private class InvalidNameReportRow
+        {
+            public int RowIndex { get; set; }
+
+            public string OriginalName { get; set; }
+
+            public string SanitizedName { get; set; }
+
+            public string InvalidCharactersFound { get; set; }
+
+            public string SkipReason { get; set; }
         }
     }
 }
