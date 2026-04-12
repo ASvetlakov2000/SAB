@@ -12,7 +12,23 @@ namespace RevitLibraryBuilder.Services.PostActions
     /// </summary>
     public static class PostActionViewService
     {
-        public static void AskAndCreateView(Document document)
+        public static void RunAfterPlacement(
+            Document document,
+            string categoryNameFromCsv,
+            int placedCount,
+            string commandName)
+        {
+            RunAfterPlacement(document, categoryNameFromCsv, placedCount, commandName, null, null, 0);
+        }
+
+        public static void RunAfterPlacement(
+            Document document,
+            string categoryNameFromCsv,
+            int placedCount,
+            string commandName,
+            string sourceCsvFilePath,
+            string typeNameOriginal,
+            int rowIndex)
         {
             if (document == null)
             {
@@ -20,51 +36,110 @@ namespace RevitLibraryBuilder.Services.PostActions
                 return;
             }
 
-            View activeView = document.ActiveView;
+            if (placedCount <= 0)
+            {
+                return;
+            }
 
-            if (activeView == null)
+            if (string.IsNullOrWhiteSpace(categoryNameFromCsv))
+            {
+                TaskDialog.Show("Create View", "Category value from CSV is missing.");
+                return;
+            }
+
+            View sourceView = document.ActiveView;
+
+            if (sourceView == null)
             {
                 TaskDialog.Show("Create View", "Active view is not available.");
                 return;
             }
 
-            bool createView;
-
             try
             {
-                // Block responsible for asking the user whether a result view should be created
-                createView = ViewCreationDialogService.Ask("Placement Result");
+                string generatedViewNamePreview = FloorPlanViewService.BuildViewNameByCategory(categoryNameFromCsv);
+                bool createView = ViewCreationDialogService.Ask(generatedViewNamePreview);
+
+                if (!createView)
+                {
+                    return;
+                }
+
+                CreateByCategory(
+                    document,
+                    categoryNameFromCsv,
+                    sourceView,
+                    sourceCsvFilePath,
+                    typeNameOriginal,
+                    rowIndex);
             }
-            catch (Exception dialogException)
+            catch (Exception exception)
             {
-                TaskDialog.Show(
-                    "Create View",
-                    "The confirmation dialog could not be opened.\n\n" + dialogException.Message);
-                return;
+                TaskDialog.Show("Create View", exception.ToString());
+            }
+        }
+
+        public static ViewPlan CreateByCategory(
+            Document document,
+            string categoryNameFromCsv,
+            View sourceView)
+        {
+            return CreateByCategory(document, categoryNameFromCsv, sourceView, null, null, 0);
+        }
+
+        public static ViewPlan CreateByCategory(
+            Document document,
+            string categoryNameFromCsv,
+            View sourceView,
+            string sourceCsvFilePath,
+            string typeNameOriginal,
+            int rowIndex)
+        {
+            if (document == null)
+            {
+                TaskDialog.Show("Create View", "Document is not available.");
+                return null;
             }
 
-            if (!createView)
+            if (sourceView == null)
             {
-                return;
+                sourceView = document.ActiveView;
+            }
+
+            if (sourceView == null)
+            {
+                TaskDialog.Show("Create View", "Source view is not available.");
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(categoryNameFromCsv))
+            {
+                TaskDialog.Show("Create View", "Category value from CSV is missing.");
+                return null;
             }
 
             try
             {
                 ViewPlan createdView;
 
-                // Block responsible for creating a result floor plan view
                 using (Transaction transaction = new Transaction(document, "Create Placement Result View"))
                 {
                     transaction.Start();
 
                     FloorPlanViewService service = new FloorPlanViewService();
-                    createdView = service.Create(document, "Placement Result", activeView);
+                    createdView = service.CreateByCategory(
+                        document,
+                        categoryNameFromCsv,
+                        sourceView,
+                        sourceCsvFilePath,
+                        typeNameOriginal,
+                        rowIndex);
 
                     if (createdView == null)
                     {
                         transaction.RollBack();
                         TaskDialog.Show("Create View", "The floor plan view could not be created.");
-                        return;
+                        return null;
                     }
 
                     transaction.Commit();
@@ -73,10 +148,13 @@ namespace RevitLibraryBuilder.Services.PostActions
                 ShowSuccessNotification(
                     "Completed",
                     "Created placement result view: " + createdView.Name);
+
+                return createdView;
             }
             catch (Exception exception)
             {
                 TaskDialog.Show("Create View", exception.ToString());
+                return null;
             }
         }
 

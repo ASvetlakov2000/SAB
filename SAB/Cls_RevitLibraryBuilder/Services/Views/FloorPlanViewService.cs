@@ -1,13 +1,90 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Autodesk.Revit.DB;
 
 namespace RevitLibraryBuilder.Services.Views
 {
     public class FloorPlanViewService
     {
+        private const string ViewPrefix = "Библиотека_";
+        private static readonly char[] ProhibitedViewNameCharacters = new char[] { '{', '}', '[', ']', ';', '<', '>', '?', '^', '~' };
+        private static readonly Dictionary<string, string> CategoryTranslations =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Doors", "Двери" },
+                { "Windows", "Окна" },
+                { "Generic Models", "Общие модели" },
+                { "Walls", "Стены" },
+                { "Floors", "Перекрытия" },
+                { "Ceilings", "Потолки" },
+                { "Roofs", "Крыши" },
+                { "Columns", "Колонны" },
+                { "Structural Columns", "Несущие колонны" },
+                { "Structural Framing", "Несущие конструкции" },
+                { "Furniture", "Мебель" },
+                { "Plumbing Fixtures", "Сантехнические приборы" },
+                { "Electrical Fixtures", "Электрооборудование" }
+            };
+
         public ViewPlan Create(Document document, string baseViewName)
         {
             return Create(document, baseViewName, document != null ? document.ActiveView : null);
+        }
+
+        public ViewPlan CreateByCategory(
+            Document document,
+            string categoryNameFromCsv,
+            View sourceView)
+        {
+            return CreateByCategory(document, categoryNameFromCsv, sourceView, null, null, 0);
+        }
+
+        public ViewPlan CreateByCategory(
+            Document document,
+            string categoryNameFromCsv,
+            View sourceView,
+            string sourceCsvFilePath,
+            string typeNameOriginal,
+            int rowIndex)
+        {
+            NameResolutionResult naming = BuildAndSanitizeViewName(categoryNameFromCsv);
+
+            if (string.IsNullOrWhiteSpace(naming.SanitizedViewName))
+            {
+                if (naming.HasInvalidCharacters)
+                {
+                    WriteInvalidNameReport(
+                        sourceCsvFilePath,
+                        rowIndex,
+                        categoryNameFromCsv,
+                        typeNameOriginal,
+                        naming.GeneratedViewNameOriginal,
+                        naming.SanitizedViewName,
+                        naming.InvalidCharactersFound,
+                        "Sanitized view name is empty");
+                }
+
+                return null;
+            }
+
+            ViewPlan viewPlan = Create(document, naming.SanitizedViewName, sourceView);
+
+            if (naming.HasInvalidCharacters)
+            {
+                WriteInvalidNameReport(
+                    sourceCsvFilePath,
+                    rowIndex,
+                    categoryNameFromCsv,
+                    typeNameOriginal,
+                    naming.GeneratedViewNameOriginal,
+                    naming.SanitizedViewName,
+                    naming.InvalidCharactersFound,
+                    "Processed with sanitized name");
+            }
+
+            return viewPlan;
         }
 
         public ViewPlan Create(Document document, string baseViewName, View sourceView)
@@ -50,6 +127,214 @@ namespace RevitLibraryBuilder.Services.Views
             viewPlan.Name = uniqueViewName;
 
             return viewPlan;
+        }
+
+        // Block responsible for generating Floor Plan name by category
+        public static string BuildViewNameByCategory(string categoryNameFromCsv)
+        {
+            NameResolutionResult result = BuildAndSanitizeViewName(categoryNameFromCsv);
+            return result.SanitizedViewName;
+        }
+
+        // Block responsible for translating and sanitizing generated Revit view name
+        public static string SanitizeViewName(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            string result = value.Trim();
+
+            for (int i = 0; i < ProhibitedViewNameCharacters.Length; i++)
+            {
+                result = result.Replace(ProhibitedViewNameCharacters[i].ToString(), "_");
+            }
+
+            while (result.Contains("__"))
+            {
+                result = result.Replace("__", "_");
+            }
+
+            return result.Trim();
+        }
+
+        private static NameResolutionResult BuildAndSanitizeViewName(string categoryNameFromCsv)
+        {
+            string translatedCategory = TranslateCategoryToRussian(categoryNameFromCsv);
+
+            if (string.IsNullOrWhiteSpace(translatedCategory))
+            {
+                translatedCategory = "Без категории";
+            }
+
+            string originalGenerated = ViewPrefix + translatedCategory;
+            string invalidCharactersFound = GetInvalidCharactersFound(originalGenerated);
+            string sanitized = SanitizeViewName(originalGenerated);
+
+            NameResolutionResult result = new NameResolutionResult();
+            result.GeneratedViewNameOriginal = originalGenerated;
+            result.SanitizedViewName = sanitized;
+            result.InvalidCharactersFound = invalidCharactersFound;
+            result.HasInvalidCharacters = !string.IsNullOrWhiteSpace(invalidCharactersFound);
+
+            return result;
+        }
+
+        private static string TranslateCategoryToRussian(string categoryNameFromCsv)
+        {
+            if (string.IsNullOrWhiteSpace(categoryNameFromCsv))
+            {
+                return string.Empty;
+            }
+
+            string normalized = categoryNameFromCsv.Trim();
+            string translated;
+
+            if (CategoryTranslations.TryGetValue(normalized, out translated))
+            {
+                return translated;
+            }
+
+            return normalized;
+        }
+
+        private static string GetInvalidCharactersFound(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
+
+            StringBuilder found = new StringBuilder();
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                char character = value[i];
+
+                if (!IsProhibitedCharacter(character))
+                {
+                    continue;
+                }
+
+                if (found.ToString().IndexOf(character) >= 0)
+                {
+                    continue;
+                }
+
+                found.Append(character);
+            }
+
+            return found.ToString();
+        }
+
+        private static bool IsProhibitedCharacter(char character)
+        {
+            for (int i = 0; i < ProhibitedViewNameCharacters.Length; i++)
+            {
+                if (ProhibitedViewNameCharacters[i] == character)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void WriteInvalidNameReport(
+            string sourceCsvFilePath,
+            int rowIndex,
+            string categoryNameOriginal,
+            string typeNameOriginal,
+            string generatedViewNameOriginal,
+            string sanitizedViewName,
+            string invalidCharactersFound,
+            string skipReason)
+        {
+            if (string.IsNullOrWhiteSpace(sourceCsvFilePath))
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(invalidCharactersFound))
+            {
+                return;
+            }
+
+            try
+            {
+                string sourceFolder = Path.GetDirectoryName(sourceCsvFilePath);
+
+                if (string.IsNullOrWhiteSpace(sourceFolder))
+                {
+                    return;
+                }
+
+                string categoryForFileName = TranslateCategoryToRussian(categoryNameOriginal);
+
+                if (string.IsNullOrWhiteSpace(categoryForFileName))
+                {
+                    categoryForFileName = "Категория";
+                }
+
+                string safeCategoryForFileName = SanitizeFileNamePart(categoryForFileName);
+                string reportFileName = "Проблемные наименования_" + safeCategoryForFileName + ".csv";
+                string reportPath = Path.Combine(sourceFolder, reportFileName);
+
+                StringBuilder builder = new StringBuilder();
+                builder.AppendLine("RowIndex,CategoryNameOriginal,TypeNameOriginal,GeneratedViewNameOriginal,SanitizedViewName,InvalidCharactersFound,SkipReason");
+                builder.AppendLine(
+                    rowIndex + "," +
+                    EscapeCsv(categoryNameOriginal) + "," +
+                    EscapeCsv(typeNameOriginal) + "," +
+                    EscapeCsv(generatedViewNameOriginal) + "," +
+                    EscapeCsv(sanitizedViewName) + "," +
+                    EscapeCsv(invalidCharactersFound) + "," +
+                    EscapeCsv(skipReason));
+
+                File.WriteAllText(reportPath, builder.ToString(), Encoding.UTF8);
+            }
+            catch
+            {
+            }
+        }
+
+        private static string SanitizeFileNamePart(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "Категория";
+            }
+
+            string result = value.Trim();
+            char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+
+            for (int i = 0; i < invalidFileNameChars.Length; i++)
+            {
+                result = result.Replace(invalidFileNameChars[i].ToString(), "_");
+            }
+
+            while (result.Contains("__"))
+            {
+                result = result.Replace("__", "_");
+            }
+
+            return result.Trim();
+        }
+
+        private static string EscapeCsv(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
+
+            if (value.Contains(",") || value.Contains("\""))
+            {
+                return "\"" + value.Replace("\"", "\"\"") + "\"";
+            }
+
+            return value;
         }
 
         // Block responsible for selecting the most suitable level for the new view
@@ -164,6 +449,17 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return false;
+        }
+
+        private class NameResolutionResult
+        {
+            public string GeneratedViewNameOriginal { get; set; }
+
+            public string SanitizedViewName { get; set; }
+
+            public string InvalidCharactersFound { get; set; }
+
+            public bool HasInvalidCharacters { get; set; }
         }
     }
 }
