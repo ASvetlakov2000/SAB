@@ -1,29 +1,30 @@
-﻿using Autodesk.Revit.Attributes;
+using System;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Services.Placement;
-using RevitLibraryBuilder.Services.PostActions;
+using RevitLibraryBuilder.Services.Placement;
 
-[Transaction(TransactionMode.Manual)]
-public class PlaceFillPatternsCommand : IExternalCommand
+namespace RevitLibraryBuilder.Commands
 {
-    public Result Execute(ExternalCommandData data, ref string message, ElementSet elements)
+    [Transaction(TransactionMode.Manual)]
+    public class PlaceFillPatternsCommand : IExternalCommand
     {
-        Document doc = data.Application.ActiveUIDocument.Document;
-
-        View view = doc.ActiveView;
-
-        using (Transaction t = new Transaction(doc, "Fill Patterns"))
+        public Result Execute(
+            ExternalCommandData commandData,
+            ref string message,
+            ElementSet elements)
         {
-            t.Start();
-
-            FillPatternPlacer.Place(doc, view);
-
-            t.Commit();
+            try
+            {
+                FillPatternPlacer fillPatternPlacer = new FillPatternPlacer();
+                return fillPatternPlacer.Execute(commandData, ref message);
+            }
+            catch (Exception exception)
+            {
+                message = exception.Message;
+                TaskDialog.Show("Place Fill Patterns", exception.ToString());
+                return Result.Failed;
+            }
         }
-
-        PostActionViewService.AskAndCreateView(doc);
-
-        return Result.Succeeded;
     }
 }
