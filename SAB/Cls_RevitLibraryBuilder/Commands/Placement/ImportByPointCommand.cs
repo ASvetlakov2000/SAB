@@ -1,6 +1,7 @@
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Models;
 using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Placement;
@@ -72,11 +73,33 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
-                IPlacementService placementService = PlacementServiceFactory.Create("Point", document);
-                placementService.Place(csvRows, level);
+                int placedCount = includedRowCount;
+
+                if (HostedDoorWindowPlacementService.IsDoorOrWindowCategory(categoryName))
+                {
+                    HostedDoorWindowPlacementService hostedService = new HostedDoorWindowPlacementService(document);
+                    placedCount = hostedService.PlaceHosted(csvRows, categoryName);
+                }
+                else
+                {
+                    IPlacementService placementService = PlacementServiceFactory.Create("Point", document);
+                    placementService.Place(csvRows, level);
+                }
+
+                if (placedCount <= 0)
+                {
+                    TaskDialog.Show("Import By Point", "No elements were placed.");
+                    return Result.Cancelled;
+                }
 
                 // Block responsible for passing category into post-action workflow
-                PostActionViewService.RunAfterPlacement(document, categoryName, includedRowCount, "ImportByPointCommand");
+                PostActionViewService.RunAfterPlacement(document, categoryName, placedCount, "ImportByPointCommand");
+
+                // Block responsible for triggering post-placement Floor Plan creation
+                // Floor plan creation is triggered through PostActionViewService pipeline above.
+
+                // Block responsible for completion notification
+                ShowCompletionNotification("Import By Point", "Placement workflow completed successfully.");
 
                 return Result.Succeeded;
             }
@@ -154,6 +177,18 @@ namespace RevitLibraryBuilder.Commands
             }
 
             return resolvedCategory;
+        }
+
+        private static void ShowCompletionNotification(string title, string message)
+        {
+            try
+            {
+                ToastNotifier.ShowSuccess(title, message, 5);
+            }
+            catch
+            {
+                TaskDialog.Show(title, message);
+            }
         }
     }
 }
