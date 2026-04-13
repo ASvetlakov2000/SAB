@@ -91,6 +91,9 @@ namespace SAB
             BuiltInCategory.OST_ColorFillLegends,       // Легенды цветового заполнения
             BuiltInCategory.OST_Parts,                  // Части
             BuiltInCategory.OST_Assemblies              // Узлы
+
+            // Узлы
+
         };
     }
 }

@@ -33,14 +33,12 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right">
 
-                <Button x:Name="NoButton"
-                        Content="Нет"
+                <Button Content="Нет"
                         Width="80"
                         Margin="0,0,10,0"
                         Click="No_Click"/>
 
-                <Button x:Name="YesButton"
-                        Content="Да"
+                <Button Content="Да"
                         Width="80"
                         Background="#4CAF50"
                         Foreground="White"

@@ -265,8 +265,8 @@ namespace Helpers.Notifications.ToastNotifications
 
         private Brush GetBackground(ToastType type) => type switch
         {
-            ToastType.Info => new SolidColorBrush(Color.FromRgb(103, 108, 115)),
-            ToastType.Success => new SolidColorBrush(Color.FromRgb(103, 108, 115)),
+            ToastType.Info => new SolidColorBrush(Color.FromRgb(116, 155, 184)),
+            ToastType.Success => new SolidColorBrush(Color.FromRgb(116, 155, 184)),
             ToastType.Warning => new SolidColorBrush(Color.FromRgb(255, 193, 94)),
             ToastType.Error => new SolidColorBrush(Color.FromRgb(255, 128, 128)),
             _ => Brushes.Gray

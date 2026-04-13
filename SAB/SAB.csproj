@@ -71,7 +71,6 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesByCategoryCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesSingleFileCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByBoundaryCommand.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\DeleteSelectedTypesAndFamiliesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByLineCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByPointCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceFillPatternsCommand.cs" />
@@ -87,20 +86,17 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\FillPatternPlacer.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\IPlacementService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\LineStylePlacer.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\HostedDoorWindowPlacementService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementByBoundaryService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementByLineService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementByPointService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementServiceFactory.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\PostActions\PostActionViewService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeCollectorService.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeAndFamilyDeletionService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\FloorPlanViewService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs">
       <DependentUpon>ConfirmViewCreationDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ViewCreationDialogService.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmationDialogService.cs" />
     <Compile Include="Helpers\ForRevit\AllCategoriesByPlacement.cs" />
     <Compile Include="Helpers\ForRevit\AllUsedCategoryList.cs" />
     <Compile Include="Helpers\Notifications\ToastNotifications\ToastNotifier.cs" />

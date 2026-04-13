@@ -7,18 +7,11 @@ namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
         public bool Result { get; private set; }
 
         public ConfirmViewCreationDialog(string categoryName)
-            : this("Создание вида", $"Создать план вида для категории:\n\n{categoryName}?", "Да", "Нет")
-        {
-        }
-
-        public ConfirmViewCreationDialog(string titleText, string messageText, string yesButtonText, string noButtonText)
         {
             InitializeComponent();
 
-            TitleText.Text = titleText;
-            MessageText.Text = messageText;
-            YesButton.Content = yesButtonText;
-            NoButton.Content = noButtonText;
+            TitleText.Text = "Создание вида";
+            MessageText.Text = $"Создать план вида для категории:\n\n{categoryName}?";
         }
 
         private void Yes_Click(object sender, RoutedEventArgs e)
