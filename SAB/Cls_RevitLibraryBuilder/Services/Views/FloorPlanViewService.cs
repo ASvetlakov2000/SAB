@@ -70,6 +70,7 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             ViewPlan viewPlan = Create(document, naming.SanitizedViewName, sourceView);
+            ApplyCategoryVisibilityRules(document, viewPlan, categoryNameFromCsv);
 
             if (naming.HasInvalidCharacters)
             {
@@ -335,6 +336,261 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return value;
+        }
+
+        // Block responsible for resolving the placed category for view visibility
+        private static void ApplyCategoryVisibilityRules(Document document, ViewPlan viewPlan, string categoryNameFromCsv)
+        {
+            if (document == null || viewPlan == null)
+            {
+                return;
+            }
+
+            BuiltInCategory? mainCategory = ResolveMainCategory(document, categoryNameFromCsv);
+
+            if (!mainCategory.HasValue)
+            {
+                return;
+            }
+
+            HashSet<int> allowedCategoryIds = BuildAllowedCategoryIds(document, mainCategory.Value);
+
+            // Block responsible for applying category visibility rules to the created Floor Plan view
+            Categories categories = document.Settings.Categories;
+
+            if (categories == null)
+            {
+                return;
+            }
+
+            foreach (Category category in categories)
+            {
+                if (category == null)
+                {
+                    continue;
+                }
+
+                // Block responsible for excluding Annotation / Analytical / Imported / Filters / Linked Files from visibility processing
+                if (!IsModelCategoryForVisibilityProcessing(category))
+                {
+                    continue;
+                }
+
+                if (!viewPlan.CanCategoryBeHidden(category.Id))
+                {
+                    continue;
+                }
+
+                bool shouldBeVisible = allowedCategoryIds.Contains(category.Id.IntegerValue);
+
+                try
+                {
+                    viewPlan.SetCategoryHidden(category.Id, !shouldBeVisible);
+                }
+                catch
+                {
+                    // Some categories cannot be controlled for visibility in this view context.
+                }
+            }
+        }
+
+        private static HashSet<int> BuildAllowedCategoryIds(Document document, BuiltInCategory mainCategory)
+        {
+            HashSet<int> allowedCategoryIds = new HashSet<int>();
+            Category mainRevitCategory = Category.GetCategory(document, mainCategory);
+
+            if (mainRevitCategory != null)
+            {
+                allowedCategoryIds.Add(mainRevitCategory.Id.IntegerValue);
+            }
+
+            // Block responsible for Windows/Doors special exception with Walls visibility
+            if (mainCategory == BuiltInCategory.OST_Windows || mainCategory == BuiltInCategory.OST_Doors)
+            {
+                Category wallsCategory = Category.GetCategory(document, BuiltInCategory.OST_Walls);
+
+                if (wallsCategory != null)
+                {
+                    allowedCategoryIds.Add(wallsCategory.Id.IntegerValue);
+                }
+            }
+
+            return allowedCategoryIds;
+        }
+
+        private static bool IsModelCategoryForVisibilityProcessing(Category category)
+        {
+            if (category == null)
+            {
+                return false;
+            }
+
+            if (category.CategoryType != CategoryType.Model)
+            {
+                return false;
+            }
+
+            string categoryName = category.Name;
+            string parentCategoryName = category.Parent != null ? category.Parent.Name : string.Empty;
+
+            if (ContainsImportedCategoryMarker(categoryName) || ContainsImportedCategoryMarker(parentCategoryName))
+            {
+                return false;
+            }
+
+            if (ContainsLinkedCategoryMarker(categoryName) || ContainsLinkedCategoryMarker(parentCategoryName))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ContainsImportedCategoryMarker(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            string normalized = NormalizeCategoryName(value);
+
+            if (normalized.Contains("IMPORT"))
+            {
+                return true;
+            }
+
+            if (normalized.Contains("ИМПОРТ"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool ContainsLinkedCategoryMarker(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            string normalized = NormalizeCategoryName(value);
+
+            if (normalized.Contains("REVIT LINK"))
+            {
+                return true;
+            }
+
+            if (normalized.Contains("RVT LINK"))
+            {
+                return true;
+            }
+
+            if (normalized.Contains("СВЯЗИ REVIT"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static BuiltInCategory? ResolveMainCategory(Document document, string categoryNameFromCsv)
+        {
+            if (string.IsNullOrWhiteSpace(categoryNameFromCsv))
+            {
+                return null;
+            }
+
+            string normalizedCategoryName = NormalizeCategoryName(categoryNameFromCsv);
+            Dictionary<string, BuiltInCategory> map = BuildCategoryMap();
+            BuiltInCategory mappedCategory;
+
+            if (map.TryGetValue(normalizedCategoryName, out mappedCategory))
+            {
+                return mappedCategory;
+            }
+
+            Categories categories = document.Settings.Categories;
+
+            if (categories == null)
+            {
+                return null;
+            }
+
+            foreach (Category category in categories)
+            {
+                if (category == null || string.IsNullOrWhiteSpace(category.Name))
+                {
+                    continue;
+                }
+
+                if (!string.Equals(
+                    NormalizeCategoryName(category.Name),
+                    normalizedCategoryName,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                int categoryIdValue = category.Id.IntegerValue;
+
+                if (!Enum.IsDefined(typeof(BuiltInCategory), categoryIdValue))
+                {
+                    return null;
+                }
+
+                return (BuiltInCategory)categoryIdValue;
+            }
+
+            return null;
+        }
+
+        private static Dictionary<string, BuiltInCategory> BuildCategoryMap()
+        {
+            Dictionary<string, BuiltInCategory> map = new Dictionary<string, BuiltInCategory>(StringComparer.OrdinalIgnoreCase);
+            map[NormalizeCategoryName("Doors")] = BuiltInCategory.OST_Doors;
+            map[NormalizeCategoryName("Двери")] = BuiltInCategory.OST_Doors;
+            map[NormalizeCategoryName("Windows")] = BuiltInCategory.OST_Windows;
+            map[NormalizeCategoryName("Окна")] = BuiltInCategory.OST_Windows;
+            map[NormalizeCategoryName("Walls")] = BuiltInCategory.OST_Walls;
+            map[NormalizeCategoryName("Стены")] = BuiltInCategory.OST_Walls;
+            map[NormalizeCategoryName("Generic Models")] = BuiltInCategory.OST_GenericModel;
+            map[NormalizeCategoryName("Общие модели")] = BuiltInCategory.OST_GenericModel;
+            map[NormalizeCategoryName("Furniture")] = BuiltInCategory.OST_Furniture;
+            map[NormalizeCategoryName("Мебель")] = BuiltInCategory.OST_Furniture;
+            map[NormalizeCategoryName("Floors")] = BuiltInCategory.OST_Floors;
+            map[NormalizeCategoryName("Перекрытия")] = BuiltInCategory.OST_Floors;
+            map[NormalizeCategoryName("Ceilings")] = BuiltInCategory.OST_Ceilings;
+            map[NormalizeCategoryName("Потолки")] = BuiltInCategory.OST_Ceilings;
+            map[NormalizeCategoryName("Roofs")] = BuiltInCategory.OST_Roofs;
+            map[NormalizeCategoryName("Крыши")] = BuiltInCategory.OST_Roofs;
+            map[NormalizeCategoryName("Columns")] = BuiltInCategory.OST_Columns;
+            map[NormalizeCategoryName("Колонны")] = BuiltInCategory.OST_Columns;
+            map[NormalizeCategoryName("Structural Columns")] = BuiltInCategory.OST_StructuralColumns;
+            map[NormalizeCategoryName("Несущие колонны")] = BuiltInCategory.OST_StructuralColumns;
+            map[NormalizeCategoryName("Plumbing Fixtures")] = BuiltInCategory.OST_PlumbingFixtures;
+            map[NormalizeCategoryName("Сантехнические приборы")] = BuiltInCategory.OST_PlumbingFixtures;
+            map[NormalizeCategoryName("Electrical Fixtures")] = BuiltInCategory.OST_ElectricalFixtures;
+            map[NormalizeCategoryName("Электрооборудование")] = BuiltInCategory.OST_ElectricalFixtures;
+
+            return map;
+        }
+
+        private static string NormalizeCategoryName(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            string result = value.Trim();
+            while (result.Contains("  "))
+            {
+                result = result.Replace("  ", " ");
+            }
+
+            return result.ToUpperInvariant();
         }
 
         // Block responsible for selecting the most suitable level for the new view

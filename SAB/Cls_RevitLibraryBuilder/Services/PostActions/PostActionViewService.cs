@@ -127,6 +127,8 @@ namespace RevitLibraryBuilder.Services.PostActions
                     transaction.Start();
 
                     FloorPlanViewService service = new FloorPlanViewService();
+
+                    // Block responsible for passing category into post-action workflow
                     createdView = service.CreateByCategory(
                         document,
                         categoryNameFromCsv,

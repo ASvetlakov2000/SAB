@@ -40,6 +40,7 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
+                // Block responsible for delegating floor plan creation to post-action pipeline
                 ViewPlan createdView = PostActionViewService.CreateByCategory(
                     document,
                     "Generic Models",
