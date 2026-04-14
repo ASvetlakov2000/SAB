@@ -25,7 +25,7 @@ namespace RevitLibraryBuilder.Commands
                 if (uiDocument == null)
                 {
                     message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Выгрузка наименований материалов", message);
+                    ShowErrorNotification("Выгрузка наименований материалов", message);
                     return Result.Failed;
                 }
 
@@ -34,7 +34,7 @@ namespace RevitLibraryBuilder.Commands
                 if (document == null || document.ActiveView == null)
                 {
                     message = "Document or active view is not available.";
-                    TaskDialog.Show("Выгрузка наименований материалов", message);
+                    ShowErrorNotification("Выгрузка наименований материалов", message);
                     return Result.Failed;
                 }
 
@@ -42,14 +42,14 @@ namespace RevitLibraryBuilder.Commands
 
                 if (rows.Count == 0)
                 {
-                    TaskDialog.Show("Выгрузка наименований материалов", "Материалы не найдены.");
+                    ToastNotifier.ShowWarning("Выгрузка наименований материалов", "Материалы не найдены.", 10);
                     return Result.Cancelled;
                 }
 
                 using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
-                    // Блок выбора папки для CSV материалов
-                    folderDialog.Description = "Выберите папку для CSV выгрузки наименований материалов";
+                    // Блок выбора папки для XLSX материалов
+                    folderDialog.Description = "Выберите папку для XLSX выгрузки наименований материалов";
 
                     if (folderDialog.ShowDialog() != DialogResult.OK)
                     {
@@ -59,13 +59,14 @@ namespace RevitLibraryBuilder.Commands
                     string outputFolder = folderDialog.SelectedPath;
 
                     MaterialNamingCsvService csvService = new MaterialNamingCsvService();
-                    string filePath = csvService.WriteMaterialCsv(outputFolder, document.Title, rows);
+                    string filePath = csvService.WriteMaterialXlsx(outputFolder, document.Title, rows);
 
                     string folderPath = System.IO.Path.GetDirectoryName(filePath) ?? outputFolder;
-                    ShowSuccessNotification(
+                    ToastNotifier.ShowFolderLinkSuccess(
                         "Выгрузка завершена",
-                        "CSV для переименования материалов сохранен:\n",
-                        folderPath);
+                        "XLSX для переименования материалов сохранен:\n",
+                        folderPath,
+                        10);
                 }
 
                 return Result.Succeeded;
@@ -73,7 +74,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Выгрузка наименований материалов", exception.ToString());
+                ShowErrorNotification("Выгрузка наименований материалов", exception.Message);
                 return Result.Failed;
             }
         }
@@ -103,6 +104,10 @@ namespace RevitLibraryBuilder.Commands
                     MaterialNameNew = material.Name,
                     DescriptionOld = description,
                     DescriptionNew = description,
+                    Manufacturer = GetMaterialText(material, BuiltInParameter.ALL_MODEL_MANUFACTURER, "Изготовитель"),
+                    Model = GetMaterialText(material, BuiltInParameter.ALL_MODEL_MODEL, "Модель"),
+                    Keynote = GetMaterialText(material, BuiltInParameter.KEYNOTE_PARAM, "Ключевая заметка"),
+                    Marking = GetMaterialText(material, BuiltInParameter.ALL_MODEL_MARK, "Маркировка"),
                     DeleteMaterial = false
                 });
             }
@@ -132,16 +137,26 @@ namespace RevitLibraryBuilder.Commands
             return descriptionParameter.AsString() ?? string.Empty;
         }
 
-        private static void ShowSuccessNotification(string title, string text, string folderPath)
+        private static string GetMaterialText(Material material, BuiltInParameter builtInParameter, string fallbackName)
         {
-            try
+            Parameter parameter = material.get_Parameter(builtInParameter);
+
+            if (parameter == null)
             {
-                ToastNotifier.ShowFolderLinkSuccess(title, text, folderPath, 10);
+                parameter = material.LookupParameter(fallbackName);
             }
-            catch
+
+            if (parameter == null)
             {
-                TaskDialog.Show(title, text + folderPath);
+                return string.Empty;
             }
+
+            return parameter.AsString() ?? string.Empty;
+        }
+
+        private static void ShowErrorNotification(string title, string text)
+        {
+            ToastNotifier.ShowError(title, text, 12);
         }
     }
 }

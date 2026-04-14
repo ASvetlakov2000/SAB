@@ -2,7 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
-using RevitLibraryBuilder.Services;
+using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Revit;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace RevitLibraryBuilder.Commands
                 if (uiDocument == null)
                 {
                     message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Выгрузка наименований типоразмеров", message);
+                    ShowErrorNotification("Выгрузка наименований типоразмеров", message);
                     return Result.Failed;
                 }
 
@@ -34,7 +34,7 @@ namespace RevitLibraryBuilder.Commands
                 if (document == null || document.ActiveView == null)
                 {
                     message = "Document or active view is not available.";
-                    TaskDialog.Show("Выгрузка наименований типоразмеров", message);
+                    ShowErrorNotification("Выгрузка наименований типоразмеров", message);
                     return Result.Failed;
                 }
 
@@ -43,14 +43,14 @@ namespace RevitLibraryBuilder.Commands
 
                 if (allTypes == null || allTypes.Count == 0)
                 {
-                    TaskDialog.Show("Выгрузка наименований типоразмеров", "Типоразмеры не найдены.");
+                    ToastNotifier.ShowWarning("Выгрузка наименований типоразмеров", "Типоразмеры не найдены.", 10);
                     return Result.Cancelled;
                 }
 
                 using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
-                    // Блок выбора папки для CSV наименований
-                    folderDialog.Description = "Выберите папку для CSV выгрузки наименований типоразмеров";
+                    // Блок выбора папки для XLSX наименований
+                    folderDialog.Description = "Выберите папку для XLSX выгрузки наименований типоразмеров";
 
                     if (folderDialog.ShowDialog() != DialogResult.OK)
                     {
@@ -59,17 +59,14 @@ namespace RevitLibraryBuilder.Commands
 
                     string outputFolder = folderDialog.SelectedPath;
 
-                    CsvExportService csvExportService = new CsvExportService();
-                    csvExportService.ExportToSingleCsv(
-                        allTypes,
-                        document,
-                        outputFolder,
-                        CsvExportService.TypeCsvExportMode.Naming);
+                    TypeNamingCsvService typeNamingService = new TypeNamingCsvService();
+                    string filePath = typeNamingService.WriteTypeNamingXlsx(outputFolder, document.Title, allTypes);
 
-                    ShowSuccessNotification(
+                    ToastNotifier.ShowFolderLinkSuccess(
                         "Выгрузка завершена",
-                        "CSV для переименования типоразмеров сохранен:\n",
-                        outputFolder);
+                        "XLSX для переименования типоразмеров сохранен:\n",
+                        System.IO.Path.GetDirectoryName(filePath) ?? outputFolder,
+                        10);
                 }
 
                 return Result.Succeeded;
@@ -77,21 +74,14 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Выгрузка наименований типоразмеров", exception.ToString());
+                ShowErrorNotification("Выгрузка наименований типоразмеров", exception.Message);
                 return Result.Failed;
             }
         }
 
-        private static void ShowSuccessNotification(string title, string text, string folderPath)
+        private static void ShowErrorNotification(string title, string text)
         {
-            try
-            {
-                ToastNotifier.ShowFolderLinkSuccess(title, text, folderPath, 10);
-            }
-            catch
-            {
-                TaskDialog.Show(title, text + folderPath);
-            }
+            ToastNotifier.ShowError(title, text, 12);
         }
     }
 }

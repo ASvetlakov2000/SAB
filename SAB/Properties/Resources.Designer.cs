@@ -103,6 +103,46 @@ namespace SAB.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        public static byte[] ExportMaterialNamingCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("ExportMaterialNamingCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ExportMaterialNamingCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("ExportMaterialNamingCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ExportTypeNamingCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("ExportTypeNamingCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ExportTypeNamingCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("ExportTypeNamingCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         public static byte[] ExportTypesByCategoryCommand_16 {
             get {
                 object obj = ResourceManager.GetObject("ExportTypesByCategoryCommand_16", resourceCulture);
@@ -136,6 +176,26 @@ namespace SAB.Properties {
         public static byte[] ExportTypesSingleFileCommand_32 {
             get {
                 object obj = ResourceManager.GetObject("ExportTypesSingleFileCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] GenerateDashboardCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("GenerateDashboardCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] GenerateDashboardCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("GenerateDashboardCommand_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -196,6 +256,46 @@ namespace SAB.Properties {
         public static byte[] ImportByPointCommand_32 {
             get {
                 object obj = ResourceManager.GetObject("ImportByPointCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ImportMaterialNamingCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("ImportMaterialNamingCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ImportMaterialNamingCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("ImportMaterialNamingCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ImportTypeNamingCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("ImportTypeNamingCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ImportTypeNamingCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("ImportTypeNamingCommand_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }

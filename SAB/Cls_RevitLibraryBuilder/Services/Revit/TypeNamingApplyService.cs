@@ -26,7 +26,8 @@ namespace RevitLibraryBuilder.Services.Revit
 
             Dictionary<int, ElementId> mappedTypeIds = ResolveTypeIdsByRows(document, rows);
 
-            // Блок последовательного применения строк CSV без перестановки порядка
+            // Блок последовательного применения строк CSV/XLSX без перестановки порядка
+            // Здесь нельзя менять порядок строк, так как переименование идет построчно
             for (int i = 0; i < rows.Count; i++)
             {
                 TypeNamingCsvModel row = rows[i];
@@ -109,6 +110,8 @@ namespace RevitLibraryBuilder.Services.Revit
                 }
                 catch (Exception exception)
                 {
+                    // Блок обработки ошибок дубликатов и других ограничений Revit:
+                    // проблемная строка пропускается, процесс продолжается.
                     result.Errors.Add(new NamingErrorCsvModel
                     {
                         OldName = BuildOldLabel(row),

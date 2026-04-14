@@ -26,7 +26,8 @@ namespace RevitLibraryBuilder.Services.Revit
 
             Dictionary<int, ElementId> mappedMaterialIds = ResolveMaterialIdsByRows(document, rows);
 
-            // Блок последовательного применения строк CSV без сортировки
+            // Блок последовательного применения строк CSV/XLSX без сортировки
+            // Здесь нельзя менять порядок строк, так как операции выполняются построчно
             for (int i = 0; i < rows.Count; i++)
             {
                 MaterialNamingCsvModel row = rows[i];
@@ -72,6 +73,8 @@ namespace RevitLibraryBuilder.Services.Revit
                     {
                         transaction.Start();
 
+                        // Блок удаления материала:
+                        // удаляем только при явном признаке DeleteMaterial=true
                         if (row.DeleteMaterial)
                         {
                             document.Delete(material.Id);
@@ -81,6 +84,11 @@ namespace RevitLibraryBuilder.Services.Revit
                         {
                             renamed = TryRenameMaterial(material, row.MaterialNameNew);
                             descriptionChanged = TryUpdateDescription(material, row.DescriptionNew);
+
+                            TryUpdateTextParameter(material, BuiltInParameter.ALL_MODEL_MANUFACTURER, "Изготовитель", row.Manufacturer);
+                            TryUpdateTextParameter(material, BuiltInParameter.ALL_MODEL_MODEL, "Модель", row.Model);
+                            TryUpdateTextParameter(material, BuiltInParameter.KEYNOTE_PARAM, "Ключевая заметка", row.Keynote);
+                            TryUpdateTextParameter(material, BuiltInParameter.ALL_MODEL_MARK, "Маркировка", row.Marking);
                         }
 
                         transaction.Commit();
@@ -103,6 +111,8 @@ namespace RevitLibraryBuilder.Services.Revit
                 }
                 catch (Exception exception)
                 {
+                    // Блок обработки ошибок зависимостей/дубликатов:
+                    // проблемная строка пропускается, процесс продолжается.
                     result.Errors.Add(new NamingErrorCsvModel
                     {
                         OldName = BuildOldLabel(row),
@@ -269,6 +279,32 @@ namespace RevitLibraryBuilder.Services.Revit
             }
 
             descriptionParameter.Set(descriptionNew);
+            return true;
+        }
+
+        private static bool TryUpdateTextParameter(Material material, BuiltInParameter builtInParameter, string fallbackName, string newValue)
+        {
+            Parameter parameter = material.get_Parameter(builtInParameter);
+
+            if (parameter == null)
+            {
+                parameter = material.LookupParameter(fallbackName);
+            }
+
+            if (parameter == null || parameter.IsReadOnly)
+            {
+                return false;
+            }
+
+            string safeValue = newValue ?? string.Empty;
+            string currentValue = parameter.AsString() ?? string.Empty;
+
+            if (string.Equals(currentValue, safeValue, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            parameter.Set(safeValue);
             return true;
         }
 

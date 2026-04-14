@@ -13,7 +13,7 @@ using System.Windows.Forms;
 namespace RevitLibraryBuilder.Commands
 {
     /// <summary>
-    /// Импорт CSV и пакетное переименование типоразмеров/семейств.
+    /// Импорт XLSX/CSV и пакетное переименование типоразмеров/семейств.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ImportTypeNamingCommand : IExternalCommand
@@ -27,7 +27,7 @@ namespace RevitLibraryBuilder.Commands
                 if (uiDocument == null)
                 {
                     message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Импорт наименований типоразмеров", message);
+                    ShowErrorNotification("Импорт наименований типоразмеров", message);
                     return Result.Failed;
                 }
 
@@ -36,30 +36,30 @@ namespace RevitLibraryBuilder.Commands
                 if (document == null || document.ActiveView == null)
                 {
                     message = "Document or active view is not available.";
-                    TaskDialog.Show("Импорт наименований типоразмеров", message);
+                    ShowErrorNotification("Импорт наименований типоразмеров", message);
                     return Result.Failed;
                 }
 
-                string csvFilePath = RequestCsvFilePath();
+                string inputFilePath = RequestInputFilePath();
 
-                if (string.IsNullOrWhiteSpace(csvFilePath))
+                if (string.IsNullOrWhiteSpace(inputFilePath))
                 {
                     return Result.Cancelled;
                 }
 
-                TypeNamingCsvService csvService = new TypeNamingCsvService();
-                List<TypeNamingCsvModel> rows = csvService.ImportRows(csvFilePath);
+                TypeNamingCsvService namingService = new TypeNamingCsvService();
+                List<TypeNamingCsvModel> rows = namingService.ImportRows(inputFilePath);
 
                 if (rows.Count == 0)
                 {
-                    TaskDialog.Show("Импорт наименований типоразмеров", "В CSV нет строк для обработки.");
+                    ToastNotifier.ShowWarning("Импорт наименований типоразмеров", "В файле нет строк для обработки.", 10);
                     return Result.Cancelled;
                 }
 
                 TypeNamingApplyService applyService = new TypeNamingApplyService();
                 TypeNamingApplyResult applyResult = applyService.Apply(document, rows);
 
-                string reportPath = csvService.WriteErrorReport(csvFilePath, applyResult.Errors);
+                string reportPath = namingService.WriteErrorReport(inputFilePath, applyResult.Errors);
 
                 ShowResultNotification(applyResult, reportPath);
                 return Result.Succeeded;
@@ -67,17 +67,17 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Импорт наименований типоразмеров", exception.ToString());
+                ShowErrorNotification("Импорт наименований типоразмеров", exception.Message);
                 return Result.Failed;
             }
         }
 
-        private static string RequestCsvFilePath()
+        private static string RequestInputFilePath()
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Title = "Выберите CSV для переименования типоразмеров";
-                dialog.Filter = "CSV (*.csv)|*.csv";
+                dialog.Title = "Выберите XLSX для переименования типоразмеров";
+                dialog.Filter = "XLSX (*.xlsx)|*.xlsx|CSV (*.csv)|*.csv";
                 dialog.Multiselect = false;
 
                 if (dialog.ShowDialog() != DialogResult.OK)
@@ -101,22 +101,27 @@ namespace RevitLibraryBuilder.Commands
             {
                 string folder = Path.GetDirectoryName(reportPath) ?? string.Empty;
 
-                try
-                {
-                    ToastNotifier.ShowFolderLinkWarning(
-                        "Импорт наименований завершен",
-                        summary + "\nСформирован отчет: Проблемные наименования.csv\n",
-                        folder,
-                        12);
-                    return;
-                }
-                catch
-                {
-                    // fallback to TaskDialog below
-                }
+                ToastNotifier.ShowFolderLinkWarning(
+                    "Импорт наименований завершен",
+                    summary + "\nСформирован отчет: Проблемные наименования.csv\n",
+                    folder,
+                    12);
+                return;
             }
 
-            TaskDialog.Show("Импорт наименований завершен", summary);
+            if (result.Errors.Count > 0)
+            {
+                ToastNotifier.ShowWarning("Импорт наименований завершен", summary, 12);
+            }
+            else
+            {
+                ToastNotifier.ShowSuccess("Импорт наименований завершен", summary, 12);
+            }
+        }
+
+        private static void ShowErrorNotification(string title, string text)
+        {
+            ToastNotifier.ShowError(title, text, 12);
         }
     }
 }

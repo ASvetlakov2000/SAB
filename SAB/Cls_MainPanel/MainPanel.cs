@@ -53,18 +53,18 @@ namespace SAB
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportTypeNaming",
-                "Выгрузка наименований типоразмеров",
+                "Экспорт имен типов",
                 "RevitLibraryBuilder.Commands.ExportTypeNamingCommand",
-                "SAB.Resources.ExportTypesSingleFileCommand_32.png",
-                "SAB.Resources.ExportTypesSingleFileCommand_16.png");
+                "SAB.Resources.ExportTypeNamingCommand_32.png",
+                "SAB.Resources.ExportTypeNamingCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportMaterialNaming",
-                "Выгрузка наименований материалов",
+                "Экспорт имен MTL",
                 "RevitLibraryBuilder.Commands.ExportMaterialNamingCommand",
-                "SAB.Resources.ExportTypesByCategoryCommand_32.png",
-                "SAB.Resources.ExportTypesByCategoryCommand_16.png");
+                "SAB.Resources.ExportMaterialNamingCommand_32.png",
+                "SAB.Resources.ExportMaterialNamingCommand_16.png");
 
             libraryPanel.AddSeparator();
 
@@ -75,18 +75,18 @@ namespace SAB
             Ribbon.AddPushButtonToSplit(
                 namingImportSplit,
                 "SAB_ImportTypeNaming",
-                "Применить наименования типоразмеров",
+                "Переименовать типы",
                 "RevitLibraryBuilder.Commands.ImportTypeNamingCommand",
-                "SAB.Resources.ImportByPointCommand_32.png",
-                "SAB.Resources.ImportByPointCommand_16.png");
+                "SAB.Resources.ImportTypeNamingCommand_32.png",
+                "SAB.Resources.ImportTypeNamingCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 namingImportSplit,
                 "SAB_ImportMaterialNaming",
-                "Применить наименования материалов",
+                "Переименовать материалы",
                 "RevitLibraryBuilder.Commands.ImportMaterialNamingCommand",
-                "SAB.Resources.ImportByLineCommand_32.png",
-                "SAB.Resources.ImportByLineCommand_16.png");
+                "SAB.Resources.ImportMaterialNamingCommand_32.png",
+                "SAB.Resources.ImportMaterialNamingCommand_16.png");
 
             libraryPanel.AddSeparator();
 
@@ -153,6 +153,17 @@ namespace SAB
                 "RevitLibraryBuilder.Commands.DeleteSelectedTypesAndFamiliesCommand",
                 "SAB.Resources.DeleteSelectedTypesAndFamiliesCommand_32.png",
                 "SAB.Resources.DeleteSelectedTypesAndFamiliesCommand_16.png");
+
+            libraryPanel.AddSeparator();
+
+            // Блок запуска MVP dashboard
+            Ribbon.AddPushButtonSingle(
+                libraryPanel,
+                "SAB_GenerateDashboard",
+                "HTML просмотр",
+                "SAB.BimDashboard.Commands.GenerateDashboardCommand",
+                "SAB.Resources.GenerateDashboardCommand_32.png",
+                "SAB.Resources.GenerateDashboardCommand_16.png");
 
             return Result.Succeeded;
         }

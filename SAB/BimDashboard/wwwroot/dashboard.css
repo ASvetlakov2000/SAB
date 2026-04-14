@@ -1,0 +1,271 @@
+﻿:root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-alt: #0f141a;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-strong: #1f6feb;
+    --shadow: 0 10px 24px rgba(1, 4, 9, 0.45);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(180deg, #0d1117 0%, #0b1016 100%);
+}
+
+.page {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 18px;
+}
+
+.header,
+.summary-card,
+.columns-card,
+.controls-card,
+.table-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.header {
+    padding: 16px 18px;
+}
+
+.title {
+    margin: 0;
+    font-size: 26px;
+    color: #f0f6fc;
+}
+
+.subtitle {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.summary-grid {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: minmax(220px, 320px);
+    gap: 10px;
+}
+
+.summary-card {
+    padding: 14px;
+}
+
+.summary-label {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.summary-value {
+    margin: 6px 0 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.workspace-grid {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.columns-card {
+    padding: 12px;
+    position: sticky;
+    top: 10px;
+}
+
+.panel-title {
+    margin: 0;
+    font-size: 15px;
+    color: #f0f6fc;
+}
+
+.panel-note {
+    margin: 6px 0 10px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.column-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 65vh;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.column-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel-alt);
+}
+
+.column-option input[type="checkbox"] {
+    accent-color: var(--accent-strong);
+}
+
+.table-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.controls-card {
+    padding: 12px;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr auto;
+    gap: 10px;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.control-item input,
+.control-item select,
+.control-item button {
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 10px;
+    font-size: 13px;
+    color: var(--text);
+    background: #0d1117;
+}
+
+.control-item input::placeholder {
+    color: #6e7681;
+}
+
+.control-item button {
+    cursor: pointer;
+    background: #1f6feb;
+    border-color: #2f81f7;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.control-item button:hover {
+    background: #2f81f7;
+}
+
+.result-info {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.table-card {
+    padding: 10px;
+}
+
+.table-container {
+    width: 100%;
+    max-height: 72vh;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #0d1117;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid var(--border);
+    padding: 7px 9px;
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #1f2937;
+    color: #f0f6fc;
+    font-weight: 600;
+}
+
+.data-table th.sortable {
+    cursor: pointer;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background: #10161d;
+}
+
+.data-table tbody tr:hover {
+    background: #1a2330;
+}
+
+.warning {
+    margin: 10px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #f85149;
+    background: rgba(248, 81, 73, 0.08);
+    color: #ffa198;
+}
+
+@media (max-width: 1200px) {
+    .workspace-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .columns-card {
+        position: static;
+    }
+
+    .column-menu {
+        max-height: 220px;
+    }
+}
+
+@media (max-width: 860px) {
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page {
+        padding: 12px;
+    }
+}

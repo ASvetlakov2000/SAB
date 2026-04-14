@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Notifications.Wpf, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Notifications.Wpf.0.1.1\lib\net461\Notifications.Wpf.dll</HintPath>
     </Reference>
@@ -47,6 +50,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms">
       <HintPath>..\packages\Microsoft.NETFramework.ReferenceAssemblies.net48.1.0.3\build\.NETFramework\v4.8\System.Windows.Forms.dll</HintPath>
     </Reference>
@@ -62,6 +67,36 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BimDashboard\Commands\GenerateDashboardCommand.cs" />
+    <Compile Include="BimDashboard\Models\DashboardData.cs" />
+    <Compile Include="BimDashboard\Models\DataProviderContext.cs" />
+    <Compile Include="BimDashboard\Models\DataSourceType.cs" />
+    <Compile Include="BimDashboard\Models\ProviderResult.cs" />
+    <Compile Include="BimDashboard\Models\SummaryData.cs" />
+    <Compile Include="BimDashboard\Models\TabularDataSet.cs" />
+    <Compile Include="BimDashboard\Models\TabularRow.cs" />
+    <Compile Include="BimDashboard\Models\UnifiedRecord.cs" />
+    <Compile Include="BimDashboard\Services\Data\CsvDataProvider.cs" />
+    <Compile Include="BimDashboard\Services\Data\DataProviderFactory.cs" />
+    <Compile Include="BimDashboard\Services\Data\ExcelDataProvider.cs" />
+    <Compile Include="BimDashboard\Services\Data\IDataProvider.cs" />
+    <Compile Include="BimDashboard\Services\Data\RevitDataProvider.cs" />
+    <Compile Include="BimDashboard\Services\Processing\DataMapper.cs" />
+    <Compile Include="BimDashboard\Services\Processing\TabularRecordMapper.cs" />
+    <Compile Include="BimDashboard\Services\Reporting\HtmlReportBuilder.cs" />
+    <Compile Include="BimDashboard\Services\Reporting\HtmlTransferPipelineValidator.cs" />
+    <Compile Include="BimDashboard\Services\Reporting\JsonSerializerService.cs" />
+    <Compile Include="BimDashboard\Services\Tables\CsvTableReader.cs" />
+    <Compile Include="BimDashboard\Services\Tables\ExcelTableReader.cs" />
+    <Compile Include="BimDashboard\Services\Tables\ITableReader.cs" />
+    <Compile Include="BimDashboard\Services\Tables\TabularHeaderNormalizer.cs" />
+    <Compile Include="BimDashboard\Services\Viewer\ExternalBrowserDashboardViewer.cs" />
+    <Compile Include="BimDashboard\Services\Viewer\IDashboardViewer.cs" />
+    <Compile Include="BimDashboard\UI\DataSourceDialog.xaml.cs">
+      <DependentUpon>DataSourceDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BimDashboard\UI\DataSourceDialogService.cs" />
+    <Compile Include="BimDashboard\Utils\FileUtils.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Services\ElevationCreator.cs" />
@@ -91,6 +126,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvFillPatternExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvGraphicsStyleExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvImportService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\NamingSpreadsheetExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvTableService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\MaterialNamingCsvService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\TypeNamingCsvService.cs" />
@@ -130,6 +166,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Helpers\Notifications\ToastNotifications\Пример вызова_ToastNotifier.txt" />
+    <EmbeddedResource Include="Resources\GenerateDashboardCommand_16.png" />
+    <EmbeddedResource Include="Resources\GenerateDashboardCommand_32.png" />
+    <EmbeddedResource Include="Resources\ExportMaterialNamingCommand_16.png" />
+    <EmbeddedResource Include="Resources\ExportMaterialNamingCommand_32.png" />
+    <EmbeddedResource Include="Resources\ExportTypeNamingCommand_16.png" />
+    <EmbeddedResource Include="Resources\ExportTypeNamingCommand_32.png" />
+    <EmbeddedResource Include="Resources\ImportMaterialNamingCommand_16.png" />
+    <EmbeddedResource Include="Resources\ImportMaterialNamingCommand_32.png" />
+    <EmbeddedResource Include="Resources\ImportTypeNamingCommand_16.png" />
+    <EmbeddedResource Include="Resources\ImportTypeNamingCommand_32.png" />
     <EmbeddedResource Include="Resources\DeleteSelectedTypesAndFamiliesCommand_16.png" />
     <EmbeddedResource Include="Resources\DeleteSelectedTypesAndFamiliesCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportLineAndFillPatternsCommand_16.png" />
@@ -155,7 +201,17 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="BimDashboard\Templates\dashboard_template.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="BimDashboard\wwwroot\dashboard.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="BimDashboard\wwwroot\dashboard.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
