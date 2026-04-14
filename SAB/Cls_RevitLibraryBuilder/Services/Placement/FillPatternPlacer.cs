@@ -116,8 +116,11 @@ namespace RevitLibraryBuilder.Services.Placement
 
                     // Block responsible for geometry values that can be tuned later
                     XYZ basePoint = XYZ.Zero;
+                    // Настраиваемый размер одной штриховки по стороне (мм)
                     double regionSize = ConvertMillimetersToInternalUnits(1000.0);
+                    // Настраиваемый горизонтальный отступ между соседними штриховками (мм)
                     double regionSpacing = ConvertMillimetersToInternalUnits(500.0);
+                    // Настраиваемое смещение подписи вниз от штриховки (мм)
                     double textOffsetBelow = ConvertMillimetersToInternalUnits(250.0);
 
                     for (int index = 0; index < newlyCreatedTypes.Count; index++)
@@ -165,8 +168,8 @@ namespace RevitLibraryBuilder.Services.Placement
                 }
 
                 ShowSuccessNotification(
-                    "Place Fill Patterns",
-                    "Created FilledRegion instances: " + newlyCreatedTypes.Count);
+                    "Размещение элементов",
+                    "Элементов размещено " + newlyCreatedTypes.Count);
 
                 return Result.Succeeded;
             }
@@ -349,6 +352,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 return existing;
             }
 
+            // Настраиваемый шаг штриха для автоматически создаваемого FillPattern (мм)
             double defaultSpacing = ConvertMillimetersToInternalUnits(5.0);
 
             FillPattern fillPattern = new FillPattern(
@@ -661,7 +665,7 @@ namespace RevitLibraryBuilder.Services.Placement
         {
             try
             {
-                ToastNotifier.ShowSuccess(title, message, 5);
+                ToastNotifier.ShowSuccess(title, message, 10);
             }
             catch
             {

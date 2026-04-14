@@ -148,8 +148,8 @@ namespace RevitLibraryBuilder.Services.PostActions
                 }
 
                 ShowSuccessNotification(
-                    "Completed",
-                    "Created placement result view: " + createdView.Name);
+                    "Создание вида",
+                    "Вид для категории " + categoryNameFromCsv + " создан");
 
                 return createdView;
             }
@@ -165,7 +165,7 @@ namespace RevitLibraryBuilder.Services.PostActions
         {
             try
             {
-                ToastNotifier.ShowSuccess(title, message, 5);
+                ToastNotifier.ShowSuccess(title, message, 10);
             }
             catch
             {

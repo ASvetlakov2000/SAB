@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,73 +6,155 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Helpers.Notifications.ToastNotifications
 {
     public static class ToastNotifier
     {
+        // Блок настройки времени показа уведомления (секунды)
+        private const int DefaultDurationSeconds = 10;
+
+        private static readonly object SyncRoot = new object();
         private static Window _dummyWindow;
         private static ToastHost _host;
 
-        static ToastNotifier()
+        // Group 1: ShowToast (without link)
+        public static void ShowInfo(string title, string message, int durationSeconds = DefaultDurationSeconds)
         {
-            _dummyWindow = new Window
-            {
-                Width = 0,
-                Height = 0,
-                ShowInTaskbar = false,
-                WindowStyle = WindowStyle.None,
-                AllowsTransparency = true,
-                Opacity = 0
-            };
-            _dummyWindow.Show();
-
-            _host = new ToastHost
-            {
-                Owner = _dummyWindow,
-                Left = SystemParameters.WorkArea.Right - 544 - 10, // ширина + 20%
-                Top = SystemParameters.WorkArea.Bottom - (SystemParameters.WorkArea.Height * 2 / 3) - 10
-            };
-            _host.Show();
+            ShowToastInternal(title, message, ToastType.Info, null, durationSeconds);
         }
 
-        public static void ShowInfo(string title, string message, int durationSeconds = 5) =>
-            _host.ShowToast(title, message, ToastType.Info, durationSeconds);
+        public static void ShowSuccess(string title, string message, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Success, null, durationSeconds);
+        }
 
-        public static void ShowSuccess(string title, string message, int durationSeconds = 5) =>
-            _host.ShowToast(title, message, ToastType.Success, durationSeconds);
+        public static void ShowWarning(string title, string message, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Warning, null, durationSeconds);
+        }
 
-        public static void ShowWarning(string title, string message, int durationSeconds = 5) =>
-            _host.ShowToast(title, message, ToastType.Warning, durationSeconds);
+        public static void ShowError(string title, string message, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Error, null, durationSeconds);
+        }
 
-        public static void ShowError(string title, string message, int durationSeconds = 5) =>
-            _host.ShowToast(title, message, ToastType.Error, durationSeconds);
+        // Group 2: ShowToastWithLink (with folder link)
+        public static void ShowFolderLinkInfo(string title, string message, string folderLink, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Info, folderLink, durationSeconds);
+        }
 
-        public static void ShowFolderLinkInfo(string title, string message, string folderLink, int durationSeconds = 10) =>
-            _host.ShowToastWithLink(title, message, folderLink, ToastType.Info, durationSeconds);
+        public static void ShowFolderLinkSuccess(string title, string message, string folderLink, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Success, folderLink, durationSeconds);
+        }
 
-        public static void ShowFolderLinkSuccess(string title, string message, string folderLink, int durationSeconds = 10) =>
-            _host.ShowToastWithLink(title, message, folderLink, ToastType.Success, durationSeconds);
+        public static void ShowFolderLinkWarning(string title, string message, string folderLink, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Warning, folderLink, durationSeconds);
+        }
 
-        public static void ShowFolderLinkWarning(string title, string message, string folderLink, int durationSeconds = 10) =>
-            _host.ShowToastWithLink(title, message, folderLink, ToastType.Warning, durationSeconds);
+        public static void ShowFolderLinkError(string title, string message, string folderLink, int durationSeconds = DefaultDurationSeconds)
+        {
+            ShowToastInternal(title, message, ToastType.Error, folderLink, durationSeconds);
+        }
 
-        public static void ShowFolderLinkError(string title, string message, string folderLink, int durationSeconds = 10) =>
-            _host.ShowToastWithLink(title, message, folderLink, ToastType.Error, durationSeconds);
+        // Блок единой точки показа уведомлений (без дублирования логики)
+        private static void ShowToastInternal(
+            string title,
+            string message,
+            ToastType toastType,
+            string folderLink,
+            int durationSeconds)
+        {
+            try
+            {
+                if (!EnsureHost())
+                {
+                    return;
+                }
+
+                int safeDuration = durationSeconds > 0 ? durationSeconds : DefaultDurationSeconds;
+                _host.ShowToast(title, message, toastType, folderLink, safeDuration);
+            }
+            catch
+            {
+                // Защита от падения при проблемах с UI.
+            }
+        }
+
+        private static bool EnsureHost()
+        {
+            if (_host != null)
+            {
+                return true;
+            }
+
+            lock (SyncRoot)
+            {
+                if (_host != null)
+                {
+                    return true;
+                }
+
+                try
+                {
+                    _dummyWindow = new Window
+                    {
+                        Width = 0,
+                        Height = 0,
+                        ShowInTaskbar = false,
+                        WindowStyle = WindowStyle.None,
+                        AllowsTransparency = true,
+                        Opacity = 0
+                    };
+                    _dummyWindow.Show();
+
+                    _host = new ToastHost
+                    {
+                        Owner = _dummyWindow,
+                        Left = SystemParameters.WorkArea.Right - 554,
+                        Top = SystemParameters.WorkArea.Bottom - (SystemParameters.WorkArea.Height * 2 / 3) - 10
+                    };
+                    _host.Show();
+                }
+                catch
+                {
+                    _host = null;
+                }
+            }
+
+            return _host != null;
+        }
     }
 
-    public enum ToastType { Info, Success, Warning, Error }
+    public enum ToastType
+    {
+        Info,
+        Success,
+        Warning,
+        Error
+    }
 
     public class ToastHost : Window
     {
-        private StackPanel _stackPanel;
-        private ScrollViewer _scrollViewer;
-        private const double TextMaxWidth = 400; // немного увеличили, чтобы текст не обрезался
+        // Блок цветовых настроек уведомлений и кнопок
+        private static readonly Color InfoSuccessBackgroundColor = Color.FromRgb(103, 108, 115);
+        private static readonly Color WarningBackgroundColor = Color.FromRgb(255, 193, 94);
+        private static readonly Color ErrorBackgroundColor = Color.FromRgb(255, 128, 128);
+        private static readonly Color ButtonBackgroundColor = Color.FromRgb(103, 108, 115);
+
+        private const double TextMaxWidth = 400;
         private const double IconSize = 26;
+
+        private readonly StackPanel _stackPanel;
+        private readonly ScrollViewer _scrollViewer;
 
         public ToastHost()
         {
-            Width = 544; // увеличено на 20%
+            Width = 544;
             Topmost = true;
             AllowsTransparency = true;
             WindowStyle = WindowStyle.None;
@@ -80,6 +162,7 @@ namespace Helpers.Notifications.ToastNotifications
             ShowInTaskbar = false;
             MaxHeight = SystemParameters.WorkArea.Height * 2 / 3;
 
+            // Блок конфигурации базового контейнера уведомлений
             _stackPanel = new StackPanel
             {
                 VerticalAlignment = VerticalAlignment.Bottom,
@@ -97,27 +180,24 @@ namespace Helpers.Notifications.ToastNotifications
             Content = _scrollViewer;
         }
 
-        public void ShowToast(string title, string message, ToastType type, int durationSeconds)
+        public void ShowToast(string title, string message, ToastType type, string folderLink, int durationSeconds)
         {
-            var border = CreateToastBorder(type);
-            var grid = CreateToastGrid(border, title, message, type, link: null);
-            border.Child = grid;
-            AddToast(border, durationSeconds);
-        }
-
-        public void ShowToastWithLink(string title, string message, string link, ToastType type, int durationSeconds)
-        {
-            var border = CreateToastBorder(type);
-            var grid = CreateToastGrid(border, title, message, type, link);
+            Border border = CreateToastBorder(type);
+            Grid grid = CreateToastGrid(border, title, message, type, folderLink);
             border.Child = grid;
             AddToast(border, durationSeconds);
         }
 
         private Border CreateToastBorder(ToastType type)
         {
+            // Блок выбора цвета фона по типу уведомления
+            Brush backgroundBrush = new SolidColorBrush(GetBackgroundColor(type));
+
             return new Border
             {
-                Background = GetBackground(type),
+                Background = backgroundBrush,
+                BorderBrush = Brushes.White,
+                BorderThickness = new Thickness(3),
                 CornerRadius = new CornerRadius(8),
                 Margin = new Thickness(0, 0, 0, 5),
                 Padding = new Thickness(10),
@@ -125,21 +205,19 @@ namespace Helpers.Notifications.ToastNotifications
             };
         }
 
-        private Grid CreateToastGrid(Border border, string title, string message, ToastType type, string link)
+        private Grid CreateToastGrid(Border border, string title, string message, ToastType type, string folderLink)
         {
-            var grid = new Grid { HorizontalAlignment = HorizontalAlignment.Right };
+            Grid grid = new Grid { HorizontalAlignment = HorizontalAlignment.Right };
 
-            // Расстановка колонок
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(IconSize) });   // значок
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });       // отступ между значком и левым разделителем
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5) });      // левый разделитель
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });       // отступ от разделителя до текста
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // текст
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(15) });      // правый разделитель
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });           // кнопка закрытия
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(IconSize) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(15) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            // Иконка
-            var icon = new TextBlock
+            TextBlock icon = new TextBlock
             {
                 Text = GetIcon(type),
                 FontSize = 16,
@@ -150,8 +228,7 @@ namespace Helpers.Notifications.ToastNotifications
             };
             Grid.SetColumn(icon, 0);
 
-            // Левый разделитель
-            var separator = new Rectangle
+            Rectangle separator = new Rectangle
             {
                 Width = 1.5,
                 Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)),
@@ -159,15 +236,14 @@ namespace Helpers.Notifications.ToastNotifications
             };
             Grid.SetColumn(separator, 2);
 
-            // Текстовая часть
-            var textStack = new StackPanel
+            StackPanel textStack = new StackPanel
             {
                 Orientation = Orientation.Vertical,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(0, 0, 10, 0)
             };
 
-            var titleBlock = new TextBlock
+            TextBlock titleBlock = new TextBlock
             {
                 Text = title,
                 FontWeight = FontWeights.Bold,
@@ -177,7 +253,7 @@ namespace Helpers.Notifications.ToastNotifications
             };
             textStack.Children.Add(titleBlock);
 
-            var messageBlock = new TextBlock
+            TextBlock messageBlock = new TextBlock
             {
                 Text = message,
                 FontSize = 14,
@@ -188,11 +264,12 @@ namespace Helpers.Notifications.ToastNotifications
             };
             textStack.Children.Add(messageBlock);
 
-            if (!string.IsNullOrEmpty(link))
+            // Блок обработки уведомлений со ссылкой на папку
+            if (!string.IsNullOrWhiteSpace(folderLink))
             {
-                var linkBlock = new TextBlock
+                TextBlock linkBlock = new TextBlock
                 {
-                    Text = link,
+                    Text = folderLink,
                     FontSize = 14,
                     Foreground = Brushes.White,
                     TextWrapping = TextWrapping.Wrap,
@@ -201,18 +278,25 @@ namespace Helpers.Notifications.ToastNotifications
                     Margin = new Thickness(0, 2, 0, 0),
                     TextDecorations = TextDecorations.Underline
                 };
-                linkBlock.MouseLeftButtonUp += (_, __) =>
+
+                linkBlock.MouseLeftButtonUp += (sender, args) =>
                 {
-                    try { Process.Start(new ProcessStartInfo(link) { UseShellExecute = true }); }
-                    catch { }
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(folderLink) { UseShellExecute = true });
+                    }
+                    catch
+                    {
+                        // Невалидный путь не должен ломать работу уведомлений.
+                    }
                 };
+
                 textStack.Children.Add(linkBlock);
             }
 
             Grid.SetColumn(textStack, 4);
 
-            // Правый разделитель
-            var separatorRight = new Rectangle
+            Rectangle separatorRight = new Rectangle
             {
                 Width = 1.5,
                 Fill = new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)),
@@ -220,20 +304,22 @@ namespace Helpers.Notifications.ToastNotifications
             };
             Grid.SetColumn(separatorRight, 5);
 
-            // Кнопка закрытия
-            var closeButton = new Button
+            Button closeButton = new Button
             {
                 Content = "✖",
                 Width = 24,
                 Height = 24,
-                Background = Brushes.Transparent,
-                BorderThickness = new Thickness(0),
+                Background = new SolidColorBrush(ButtonBackgroundColor),
                 Foreground = Brushes.White,
+                BorderBrush = Brushes.White,
+                BorderThickness = new Thickness(2),
                 Cursor = Cursors.Hand,
                 Padding = new Thickness(0),
-                Margin = new Thickness(0)
+                Margin = new Thickness(0),
+                Template = CreateRoundedButtonTemplate()
             };
-            closeButton.Click += (_, __) => _stackPanel.Children.Remove(border);
+
+            closeButton.Click += (sender, args) => _stackPanel.Children.Remove(border);
             Grid.SetColumn(closeButton, 6);
 
             grid.Children.Add(icon);
@@ -249,36 +335,76 @@ namespace Helpers.Notifications.ToastNotifications
         {
             _stackPanel.Children.Insert(0, border);
 
-            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300));
-            border.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+            DoubleAnimation fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(300));
+            border.BeginAnimation(OpacityProperty, fadeIn);
 
-            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(durationSeconds) };
-            timer.Tick += (s, e) =>
+            DispatcherTimer timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(durationSeconds)
+            };
+
+            timer.Tick += (sender, args) =>
             {
                 timer.Stop();
-                var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300));
-                fadeOut.Completed += (s2, e2) => _stackPanel.Children.Remove(border);
-                border.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+                DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(300));
+                fadeOut.Completed += (sender2, args2) => _stackPanel.Children.Remove(border);
+                border.BeginAnimation(OpacityProperty, fadeOut);
             };
+
             timer.Start();
         }
 
-        private Brush GetBackground(ToastType type) => type switch
+        private static Color GetBackgroundColor(ToastType type)
         {
-            ToastType.Info => new SolidColorBrush(Color.FromRgb(116, 155, 184)),
-            ToastType.Success => new SolidColorBrush(Color.FromRgb(116, 155, 184)),
-            ToastType.Warning => new SolidColorBrush(Color.FromRgb(255, 193, 94)),
-            ToastType.Error => new SolidColorBrush(Color.FromRgb(255, 128, 128)),
-            _ => Brushes.Gray
-        };
+            switch (type)
+            {
+                case ToastType.Warning:
+                    return WarningBackgroundColor;
+                case ToastType.Error:
+                    return ErrorBackgroundColor;
+                case ToastType.Info:
+                case ToastType.Success:
+                default:
+                    return InfoSuccessBackgroundColor;
+            }
+        }
 
-        private string GetIcon(ToastType type) => type switch
+        // Блок конфигурации кнопок уведомления
+        private static ControlTemplate CreateRoundedButtonTemplate()
         {
-            ToastType.Info => "ℹ",
-            ToastType.Success => "✔",
-            ToastType.Warning => "❗",
-            ToastType.Error => "✖",
-            _ => "?"
-        };
+            FrameworkElementFactory borderFactory = new FrameworkElementFactory(typeof(Border));
+            borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(4));
+            borderFactory.SetValue(Border.BorderBrushProperty, Brushes.White);
+            borderFactory.SetValue(Border.BorderThicknessProperty, new Thickness(2));
+            borderFactory.SetValue(Border.BackgroundProperty, new SolidColorBrush(ButtonBackgroundColor));
+
+            FrameworkElementFactory contentFactory = new FrameworkElementFactory(typeof(ContentPresenter));
+            contentFactory.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            contentFactory.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center);
+
+            borderFactory.AppendChild(contentFactory);
+
+            ControlTemplate template = new ControlTemplate(typeof(Button));
+            template.VisualTree = borderFactory;
+            return template;
+        }
+
+        // Блок выбора иконки по типу уведомления
+        private static string GetIcon(ToastType type)
+        {
+            switch (type)
+            {
+                case ToastType.Info:
+                    return "ℹ";
+                case ToastType.Success:
+                    return "✔";
+                case ToastType.Warning:
+                    return "❗";
+                case ToastType.Error:
+                    return "✖";
+                default:
+                    return "?";
+            }
+        }
     }
 }

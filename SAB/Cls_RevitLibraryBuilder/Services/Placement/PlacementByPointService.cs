@@ -1,8 +1,7 @@
-﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using RevitLibraryBuilder.Models;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RevitLibraryBuilder.Services.Placement
 {
@@ -10,6 +9,7 @@ namespace RevitLibraryBuilder.Services.Placement
     {
         private readonly Document _doc;
 
+        // Настраиваемый шаг между экземплярами при размещении по точкам (мм)
         private readonly double _step = 2000 / 304.8;
 
         public PlacementByPointService(Document doc)
@@ -19,32 +19,67 @@ namespace RevitLibraryBuilder.Services.Placement
 
         public void Place(List<ElementTypeCsvModel> elements, Level level)
         {
-            using (Transaction t = new Transaction(_doc, "Point Placement"))
+            using (Transaction transaction = new Transaction(_doc, "Point Placement"))
             {
-                t.Start();
+                transaction.Start();
 
-                XYZ p = new XYZ(0, 0, 0);
+                XYZ point = new XYZ(0, 0, 0);
 
-                foreach (var e in elements.Where(x => x.Include))
+                for (int i = 0; i < elements.Count; i++)
                 {
-                    var symbol = new FilteredElementCollector(_doc)
-                        .OfClass(typeof(FamilySymbol))
-                        .Cast<FamilySymbol>()
-                        .FirstOrDefault(s => s.Name == e.TypeName);
+                    ElementTypeCsvModel row = elements[i];
+
+                    if (row == null || !row.Include)
+                    {
+                        continue;
+                    }
+
+                    FamilySymbol symbol = FindFamilySymbolByTypeName(row.TypeName);
 
                     if (symbol == null)
+                    {
                         continue;
+                    }
 
                     if (!symbol.IsActive)
+                    {
                         symbol.Activate();
+                    }
 
-                    _doc.Create.NewFamilyInstance(p, symbol, level, StructuralType.NonStructural);
-
-                    p = new XYZ(p.X + _step, p.Y, p.Z);
+                    _doc.Create.NewFamilyInstance(point, symbol, level, StructuralType.NonStructural);
+                    point = new XYZ(point.X + _step, point.Y, point.Z);
                 }
 
-                t.Commit();
+                transaction.Commit();
             }
+        }
+
+        private FamilySymbol FindFamilySymbolByTypeName(string typeName)
+        {
+            if (string.IsNullOrWhiteSpace(typeName))
+            {
+                return null;
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(_doc);
+            collector.OfClass(typeof(FamilySymbol));
+
+            foreach (Element element in collector)
+            {
+                FamilySymbol symbol = element as FamilySymbol;
+
+                if (symbol == null)
+                {
+                    continue;
+                }
+
+                if (symbol.Name == typeName)
+                {
+                    return symbol;
+                }
+            }
+
+            return null;
         }
     }
 }

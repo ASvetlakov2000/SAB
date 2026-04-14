@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>SAB</Name>
+    <Assembly>.\SAB\SAB.dll</Assembly>
+    <AddInId>fb72e042-343b-4caf-beab-505d04d36477</AddInId>
+    <FullClassName>SAB.MainPanel</FullClassName>
+    <VendorId>SAB</VendorId>
+    <VendorDescription>SAB</VendorDescription>
+  </AddIn>
+</RevitAddIns>

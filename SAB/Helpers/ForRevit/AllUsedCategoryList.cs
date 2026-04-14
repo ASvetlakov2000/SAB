@@ -1,99 +1,132 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 namespace SAB
 {
-    internal class AllUsedCategoryList
+    internal static class AllUsedCategoryList
     {
-        public static IEnumerable<BuiltInCategory> categoryList = new BuiltInCategory[]
+        // Единый список категорий для экспорта (собирается динамически и безопасно для Revit 2023/2024)
+        public static readonly IEnumerable<BuiltInCategory> categoryList = BuildCategoryList();
+
+        private static List<BuiltInCategory> BuildCategoryList()
         {
-            BuiltInCategory.OST_Walls,                  // Стены
-            BuiltInCategory.OST_Floors,                 // Полы
-            BuiltInCategory.OST_Ceilings,               // Потолки
-            BuiltInCategory.OST_Columns,                // Колонны
-            BuiltInCategory.OST_StructuralColumns,      // Конструктивные колонны
-            BuiltInCategory.OST_Roofs,                  // Крыши
-            BuiltInCategory.OST_Doors,                  // Двери
-            BuiltInCategory.OST_Windows,                // Окна
-            BuiltInCategory.OST_Stairs,                 // Лестницы
-            BuiltInCategory.OST_StairsRailing,          // Ограждения лестниц
-            BuiltInCategory.OST_Ramps,                  // Пандусы
-            BuiltInCategory.OST_Furniture,              // Мебель
-            BuiltInCategory.OST_CurtainWallMullions,    // Импосты витражей
-            BuiltInCategory.OST_CurtainWallPanels,      // Панели витражей
-            BuiltInCategory.OST_GenericModel,           // Общие модели
-            BuiltInCategory.OST_MechanicalEquipment,    // Механическое оборудование
-            BuiltInCategory.OST_PipeCurves,             // Трубы
-            BuiltInCategory.OST_PipeFitting,            // Фитинги труб
-            BuiltInCategory.OST_DuctCurves,             // Воздуховоды
-            BuiltInCategory.OST_DuctFitting,            // Фитинги воздуховодов
-            BuiltInCategory.OST_PlumbingFixtures,       // Сантехнические приборы
-            BuiltInCategory.OST_LightingFixtures,       // Светильники
-            BuiltInCategory.OST_ElectricalEquipment,    // Электрооборудование
-            BuiltInCategory.OST_ElectricalFixtures,     // Электроприборы
-            BuiltInCategory.OST_CableTray,              // Кабельные лотки
-            BuiltInCategory.OST_Conduit,                // Кабельные каналы
-            BuiltInCategory.OST_Casework,               // Корпусная мебель
-            BuiltInCategory.OST_CommunicationDevices,   // Устройства связи
-            BuiltInCategory.OST_FireAlarmDevices,       // Устройства пожарной сигнализации
-            BuiltInCategory.OST_DataDevices,            // Устройства передачи данных
-            BuiltInCategory.OST_NurseCallDevices,       // Устройства вызова медсестры
-            BuiltInCategory.OST_SecurityDevices,        // Устройства безопасности
-            BuiltInCategory.OST_FurnitureSystems,       // Системы мебели
-            BuiltInCategory.OST_SpecialityEquipment,    // Специальное оборудование
-            BuiltInCategory.OST_LightingDevices,        // Осветительные устройства
-            BuiltInCategory.OST_Parking,                // Парковочные места
-            BuiltInCategory.OST_Railings,               // Ограждения
-            BuiltInCategory.OST_Topography,             // Топография
-            // BuiltInCategory.OST_Plants,                 // Растения
-            BuiltInCategory.OST_Entourage,              // Окружение
-            BuiltInCategory.OST_Mass,                   // Массы
-            BuiltInCategory.OST_MassFloor,              // Полы масс
-            BuiltInCategory.OST_AnalyticalNodes,        // Аналитические узлы
-            // BuiltInCategory.OST_AnalyticalSurfaces,     // Аналитические поверхности
-            // BuiltInCategory.OST_AnalyticalLinks,        // Аналитические связи
-            BuiltInCategory.OST_Rebar,                  // Арматура
-            BuiltInCategory.OST_Areas,                  // Зоны
-            BuiltInCategory.OST_Rooms,                  // Помещения
-            // BuiltInCategory.OST_Spaces,                 // Пространства
-            //  BuiltInCategory.OST_Elevators,              // Лифты
-            // BuiltInCategory.OST_Footings,               // Фундаменты
-            // BuiltInCategory.OST_Framing,                // Каркасы
-            // BuiltInCategory.OST_Trusses,                // Фермы
-            // BuiltInCategory.OST_Wires,                  // Провода
-            BuiltInCategory.OST_FabricAreas,            // Зоны арматурных сеток
-            BuiltInCategory.OST_FabricReinforcement,    // Арматурные сетки
-            BuiltInCategory.OST_FabricationPipework,    // Изготовленные трубы
-            BuiltInCategory.OST_FabricationDuctwork,    // Изготовленные воздуховоды
-            BuiltInCategory.OST_MEPSpaces,              // Пространства инженерных систем
-            BuiltInCategory.OST_PointClouds,            // Облачные точки
-            BuiltInCategory.OST_RoomSeparationLines,    // Линии разделения помещений
-            BuiltInCategory.OST_Grids,                  // Оси
-            BuiltInCategory.OST_Levels,                 // Уровни
-            BuiltInCategory.OST_DesignOptions,          // Варианты проектирования
-            BuiltInCategory.OST_Viewports,              // Видовые экраны
-            BuiltInCategory.OST_Sheets,                 // Листы
-            BuiltInCategory.OST_Views,                  // Виды
-            BuiltInCategory.OST_Schedules,              // Ведомости
-            BuiltInCategory.OST_Materials,              // Материалы
-            BuiltInCategory.OST_Tags,                   // Маркировки
-            BuiltInCategory.OST_Revisions,              // Ревизии
-            // BuiltInCategory.OST_Insulation,             // Изоляция
-            BuiltInCategory.OST_StructuralFoundation,   // Конструктивные фундаменты
-            // BuiltInCategory.OST_BraceFrames,            // Рамы распорок
-            BuiltInCategory.OST_Cameras,                // Камеры
-            BuiltInCategory.OST_TextNotes,              // Текстовые аннотации
-            BuiltInCategory.OST_DetailComponents,       // Деталировочные компоненты
-            BuiltInCategory.OST_KeynoteTags,            // Марки ключевых заметок
-            BuiltInCategory.OST_Dimensions,             // Размеры
-            // BuiltInCategory.OST_Annotations,            // Аннотации
-            BuiltInCategory.OST_Coordination_Model,     // Модель координации
-            BuiltInCategory.OST_ColorFillLegends,       // Легенды цветового заполнения
-            BuiltInCategory.OST_Parts,                  // Части
-            BuiltInCategory.OST_Assemblies              // Узлы
+            List<BuiltInCategory> result = new List<BuiltInCategory>();
 
-            // Узлы
+            try
+            {
+                // Блок с категориями, который можно безопасно дополнять для экспорта
+                AddCategorySafe(result, "OST_Walls");
+                AddCategorySafe(result, "OST_Floors");
+                AddCategorySafe(result, "OST_Ceilings");
+                AddCategorySafe(result, "OST_Columns");
+                AddCategorySafe(result, "OST_StructuralColumns");
+                AddCategorySafe(result, "OST_Roofs");
+                AddCategorySafe(result, "OST_Doors");
+                AddCategorySafe(result, "OST_Windows");
+                AddCategorySafe(result, "OST_Stairs");
+                AddCategorySafe(result, "OST_StairsRailing");
+                AddCategorySafe(result, "OST_Ramps");
+                AddCategorySafe(result, "OST_Furniture");
+                AddCategorySafe(result, "OST_CurtainWallMullions");
+                AddCategorySafe(result, "OST_CurtainWallPanels");
+                AddCategorySafe(result, "OST_GenericModel");
+                AddCategorySafe(result, "OST_MechanicalEquipment");
+                AddCategorySafe(result, "OST_PipeCurves");
+                AddCategorySafe(result, "OST_PipeFitting");
+                AddCategorySafe(result, "OST_DuctCurves");
+                AddCategorySafe(result, "OST_DuctFitting");
+                AddCategorySafe(result, "OST_PlumbingFixtures");
+                AddCategorySafe(result, "OST_LightingFixtures");
+                AddCategorySafe(result, "OST_ElectricalEquipment");
+                AddCategorySafe(result, "OST_ElectricalFixtures");
+                AddCategorySafe(result, "OST_CableTray");
+                AddCategorySafe(result, "OST_Conduit");
+                AddCategorySafe(result, "OST_Casework");
+                AddCategorySafe(result, "OST_CommunicationDevices");
+                AddCategorySafe(result, "OST_FireAlarmDevices");
+                AddCategorySafe(result, "OST_DataDevices");
+                AddCategorySafe(result, "OST_NurseCallDevices");
+                AddCategorySafe(result, "OST_SecurityDevices");
+                AddCategorySafe(result, "OST_FurnitureSystems");
+                AddCategorySafe(result, "OST_SpecialityEquipment");
+                AddCategorySafe(result, "OST_LightingDevices");
+                AddCategorySafe(result, "OST_Parking");
+                AddCategorySafe(result, "OST_Railings");
+                AddCategorySafe(result, "OST_Topography");
+                AddCategorySafe(result, "OST_Entourage");
+                AddCategorySafe(result, "OST_Mass");
+                AddCategorySafe(result, "OST_MassFloor");
+                AddCategorySafe(result, "OST_AnalyticalNodes");
+                AddCategorySafe(result, "OST_Rebar");
+                AddCategorySafe(result, "OST_Areas");
+                AddCategorySafe(result, "OST_Rooms");
+                AddCategorySafe(result, "OST_FabricAreas");
+                AddCategorySafe(result, "OST_FabricReinforcement");
+                AddCategorySafe(result, "OST_FabricationPipework");
+                AddCategorySafe(result, "OST_FabricationDuctwork");
+                AddCategorySafe(result, "OST_MEPSpaces");
+                AddCategorySafe(result, "OST_PointClouds");
+                AddCategorySafe(result, "OST_RoomSeparationLines");
+                AddCategorySafe(result, "OST_Grids");
+                AddCategorySafe(result, "OST_Levels");
+                AddCategorySafe(result, "OST_DesignOptions");
+                AddCategorySafe(result, "OST_Viewports");
+                AddCategorySafe(result, "OST_Sheets");
+                AddCategorySafe(result, "OST_Views");
+                AddCategorySafe(result, "OST_Schedules");
+                AddCategorySafe(result, "OST_Materials");
+                AddCategorySafe(result, "OST_Tags");
+                AddCategorySafe(result, "OST_Revisions");
+                AddCategorySafe(result, "OST_StructuralFoundation");
+                AddCategorySafe(result, "OST_Cameras");
+                AddCategorySafe(result, "OST_TextNotes");
+                AddCategorySafe(result, "OST_DetailComponents");
+                AddCategorySafe(result, "OST_KeynoteTags");
+                AddCategorySafe(result, "OST_Dimensions");
+                AddCategorySafe(result, "OST_Coordination_Model");
+                AddCategorySafe(result, "OST_ColorFillLegends");
+                AddCategorySafe(result, "OST_Parts");
+                AddCategorySafe(result, "OST_Assemblies");
+            }
+            catch
+            {
+                // В случае неожиданных ошибок возвращаем уже собранную часть списка.
+            }
 
-        };
+            return result;
+        }
+
+        private static void AddCategorySafe(List<BuiltInCategory> target, string categoryName)
+        {
+            if (target == null || string.IsNullOrWhiteSpace(categoryName))
+            {
+                return;
+            }
+
+            try
+            {
+                BuiltInCategory category;
+
+                if (!Enum.TryParse(categoryName, out category))
+                {
+                    return;
+                }
+
+                if (!Enum.IsDefined(typeof(BuiltInCategory), category))
+                {
+                    return;
+                }
+
+                if (!target.Contains(category))
+                {
+                    target.Add(category);
+                }
+            }
+            catch
+            {
+                // Категория отсутствует в текущей версии Revit.
+            }
+        }
     }
 }

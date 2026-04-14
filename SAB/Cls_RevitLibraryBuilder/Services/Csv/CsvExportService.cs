@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using asBIM;
 using SAB;
 
 namespace RevitLibraryBuilder.Services
@@ -41,10 +39,26 @@ namespace RevitLibraryBuilder.Services
             {
                 BuiltInCategory[] categories = placementGroup.Value;
 
+                if (categories == null || categories.Length == 0)
+                {
+                    continue;
+                }
+
                 foreach (var builtInCategory in categories)
                 {
                     // 🔹 Получаем категорию из документа
-                    Category category = Category.GetCategory(document, builtInCategory);
+                    Category category = null;
+
+                    try
+                    {
+                        category = Category.GetCategory(document, builtInCategory);
+                    }
+                    catch
+                    {
+                        // Часть категорий может отсутствовать в конкретной версии Revit/шаблоне.
+                        category = null;
+                    }
+
                     if (category == null) continue;
 
                     string categoryName = category.Name;
@@ -61,10 +75,38 @@ namespace RevitLibraryBuilder.Services
                     sb.AppendLine("Category,Family,TypeName,Include");
 
                     // 🔹 Фильтрация типов по категории
-                    var filteredTypes = types
-                        .Where(t => t.Category != null && t.Category.Id == category.Id)
-                        .OrderBy(t => GetFamilyName(t))
-                        .ThenBy(t => t.Name);
+                    List<ElementType> filteredTypes = new List<ElementType>();
+
+                    for (int i = 0; i < types.Count; i++)
+                    {
+                        ElementType type = types[i];
+
+                        if (type == null || type.Category == null)
+                        {
+                            continue;
+                        }
+
+                        if (type.Category.Id.IntegerValue != category.Id.IntegerValue)
+                        {
+                            continue;
+                        }
+
+                        filteredTypes.Add(type);
+                    }
+
+                    filteredTypes.Sort(delegate (ElementType left, ElementType right)
+                    {
+                        string leftFamily = GetFamilyName(left);
+                        string rightFamily = GetFamilyName(right);
+                        int familyCompare = string.Compare(leftFamily, rightFamily, StringComparison.OrdinalIgnoreCase);
+
+                        if (familyCompare != 0)
+                        {
+                            return familyCompare;
+                        }
+
+                        return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
+                    });
 
                     foreach (var type in filteredTypes)
                     {
@@ -78,7 +120,7 @@ namespace RevitLibraryBuilder.Services
                     }
 
                     // 🔹 Записываем файл только если есть данные
-                    if (filteredTypes.Any())
+                    if (filteredTypes.Count > 0)
                         File.WriteAllText(fileName, sb.ToString(), Encoding.UTF8);
                 }
             }
@@ -113,22 +155,56 @@ namespace RevitLibraryBuilder.Services
             sb.AppendLine("Category,Family,TypeName,Include");
 
             // 🔹 Группировка по категориям
-            var grouped = types
-                .Where(t => t.Category != null)
-                .GroupBy(t => t.Category.Name)
-                .OrderBy(g => g.Key);
+            Dictionary<string, List<ElementType>> groupedByCategory = new Dictionary<string, List<ElementType>>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var group in grouped)
+            for (int i = 0; i < types.Count; i++)
             {
-                foreach (var type in group
-                    .OrderBy(t => GetFamilyName(t))
-                    .ThenBy(t => t.Name))
+                ElementType type = types[i];
+
+                if (type == null || type.Category == null)
                 {
-                    string cat = Escape(group.Key);
+                    continue;
+                }
+
+                string categoryName = type.Category.Name;
+
+                if (!groupedByCategory.ContainsKey(categoryName))
+                {
+                    groupedByCategory[categoryName] = new List<ElementType>();
+                }
+
+                groupedByCategory[categoryName].Add(type);
+            }
+
+            List<string> categoryNames = new List<string>(groupedByCategory.Keys);
+            categoryNames.Sort(StringComparer.OrdinalIgnoreCase);
+
+            for (int i = 0; i < categoryNames.Count; i++)
+            {
+                string categoryName = categoryNames[i];
+                List<ElementType> groupedTypes = groupedByCategory[categoryName];
+
+                groupedTypes.Sort(delegate (ElementType left, ElementType right)
+                {
+                    string leftFamily = GetFamilyName(left);
+                    string rightFamily = GetFamilyName(right);
+                    int familyCompare = string.Compare(leftFamily, rightFamily, StringComparison.OrdinalIgnoreCase);
+
+                    if (familyCompare != 0)
+                    {
+                        return familyCompare;
+                    }
+
+                    return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
+                });
+
+                for (int j = 0; j < groupedTypes.Count; j++)
+                {
+                    ElementType type = groupedTypes[j];
+                    string cat = Escape(categoryName);
                     string family = Escape(GetFamilyName(type));
                     string typeName = Escape(type.Name);
                     string include = "TRUE";
-
                     sb.AppendLine($"{cat},{family},{typeName},{include}");
                 }
             }

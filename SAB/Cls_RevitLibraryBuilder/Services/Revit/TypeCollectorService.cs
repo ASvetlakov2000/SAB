@@ -1,6 +1,5 @@
-﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.DB;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RevitLibraryBuilder.Services.Revit
 {
@@ -8,11 +7,34 @@ namespace RevitLibraryBuilder.Services.Revit
     {
         public List<ElementType> CollectAllTypes(Document doc)
         {
-            return new FilteredElementCollector(doc)
-                .OfClass(typeof(ElementType))
-                .Cast<ElementType>()
-                .Where(x => x.Category != null)
-                .ToList();
+            List<ElementType> types = new List<ElementType>();
+
+            if (doc == null)
+            {
+                return types;
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(ElementType));
+
+            foreach (Element element in collector)
+            {
+                ElementType type = element as ElementType;
+
+                if (type == null)
+                {
+                    continue;
+                }
+
+                if (type.Category == null)
+                {
+                    continue;
+                }
+
+                types.Add(type);
+            }
+
+            return types;
         }
     }
 }

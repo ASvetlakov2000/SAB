@@ -1,119 +1,134 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using Autodesk.Revit.DB;
 
 namespace SAB
 {
     internal static class AllCategoriesByPlacement
     {
-        // Словарь категорий по типу размещения
-        public static readonly Dictionary<string, BuiltInCategory[]> CategoriesByPlacement = new Dictionary<string, BuiltInCategory[]>
+        // Словарь категорий по типу размещения (инициализируется безопасно для разных версий Revit)
+        public static readonly Dictionary<string, BuiltInCategory[]> CategoriesByPlacement = BuildCategories();
+
+        private static Dictionary<string, BuiltInCategory[]> BuildCategories()
         {
-            // Элементы по линии/трассе с высотой
-            { "LineBased", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_Walls,               // Стены
-                    BuiltInCategory.OST_Columns,             // Колонны
-                    BuiltInCategory.OST_StructuralColumns,   // Конструктивные колонны
-                    // BuiltInCategory.OST_Framing,             // Каркасы
-                    // BuiltInCategory.OST_Trusses,             // Фермы
-                    // BuiltInCategory.OST_BraceFrames,         // Рамы распорок
-                    BuiltInCategory.OST_Railings,            // Ограждения
-                    BuiltInCategory.OST_StairsRailing,       // Ограждения лестниц
-                    BuiltInCategory.OST_Ramps,               // Пандусы
-                    BuiltInCategory.OST_PipeCurves,          // Трубы
-                    BuiltInCategory.OST_DuctCurves,          // Воздуховоды
-                    // BuiltInCategory.OST_Wires,               // Провода
-                    BuiltInCategory.OST_CableTray,           // Кабельные лотки
-                    BuiltInCategory.OST_Conduit              // Кабельные каналы
-                }
-            },
+            Dictionary<string, BuiltInCategory[]> result = new Dictionary<string, BuiltInCategory[]>();
 
-            // Элементы по контуру/области
-            { "ContourBased", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_Floors,              // Полы
-                    BuiltInCategory.OST_Ceilings,            // Потолки
-                    BuiltInCategory.OST_Roofs,               // Крыши
-                    BuiltInCategory.OST_FabricAreas,         // Зоны арматурных сеток
-                    BuiltInCategory.OST_MassFloor,           // Полы масс
-                    BuiltInCategory.OST_Areas,               // Зоны
-                    BuiltInCategory.OST_RoomSeparationLines  // Линии разделения помещений
-                }
-            },
+            try
+            {
+                result["LineBased"] = BuildGroup(
+                    "OST_Walls",
+                    "OST_Columns",
+                    "OST_StructuralColumns",
+                    "OST_Railings",
+                    "OST_StairsRailing",
+                    "OST_Ramps",
+                    "OST_PipeCurves",
+                    "OST_DuctCurves",
+                    "OST_CableTray",
+                    "OST_Conduit");
 
-            // Элементы, которые требуют хоста
-            { "HostBased", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_Doors,               // Двери (только на стене)
-                    BuiltInCategory.OST_Windows              // Окна (только на стене)
-                }
-            },
+                result["ContourBased"] = BuildGroup(
+                    "OST_Floors",
+                    "OST_Ceilings",
+                    "OST_Roofs",
+                    "OST_FabricAreas",
+                    "OST_MassFloor",
+                    "OST_Areas",
+                    "OST_RoomSeparationLines");
 
-            // Элементы по точке/местоположению
-            { "PointBased", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_Furniture,             // Мебель
-                    BuiltInCategory.OST_Casework,              // Корпусная мебель
-                    BuiltInCategory.OST_MechanicalEquipment,   // Механическое оборудование
-                    BuiltInCategory.OST_PlumbingFixtures,      // Сантехнические приборы
-                    BuiltInCategory.OST_LightingFixtures,      // Светильники
-                    BuiltInCategory.OST_ElectricalEquipment,   // Электрооборудование
-                    BuiltInCategory.OST_ElectricalFixtures,    // Электроприборы
-                    BuiltInCategory.OST_CommunicationDevices,  // Устройства связи
-                    BuiltInCategory.OST_FireAlarmDevices,      // Пожарная сигнализация
-                    BuiltInCategory.OST_DataDevices,           // Устройства передачи данных
-                    BuiltInCategory.OST_NurseCallDevices,      // Устройства вызова медсестры
-                    BuiltInCategory.OST_SecurityDevices,       // Устройства безопасности
-                    BuiltInCategory.OST_SpecialityEquipment,   // Специальное оборудование
-                    BuiltInCategory.OST_LightingDevices,       // Осветительные устройства
-                    BuiltInCategory.OST_Parking,               // Парковочные места
-                    BuiltInCategory.OST_Cameras                // Камеры
-                }
-            },
+                result["HostBased"] = BuildGroup(
+                    "OST_Doors",
+                    "OST_Windows");
 
-            // Массовые/объёмные элементы
-            { "MassBased", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_Mass,                 // Массы
-                    BuiltInCategory.OST_GenericModel,         // Общие модели
-                    BuiltInCategory.OST_Entourage             // Окружение
-                }
-            },
+                result["PointBased"] = BuildGroup(
+                    "OST_Furniture",
+                    "OST_Casework",
+                    "OST_MechanicalEquipment",
+                    "OST_PlumbingFixtures",
+                    "OST_LightingFixtures",
+                    "OST_ElectricalEquipment",
+                    "OST_ElectricalFixtures",
+                    "OST_CommunicationDevices",
+                    "OST_FireAlarmDevices",
+                    "OST_DataDevices",
+                    "OST_NurseCallDevices",
+                    "OST_SecurityDevices",
+                    "OST_SpecialityEquipment",
+                    "OST_LightingDevices",
+                    "OST_Parking",
+                    "OST_Cameras");
 
-            // Аннотационные и измерительные элементы
-            { "Annotation", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_TextNotes,           // Текстовые аннотации
-                    BuiltInCategory.OST_DetailComponents,    // Деталировочные компоненты
-                    BuiltInCategory.OST_KeynoteTags,         // Марки ключевых заметок
-                    BuiltInCategory.OST_Dimensions,          // Размеры
-                    BuiltInCategory.OST_Tags,                // Маркировки
-                    BuiltInCategory.OST_ColorFillLegends     // Легенды цветового заполнения
-                }
-            },
+                result["MassBased"] = BuildGroup(
+                    "OST_Mass",
+                    "OST_GenericModel",
+                    "OST_Entourage");
 
-            // Структурные элементы и фундаменты
-            { "Structural", new BuiltInCategory[]
-                {
-                    BuiltInCategory.OST_StructuralFoundation, // Конструктивные фундаменты
-                    // BuiltInCategory.OST_Footings,             // Фундаменты
-                    BuiltInCategory.OST_Rebar                 // Арматура
-                }
-            },
+                result["Annotation"] = BuildGroup(
+                    "OST_TextNotes",
+                    "OST_DetailComponents",
+                    "OST_KeynoteTags",
+                    "OST_Dimensions",
+                    "OST_Tags",
+                    "OST_ColorFillLegends");
 
-            // Вспомогательные/координационные элементы
-            { "Helper", new BuiltInCategory[]
+                result["Structural"] = BuildGroup(
+                    "OST_StructuralFoundation",
+                    "OST_Rebar");
+
+                result["Helper"] = BuildGroup(
+                    "OST_Levels",
+                    "OST_Grids",
+                    "OST_DesignOptions",
+                    "OST_Viewports",
+                    "OST_Sheets",
+                    "OST_Views",
+                    "OST_Schedules",
+                    "OST_Materials");
+            }
+            catch
+            {
+                // В случае неожиданных ошибок возвращаем то, что удалось собрать.
+            }
+
+            return result;
+        }
+
+        private static BuiltInCategory[] BuildGroup(params string[] categoryNames)
+        {
+            List<BuiltInCategory> categories = new List<BuiltInCategory>();
+
+            for (int i = 0; i < categoryNames.Length; i++)
+            {
+                string name = categoryNames[i];
+
+                if (string.IsNullOrWhiteSpace(name))
                 {
-                    BuiltInCategory.OST_Levels,              // Уровни
-                    BuiltInCategory.OST_Grids,               // Оси
-                    BuiltInCategory.OST_DesignOptions,       // Варианты проектирования
-                    BuiltInCategory.OST_Viewports,           // Видовые экраны
-                    BuiltInCategory.OST_Sheets,              // Листы
-                    BuiltInCategory.OST_Views,               // Виды
-                    BuiltInCategory.OST_Schedules,           // Ведомости
-                    BuiltInCategory.OST_Materials            // Материалы
+                    continue;
+                }
+
+                try
+                {
+                    BuiltInCategory category;
+
+                    if (!Enum.TryParse(name, out category))
+                    {
+                        continue;
+                    }
+
+                    if (!Enum.IsDefined(typeof(BuiltInCategory), category))
+                    {
+                        continue;
+                    }
+
+                    categories.Add(category);
+                }
+                catch
+                {
+                    // Категория недоступна в текущей версии Revit, пропускаем.
                 }
             }
-        };
+
+            return categories.ToArray();
+        }
     }
 }

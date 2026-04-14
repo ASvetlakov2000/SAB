@@ -1,18 +1,18 @@
-﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using System;
-using System.Linq;
-using System.Windows.Forms;
 using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Revit;
 using SAB;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace RevitLibraryBuilder.Commands
 {
     /// <summary>
-    /// Экспорт типов — ОДИН CSV со всеми категориями (ТОЛЬКО из AllUsedCategoryList)
+    /// Экспорт типов — один CSV со всеми категориями из AllUsedCategoryList.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportTypesSingleFileCommand : IExternalCommand
@@ -21,56 +21,77 @@ namespace RevitLibraryBuilder.Commands
         {
             try
             {
-                // 🔹 Получаем документ
                 UIDocument uidoc = commandData.Application.ActiveUIDocument;
+
+                if (uidoc == null)
+                {
+                    message = "Active UIDocument is not available.";
+                    TaskDialog.Show("Экспорт", message);
+                    return Result.Failed;
+                }
+
                 Document doc = uidoc.Document;
 
-                // 🔹 Сбор всех типов
+                if (doc == null)
+                {
+                    message = "Document is not available.";
+                    TaskDialog.Show("Экспорт", message);
+                    return Result.Failed;
+                }
+
                 TypeCollectorService collector = new TypeCollectorService();
-                var allTypes = collector.CollectAllTypes(doc);
+                List<ElementType> allTypes = collector.CollectAllTypes(doc);
 
-                // 🔹 Получаем список разрешённых категорий
-                var allowedCategories = AllUsedCategoryList.categoryList
-                    .Select(bic => Category.GetCategory(doc, bic)) // получаем Category из BuiltInCategory
-                    .Where(c => c != null)                         // убираем null (если категории нет в проекте)
-                    .Select(c => c.Id.IntegerValue)                // берём ID категории
-                    .ToHashSet();                                  // для быстрого поиска
+                HashSet<int> allowedCategoryIds = BuildAllowedCategoryIdSet(doc);
+                List<ElementType> filteredTypes = new List<ElementType>();
 
-                // 🔹 Фильтруем типы
-                var filteredTypes = allTypes
-                    .Where(t => t.Category != null &&
-                                allowedCategories.Contains(t.Category.Id.IntegerValue))
-                    .ToList();
+                for (int i = 0; i < allTypes.Count; i++)
+                {
+                    ElementType type = allTypes[i];
 
-                // 🔹 Проверка
+                    if (type == null || type.Category == null)
+                    {
+                        continue;
+                    }
+
+                    int categoryId = type.Category.Id.IntegerValue;
+
+                    if (allowedCategoryIds.Contains(categoryId))
+                    {
+                        filteredTypes.Add(type);
+                    }
+                }
+
                 if (filteredTypes.Count == 0)
                 {
-                    MessageBox.Show("Типы из выбранного списка категорий не найдены.",
-                        "Экспорт", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(
+                        "Типы из выбранного списка категорий не найдены.",
+                        "Экспорт",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     return Result.Cancelled;
                 }
 
-                // 🔹 Выбор папки
                 using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
+                    // Настраиваемый текст подсказки для выбора папки экспорта
                     folderDialog.Description = "Выберите папку для экспорта одного CSV";
 
                     if (folderDialog.ShowDialog() != DialogResult.OK)
+                    {
                         return Result.Cancelled;
+                    }
 
+                    // Настраиваемый путь сохранения CSV (выбирается пользователем)
                     string outputFolder = folderDialog.SelectedPath;
-
-                    // 🔹 Экспорт
                     CsvExportService exportService = new CsvExportService();
                     exportService.ExportToSingleCsv(filteredTypes, doc, outputFolder);
 
-                    // 🔹 Уведомление
                     ToastNotifier.ShowFolderLinkSuccess(
                         "Экспорт завершен",
                         "\nCSV (только выбранные категории) сохранен:\n",
                         outputFolder,
-                        durationSeconds: 10
-                    );
+                        durationSeconds: 10);
                 }
 
                 return Result.Succeeded;
@@ -78,8 +99,36 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception ex)
             {
                 message = ex.Message;
+                TaskDialog.Show("Экспорт", ex.ToString());
                 return Result.Failed;
             }
+        }
+
+        // Блок выбора категорий для экспорта (редактируется через AllUsedCategoryList)
+        private static HashSet<int> BuildAllowedCategoryIdSet(Document document)
+        {
+            HashSet<int> ids = new HashSet<int>();
+
+            foreach (BuiltInCategory builtInCategory in AllUsedCategoryList.categoryList)
+            {
+                try
+                {
+                    Category category = Category.GetCategory(document, builtInCategory);
+
+                    if (category == null)
+                    {
+                        continue;
+                    }
+
+                    ids.Add(category.Id.IntegerValue);
+                }
+                catch
+                {
+                    // Категория может отсутствовать в конкретной версии Revit или шаблоне проекта.
+                }
+            }
+
+            return ids;
         }
     }
 }

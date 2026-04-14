@@ -1,6 +1,7 @@
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Models;
 using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Placement;
@@ -72,11 +73,23 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
-                IPlacementService placementService = PlacementServiceFactory.Create("Point", document);
-                placementService.Place(csvRows, level);
+                int placedCount = includedRowCount;
+
+                if (HostedDoorWindowPlacementService.IsDoorOrWindowCategory(categoryName))
+                {
+                    HostedDoorWindowPlacementService hostedService = new HostedDoorWindowPlacementService(document);
+                    placedCount = hostedService.PlaceHosted(csvRows, categoryName);
+                }
+                else
+                {
+                    IPlacementService placementService = PlacementServiceFactory.Create("Point", document);
+                    placementService.Place(csvRows, level);
+                }
+
+                ShowPlacementNotification(placedCount);
 
                 // Block responsible for passing category into post-action workflow
-                PostActionViewService.RunAfterPlacement(document, categoryName, includedRowCount, "ImportByPointCommand");
+                PostActionViewService.RunAfterPlacement(document, categoryName, placedCount, "ImportByPointCommand");
 
                 return Result.Succeeded;
             }
@@ -154,6 +167,21 @@ namespace RevitLibraryBuilder.Commands
             }
 
             return resolvedCategory;
+        }
+
+        private static void ShowPlacementNotification(int placedCount)
+        {
+            string title = "Размещение элементов";
+            string message = "Элементов размещено " + placedCount;
+
+            try
+            {
+                ToastNotifier.ShowSuccess(title, message, 10);
+            }
+            catch
+            {
+                TaskDialog.Show(title, message);
+            }
         }
     }
 }

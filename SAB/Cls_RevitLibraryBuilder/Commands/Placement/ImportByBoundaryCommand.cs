@@ -1,6 +1,7 @@
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Models;
 using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Placement;
@@ -71,6 +72,7 @@ namespace RevitLibraryBuilder.Commands
 
                 IPlacementService placementService = PlacementServiceFactory.Create("Boundary", document);
                 placementService.Place(csvRows, level);
+                ShowPlacementNotification(includedRowCount);
 
                 // Block responsible for passing category into post-action workflow
                 PostActionViewService.RunAfterPlacement(document, categoryName, includedRowCount, "ImportByBoundaryCommand");
@@ -151,6 +153,21 @@ namespace RevitLibraryBuilder.Commands
             }
 
             return resolvedCategory;
+        }
+
+        private static void ShowPlacementNotification(int placedCount)
+        {
+            string title = "Размещение элементов";
+            string message = "Элементов размещено " + placedCount;
+
+            try
+            {
+                ToastNotifier.ShowSuccess(title, message, 10);
+            }
+            catch
+            {
+                TaskDialog.Show(title, message);
+            }
         }
     }
 }

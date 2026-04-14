@@ -16,7 +16,7 @@ namespace RevitLibraryBuilder.Services.Placement
     {
         private readonly Document _doc;
 
-        // Размер границы: 2000 мм → футы
+        // Настраиваемый размер стороны границы (мм)
         private const double BoundarySizeMm = 2000;
 
         public PlacementByBoundaryService(Document doc)
@@ -40,7 +40,8 @@ namespace RevitLibraryBuilder.Services.Placement
                 t.Start();
 
                 double size = BoundarySizeMm / 304.8; // мм → футы
-                double offsetX = 0; // смещение по X для следующей границы
+                // Настраиваемое стартовое смещение по X для первой границы
+                double offsetX = 0;
                 int placedCount = 0;
                 List<string> skippedElements = new List<string>();
 
@@ -76,7 +77,8 @@ namespace RevitLibraryBuilder.Services.Placement
                         }
 
                         placedCount++;
-                        offsetX += size + 1; // сдвиг следующей границы
+                        // Настраиваемый шаг между соседними границами (1 фут)
+                        offsetX += size + 1;
                     }
                     catch (Exception ex)
                     {
@@ -87,11 +89,11 @@ namespace RevitLibraryBuilder.Services.Placement
                 t.Commit();
 
                 // Логирование через ToastNotifier
-                string logMessage = $"Элементов размещено: {placedCount}";
+                string logMessage = $"Элементов размещено {placedCount}";
                 if (skippedElements.Count > 0)
                     logMessage += $"\nПропущено: {skippedElements.Count}\n{string.Join("\n", skippedElements)}";
 
-                ToastNotifier.ShowSuccess("Результаты PlacementByBoundary", logMessage);
+                ToastNotifier.ShowSuccess("Размещение элементов", logMessage, 10);
             }
         }
 

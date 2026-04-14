@@ -21,7 +21,22 @@ namespace RevitLibraryBuilder.Commands
             {
                 // 🔹 Получаем документ
                 UIDocument uidoc = commandData.Application.ActiveUIDocument;
+
+                if (uidoc == null)
+                {
+                    message = "Active UIDocument is not available.";
+                    TaskDialog.Show("Экспорт", message);
+                    return Result.Failed;
+                }
+
                 Document doc = uidoc.Document;
+
+                if (doc == null)
+                {
+                    message = "Document is not available.";
+                    TaskDialog.Show("Экспорт", message);
+                    return Result.Failed;
+                }
 
                 // 🔹 Сбор типов
                 TypeCollectorService collector = new TypeCollectorService();
@@ -37,11 +52,13 @@ namespace RevitLibraryBuilder.Commands
                 // 🔹 Выбор папки
                 using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
+                    // Настраиваемый текст подсказки для выбора папки экспорта
                     folderDialog.Description = "Выберите папку для экспорта CSV (по категориям)";
 
                     if (folderDialog.ShowDialog() != DialogResult.OK)
                         return Result.Cancelled;
 
+                    // Настраиваемый путь сохранения CSV (выбирается пользователем)
                     string outputFolder = folderDialog.SelectedPath;
 
                     // 🔹 Экспорт
@@ -62,6 +79,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception ex)
             {
                 message = ex.Message;
+                TaskDialog.Show("Экспорт", ex.ToString());
                 return Result.Failed;
             }
         }

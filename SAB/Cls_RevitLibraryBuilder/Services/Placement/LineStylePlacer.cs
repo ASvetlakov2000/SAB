@@ -115,7 +115,9 @@ namespace RevitLibraryBuilder.Services.Placement
                     XYZ basePoint = XYZ.Zero;
 
                     // Block responsible for fixed geometry parameters in millimeters
+                    // Настраиваемая длина создаваемой линии (мм)
                     double lineLength = ConvertMillimetersToInternalUnits(1000.0);
+                    // Настраиваемый шаг между строками линий по оси Y (мм)
                     double verticalSpacing = ConvertMillimetersToInternalUnits(500.0);
 
                     for (int index = 0; index < styleNames.Count; index++)
@@ -167,9 +169,8 @@ namespace RevitLibraryBuilder.Services.Placement
                 }
 
                 ShowSuccessNotification(
-                    "Place Line Styles",
-                    "Создано линий: " + createdLineCount + "\n" +
-                    "Пропущено стилей: " + skippedLineCount);
+                    "Размещение элементов",
+                    "Элементов размещено " + createdLineCount);
 
                 return Result.Succeeded;
             }
@@ -477,7 +478,7 @@ namespace RevitLibraryBuilder.Services.Placement
         {
             try
             {
-                ToastNotifier.ShowSuccess(title, message, 5);
+                ToastNotifier.ShowSuccess(title, message, 10);
             }
             catch
             {
