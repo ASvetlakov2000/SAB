@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms">
@@ -105,7 +106,9 @@
     <Compile Include="Cls_InteriorElevations\Services\LineCollector.cs" />
     <Compile Include="Cls_InteriorElevations\Services\RoomDetector.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLineAndFillPatternsCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLoadableFamilyThumbnailsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportMaterialNamingCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemFamilyThumbnailTemplateCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypeNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesByCategoryCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesSingleFileCommand.cs" />
@@ -128,6 +131,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvFillPatternExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvGraphicsStyleExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvImportService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\FamilyThumbnailCsvExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\NamingSpreadsheetExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvTableService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\MaterialNamingCsvService.cs" />

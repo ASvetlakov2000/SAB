@@ -258,6 +258,52 @@ body {
     background: #1a2330;
 }
 
+.thumbnail-td {
+    min-width: 120px;
+}
+
+.thumbnail-cell {
+    min-height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail-image {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    border: 1px solid #3d444d;
+    border-radius: 6px;
+    background: #0d1117;
+    padding: 3px;
+}
+
+.thumbnail-empty {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.line-color-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.line-color-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid #4b5563;
+    flex: 0 0 18px;
+}
+
+.line-color-text {
+    color: var(--text);
+    font-size: 12px;
+}
+
 .warning {
     margin: 10px;
     padding: 12px;

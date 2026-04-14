@@ -60,6 +60,7 @@ namespace SAB.BimDashboard.Services.Data
             }
 
             string sourceFileName = Path.GetFileName(context.FilePath);
+            ResolveThumbnailPaths(records, context.FilePath);
 
             // Блок обогащения записей метаданными источника.
             for (int i = 0; i < records.Count; i++)
@@ -87,6 +88,108 @@ namespace SAB.BimDashboard.Services.Data
             result.Records = records;
             result.Warnings.AddRange(warnings);
             return result;
+        }
+
+        // Блок пост-обработки путей миниатюр для корректного рендера в HTML.
+        private static void ResolveThumbnailPaths(List<UnifiedRecord> records, string sourceFilePath)
+        {
+            if (records == null || records.Count == 0 || string.IsNullOrWhiteSpace(sourceFilePath))
+            {
+                return;
+            }
+
+            string sourceDirectory = Path.GetDirectoryName(sourceFilePath);
+
+            if (string.IsNullOrWhiteSpace(sourceDirectory))
+            {
+                return;
+            }
+
+            for (int i = 0; i < records.Count; i++)
+            {
+                UnifiedRecord record = records[i];
+
+                if (record == null || record.Fields == null)
+                {
+                    continue;
+                }
+
+                ResolveThumbnailField(record.Fields, "ThumbnailPath", sourceDirectory);
+                ResolveThumbnailField(record.Fields, "Thumbnail", sourceDirectory);
+                ResolveThumbnailField(record.Fields, "IconPath", sourceDirectory);
+            }
+        }
+
+        private static void ResolveThumbnailField(Dictionary<string, string> fields, string fieldName, string sourceDirectory)
+        {
+            if (fields == null || string.IsNullOrWhiteSpace(fieldName))
+            {
+                return;
+            }
+
+            string keyToUse = fieldName;
+            string rawValue = null;
+
+            if (!fields.TryGetValue(keyToUse, out rawValue))
+            {
+                foreach (KeyValuePair<string, string> pair in fields)
+                {
+                    if (!string.Equals(pair.Key, fieldName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    keyToUse = pair.Key;
+                    rawValue = pair.Value;
+                    break;
+                }
+            }
+
+            if (rawValue == null && !fields.ContainsKey(keyToUse))
+            {
+                return;
+            }
+
+            fields[keyToUse] = ResolveToDisplayPath(rawValue, sourceDirectory);
+        }
+
+        private static string ResolveToDisplayPath(string rawPath, string sourceDirectory)
+        {
+            if (string.IsNullOrWhiteSpace(rawPath))
+            {
+                return string.Empty;
+            }
+
+            string path = rawPath.Trim();
+
+            if (path.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                return path;
+            }
+
+            Uri absoluteUri;
+
+            if (Uri.TryCreate(path, UriKind.Absolute, out absoluteUri))
+            {
+                return absoluteUri.AbsoluteUri;
+            }
+
+            string fullPath = path;
+
+            if (!Path.IsPathRooted(fullPath))
+            {
+                fullPath = Path.Combine(sourceDirectory, fullPath.Replace('/', Path.DirectorySeparatorChar));
+            }
+
+            try
+            {
+                fullPath = Path.GetFullPath(fullPath);
+                return new Uri(fullPath).AbsoluteUri;
+            }
+            catch
+            {
+                return rawPath;
+            }
         }
     }
 }

@@ -66,6 +66,22 @@ namespace SAB
                 "SAB.Resources.ExportMaterialNamingCommand_32.png",
                 "SAB.Resources.ExportMaterialNamingCommand_16.png");
 
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportLoadableFamilyThumbnails",
+                "Миниатюры загружаемых семейств",
+                "RevitLibraryBuilder.Commands.ExportLoadableFamilyThumbnailsCommand",
+                "SAB.Resources.ExportTypeNamingCommand_32.png",
+                "SAB.Resources.ExportTypeNamingCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportSystemFamilyThumbnailTemplate",
+                "Шаблон миниатюр системных семейств",
+                "RevitLibraryBuilder.Commands.ExportSystemFamilyThumbnailTemplateCommand",
+                "SAB.Resources.ExportMaterialNamingCommand_32.png",
+                "SAB.Resources.ExportMaterialNamingCommand_16.png");
+
             libraryPanel.AddSeparator();
 
             // Блок кнопок импорта наименований

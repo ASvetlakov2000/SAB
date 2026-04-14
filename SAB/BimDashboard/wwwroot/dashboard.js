@@ -15,7 +15,10 @@
         filterColumnIndex: -1,
         sortColumnIndex: -1,
         sortDirection: "asc",
-        columnWidths: {}
+        columnWidths: {},
+        colorRIndex: -1,
+        colorGIndex: -1,
+        colorBIndex: -1
     };
 
     var hiddenColumns = {
@@ -161,6 +164,9 @@
             "Category",
             "Family",
             "TypeName",
+            "ThumbnailPath",
+            "Thumbnail",
+            "IconPath",
             "Name",
             "MaterialName_Old",
             "MaterialName_New",
@@ -246,6 +252,125 @@
         }
 
         return visible;
+    }
+
+    function isThumbnailColumn(columnMeta) {
+        if (!columnMeta) {
+            return false;
+        }
+
+        var name = toLowerSafe(columnMeta.name);
+        return name === "thumbnailpath" || name === "thumbnail" || name === "iconpath";
+    }
+
+    function normalizeThumbnailSource(rawValue) {
+        var value = String(rawValue || "").trim();
+        var lowerValue = toLowerSafe(value);
+
+        if (!value) {
+            return "";
+        }
+
+        if (lowerValue.indexOf("data:") === 0 || lowerValue.indexOf("http://") === 0 || lowerValue.indexOf("https://") === 0 || lowerValue.indexOf("file://") === 0) {
+            return value;
+        }
+
+        // Для локальных абсолютных путей Windows формируем file URI.
+        if (/^[a-zA-Z]:\\/.test(value)) {
+            return "file:///" + value.replace(/\\/g, "/");
+        }
+
+        return value;
+    }
+
+    function appendThumbnailFallback(container, text, fullPath) {
+        var fallback = document.createElement("span");
+        fallback.className = "thumbnail-empty";
+        fallback.textContent = text;
+
+        if (fullPath) {
+            fallback.title = fullPath;
+        }
+
+        container.appendChild(fallback);
+    }
+
+    function renderThumbnailCell(cell, rawValue) {
+        cell.className = "thumbnail-td";
+
+        var wrapper = document.createElement("div");
+        wrapper.className = "thumbnail-cell";
+        cell.appendChild(wrapper);
+
+        var sourceValue = String(rawValue || "").trim();
+
+        if (!sourceValue) {
+            appendThumbnailFallback(wrapper, "Нет миниатюры", "");
+            return;
+        }
+
+        var image = document.createElement("img");
+        image.className = "thumbnail-image";
+        image.alt = "Миниатюра";
+        image.loading = "lazy";
+        image.src = normalizeThumbnailSource(sourceValue);
+
+        image.addEventListener("error", function () {
+            wrapper.innerHTML = "";
+            appendThumbnailFallback(wrapper, "Файл не найден", sourceValue);
+        });
+
+        wrapper.appendChild(image);
+    }
+
+    function isColorRColumn(columnMeta) {
+        if (!columnMeta) {
+            return false;
+        }
+
+        return toLowerSafe(columnMeta.name) === "colorr";
+    }
+
+    function parseColorComponent(rawValue) {
+        var parsed = Number(rawValue);
+
+        if (isNaN(parsed)) {
+            return 0;
+        }
+
+        parsed = Math.round(parsed);
+
+        if (parsed < 0) {
+            return 0;
+        }
+
+        if (parsed > 255) {
+            return 255;
+        }
+
+        return parsed;
+    }
+
+    // Легкий fallback для таблиц LineStyles.csv: цветовая плашка по RGB.
+    function renderLineColorCell(cell, row) {
+        var red = parseColorComponent(row[state.colorRIndex]);
+        var green = parseColorComponent(row[state.colorGIndex]);
+        var blue = parseColorComponent(row[state.colorBIndex]);
+
+        var wrapper = document.createElement("div");
+        wrapper.className = "line-color-cell";
+
+        var swatch = document.createElement("span");
+        swatch.className = "line-color-swatch";
+        swatch.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
+
+        var text = document.createElement("span");
+        text.className = "line-color-text";
+        text.textContent = red + ", " + green + ", " + blue;
+
+        wrapper.appendChild(swatch);
+        wrapper.appendChild(text);
+        cell.appendChild(wrapper);
     }
 
     function ensureVisibleColumnsNotEmpty() {
@@ -608,7 +733,15 @@
             for (var colIndex = 0; colIndex < visibleColumns.length; colIndex++) {
                 var columnMeta = visibleColumns[colIndex];
                 var td = document.createElement("td");
-                td.textContent = sourceRow[columnMeta.index] || "";
+
+                if (isThumbnailColumn(columnMeta)) {
+                    renderThumbnailCell(td, sourceRow[columnMeta.index] || "");
+                } else if (isColorRColumn(columnMeta) && state.colorRIndex >= 0 && state.colorGIndex >= 0 && state.colorBIndex >= 0) {
+                    renderLineColorCell(td, sourceRow);
+                } else {
+                    td.textContent = sourceRow[columnMeta.index] || "";
+                }
+
                 tr.appendChild(td);
             }
 
@@ -689,6 +822,9 @@
             state.catalogName = String(data.catalogName || "RevitLibraryBuilder");
             state.sourceName = String(data.sourceName || data.projectName || "Не указан");
             state.rawColumns = Array.isArray(data.columns) ? data.columns.slice() : [];
+            state.colorRIndex = findColumnIndex(state.rawColumns, "ColorR");
+            state.colorGIndex = findColumnIndex(state.rawColumns, "ColorG");
+            state.colorBIndex = findColumnIndex(state.rawColumns, "ColorB");
             state.rows = normalizeRows(data.rows, state.rawColumns.length);
             state.sourceFormat = resolveSourceFormat(data);
             state.displayColumns = buildDisplayColumns(state.rawColumns);
