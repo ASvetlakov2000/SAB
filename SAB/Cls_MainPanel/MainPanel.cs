@@ -1,11 +1,5 @@
-using Autodesk.Revit.UI;
+﻿using Autodesk.Revit.UI;
 using SAB.Helpers;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using SAB.Properties;
 
 namespace SAB
 {
@@ -13,9 +7,6 @@ namespace SAB
     {
         private const string RibbonTabName = "SAB";
         private const string RibbonPanelName = "Библиотека";
-
-        // Путь к embedded ресурсам: <DefaultNamespace>.Resources.<FileName>
-        private const string EmbeddedResourcePrefix = "SAB.Cls_RevitLibraryBuilder.Resources.";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -29,15 +20,12 @@ namespace SAB
                 // Вкладка уже существует.
             }
 
-         
-            // Блок создания панели "Библиотека"
             RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
 
-            // Блок создания SplitButton #1 (Экспорт)
+            // Блок кнопок экспорта
             SplitButton exportSplit = libraryPanel.AddItem(
                 new SplitButtonData("SAB_ExportSplit", "Экспорт")) as SplitButton;
 
-            // Блок привязки иконок (_32 / _16) из embedded ресурсов
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportAllCategories",
@@ -60,11 +48,49 @@ namespace SAB
                 "Экспорт линий/штриховок",
                 "RevitLibraryBuilder.Commands.ExportLineAndFillPatternsCommand",
                 "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_32.png");
+                "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportTypeNaming",
+                "Выгрузка наименований типоразмеров",
+                "RevitLibraryBuilder.Commands.ExportTypeNamingCommand",
+                "SAB.Resources.ExportTypesSingleFileCommand_32.png",
+                "SAB.Resources.ExportTypesSingleFileCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportMaterialNaming",
+                "Выгрузка наименований материалов",
+                "RevitLibraryBuilder.Commands.ExportMaterialNamingCommand",
+                "SAB.Resources.ExportTypesByCategoryCommand_32.png",
+                "SAB.Resources.ExportTypesByCategoryCommand_16.png");
 
             libraryPanel.AddSeparator();
 
-            // Блок создания SplitButton #2 (Размещение по категории)
+            // Блок кнопок импорта наименований
+            SplitButton namingImportSplit = libraryPanel.AddItem(
+                new SplitButtonData("SAB_NamingImportSplit", "Переименование")) as SplitButton;
+
+            Ribbon.AddPushButtonToSplit(
+                namingImportSplit,
+                "SAB_ImportTypeNaming",
+                "Применить наименования типоразмеров",
+                "RevitLibraryBuilder.Commands.ImportTypeNamingCommand",
+                "SAB.Resources.ImportByPointCommand_32.png",
+                "SAB.Resources.ImportByPointCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                namingImportSplit,
+                "SAB_ImportMaterialNaming",
+                "Применить наименования материалов",
+                "RevitLibraryBuilder.Commands.ImportMaterialNamingCommand",
+                "SAB.Resources.ImportByLineCommand_32.png",
+                "SAB.Resources.ImportByLineCommand_16.png");
+
+            libraryPanel.AddSeparator();
+
+            // Блок кнопок размещения
             SplitButton placementSplit = libraryPanel.AddItem(
                 new SplitButtonData("SAB_PlacementSplit", "Размещение")) as SplitButton;
 
@@ -73,8 +99,8 @@ namespace SAB
                 "SAB_PlacementByPoint",
                 "Размещение по точке",
                 "RevitLibraryBuilder.Commands.ImportByPointCommand",
-               "SAB.Resources.ImportByPointCommand_32.png",
-               "SAB.Resources.ImportByPointCommand_16.png");
+                "SAB.Resources.ImportByPointCommand_32.png",
+                "SAB.Resources.ImportByPointCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 placementSplit,
@@ -89,12 +115,12 @@ namespace SAB
                 "SAB_PlacementByLine",
                 "Размещение по линии",
                 "RevitLibraryBuilder.Commands.ImportByLineCommand",
-               "SAB.Resources.ImportByLineCommand_32.png",
-               "SAB.Resources.ImportByLineCommand_16.png");
+                "SAB.Resources.ImportByLineCommand_32.png",
+                "SAB.Resources.ImportByLineCommand_16.png");
 
             libraryPanel.AddSeparator();
 
-            // Блок создания SplitButton #3 (Линии и штриховки)
+            // Блок кнопок аннотаций
             SplitButton annotationSplit = libraryPanel.AddItem(
                 new SplitButtonData("SAB_AnnotationSplit", "Аннотации")) as SplitButton;
 
@@ -116,7 +142,7 @@ namespace SAB
 
             libraryPanel.AddSeparator();
 
-            // Блок создания SplitButton #4 (Удаление)
+            // Блок кнопок удаления
             SplitButton deleteSplit = libraryPanel.AddItem(
                 new SplitButtonData("SAB_DeleteSplit", "Удаление")) as SplitButton;
 
@@ -135,6 +161,5 @@ namespace SAB
         {
             return Result.Succeeded;
         }
-        
     }
 }

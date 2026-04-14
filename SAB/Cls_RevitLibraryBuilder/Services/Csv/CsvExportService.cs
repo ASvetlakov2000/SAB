@@ -1,9 +1,9 @@
 ﻿using Autodesk.Revit.DB;
+using SAB;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SAB;
 
 namespace RevitLibraryBuilder.Services
 {
@@ -15,27 +15,39 @@ namespace RevitLibraryBuilder.Services
     /// </summary>
     public class CsvExportService
     {
+        public enum TypeCsvExportMode
+        {
+            Full = 0,
+            Naming = 1
+        }
+
         /// <summary>
         /// Экспортирует элементы в CSV, создавая отдельный файл для каждой категории
         /// </summary>
         public void ExportToCsv(List<ElementType> types, Document document, string outputFolder)
         {
-            // 🔹 Проверка входных данных
-            if (types == null || types.Count == 0)
-                throw new ArgumentException("Список элементов пуст.");
+            ExportToCsv(types, document, outputFolder, TypeCsvExportMode.Full);
+        }
 
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
+        /// <summary>
+        /// Экспортирует элементы в CSV, создавая отдельный файл для каждой категории
+        /// </summary>
+        public void ExportToCsv(
+            List<ElementType> types,
+            Document document,
+            string outputFolder,
+            TypeCsvExportMode mode)
+        {
+            // Проверка входных данных
+            ValidateInput(types, document, outputFolder);
 
-            if (string.IsNullOrEmpty(outputFolder))
-                throw new ArgumentException("Папка для сохранения не указана.", nameof(outputFolder));
-
-            // 🔹 Создаём папку, если её нет
             if (!Directory.Exists(outputFolder))
+            {
                 Directory.CreateDirectory(outputFolder);
+            }
 
-            // 🔹 Проходим по группам категорий (по типу размещения)
-            foreach (var placementGroup in AllCategoriesByPlacement.CategoriesByPlacement)
+            // Проходим по группам категорий (по типу размещения)
+            foreach (KeyValuePair<string, BuiltInCategory[]> placementGroup in AllCategoriesByPlacement.CategoriesByPlacement)
             {
                 BuiltInCategory[] categories = placementGroup.Value;
 
@@ -44,84 +56,37 @@ namespace RevitLibraryBuilder.Services
                     continue;
                 }
 
-                foreach (var builtInCategory in categories)
+                foreach (BuiltInCategory builtInCategory in categories)
                 {
-                    // 🔹 Получаем категорию из документа
-                    Category category = null;
+                    Category category = TryGetCategory(document, builtInCategory);
 
-                    try
+                    if (category == null)
                     {
-                        category = Category.GetCategory(document, builtInCategory);
-                    }
-                    catch
-                    {
-                        // Часть категорий может отсутствовать в конкретной версии Revit/шаблоне.
-                        category = null;
+                        continue;
                     }
 
-                    if (category == null) continue;
-
-                    string categoryName = category.Name;
-
-                    // 🔹 Формируем безопасное имя файла
                     string safeDocName = MakeSafeFileName(document.Title);
-                    string safeCategoryName = MakeSafeFileName(categoryName);
+                    string safeCategoryName = MakeSafeFileName(category.Name);
+                    string fileName = Path.Combine(outputFolder, safeDocName + "_" + safeCategoryName + ".csv");
 
-                    string fileName = Path.Combine(outputFolder, $"{safeDocName}_{safeCategoryName}.csv");
+                    List<ElementType> filteredTypes = FilterTypesByCategory(types, category.Id.IntegerValue);
 
-                    StringBuilder sb = new StringBuilder();
-
-                    // 🔹 Заголовок CSV
-                    sb.AppendLine("Category,Family,TypeName,Include");
-
-                    // 🔹 Фильтрация типов по категории
-                    List<ElementType> filteredTypes = new List<ElementType>();
-
-                    for (int i = 0; i < types.Count; i++)
+                    if (filteredTypes.Count == 0)
                     {
-                        ElementType type = types[i];
-
-                        if (type == null || type.Category == null)
-                        {
-                            continue;
-                        }
-
-                        if (type.Category.Id.IntegerValue != category.Id.IntegerValue)
-                        {
-                            continue;
-                        }
-
-                        filteredTypes.Add(type);
+                        continue;
                     }
 
-                    filteredTypes.Sort(delegate (ElementType left, ElementType right)
+                    SortTypes(filteredTypes);
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    AppendHeader(stringBuilder, mode);
+
+                    for (int i = 0; i < filteredTypes.Count; i++)
                     {
-                        string leftFamily = GetFamilyName(left);
-                        string rightFamily = GetFamilyName(right);
-                        int familyCompare = string.Compare(leftFamily, rightFamily, StringComparison.OrdinalIgnoreCase);
-
-                        if (familyCompare != 0)
-                        {
-                            return familyCompare;
-                        }
-
-                        return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
-                    });
-
-                    foreach (var type in filteredTypes)
-                    {
-                        // 🔹 Подготовка значений
-                        string cat = Escape(type.Category.Name);
-                        string family = Escape(GetFamilyName(type));
-                        string typeName = Escape(type.Name);
-                        string include = "TRUE";
-
-                        sb.AppendLine($"{cat},{family},{typeName},{include}");
+                        AppendTypeRow(stringBuilder, filteredTypes[i], mode);
                     }
 
-                    // 🔹 Записываем файл только если есть данные
-                    if (filteredTypes.Count > 0)
-                        File.WriteAllText(fileName, sb.ToString(), Encoding.UTF8);
+                    File.WriteAllText(fileName, stringBuilder.ToString(), Encoding.UTF8);
                 }
             }
         }
@@ -131,31 +96,92 @@ namespace RevitLibraryBuilder.Services
         /// </summary>
         public void ExportToSingleCsv(List<ElementType> types, Document document, string outputFolder)
         {
-            // 🔹 Проверка входных данных
-            if (types == null || types.Count == 0)
-                throw new ArgumentException("Список элементов пуст.");
+            ExportToSingleCsv(types, document, outputFolder, TypeCsvExportMode.Full);
+        }
 
-            if (document == null)
-                throw new ArgumentNullException(nameof(document));
+        /// <summary>
+        /// Экспортирует ВСЕ категории в ОДИН CSV файл
+        /// </summary>
+        public void ExportToSingleCsv(
+            List<ElementType> types,
+            Document document,
+            string outputFolder,
+            TypeCsvExportMode mode)
+        {
+            // Проверка входных данных
+            ValidateInput(types, document, outputFolder);
 
-            if (string.IsNullOrEmpty(outputFolder))
-                throw new ArgumentException("Папка не указана.");
-
-            // 🔹 Создаём папку
             if (!Directory.Exists(outputFolder))
+            {
                 Directory.CreateDirectory(outputFolder);
+            }
 
-            // 🔹 Имя файла
             string safeDocName = MakeSafeFileName(document.Title);
-            string fileName = Path.Combine(outputFolder, $"{safeDocName}_ALL_CATEGORIES.csv");
+            string suffix = mode == TypeCsvExportMode.Naming ? "_TYPE_NAMING.csv" : "_ALL_CATEGORIES.csv";
+            string fileName = Path.Combine(outputFolder, safeDocName + suffix);
 
-            StringBuilder sb = new StringBuilder();
+            Dictionary<string, List<ElementType>> groupedByCategory = GroupTypesByCategory(types);
+            List<string> categoryNames = new List<string>(groupedByCategory.Keys);
+            categoryNames.Sort(StringComparer.OrdinalIgnoreCase);
 
-            // 🔹 Заголовок CSV
-            sb.AppendLine("Category,Family,TypeName,Include");
+            StringBuilder stringBuilder = new StringBuilder();
+            AppendHeader(stringBuilder, mode);
 
-            // 🔹 Группировка по категориям
-            Dictionary<string, List<ElementType>> groupedByCategory = new Dictionary<string, List<ElementType>>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < categoryNames.Count; i++)
+            {
+                string categoryName = categoryNames[i];
+                List<ElementType> groupedTypes = groupedByCategory[categoryName];
+                SortTypes(groupedTypes);
+
+                for (int j = 0; j < groupedTypes.Count; j++)
+                {
+                    AppendTypeRow(stringBuilder, groupedTypes[j], mode);
+                }
+            }
+
+            File.WriteAllText(fileName, stringBuilder.ToString(), Encoding.UTF8);
+        }
+
+        // Блок выбора состава колонок CSV для разных сценариев выгрузки
+        private static void AppendHeader(StringBuilder stringBuilder, TypeCsvExportMode mode)
+        {
+            if (mode == TypeCsvExportMode.Naming)
+            {
+                stringBuilder.AppendLine("Category,Family_Old,Family_New,TypeName_Old,TypeName_New");
+                return;
+            }
+
+            stringBuilder.AppendLine("Category,Family,TypeName,Include");
+        }
+
+        // Блок формирования строки CSV с учетом профиля экспорта
+        private void AppendTypeRow(StringBuilder stringBuilder, ElementType type, TypeCsvExportMode mode)
+        {
+            string categoryName = type.Category != null ? type.Category.Name : string.Empty;
+            string familyName = GetFamilyName(type);
+            string typeName = type.Name ?? string.Empty;
+
+            if (mode == TypeCsvExportMode.Naming)
+            {
+                stringBuilder.AppendLine(
+                    Escape(categoryName) + "," +
+                    Escape(familyName) + "," +
+                    Escape(familyName) + "," +
+                    Escape(typeName) + "," +
+                    Escape(typeName));
+                return;
+            }
+
+            stringBuilder.AppendLine(
+                Escape(categoryName) + "," +
+                Escape(familyName) + "," +
+                Escape(typeName) + "," +
+                "TRUE");
+        }
+
+        private static Dictionary<string, List<ElementType>> GroupTypesByCategory(List<ElementType> types)
+        {
+            Dictionary<string, List<ElementType>> grouped = new Dictionary<string, List<ElementType>>(StringComparer.OrdinalIgnoreCase);
 
             for (int i = 0; i < types.Count; i++)
             {
@@ -168,49 +194,84 @@ namespace RevitLibraryBuilder.Services
 
                 string categoryName = type.Category.Name;
 
-                if (!groupedByCategory.ContainsKey(categoryName))
+                if (!grouped.ContainsKey(categoryName))
                 {
-                    groupedByCategory[categoryName] = new List<ElementType>();
+                    grouped[categoryName] = new List<ElementType>();
                 }
 
-                groupedByCategory[categoryName].Add(type);
+                grouped[categoryName].Add(type);
             }
 
-            List<string> categoryNames = new List<string>(groupedByCategory.Keys);
-            categoryNames.Sort(StringComparer.OrdinalIgnoreCase);
+            return grouped;
+        }
 
-            for (int i = 0; i < categoryNames.Count; i++)
+        private static List<ElementType> FilterTypesByCategory(List<ElementType> source, int categoryId)
+        {
+            List<ElementType> filteredTypes = new List<ElementType>();
+
+            for (int i = 0; i < source.Count; i++)
             {
-                string categoryName = categoryNames[i];
-                List<ElementType> groupedTypes = groupedByCategory[categoryName];
+                ElementType type = source[i];
 
-                groupedTypes.Sort(delegate (ElementType left, ElementType right)
+                if (type == null || type.Category == null)
                 {
-                    string leftFamily = GetFamilyName(left);
-                    string rightFamily = GetFamilyName(right);
-                    int familyCompare = string.Compare(leftFamily, rightFamily, StringComparison.OrdinalIgnoreCase);
+                    continue;
+                }
 
-                    if (familyCompare != 0)
-                    {
-                        return familyCompare;
-                    }
-
-                    return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
-                });
-
-                for (int j = 0; j < groupedTypes.Count; j++)
+                if (type.Category.Id.IntegerValue == categoryId)
                 {
-                    ElementType type = groupedTypes[j];
-                    string cat = Escape(categoryName);
-                    string family = Escape(GetFamilyName(type));
-                    string typeName = Escape(type.Name);
-                    string include = "TRUE";
-                    sb.AppendLine($"{cat},{family},{typeName},{include}");
+                    filteredTypes.Add(type);
                 }
             }
 
-            // 🔹 Запись файла
-            File.WriteAllText(fileName, sb.ToString(), Encoding.UTF8);
+            return filteredTypes;
+        }
+
+        private void SortTypes(List<ElementType> list)
+        {
+            list.Sort(delegate (ElementType left, ElementType right)
+            {
+                string leftFamily = GetFamilyName(left);
+                string rightFamily = GetFamilyName(right);
+                int familyCompare = string.Compare(leftFamily, rightFamily, StringComparison.OrdinalIgnoreCase);
+
+                if (familyCompare != 0)
+                {
+                    return familyCompare;
+                }
+
+                return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+
+        private static Category TryGetCategory(Document document, BuiltInCategory builtInCategory)
+        {
+            try
+            {
+                return Category.GetCategory(document, builtInCategory);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void ValidateInput(List<ElementType> types, Document document, string outputFolder)
+        {
+            if (types == null || types.Count == 0)
+            {
+                throw new ArgumentException("Список элементов пуст.");
+            }
+
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (string.IsNullOrWhiteSpace(outputFolder))
+            {
+                throw new ArgumentException("Папка для сохранения не указана.", nameof(outputFolder));
+            }
         }
 
         /// <summary>
@@ -224,12 +285,17 @@ namespace RevitLibraryBuilder.Services
         /// <summary>
         /// Экранирование CSV (кавычки, запятые)
         /// </summary>
-        private string Escape(string value)
+        private static string Escape(string value)
         {
-            if (string.IsNullOrEmpty(value)) return "";
+            if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
 
             if (value.Contains(",") || value.Contains("\""))
-                value = $"\"{value.Replace("\"", "\"\"")}\"";
+            {
+                return "\"" + value.Replace("\"", "\"\"") + "\"";
+            }
 
             return value;
         }
@@ -237,12 +303,18 @@ namespace RevitLibraryBuilder.Services
         /// <summary>
         /// Убираем запрещённые символы из имени файла
         /// </summary>
-        private string MakeSafeFileName(string name)
+        private static string MakeSafeFileName(string name)
         {
-            foreach (char c in Path.GetInvalidFileNameChars())
+            if (string.IsNullOrEmpty(name))
             {
-                name = name.Replace(c, '_');
+                return "Unnamed";
             }
+
+            foreach (char invalidChar in Path.GetInvalidFileNameChars())
+            {
+                name = name.Replace(invalidChar, '_');
+            }
+
             return name;
         }
     }
