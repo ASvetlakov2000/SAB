@@ -260,23 +260,26 @@ body {
 
 .thumbnail-td {
     min-width: 120px;
+    padding: 4px;
 }
 
 .thumbnail-cell {
-    min-height: 82px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .thumbnail-image {
-    width: 72px;
-    height: 72px;
+    width: 100%;
+    height: auto;
+    max-width: none;
     object-fit: contain;
     border: 1px solid #3d444d;
     border-radius: 6px;
     background: #0d1117;
-    padding: 3px;
+    padding: 2px;
+    display: block;
 }
 
 .thumbnail-empty {

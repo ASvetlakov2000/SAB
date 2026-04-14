@@ -108,11 +108,13 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLineAndFillPatternsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLoadableFamilyThumbnailsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportMaterialNamingCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemTypePiePngCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemFamilyThumbnailTemplateCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypeNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesByCategoryCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesSingleFileCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportMaterialNamingCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportSystemTypePiePngCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportTypeNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\DeleteSelectedTypesAndFamiliesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByBoundaryCommand.cs" />
@@ -146,10 +148,12 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementServiceFactory.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\PostActions\PostActionViewService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\MaterialNamingApplyService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\SystemTypePieImageLoadService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeCollectorService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeNamingApplyService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeAndFamilyDeletionService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\FloorPlanViewService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Views\SystemTypePieLegendExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs">
       <DependentUpon>ConfirmViewCreationDialog.xaml</DependentUpon>
     </Compile>
