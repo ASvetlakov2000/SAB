@@ -18,14 +18,15 @@ namespace SAB.BimDashboard.Commands
     [Transaction(TransactionMode.ReadOnly)]
     public class GenerateDashboardCommand : IExternalCommand
     {
-        // Блок debug-режима: при необходимости можно выключить подробный поток выполнения.
-        private static readonly bool IsDebugMode = true;
+        // Блок debug-режима: сейчас отключен.
+        // Чтобы вернуть отладочные окна, установите true и раскомментируйте вызовы ShowDebug ниже.
+        private static readonly bool IsDebugMode = false;
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
             {
-                ShowDebug("Шаг 1", "Запуск GenerateDashboardCommand.");
+                // ShowDebug("Шаг 1", "Запуск GenerateDashboardCommand.");
 
                 if (commandData == null || commandData.Application == null)
                 {
@@ -39,10 +40,10 @@ namespace SAB.BimDashboard.Commands
                 string selectedFilePath;
                 bool isConfirmed = DataSourceDialogService.ShowDialog(out selectedSourceType, out selectedFilePath);
 
-                ShowDebug("Шаг 2", "Диалог выбора источника закрыт.\n" +
-                                    "isConfirmed = " + isConfirmed + "\n" +
-                                    "selectedSourceType = " + selectedSourceType + "\n" +
-                                    "selectedFilePath = " + (selectedFilePath ?? string.Empty));
+                // ShowDebug("Шаг 2", "Диалог выбора источника закрыт.\n" +
+                //                     "isConfirmed = " + isConfirmed + "\n" +
+                //                     "selectedSourceType = " + selectedSourceType + "\n" +
+                //                     "selectedFilePath = " + (selectedFilePath ?? string.Empty));
 
                 if (!isConfirmed)
                 {
@@ -60,7 +61,7 @@ namespace SAB.BimDashboard.Commands
                 DataProviderFactory providerFactory = new DataProviderFactory(providers);
                 IDataProvider provider = providerFactory.Create(selectedSourceType);
 
-                ShowDebug("Шаг 3", "Выбран провайдер: " + provider.GetType().FullName);
+                // ShowDebug("Шаг 3", "Выбран провайдер: " + provider.GetType().FullName);
 
                 DataProviderContext context = new DataProviderContext
                 {
@@ -68,13 +69,13 @@ namespace SAB.BimDashboard.Commands
                     FilePath = selectedFilePath
                 };
 
-                // Блок чтения источника и получения универсальных записей.
+                // Блок отвечает за загрузку исходных данных для HTML.
                 ProviderResult providerResult = provider.Load(context);
 
-                ShowDebug("Шаг 4", "Источник загружен.\n" +
-                                    "ProjectName = " + providerResult.ProjectName + "\n" +
-                                    "Records.Count = " + (providerResult.Records != null ? providerResult.Records.Count : 0) + "\n" +
-                                    "Warnings.Count = " + (providerResult.Warnings != null ? providerResult.Warnings.Count : 0));
+                // ShowDebug("Шаг 4", "Источник загружен.\n" +
+                //                     "ProjectName = " + providerResult.ProjectName + "\n" +
+                //                     "Records.Count = " + (providerResult.Records != null ? providerResult.Records.Count : 0) + "\n" +
+                //                     "Warnings.Count = " + (providerResult.Warnings != null ? providerResult.Warnings.Count : 0));
 
                 if (providerResult == null || providerResult.Records == null || providerResult.Records.Count == 0)
                 {
@@ -92,21 +93,24 @@ namespace SAB.BimDashboard.Commands
                     firstRowPreview = string.Join(" | ", dashboardData.Rows[0]);
                 }
 
-                ShowDebug("Шаг 5", "Модель для HTML сформирована.\n" +
-                                    "Columns.Count = " + (dashboardData.Columns != null ? dashboardData.Columns.Count : 0) + "\n" +
-                                    "Rows.Count = " + (dashboardData.Rows != null ? dashboardData.Rows.Count : 0) + "\n" +
-                                    "FirstRow = " + firstRowPreview);
+                // ShowDebug("Шаг 5", "Модель для HTML сформирована.\n" +
+                //                     "CatalogName = " + (dashboardData.CatalogName ?? string.Empty) + "\n" +
+                //                     "SourceName = " + (dashboardData.SourceName ?? string.Empty) + "\n" +
+                //                     "SourceFormat = " + (dashboardData.SourceFormat ?? string.Empty) + "\n" +
+                //                     "Columns.Count = " + (dashboardData.Columns != null ? dashboardData.Columns.Count : 0) + "\n" +
+                //                     "Rows.Count = " + (dashboardData.Rows != null ? dashboardData.Rows.Count : 0) + "\n" +
+                //                     "FirstRow = " + firstRowPreview);
 
                 // Блок генерации HTML и открытия результата пользователю.
                 HtmlReportBuilder htmlReportBuilder = new HtmlReportBuilder();
                 string htmlPath = htmlReportBuilder.Generate(dashboardData);
 
-                ShowDebug("Шаг 6", "HTML сгенерирован.\nhtmlPath = " + htmlPath);
+                // ShowDebug("Шаг 6", "HTML сгенерирован.\nhtmlPath = " + htmlPath);
 
                 IDashboardViewer viewer = new ExternalBrowserDashboardViewer();
                 viewer.Open(htmlPath);
 
-                ShowDebug("Шаг 7", "Dashboard открыт во внешнем браузере.");
+                // ShowDebug("Шаг 7", "Dashboard открыт во внешнем браузере.");
 
                 // Блок информирования о предупреждениях чтения данных.
                 if (providerResult.Warnings != null && providerResult.Warnings.Count > 0)
@@ -121,7 +125,7 @@ namespace SAB.BimDashboard.Commands
             {
                 message = exception.Message;
                 TaskDialog.Show("BIM Dashboard", "Ошибка построения dashboard:\n\n" + exception.Message);
-                ShowDebug("Ошибка", exception.ToString());
+                // ShowDebug("Ошибка", exception.ToString());
                 return Result.Failed;
             }
         }

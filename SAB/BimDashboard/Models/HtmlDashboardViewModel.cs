@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SAB.BimDashboard.Models
 {
     /// <summary>
-    /// Единая модель dashboard, которая передается в HTML/JS слой.
+    /// Модель, которая напрямую сериализуется и передается в HTML viewer.
     /// </summary>
-    public class DashboardData
+    public class HtmlDashboardViewModel
     {
-        public DashboardData()
+        public HtmlDashboardViewModel()
         {
             Columns = new List<string>();
             Rows = new List<List<string>>();
@@ -17,20 +17,16 @@ namespace SAB.BimDashboard.Models
 
         public string CatalogName { get; set; }
 
-        public string ProjectName { get; set; }
-
         public string SourceName { get; set; }
 
         public string SourceFormat { get; set; }
 
         public DateTime GeneratedAt { get; set; }
 
-        // Блок списка колонок для табличного просмотра.
+        public SummaryData Summary { get; set; }
+
         public List<string> Columns { get; set; }
 
-        // Блок строк структурированного списка. Каждая строка хранит значения в порядке Columns.
         public List<List<string>> Rows { get; set; }
-
-        public SummaryData Summary { get; set; }
     }
 }

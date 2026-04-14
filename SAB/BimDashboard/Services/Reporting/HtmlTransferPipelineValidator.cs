@@ -10,38 +10,73 @@ namespace SAB.BimDashboard.Services.Reporting
     /// </summary>
     public class HtmlTransferPipelineValidator
     {
-        public void ValidateModel(DashboardData data)
+        public void ValidateDashboardData(DashboardData data)
         {
             if (data == null)
             {
                 throw new InvalidOperationException("Модель данных для HTML не создана.");
             }
 
+            if (string.IsNullOrWhiteSpace(data.SourceName))
+            {
+                throw new InvalidOperationException("Источник данных для HTML не определен.");
+            }
+
+            ValidateTable(data.Columns, data.Rows);
+        }
+
+        public void ValidateHtmlModel(HtmlDashboardViewModel data)
+        {
+            if (data == null)
+            {
+                throw new InvalidOperationException("HTML view-model не создана.");
+            }
+
+            if (string.IsNullOrWhiteSpace(data.CatalogName))
+            {
+                throw new InvalidOperationException("Каталог проекта не заполнен для HTML.");
+            }
+
+            if (string.IsNullOrWhiteSpace(data.SourceName))
+            {
+                throw new InvalidOperationException("Поле 'Источник' не заполнено для HTML.");
+            }
+
+            if (string.IsNullOrWhiteSpace(data.SourceFormat))
+            {
+                throw new InvalidOperationException("Поле 'Формат источника' не заполнено для HTML.");
+            }
+
+            ValidateTable(data.Columns, data.Rows);
+        }
+
+        private static void ValidateTable(List<string> columns, List<List<string>> rows)
+        {
             // Блок отвечает за проверку обязательных данных перед рендером HTML.
-            if (data.Columns == null || data.Columns.Count == 0)
+            if (columns == null || columns.Count == 0)
             {
                 throw new InvalidOperationException("Модель HTML не содержит колонок. Рендер невозможен.");
             }
 
-            if (data.Rows == null)
+            if (rows == null)
             {
                 throw new InvalidOperationException("Модель HTML не содержит строк. Рендер невозможен.");
             }
 
-            for (int i = 0; i < data.Rows.Count; i++)
+            for (int i = 0; i < rows.Count; i++)
             {
-                List<string> row = data.Rows[i];
+                List<string> row = rows[i];
 
                 if (row == null)
                 {
                     throw new InvalidOperationException("Найдена пустая строка модели HTML. Индекс строки: " + i);
                 }
 
-                if (row.Count != data.Columns.Count)
+                if (row.Count != columns.Count)
                 {
                     throw new InvalidOperationException(
                         "Количество значений строки не совпадает с количеством колонок. " +
-                        "Строка: " + i + ", значений: " + row.Count + ", колонок: " + data.Columns.Count);
+                        "Строка: " + i + ", значений: " + row.Count + ", колонок: " + columns.Count);
                 }
             }
         }
@@ -62,6 +97,11 @@ namespace SAB.BimDashboard.Services.Reporting
             if (!renderedHtml.Contains("dashboard-data"))
             {
                 throw new InvalidOperationException("В итоговом HTML отсутствует блок dashboard-data.");
+            }
+
+            if (!renderedHtml.Contains("catalogName") || !renderedHtml.Contains("sourceName") || !renderedHtml.Contains("sourceFormat"))
+            {
+                throw new InvalidOperationException("В итоговом HTML отсутствуют обязательные поля шапки dashboard.");
             }
         }
 

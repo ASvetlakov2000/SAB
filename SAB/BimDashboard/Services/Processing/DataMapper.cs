@@ -16,8 +16,12 @@ namespace SAB.BimDashboard.Services.Processing
                 throw new ArgumentNullException(nameof(providerResult));
             }
 
+            // Блок отвечает за формирование HTML модели.
             DashboardData dashboardData = new DashboardData();
+            dashboardData.CatalogName = "RevitLibraryBuilder";
             dashboardData.ProjectName = string.IsNullOrWhiteSpace(providerResult.ProjectName) ? "Без названия" : providerResult.ProjectName;
+            dashboardData.SourceName = dashboardData.ProjectName;
+            dashboardData.SourceFormat = ResolveSourceFormat(providerResult.Records);
             dashboardData.GeneratedAt = DateTime.Now;
 
             BuildSummary(providerResult.Records, dashboardData.Summary);
@@ -27,7 +31,6 @@ namespace SAB.BimDashboard.Services.Processing
         }
 
         // Блок построения верхних summary-метрик.
-        // Суммарная площадь и суммарная длина удалены из dashboard по требованиям UI.
         private static void BuildSummary(List<UnifiedRecord> records, SummaryData summary)
         {
             if (summary == null)
@@ -222,6 +225,32 @@ namespace SAB.BimDashboard.Services.Processing
                 default:
                     return string.Empty;
             }
+        }
+
+        private static string ResolveSourceFormat(List<UnifiedRecord> records)
+        {
+            if (records == null)
+            {
+                return "Не определен";
+            }
+
+            for (int i = 0; i < records.Count; i++)
+            {
+                UnifiedRecord record = records[i];
+
+                if (record == null || record.Fields == null)
+                {
+                    continue;
+                }
+
+                string sourceType;
+                if (record.Fields.TryGetValue("SourceType", out sourceType) && !string.IsNullOrWhiteSpace(sourceType))
+                {
+                    return sourceType.Trim();
+                }
+            }
+
+            return "Не определен";
         }
     }
 }

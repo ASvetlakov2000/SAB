@@ -3,59 +3,79 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BIM Dashboard</title>
+    <title>Каталог проекта</title>
     <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
     <div class="page">
         <header class="header">
-            <div>
-                <h1 class="title">BIM Dashboard</h1>
-                <p class="subtitle" id="projectName">Проект: -</p>
-                <p class="subtitle" id="sourceTypeValue">Источник: -</p>
-                <p class="subtitle" id="generatedAt">Сформирован: -</p>
+            <div class="header-grid">
+                <section class="header-section">
+                    <p class="header-label">Каталог проекта</p>
+                    <p class="header-value" id="catalogName">-</p>
+                </section>
+
+                <section class="header-section">
+                    <p class="header-label">Источник</p>
+                    <p class="header-value" id="sourceName">-</p>
+                </section>
+
+                <section class="header-section">
+                    <p class="header-label">Формат источника</p>
+                    <p class="header-value" id="sourceFormat">-</p>
+                </section>
+
+                <section class="header-section">
+                    <p class="header-label">Всего элементов</p>
+                    <p class="header-value" id="totalElementsHeader">0</p>
+                </section>
+
+                <section class="header-section">
+                    <p class="header-label">Сформирован</p>
+                    <p class="header-value" id="generatedAt">-</p>
+                </section>
             </div>
         </header>
 
-        <section class="summary-grid" id="summaryGrid">
-            <article class="summary-card">
-                <p class="summary-label">Всего элементов</p>
-                <p class="summary-value" id="totalElements">0</p>
-            </article>
-        </section>
-
         <section class="workspace-grid">
-            <aside class="columns-card">
-                <h2 class="panel-title">Видимые колонки</h2>
-                <p class="panel-note">Снимите лишние колонки, чтобы таблица помещалась на экран.</p>
-                <div id="columnVisibilityMenu" class="column-menu"></div>
-            </aside>
-
-            <div class="table-workspace">
+            <aside class="left-panel">
                 <section class="controls-card">
+                    <h2 class="panel-title">Фильтрация и сортировка</h2>
+
                     <div class="controls-grid">
-                        <label class="control-item">
+                        <label class="control-item control-full">
                             <span>Поиск по всем колонкам</span>
                             <input id="searchInput" type="text" placeholder="Введите текст для поиска" />
                         </label>
 
                         <label class="control-item">
-                            <span>Сортировать по</span>
-                            <select id="sortColumnSelect"></select>
+                            <span>Фильтр по колонке</span>
+                            <select id="filterColumnSelect"></select>
                         </label>
 
-                        <div class="control-item actions">
+                        <label class="control-item">
+                            <span>Значение фильтра</span>
+                            <input id="filterValueInput" type="text" placeholder="Введите значение" />
+                        </label>
+
+                        <div class="control-item actions control-full">
                             <span>Действия</span>
                             <button id="resetFiltersButton" type="button">Сбросить настройки</button>
                         </div>
                     </div>
+
                     <p class="result-info" id="resultInfo">Показано строк: 0</p>
                 </section>
 
-                <section class="table-card">
-                    <div id="tableContainer" class="table-container"></div>
+                <section class="columns-card">
+                    <h2 class="panel-title">Видимые колонки</h2>
+                    <div id="columnVisibilityMenu" class="column-menu"></div>
                 </section>
-            </div>
+            </aside>
+
+            <section class="table-card">
+                <div id="tableContainer" class="table-container"></div>
+            </section>
         </section>
     </div>
 

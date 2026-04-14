@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using SAB.BimDashboard.Models;
 
 namespace SAB.BimDashboard.Services.Reporting
 {
     /// <summary>
-    /// Сервис сериализации модели DashboardData в JSON для JavaScript.
+    /// Сервис сериализации модели dashboard в JSON для JavaScript.
     /// </summary>
     public class JsonSerializerService
     {
@@ -21,7 +20,7 @@ namespace SAB.BimDashboard.Services.Reporting
             };
         }
 
-        public string Serialize(DashboardData data)
+        public string Serialize(object data)
         {
             return JsonConvert.SerializeObject(data, _serializerSettings);
         }

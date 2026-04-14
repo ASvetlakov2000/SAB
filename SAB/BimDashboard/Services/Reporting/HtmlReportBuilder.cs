@@ -15,11 +15,13 @@ namespace SAB.BimDashboard.Services.Reporting
 
         private readonly JsonSerializerService _jsonSerializerService;
         private readonly HtmlTransferPipelineValidator _pipelineValidator;
+        private readonly HtmlDashboardViewModelBuilder _htmlModelBuilder;
 
         public HtmlReportBuilder()
         {
             _jsonSerializerService = new JsonSerializerService();
             _pipelineValidator = new HtmlTransferPipelineValidator();
+            _htmlModelBuilder = new HtmlDashboardViewModelBuilder();
         }
 
         public string Generate(DashboardData dashboardData)
@@ -29,10 +31,13 @@ namespace SAB.BimDashboard.Services.Reporting
                 throw new ArgumentNullException(nameof(dashboardData));
             }
 
-            // Блок отвечает за формирование модели данных для HTML.
-            _pipelineValidator.ValidateModel(dashboardData);
+            _pipelineValidator.ValidateDashboardData(dashboardData);
 
-            // Блок отвечает за загрузку HTML шаблона.
+            // Блок отвечает за формирование HTML модели.
+            HtmlDashboardViewModel htmlModel = _htmlModelBuilder.Build(dashboardData);
+            _pipelineValidator.ValidateHtmlModel(htmlModel);
+
+            // Блок отвечает за загрузку исходных данных для HTML.
             string templatePath = FileUtils.GetTemplateFilePath();
             string templateHtml = File.ReadAllText(templatePath, Encoding.UTF8);
 
@@ -41,23 +46,22 @@ namespace SAB.BimDashboard.Services.Reporting
                 throw new InvalidOperationException("В HTML шаблоне отсутствует placeholder {{DATA_JSON}}.");
             }
 
-            // Блок отвечает за сериализацию модели в JSON.
-            string dataJson = _jsonSerializerService.Serialize(dashboardData);
+            string dataJson = _jsonSerializerService.Serialize(htmlModel);
 
             if (string.IsNullOrWhiteSpace(dataJson))
             {
-                throw new InvalidOperationException("Сериализация модели HTML вернула пустой JSON.");
+                throw new InvalidOperationException("Сериализация HTML модели вернула пустой JSON.");
             }
 
             // Блок отвечает за подстановку значений в HTML шаблон.
-            string finalHtml = templateHtml.Replace(DataPlaceholder, dataJson);
+            string safeDataJson = MakeJsonSafeForInlineScript(dataJson);
+            string finalHtml = templateHtml.Replace(DataPlaceholder, safeDataJson);
             _pipelineValidator.ValidateRenderedHtml(finalHtml, DataPlaceholder);
 
             // Блок отвечает за сохранение итогового HTML файла.
             string outputDirectory = FileUtils.GetTempDashboardDirectory();
             string outputHtmlPath = Path.Combine(outputDirectory, "index.html");
 
-            // Блок отвечает за копирование статических ассетов dashboard.
             string sourceWwwRoot = FileUtils.GetWwwRootDirectory();
             FileUtils.CopyWithOverwrite(Path.Combine(sourceWwwRoot, "dashboard.js"), Path.Combine(outputDirectory, "dashboard.js"));
             FileUtils.CopyWithOverwrite(Path.Combine(sourceWwwRoot, "dashboard.css"), Path.Combine(outputDirectory, "dashboard.css"));
@@ -65,9 +69,22 @@ namespace SAB.BimDashboard.Services.Reporting
             File.WriteAllText(outputHtmlPath, finalHtml, Encoding.UTF8);
 
             // Здесь можно проверить, какие значения передаются в HTML после записи файла.
-            _pipelineValidator.ValidateSavedHtml(outputHtmlPath, dataJson);
+            _pipelineValidator.ValidateSavedHtml(outputHtmlPath, safeDataJson);
 
             return outputHtmlPath;
+        }
+
+        private static string MakeJsonSafeForInlineScript(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+            {
+                return string.Empty;
+            }
+
+            // Защита от случайного закрытия script-тега внутри значений данных.
+            string safe = json.Replace("</script", "<\\/script");
+            safe = safe.Replace("</SCRIPT", "<\\/SCRIPT");
+            return safe;
         }
     }
 }

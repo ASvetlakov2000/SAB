@@ -3,22 +3,30 @@
 
     var state = {
         data: null,
-        sourceType: "-",
+        catalogName: "RevitLibraryBuilder",
+        sourceName: "-",
+        sourceFormat: "Не определен",
         rawColumns: [],
         displayColumns: [],
         rows: [],
         filteredRows: [],
-        sortColumnIndex: -1,
         visibleColumnIndexes: [],
-        defaultVisibleColumnIndexes: []
+        defaultVisibleColumnIndexes: [],
+        filterColumnIndex: -1,
+        sortColumnIndex: -1,
+        sortDirection: "asc",
+        columnWidths: {}
     };
 
     var hiddenColumns = {
         filter: true,
         recordtype: true,
         include: true,
-        sourcetype: true
+        sourcetype: true,
+        sourcefile: true
     };
+
+    var minColumnWidthPx = 90;
 
     function parseDashboardData() {
         var dataNode = document.getElementById("dashboard-data");
@@ -73,92 +81,6 @@
         return parsed;
     }
 
-    function createOption(value, text) {
-        var option = document.createElement("option");
-        option.value = value;
-        option.textContent = text;
-        return option;
-    }
-
-    function fillSortSelect() {
-        var sortColumnSelect = document.getElementById("sortColumnSelect");
-
-        if (!sortColumnSelect) {
-            return;
-        }
-
-        sortColumnSelect.innerHTML = "";
-
-        for (var i = 0; i < state.displayColumns.length; i++) {
-            var column = state.displayColumns[i];
-            sortColumnSelect.appendChild(createOption(String(column.index), column.label));
-        }
-
-        if (state.displayColumns.length > 0) {
-            var firstIndex = state.displayColumns[0].index;
-            state.sortColumnIndex = firstIndex;
-            sortColumnSelect.value = String(firstIndex);
-        }
-    }
-
-    function initializeControls() {
-        fillSortSelect();
-
-        var searchInput = document.getElementById("searchInput");
-        var sortColumnSelect = document.getElementById("sortColumnSelect");
-        var resetFiltersButton = document.getElementById("resetFiltersButton");
-
-        if (searchInput) {
-            searchInput.addEventListener("input", applyAndRender);
-        }
-
-        if (sortColumnSelect) {
-            sortColumnSelect.addEventListener("change", function () {
-                state.sortColumnIndex = Number(sortColumnSelect.value || -1);
-                applyAndRender();
-            });
-        }
-
-        if (resetFiltersButton) {
-            resetFiltersButton.addEventListener("click", function () {
-                if (searchInput) {
-                    searchInput.value = "";
-                }
-
-                state.visibleColumnIndexes = state.defaultVisibleColumnIndexes.slice();
-                syncColumnMenuChecks();
-
-                if (state.displayColumns.length > 0) {
-                    state.sortColumnIndex = state.displayColumns[0].index;
-
-                    if (sortColumnSelect) {
-                        sortColumnSelect.value = String(state.sortColumnIndex);
-                    }
-                }
-
-                applyAndRender();
-            });
-        }
-    }
-
-    function resolveSourceType(columns, rows) {
-        var sourceTypeIndex = findColumnIndex(columns, "SourceType");
-
-        if (sourceTypeIndex < 0) {
-            return "-";
-        }
-
-        for (var i = 0; i < rows.length; i++) {
-            var value = rows[i][sourceTypeIndex];
-
-            if (String(value || "").trim()) {
-                return String(value).trim();
-            }
-        }
-
-        return "-";
-    }
-
     function findColumnIndex(columns, columnName) {
         var target = toLowerSafe(columnName);
 
@@ -169,6 +91,28 @@
         }
 
         return -1;
+    }
+
+    function resolveSourceFormat(data) {
+        if (data && data.sourceFormat && String(data.sourceFormat).trim()) {
+            return String(data.sourceFormat).trim();
+        }
+
+        var sourceTypeIndex = findColumnIndex(state.rawColumns, "SourceType");
+
+        if (sourceTypeIndex < 0) {
+            return "Не определен";
+        }
+
+        for (var i = 0; i < state.rows.length; i++) {
+            var value = state.rows[i][sourceTypeIndex];
+
+            if (String(value || "").trim()) {
+                return String(value).trim();
+            }
+        }
+
+        return "Не определен";
     }
 
     function buildDisplayColumns(columns) {
@@ -250,13 +194,71 @@
             }
         }
 
-        if (result.length > 10) {
-            result = result.slice(0, 10);
-        }
-
         return result;
     }
 
+    function normalizeRows(rawRows, columnsCount) {
+        var rows = [];
+
+        if (!Array.isArray(rawRows)) {
+            return rows;
+        }
+
+        for (var i = 0; i < rawRows.length; i++) {
+            var rawRow = rawRows[i];
+            var normalizedRow = [];
+
+            if (Array.isArray(rawRow)) {
+                for (var j = 0; j < columnsCount; j++) {
+                    normalizedRow.push(rawRow[j] === undefined || rawRow[j] === null ? "" : String(rawRow[j]));
+                }
+            } else {
+                for (var k = 0; k < columnsCount; k++) {
+                    normalizedRow.push("");
+                }
+            }
+
+            rows.push(normalizedRow);
+        }
+
+        return rows;
+    }
+
+    function isColumnVisible(columnIndex) {
+        for (var i = 0; i < state.visibleColumnIndexes.length; i++) {
+            if (state.visibleColumnIndexes[i] === columnIndex) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function getVisibleDisplayColumns() {
+        var visible = [];
+
+        for (var i = 0; i < state.displayColumns.length; i++) {
+            var column = state.displayColumns[i];
+
+            if (isColumnVisible(column.index)) {
+                visible.push(column);
+            }
+        }
+
+        return visible;
+    }
+
+    function ensureVisibleColumnsNotEmpty() {
+        if (state.visibleColumnIndexes.length > 0) {
+            return;
+        }
+
+        if (state.displayColumns.length > 0) {
+            state.visibleColumnIndexes = [state.displayColumns[0].index];
+        }
+    }
+
+    // Блок отвечает за настройку отображения видимых колонок.
     function buildColumnVisibilityMenu() {
         var menu = document.getElementById("columnVisibilityMenu");
 
@@ -275,7 +277,6 @@
             checkbox.type = "checkbox";
             checkbox.setAttribute("data-column-index", String(column.index));
             checkbox.checked = isColumnVisible(column.index);
-
             checkbox.addEventListener("change", onColumnVisibilityChanged);
 
             var text = document.createElement("span");
@@ -287,14 +288,20 @@
         }
     }
 
-    function isColumnVisible(columnIndex) {
-        for (var i = 0; i < state.visibleColumnIndexes.length; i++) {
-            if (state.visibleColumnIndexes[i] === columnIndex) {
-                return true;
-            }
+    function syncColumnMenuChecks() {
+        var menu = document.getElementById("columnVisibilityMenu");
+
+        if (!menu) {
+            return;
         }
 
-        return false;
+        var checkboxes = menu.querySelectorAll("input[type='checkbox']");
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            var checkbox = checkboxes[i];
+            var index = Number(checkbox.getAttribute("data-column-index"));
+            checkbox.checked = isColumnVisible(index);
+        }
     }
 
     function onColumnVisibilityChanged() {
@@ -315,48 +322,109 @@
             }
         }
 
-        if (selected.length === 0) {
-            checkboxes[0].checked = true;
-            selected.push(Number(checkboxes[0].getAttribute("data-column-index")));
-        }
-
         state.visibleColumnIndexes = selected;
-        renderTable();
+        ensureVisibleColumnsNotEmpty();
+        syncColumnMenuChecks();
+
+        updateFilterColumnOptions();
+        applyAndRender();
     }
 
-    function syncColumnMenuChecks() {
-        var menu = document.getElementById("columnVisibilityMenu");
+    function createOption(value, text, selected) {
+        var option = document.createElement("option");
+        option.value = value;
+        option.textContent = text;
 
-        if (!menu) {
+        if (selected === true) {
+            option.selected = true;
+        }
+
+        return option;
+    }
+
+    function updateFilterColumnOptions() {
+        var filterColumnSelect = document.getElementById("filterColumnSelect");
+
+        if (!filterColumnSelect) {
             return;
         }
 
-        var checkboxes = menu.querySelectorAll("input[type='checkbox']");
+        var visibleColumns = getVisibleDisplayColumns();
+        var existingValue = state.filterColumnIndex;
+        filterColumnSelect.innerHTML = "";
 
-        for (var i = 0; i < checkboxes.length; i++) {
-            var checkbox = checkboxes[i];
-            var index = Number(checkbox.getAttribute("data-column-index"));
-            checkbox.checked = isColumnVisible(index);
-        }
-    }
+        filterColumnSelect.appendChild(createOption("-1", "Все видимые колонки", false));
 
-    function isRowMatching(row, searchText) {
-        var search = toLowerSafe(searchText).trim();
-
-        if (!search) {
-            return true;
+        for (var i = 0; i < visibleColumns.length; i++) {
+            var column = visibleColumns[i];
+            filterColumnSelect.appendChild(createOption(String(column.index), column.label, false));
         }
 
-        for (var i = 0; i < state.displayColumns.length; i++) {
-            var column = state.displayColumns[i];
-            var cell = toLowerSafe(row[column.index]);
+        var shouldKeep = false;
 
-            if (cell.indexOf(search) >= 0) {
-                return true;
+        if (existingValue >= 0) {
+            for (var j = 0; j < visibleColumns.length; j++) {
+                if (visibleColumns[j].index === existingValue) {
+                    shouldKeep = true;
+                    break;
+                }
             }
         }
 
-        return false;
+        state.filterColumnIndex = shouldKeep ? existingValue : -1;
+        filterColumnSelect.value = String(state.filterColumnIndex);
+    }
+
+    function isRowMatching(row, searchText, filterText) {
+        var search = toLowerSafe(searchText).trim();
+        var filter = toLowerSafe(filterText).trim();
+        var visibleColumns = getVisibleDisplayColumns();
+
+        if (search) {
+            var foundInSearch = false;
+
+            for (var i = 0; i < visibleColumns.length; i++) {
+                var searchColumn = visibleColumns[i];
+                var searchCell = toLowerSafe(row[searchColumn.index]);
+
+                if (searchCell.indexOf(search) >= 0) {
+                    foundInSearch = true;
+                    break;
+                }
+            }
+
+            if (!foundInSearch) {
+                return false;
+            }
+        }
+
+        if (filter) {
+            if (state.filterColumnIndex < 0) {
+                var foundInFilter = false;
+
+                for (var j = 0; j < visibleColumns.length; j++) {
+                    var filterColumn = visibleColumns[j];
+                    var filterCell = toLowerSafe(row[filterColumn.index]);
+
+                    if (filterCell.indexOf(filter) >= 0) {
+                        foundInFilter = true;
+                        break;
+                    }
+                }
+
+                if (!foundInFilter) {
+                    return false;
+                }
+            } else {
+                var targetCell = toLowerSafe(row[state.filterColumnIndex]);
+
+                if (targetCell.indexOf(filter) < 0) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     function compareRows(leftRow, rightRow) {
@@ -371,24 +439,30 @@
 
         var leftNumber = tryParseNumber(left);
         var rightNumber = tryParseNumber(right);
+        var result;
 
         if (leftNumber !== null && rightNumber !== null) {
-            return leftNumber - rightNumber;
+            result = leftNumber - rightNumber;
+        } else {
+            result = String(left).localeCompare(String(right), "ru", { sensitivity: "base" });
         }
 
-        return String(left).localeCompare(String(right), "ru", { sensitivity: "base" });
+        return state.sortDirection === "desc" ? -result : result;
     }
 
     function applyAndRender() {
         var searchInput = document.getElementById("searchInput");
+        var filterValueInput = document.getElementById("filterValueInput");
+
         var searchText = searchInput ? searchInput.value : "";
+        var filterText = filterValueInput ? filterValueInput.value : "";
 
         var filteredRows = [];
 
         for (var i = 0; i < state.rows.length; i++) {
             var row = state.rows[i];
 
-            if (isRowMatching(row, searchText)) {
+            if (isRowMatching(row, searchText, filterText)) {
                 filteredRows.push(row.slice());
             }
         }
@@ -400,18 +474,46 @@
         updateResultInfo();
     }
 
-    function getVisibleDisplayColumns() {
-        var visible = [];
+    function updateResultInfo() {
+        var resultInfo = document.getElementById("resultInfo");
 
-        for (var i = 0; i < state.displayColumns.length; i++) {
-            var column = state.displayColumns[i];
-
-            if (isColumnVisible(column.index)) {
-                visible.push(column);
-            }
+        if (!resultInfo) {
+            return;
         }
 
-        return visible;
+        resultInfo.textContent = "Показано строк: " + state.filteredRows.length + " из " + state.rows.length;
+    }
+
+    function getSavedColumnWidth(columnIndex) {
+        if (state.columnWidths.hasOwnProperty(columnIndex)) {
+            return state.columnWidths[columnIndex];
+        }
+
+        return null;
+    }
+
+    function beginColumnResize(event, columnIndex, colElement) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        var startX = event.clientX;
+        var initialWidth = colElement.getBoundingClientRect().width;
+
+        function onMouseMove(moveEvent) {
+            var delta = moveEvent.clientX - startX;
+            var newWidth = Math.max(minColumnWidthPx, initialWidth + delta);
+
+            state.columnWidths[columnIndex] = newWidth;
+            colElement.style.width = newWidth + "px";
+        }
+
+        function onMouseUp() {
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
     }
 
     function renderTable() {
@@ -431,34 +533,65 @@
         var visibleColumns = getVisibleDisplayColumns();
 
         if (!visibleColumns.length) {
-            container.innerHTML = '<div class="warning">Выберите хотя бы одну колонку в левом меню.</div>';
+            container.innerHTML = '<div class="warning">Выберите хотя бы одну колонку в блоке "Видимые колонки".</div>';
             return;
         }
 
         var table = document.createElement("table");
         table.className = "data-table";
 
+        var colGroup = document.createElement("colgroup");
+        var colElements = [];
+
+        for (var i = 0; i < visibleColumns.length; i++) {
+            var visibleColumn = visibleColumns[i];
+            var col = document.createElement("col");
+            var savedWidth = getSavedColumnWidth(visibleColumn.index);
+
+            if (savedWidth !== null) {
+                col.style.width = savedWidth + "px";
+            }
+
+            colGroup.appendChild(col);
+            colElements.push(col);
+        }
+
+        table.appendChild(colGroup);
+
         var thead = document.createElement("thead");
         var headRow = document.createElement("tr");
 
-        for (var i = 0; i < visibleColumns.length; i++) {
+        for (var headerIndex = 0; headerIndex < visibleColumns.length; headerIndex++) {
             (function () {
-                var column = visibleColumns[i];
+                var column = visibleColumns[headerIndex];
+                var colElement = colElements[headerIndex];
+
                 var th = document.createElement("th");
                 th.textContent = column.label;
                 th.className = "sortable";
 
-                th.addEventListener("click", function () {
-                    state.sortColumnIndex = column.index;
+                if (state.sortColumnIndex === column.index) {
+                    th.className += state.sortDirection === "asc" ? " sorted-asc" : " sorted-desc";
+                }
 
-                    var sortColumnSelect = document.getElementById("sortColumnSelect");
-                    if (sortColumnSelect) {
-                        sortColumnSelect.value = String(column.index);
+                th.addEventListener("click", function () {
+                    if (state.sortColumnIndex === column.index) {
+                        state.sortDirection = state.sortDirection === "asc" ? "desc" : "asc";
+                    } else {
+                        state.sortColumnIndex = column.index;
+                        state.sortDirection = "asc";
                     }
 
                     applyAndRender();
                 });
 
+                var resizer = document.createElement("div");
+                resizer.className = "col-resizer";
+                resizer.addEventListener("mousedown", function (resizeEvent) {
+                    beginColumnResize(resizeEvent, column.index, colElement);
+                });
+
+                th.appendChild(resizer);
                 headRow.appendChild(th);
             })();
         }
@@ -493,50 +626,59 @@
         }
     }
 
-    function updateResultInfo() {
-        var resultInfo = document.getElementById("resultInfo");
-
-        if (!resultInfo) {
-            return;
-        }
-
-        resultInfo.textContent = "Показано строк: " + state.filteredRows.length + " из " + state.rows.length;
-    }
-
-    function initHeaderAndSummary(data) {
-        setText("projectName", "Проект: " + (data.projectName || "Без названия"));
-        setText("generatedAt", "Сформирован: " + new Date(data.generatedAt).toLocaleString("ru-RU"));
-        setText("sourceTypeValue", "Источник: " + state.sourceType);
+    function initHeader(data) {
+        setText("catalogName", state.catalogName);
+        setText("sourceName", state.sourceName);
+        setText("sourceFormat", state.sourceFormat);
+        setText("generatedAt", new Date(data.generatedAt).toLocaleString("ru-RU"));
 
         var summary = data.summary || {};
-        setText("totalElements", formatNumber(summary.totalElements, 0));
+        setText("totalElementsHeader", formatNumber(summary.totalElements, 0));
     }
 
-    function normalizeRows(rawRows, columnsCount) {
-        var rows = [];
+    function initializeControls() {
+        var searchInput = document.getElementById("searchInput");
+        var filterColumnSelect = document.getElementById("filterColumnSelect");
+        var filterValueInput = document.getElementById("filterValueInput");
+        var resetFiltersButton = document.getElementById("resetFiltersButton");
 
-        if (!Array.isArray(rawRows)) {
-            return rows;
+        updateFilterColumnOptions();
+
+        if (searchInput) {
+            searchInput.addEventListener("input", applyAndRender);
         }
 
-        for (var i = 0; i < rawRows.length; i++) {
-            var rawRow = rawRows[i];
-            var normalizedRow = [];
-
-            if (Array.isArray(rawRow)) {
-                for (var j = 0; j < columnsCount; j++) {
-                    normalizedRow.push(rawRow[j] === undefined || rawRow[j] === null ? "" : String(rawRow[j]));
-                }
-            } else {
-                for (var k = 0; k < columnsCount; k++) {
-                    normalizedRow.push("");
-                }
-            }
-
-            rows.push(normalizedRow);
+        if (filterColumnSelect) {
+            filterColumnSelect.addEventListener("change", function () {
+                state.filterColumnIndex = Number(filterColumnSelect.value || -1);
+                applyAndRender();
+            });
         }
 
-        return rows;
+        if (filterValueInput) {
+            filterValueInput.addEventListener("input", applyAndRender);
+        }
+
+        if (resetFiltersButton) {
+            resetFiltersButton.addEventListener("click", function () {
+                if (searchInput) {
+                    searchInput.value = "";
+                }
+
+                if (filterValueInput) {
+                    filterValueInput.value = "";
+                }
+
+                state.filterColumnIndex = -1;
+                state.visibleColumnIndexes = state.defaultVisibleColumnIndexes.slice();
+                state.sortDirection = "asc";
+                state.columnWidths = {};
+
+                syncColumnMenuChecks();
+                updateFilterColumnOptions();
+                applyAndRender();
+            });
+        }
     }
 
     function init() {
@@ -544,15 +686,22 @@
             var data = parseDashboardData();
 
             state.data = data;
+            state.catalogName = String(data.catalogName || "RevitLibraryBuilder");
+            state.sourceName = String(data.sourceName || data.projectName || "Не указан");
             state.rawColumns = Array.isArray(data.columns) ? data.columns.slice() : [];
             state.rows = normalizeRows(data.rows, state.rawColumns.length);
-            state.sourceType = resolveSourceType(state.rawColumns, state.rows);
+            state.sourceFormat = resolveSourceFormat(data);
             state.displayColumns = buildDisplayColumns(state.rawColumns);
             state.defaultVisibleColumnIndexes = buildDefaultVisibleColumnIndexes(state.displayColumns);
             state.visibleColumnIndexes = state.defaultVisibleColumnIndexes.slice();
             state.filteredRows = state.rows.slice();
+            state.columnWidths = {};
 
-            initHeaderAndSummary(data);
+            if (state.displayColumns.length > 0) {
+                state.sortColumnIndex = state.displayColumns[0].index;
+            }
+
+            initHeader(data);
             initializeControls();
             buildColumnVisibilityMenu();
             applyAndRender();

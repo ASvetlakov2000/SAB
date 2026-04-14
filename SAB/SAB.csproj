@@ -71,6 +71,7 @@
     <Compile Include="BimDashboard\Models\DashboardData.cs" />
     <Compile Include="BimDashboard\Models\DataProviderContext.cs" />
     <Compile Include="BimDashboard\Models\DataSourceType.cs" />
+    <Compile Include="BimDashboard\Models\HtmlDashboardViewModel.cs" />
     <Compile Include="BimDashboard\Models\ProviderResult.cs" />
     <Compile Include="BimDashboard\Models\SummaryData.cs" />
     <Compile Include="BimDashboard\Models\TabularDataSet.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="BimDashboard\Services\Processing\DataMapper.cs" />
     <Compile Include="BimDashboard\Services\Processing\TabularRecordMapper.cs" />
     <Compile Include="BimDashboard\Services\Reporting\HtmlReportBuilder.cs" />
+    <Compile Include="BimDashboard\Services\Reporting\HtmlDashboardViewModelBuilder.cs" />
     <Compile Include="BimDashboard\Services\Reporting\HtmlTransferPipelineValidator.cs" />
     <Compile Include="BimDashboard\Services\Reporting\JsonSerializerService.cs" />
     <Compile Include="BimDashboard\Services\Tables\CsvTableReader.cs" />
