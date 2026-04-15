@@ -1,21 +1,18 @@
-# SAB MSI Installer (Per-User)
+# SAB MSI Installer (WixSharp, Per-User)
 
 ## Purpose
-This folder contains a script that builds MSI installers for the Revit plugin from the `bin` folder.
+This folder contains WixSharp-based installer builder for the Revit plugin.
 
 The generated installers:
-- do **not** require administrator rights,
-- install to user profile path:
-  - `%AppData%\Autodesk\Revit\Addins\2023\...`
-  - `%AppData%\Autodesk\Revit\Addins\2024\...`
+- do **not** require administrator rights;
+- install into user profile:
+  - `%AppData%\Autodesk\Revit\Addins\2023`
+  - `%AppData%\Autodesk\Revit\Addins\2024`
 
-## What is generated
-Running the script creates:
-- `SAB_Revit_2023.msi`
-- `SAB_Revit_2024.msi`
-
-Output folder:
-- `Installer\output`
+## Technology
+- `WixSharp.wix4` NuGet package
+- Installer code: `Installer\WixSharpInstaller\Program.cs`
+- Entry script: `Installer\Build-Msi.ps1`
 
 ## Build command
 From repository root:
@@ -30,7 +27,16 @@ Optional custom bin folder:
 powershell -ExecutionPolicy Bypass -File .\Installer\Build-Msi.ps1 -BinFolder "..\SAB\bin\Release"
 ```
 
-## Notes
-- Script installs WiX Toolset 4 locally into `Installer\.tools` if needed.
-- MSI package scope is `perUser`, so elevation is not required.
-- Image/resource/dashboard files from `bin` are included recursively with folder structure preserved.
+## Result
+Output folder:
+- `Installer\output`
+
+Generated files:
+- `SAB_Revit_2023.msi`
+- `SAB_Revit_2024.msi`
+
+## Important notes
+- `Build-Msi.ps1` runs the WixSharp console project via `dotnet run`.
+- `Program.cs` sets installer scope to `InstallScope.perUser`.
+- Files from `bin` are included recursively into `...\Addins\<Year>\SAB`.
+- `.addin` file is installed as `SAB.addin` into `...\Addins\<Year>`.
