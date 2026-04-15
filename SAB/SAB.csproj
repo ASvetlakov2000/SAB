@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -108,13 +108,11 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLineAndFillPatternsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLoadableFamilyThumbnailsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportMaterialNamingCommand.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemTypePiePngCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemFamilyThumbnailTemplateCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypeNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesByCategoryCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesSingleFileCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportMaterialNamingCommand.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportSystemTypePiePngCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportTypeNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\DeleteSelectedTypesAndFamiliesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByBoundaryCommand.cs" />
@@ -122,6 +120,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByPointCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceFillPatternsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceLineStylesCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\PlaceLegendComponentsByCategoriesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\CreateFloorPlanFromPlacementCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Helpers\PlacementMath.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Model\ElementTypeCsvModel.cs" />
@@ -148,15 +147,13 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementServiceFactory.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\PostActions\PostActionViewService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\MaterialNamingApplyService.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\SystemTypePieImageLoadService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeCollectorService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeNamingApplyService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeAndFamilyDeletionService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\FloorPlanViewService.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Services\Views\SystemTypePieLegendExportService.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs">
-      <DependentUpon>ConfirmViewCreationDialog.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentImageExportService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentPlacementService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ViewCreationDialogService.cs" />
     <Compile Include="Helpers\ForRevit\AllCategoriesByPlacement.cs" />
     <Compile Include="Helpers\ForRevit\AllUsedCategoryList.cs" />
@@ -175,7 +172,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Helpers\Notifications\ToastNotifications\Пример вызова_ToastNotifier.txt" />
+    <Content Include="Helpers\Notifications\ToastNotifications\ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð²Ñ‹Ð·Ð¾Ð²Ð°_ToastNotifier.txt" />
     <EmbeddedResource Include="Resources\GenerateDashboardCommand_16.png" />
     <EmbeddedResource Include="Resources\GenerateDashboardCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportMaterialNamingCommand_16.png" />
@@ -206,12 +203,6 @@
     <EmbeddedResource Include="Resources\PlaceLineStylesCommand_32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="BimDashboard\Templates\dashboard_template.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -239,3 +230,6 @@
   </Target>
   <Import Project="..\packages\Microsoft.NETFramework.ReferenceAssemblies.net481.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net481.targets" Condition="Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net481.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net481.targets')" />
 </Project>
+
+
+

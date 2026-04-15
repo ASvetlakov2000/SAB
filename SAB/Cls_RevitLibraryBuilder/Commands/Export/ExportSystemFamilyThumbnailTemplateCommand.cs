@@ -1,32 +1,34 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
-using RevitLibraryBuilder.Services.Csv;
-using RevitLibraryBuilder.Services.Revit;
+using RevitLibraryBuilder.Services.Views;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+using System.Text;
+using Forms = System.Windows.Forms;
 
 namespace RevitLibraryBuilder.Commands
 {
     /// <summary>
-    /// Выгрузка шаблона CSV для миниатюр системных семейств.
+    /// Exports PNG images for all legend components on active Legend view.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportSystemFamilyThumbnailTemplateCommand : IExternalCommand
     {
+        private const string ExportFolderName = "PNG_Pirogi";
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
             {
+                string commandTitle = "Export Legend Component Images";
                 UIDocument uiDocument = commandData.Application.ActiveUIDocument;
 
                 if (uiDocument == null)
                 {
                     message = "Active UIDocument is not available.";
-                    ShowErrorNotification("Шаблон миниатюр системных семейств", message);
+                    ShowErrorNotification(commandTitle, message);
                     return Result.Failed;
                 }
 
@@ -35,39 +37,60 @@ namespace RevitLibraryBuilder.Commands
                 if (document == null || document.ActiveView == null)
                 {
                     message = "Document or active view is not available.";
-                    ShowErrorNotification("Шаблон миниатюр системных семейств", message);
+                    ShowErrorNotification(commandTitle, message);
                     return Result.Failed;
                 }
 
-                TypeCollectorService collector = new TypeCollectorService();
-                List<ElementType> allTypes = collector.CollectAllTypes(document);
-                FamilyThumbnailCsvExportService thumbnailService = new FamilyThumbnailCsvExportService();
+                View activeView = document.ActiveView;
 
-                if (!thumbnailService.HasSystemFamilies(allTypes))
+                if (activeView.ViewType != ViewType.Legend)
                 {
-                    ToastNotifier.ShowWarning("Шаблон миниатюр системных семейств", "Системные семейства не найдены.", 10);
-                    return Result.Cancelled;
+                    message = "Open a Legend view before running this command.";
+                    ShowErrorNotification(commandTitle, message);
+                    return Result.Failed;
                 }
 
-                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                using (Forms.FolderBrowserDialog folderDialog = new Forms.FolderBrowserDialog())
                 {
-                    // Блок выбора папки выгрузки шаблона CSV
-                    folderDialog.Description = "Выберите папку для выгрузки шаблона миниатюр системных семейств";
+                    // Block responsible for selecting output folder for image export.
+                    folderDialog.Description = "Select folder for exporting legend component images";
 
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
+                    if (folderDialog.ShowDialog() != Forms.DialogResult.OK)
                     {
                         return Result.Cancelled;
                     }
 
-                    string outputFolder = folderDialog.SelectedPath;
-                    string csvPath = thumbnailService.WriteSystemFamilyThumbnailTemplate(outputFolder, document.Title, allTypes);
-                    string csvFolder = Path.GetDirectoryName(csvPath) ?? outputFolder;
+                    string selectedRootFolder = folderDialog.SelectedPath;
+                    string outputFolder = BuildExportFolderPath(selectedRootFolder);
+                    Directory.CreateDirectory(outputFolder);
 
-                    ToastNotifier.ShowFolderLinkSuccess(
-                        "Выгрузка шаблона завершена",
-                        "Шаблон CSV для системных семейств сохранен:\n",
-                        csvFolder,
-                        12);
+                    LegendComponentImageExportService exportService = new LegendComponentImageExportService();
+                    LegendComponentImageExportResult exportResult =
+                        exportService.ExportAllFromActiveLegend(uiDocument, activeView, outputFolder);
+
+                    if (!string.IsNullOrWhiteSpace(exportResult.FatalError))
+                    {
+                        message = exportResult.FatalError;
+                        ShowErrorNotification(commandTitle, exportResult.FatalError);
+                        TaskDialog.Show(commandTitle, exportResult.FatalError);
+                        return Result.Failed;
+                    }
+
+                    string summary = BuildSummary(exportResult);
+
+                    if (exportResult.SkippedCount > 0)
+                    {
+                        ToastNotifier.ShowWarning("Legend image export completed", summary, 16);
+                        TaskDialog.Show(commandTitle, summary);
+                    }
+                    else
+                    {
+                        ToastNotifier.ShowFolderLinkSuccess(
+                            "Legend image export completed",
+                            summary + "\n\nOutput folder:",
+                            outputFolder,
+                            14);
+                    }
                 }
 
                 return Result.Succeeded;
@@ -75,9 +98,42 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                ShowErrorNotification("Шаблон миниатюр системных семейств", exception.Message);
+                ShowErrorNotification("Export Legend Component Images", exception.Message);
+                TaskDialog.Show("Export Legend Component Images", exception.ToString());
                 return Result.Failed;
             }
+        }
+
+        /// <summary>
+        /// Builds human-readable summary for final user notification.
+        /// </summary>
+        private static string BuildSummary(LegendComponentImageExportResult exportResult)
+        {
+            StringBuilder summary = new StringBuilder();
+            summary.AppendLine("Total legend components on view: " + exportResult.TotalLegendComponentsOnView);
+            summary.AppendLine("Exported images: " + exportResult.ExportedCount);
+            summary.AppendLine("Skipped items: " + exportResult.SkippedCount);
+
+            if (exportResult.SkippedDetails.Count > 0)
+            {
+                summary.AppendLine();
+                summary.AppendLine("Skip details:");
+
+                for (int i = 0; i < exportResult.SkippedDetails.Count; i++)
+                {
+                    summary.AppendLine((i + 1) + ". " + exportResult.SkippedDetails[i]);
+                }
+            }
+
+            return summary.ToString().Trim();
+        }
+
+        /// <summary>
+        /// Creates dedicated output folder path inside user-selected root path.
+        /// </summary>
+        private static string BuildExportFolderPath(string rootFolder)
+        {
+            return Path.Combine(rootFolder, ExportFolderName);
         }
 
         private static void ShowErrorNotification(string title, string text)

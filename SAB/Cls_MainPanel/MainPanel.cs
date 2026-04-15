@@ -77,16 +77,16 @@ namespace SAB
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportSystemFamilyThumbnailTemplate",
-                "Шаблон миниатюр системных семейств",
+                "Экспорт PNG легенды",
                 "RevitLibraryBuilder.Commands.ExportSystemFamilyThumbnailTemplateCommand",
                 "SAB.Resources.ExportMaterialNamingCommand_32.png",
                 "SAB.Resources.ExportMaterialNamingCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
-                "SAB_ExportSystemTypePiePng",
-                "Выгрузка PNG пирогов",
-                "RevitLibraryBuilder.Commands.ExportSystemTypePiePngCommand",
+                "SAB_PlaceLegendComponentsByCategories",
+                "Расставить компоненты легенды",
+                "RevitLibraryBuilder.Commands.PlaceLegendComponentsByCategoriesCommand",
                 "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
                 "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
 
@@ -111,14 +111,6 @@ namespace SAB
                 "RevitLibraryBuilder.Commands.ImportMaterialNamingCommand",
                 "SAB.Resources.ImportMaterialNamingCommand_32.png",
                 "SAB.Resources.ImportMaterialNamingCommand_16.png");
-
-            Ribbon.AddPushButtonToSplit(
-                namingImportSplit,
-                "SAB_ImportSystemTypePiePng",
-                "Загрузить PNG пироги в типы конструкций",
-                "RevitLibraryBuilder.Commands.ImportSystemTypePiePngCommand",
-                "SAB.Resources.ImportTypeNamingCommand_32.png",
-                "SAB.Resources.ImportTypeNamingCommand_16.png");
 
             libraryPanel.AddSeparator();
 
