@@ -83,6 +83,7 @@
     <Compile Include="BimDashboard\Services\Data\ExcelDataProvider.cs" />
     <Compile Include="BimDashboard\Services\Data\IDataProvider.cs" />
     <Compile Include="BimDashboard\Services\Data\RevitDataProvider.cs" />
+    <Compile Include="BimDashboard\Services\Data\ThumbnailRuntimePathEnricher.cs" />
     <Compile Include="BimDashboard\Services\Processing\DataMapper.cs" />
     <Compile Include="BimDashboard\Services\Processing\TabularRecordMapper.cs" />
     <Compile Include="BimDashboard\Services\Reporting\HtmlReportBuilder.cs" />
@@ -147,6 +148,9 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementServiceFactory.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\PostActions\PostActionViewService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\MaterialNamingApplyService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\LoadableFamilyThumbnailExportService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\ThumbnailFoldersRuntimeStore.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\ThumbnailPathResolverService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeCollectorService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeNamingApplyService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeAndFamilyDeletionService.cs" />
