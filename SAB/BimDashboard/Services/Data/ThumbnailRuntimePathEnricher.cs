@@ -31,8 +31,8 @@ namespace SAB.BimDashboard.Services.Data
                     continue;
                 }
 
-                string familyName = FindFieldValue(record.Fields, "Family");
-                string typeName = FindFieldValue(record.Fields, "TypeName");
+                string familyName = FindFieldValue(record.Fields, "Family", "Семейство");
+                string typeName = FindFieldValue(record.Fields, "TypeName", "Типоразмер", "Тип");
 
                 if (string.IsNullOrWhiteSpace(typeName))
                 {
@@ -66,24 +66,34 @@ namespace SAB.BimDashboard.Services.Data
             return !string.IsNullOrWhiteSpace(value);
         }
 
-        private static string FindFieldValue(Dictionary<string, string> fields, string fieldName)
+        private static string FindFieldValue(Dictionary<string, string> fields, params string[] fieldNames)
         {
-            if (fields == null || string.IsNullOrWhiteSpace(fieldName))
+            if (fields == null || fieldNames == null || fieldNames.Length == 0)
             {
                 return string.Empty;
             }
 
-            string exactValue;
-            if (fields.TryGetValue(fieldName, out exactValue))
+            for (int nameIndex = 0; nameIndex < fieldNames.Length; nameIndex++)
             {
-                return exactValue ?? string.Empty;
-            }
+                string fieldName = fieldNames[nameIndex];
 
-            foreach (KeyValuePair<string, string> pair in fields)
-            {
-                if (string.Equals(pair.Key, fieldName, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrWhiteSpace(fieldName))
                 {
-                    return pair.Value ?? string.Empty;
+                    continue;
+                }
+
+                string exactValue;
+                if (fields.TryGetValue(fieldName, out exactValue))
+                {
+                    return exactValue ?? string.Empty;
+                }
+
+                foreach (KeyValuePair<string, string> pair in fields)
+                {
+                    if (string.Equals(pair.Key, fieldName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return pair.Value ?? string.Empty;
+                    }
                 }
             }
 

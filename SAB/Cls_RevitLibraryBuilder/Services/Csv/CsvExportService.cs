@@ -15,6 +15,8 @@ namespace RevitLibraryBuilder.Services
     /// </summary>
     public class CsvExportService
     {
+        private readonly ElementThicknessService _elementThicknessService = new ElementThicknessService();
+
         public enum TypeCsvExportMode
         {
             Full = 0,
@@ -83,7 +85,7 @@ namespace RevitLibraryBuilder.Services
 
                     for (int i = 0; i < filteredTypes.Count; i++)
                     {
-                        AppendTypeRow(stringBuilder, filteredTypes[i], mode);
+                        AppendTypeRow(stringBuilder, document, filteredTypes[i], mode);
                     }
 
                     File.WriteAllText(fileName, stringBuilder.ToString(), Encoding.UTF8);
@@ -135,7 +137,7 @@ namespace RevitLibraryBuilder.Services
 
                 for (int j = 0; j < groupedTypes.Count; j++)
                 {
-                    AppendTypeRow(stringBuilder, groupedTypes[j], mode);
+                    AppendTypeRow(stringBuilder, document, groupedTypes[j], mode);
                 }
             }
 
@@ -151,11 +153,15 @@ namespace RevitLibraryBuilder.Services
                 return;
             }
 
-            stringBuilder.AppendLine("Category,Family,TypeName,Include");
+            stringBuilder.AppendLine("Category,Family,TypeName,Include,ThumbnailPath,TotalThicknessMm");
         }
 
         // Блок формирования строки CSV с учетом профиля экспорта
-        private void AppendTypeRow(StringBuilder stringBuilder, ElementType type, TypeCsvExportMode mode)
+        private void AppendTypeRow(
+            StringBuilder stringBuilder,
+            Document document,
+            ElementType type,
+            TypeCsvExportMode mode)
         {
             string categoryName = type.Category != null ? type.Category.Name : string.Empty;
             string familyName = GetFamilyName(type);
@@ -172,11 +178,16 @@ namespace RevitLibraryBuilder.Services
                 return;
             }
 
+            string thumbnailPath = ThumbnailPathResolverService.ResolveForElementType(type);
+            string totalThicknessMm = _elementThicknessService.GetTotalThicknessMm(type);
+
             stringBuilder.AppendLine(
                 Escape(categoryName) + "," +
                 Escape(familyName) + "," +
                 Escape(typeName) + "," +
-                "TRUE");
+                "TRUE," +
+                Escape(thumbnailPath) + "," +
+                Escape(totalThicknessMm));
         }
 
         private static Dictionary<string, List<ElementType>> GroupTypesByCategory(List<ElementType> types)
@@ -283,7 +294,7 @@ namespace RevitLibraryBuilder.Services
         }
 
         /// <summary>
-        /// Экранирование CSV (кавычки, запятые)
+        /// Экранирование CSV (кавычки, запятые, переносы)
         /// </summary>
         private static string Escape(string value)
         {
@@ -292,7 +303,7 @@ namespace RevitLibraryBuilder.Services
                 return string.Empty;
             }
 
-            if (value.Contains(",") || value.Contains("\""))
+            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n") || value.Contains("\r"))
             {
                 return "\"" + value.Replace("\"", "\"\"") + "\"";
             }

@@ -10,17 +10,6 @@ namespace RevitLibraryBuilder.Services.Views
     /// </summary>
     public class LegendComponentPlacementService
     {
-        // Block responsible for fixed placement categories order.
-        // The command places items in this exact sequence.
-        private static readonly BuiltInCategory[] TargetCategories =
-        {
-            BuiltInCategory.OST_Ceilings,
-            BuiltInCategory.OST_Floors,
-            BuiltInCategory.OST_Walls,
-            BuiltInCategory.OST_Roofs,
-            BuiltInCategory.OST_RoofSoffit
-        };
-
         // Block responsible for vertical spacing between copied legend components.
         private const double VerticalOffsetMillimeters = 1000.0;
 
@@ -30,7 +19,8 @@ namespace RevitLibraryBuilder.Services.Views
         public LegendComponentPlacementResult PlaceByCategories(Document document, View legendView)
         {
             LegendComponentPlacementResult result = new LegendComponentPlacementResult();
-            result.RequestedCategoriesCount = TargetCategories.Length;
+            List<BuiltInCategory> targetCategories = GetTargetCategories();
+            result.RequestedCategoriesCount = targetCategories.Count;
 
             // Block responsible for input validation.
             if (document == null)
@@ -67,9 +57,9 @@ namespace RevitLibraryBuilder.Services.Views
 
             // Block responsible for iterative placement by predefined categories.
             // Rule: place all types of current category, then move to next category.
-            for (int i = 0; i < TargetCategories.Length; i++)
+            for (int i = 0; i < targetCategories.Count; i++)
             {
-                BuiltInCategory category = TargetCategories[i];
+                BuiltInCategory category = targetCategories[i];
                 string categoryName = GetCategoryDisplayName(category);
 
                 // Step 1: find all candidate types for current category.
@@ -123,6 +113,44 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Builds target categories at runtime to avoid static array initialization issues.
+        /// </summary>
+        private static List<BuiltInCategory> GetTargetCategories()
+        {
+            List<BuiltInCategory> categories = new List<BuiltInCategory>();
+
+            // Block responsible for safe category initialization.
+            // Category names are parsed dynamically to avoid RuntimeHelpers.InitializeArray problems.
+            string[] categoryNames =
+            {
+                "OST_Ceilings",
+                "OST_Floors",
+                "OST_Walls",
+                "OST_Roofs",
+                "OST_RoofSoffit"
+            };
+
+            for (int i = 0; i < categoryNames.Length; i++)
+            {
+                BuiltInCategory category;
+
+                if (!Enum.TryParse(categoryNames[i], out category))
+                {
+                    continue;
+                }
+
+                if (!Enum.IsDefined(typeof(BuiltInCategory), category))
+                {
+                    continue;
+                }
+
+                categories.Add(category);
+            }
+
+            return categories;
         }
 
         /// <summary>

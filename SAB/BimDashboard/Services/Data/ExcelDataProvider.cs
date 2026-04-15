@@ -61,6 +61,7 @@ namespace SAB.BimDashboard.Services.Data
 
             string sourceFileName = Path.GetFileName(context.FilePath);
             ResolveThumbnailPaths(records, context.FilePath);
+            ThumbnailRuntimePathEnricher.Enrich(records);
 
             // Блок обогащения записей метаданными источника.
             for (int i = 0; i < records.Count; i++)

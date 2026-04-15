@@ -15,8 +15,11 @@ namespace RevitLibraryBuilder.Commands
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
+            string debugStage = "Start";
+
             try
             {
+                debugStage = "Get ActiveUIDocument";
                 UIDocument uiDocument = commandData.Application.ActiveUIDocument;
 
                 // Block responsible for active document and view validation.
@@ -28,6 +31,7 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
+                debugStage = "Get Document";
                 Document document = uiDocument.Document;
 
                 if (document == null)
@@ -38,6 +42,7 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
+                debugStage = "Get ActiveView";
                 View activeView = document.ActiveView;
 
                 if (activeView == null)
@@ -56,14 +61,17 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
+                debugStage = "Create LegendComponentPlacementService";
                 LegendComponentPlacementService placementService = new LegendComponentPlacementService();
                 LegendComponentPlacementResult placementResult;
 
                 // Block responsible for transaction boundaries around placement changes.
+                debugStage = "Transaction Start";
                 using (Transaction transaction = new Transaction(document, "Place legend components by categories"))
                 {
                     transaction.Start();
 
+                    debugStage = "PlaceByCategories";
                     placementResult = placementService.PlaceByCategories(document, activeView);
 
                     if (!string.IsNullOrWhiteSpace(placementResult.FatalError))
@@ -75,10 +83,12 @@ namespace RevitLibraryBuilder.Commands
                         return Result.Failed;
                     }
 
+                    debugStage = "Transaction Commit";
                     transaction.Commit();
                 }
 
                 // Block responsible for final user notification.
+                debugStage = "Show Summary";
                 string summaryText = placementResult.BuildSummaryText();
 
                 if (placementResult.SkippedDetails.Count > 0)
@@ -95,9 +105,21 @@ namespace RevitLibraryBuilder.Commands
             }
             catch (Exception exception)
             {
-                message = exception.Message;
-                ToastNotifier.ShowError("Place Legend Components", exception.Message, 12);
-                TaskDialog.Show("Place Legend Components", exception.ToString());
+                string debugText =
+                    "Stage: " + debugStage +
+                    "\nMessage: " + exception.Message +
+                    "\nType: " + exception.GetType().FullName;
+
+                if (exception.InnerException != null)
+                {
+                    debugText +=
+                        "\nInner: " + exception.InnerException.GetType().FullName +
+                        "\nInner Message: " + exception.InnerException.Message;
+                }
+
+                message = "Stage: " + debugStage + ". " + exception.Message;
+                ToastNotifier.ShowError("Place Legend Components", message, 12);
+                TaskDialog.Show("Place Legend Components DEBUG", debugText + "\n\n" + exception);
                 return Result.Failed;
             }
         }

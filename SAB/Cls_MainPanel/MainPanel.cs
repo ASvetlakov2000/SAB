@@ -69,7 +69,7 @@ namespace SAB
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportLoadableFamilyThumbnails",
-                "Миниатюры загружаемых семейств",
+                "Экспорт PNG семейств",
                 "RevitLibraryBuilder.Commands.ExportLoadableFamilyThumbnailsCommand",
                 "SAB.Resources.ExportTypeNamingCommand_32.png",
                 "SAB.Resources.ExportTypeNamingCommand_16.png");
@@ -77,18 +77,10 @@ namespace SAB
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportSystemFamilyThumbnailTemplate",
-                "Экспорт PNG легенды",
+                "Экспорт PNG пирогов",
                 "RevitLibraryBuilder.Commands.ExportSystemFamilyThumbnailTemplateCommand",
                 "SAB.Resources.ExportMaterialNamingCommand_32.png",
                 "SAB.Resources.ExportMaterialNamingCommand_16.png");
-
-            Ribbon.AddPushButtonToSplit(
-                exportSplit,
-                "SAB_PlaceLegendComponentsByCategories",
-                "Расставить компоненты легенды",
-                "RevitLibraryBuilder.Commands.PlaceLegendComponentsByCategoriesCommand",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
 
             libraryPanel.AddSeparator();
 
@@ -141,6 +133,14 @@ namespace SAB
                 "RevitLibraryBuilder.Commands.ImportByLineCommand",
                 "SAB.Resources.ImportByLineCommand_32.png",
                 "SAB.Resources.ImportByLineCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                placementSplit,
+                "SAB_PlaceLegendComponentsByCategories",
+                "Расставить комп. легенды",
+                "RevitLibraryBuilder.Commands.PlaceLegendComponentsByCategoriesCommand",
+                "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
+                "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
 
             libraryPanel.AddSeparator();
 

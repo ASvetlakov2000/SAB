@@ -18,6 +18,7 @@ namespace RevitLibraryBuilder.Services
             lock (SyncRoot)
             {
                 _systemFamilyImagesFolder = NormalizePath(folderPath);
+                ThumbnailPathResolverService.ResetCache();
             }
         }
 
@@ -26,6 +27,7 @@ namespace RevitLibraryBuilder.Services
             lock (SyncRoot)
             {
                 _loadableFamilyImagesFolder = NormalizePath(folderPath);
+                ThumbnailPathResolverService.ResetCache();
             }
         }
 
@@ -52,6 +54,7 @@ namespace RevitLibraryBuilder.Services
             lock (SyncRoot)
             {
                 ClearInvalidPathsInternal();
+                ThumbnailPathResolverService.ResetCache();
             }
         }
 

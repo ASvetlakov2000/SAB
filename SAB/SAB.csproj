@@ -138,6 +138,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvTableService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\MaterialNamingCsvService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\TypeNamingCsvService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\ElementThicknessService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\FillPatternPlacer.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\HostedDoorWindowPlacementService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\IPlacementService.cs" />

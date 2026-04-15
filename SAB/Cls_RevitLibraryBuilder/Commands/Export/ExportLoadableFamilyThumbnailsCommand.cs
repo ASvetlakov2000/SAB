@@ -1,18 +1,17 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
-using RevitLibraryBuilder.Services.Csv;
+using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Revit;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows.Forms;
 
 namespace RevitLibraryBuilder.Commands
 {
     /// <summary>
-    /// Выгрузка CSV + PNG миниатюр для загружаемых семейств.
+    /// PNG export for loadable family thumbnails (without CSV).
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportLoadableFamilyThumbnailsCommand : IExternalCommand
@@ -41,7 +40,7 @@ namespace RevitLibraryBuilder.Commands
 
                 TypeCollectorService collector = new TypeCollectorService();
                 List<ElementType> allTypes = collector.CollectAllTypes(document);
-                FamilyThumbnailCsvExportService thumbnailService = new FamilyThumbnailCsvExportService();
+                LoadableFamilyThumbnailExportService thumbnailService = new LoadableFamilyThumbnailExportService();
 
                 if (!thumbnailService.HasLoadableFamilies(allTypes))
                 {
@@ -51,7 +50,7 @@ namespace RevitLibraryBuilder.Commands
 
                 using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
-                    // Блок выбора папки экспорта CSV и PNG миниатюр
+                    // Блок выбора корневой папки, где будет создана папка PNG_Family.
                     folderDialog.Description = "Выберите папку для выгрузки миниатюр загружаемых семейств";
 
                     if (folderDialog.ShowDialog() != DialogResult.OK)
@@ -59,14 +58,23 @@ namespace RevitLibraryBuilder.Commands
                         return Result.Cancelled;
                     }
 
-                    string outputFolder = folderDialog.SelectedPath;
-                    string csvPath = thumbnailService.WriteLoadableFamilyThumbnails(outputFolder, document.Title, allTypes);
-                    string csvFolder = Path.GetDirectoryName(csvPath) ?? outputFolder;
+                    string rootFolder = folderDialog.SelectedPath;
+                    LoadableFamilyThumbnailExportResult exportResult =
+                        thumbnailService.ExportToFolder(document, allTypes, rootFolder);
+
+                    if (exportResult.ExportedCount == 0)
+                    {
+                        ToastNotifier.ShowWarning("Выгрузка миниатюр семейств", "Не удалось выгрузить миниатюры.", 10);
+                        return Result.Cancelled;
+                    }
+
+                    // Блок сохранения пути для дальнейшего использования в dashboard.
+                    ThumbnailFoldersRuntimeStore.SetLoadableFamilyImagesFolder(exportResult.OutputFolderPath);
 
                     ToastNotifier.ShowFolderLinkSuccess(
                         "Выгрузка миниатюр завершена",
-                        "CSV и PNG миниатюры загружаемых семейств сохранены:\n",
-                        csvFolder,
+                        "PNG миниатюры загружаемых семейств сохранены:\n",
+                        exportResult.OutputFolderPath,
                         12);
                 }
 

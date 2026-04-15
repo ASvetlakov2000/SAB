@@ -23,13 +23,55 @@
 
     var hiddenColumns = {
         filter: true,
+        "фильтр": true,
         recordtype: true,
+        "типзаписи": true,
         include: true,
+        "включить": true,
         sourcetype: true,
-        sourcefile: true
+        "типисточника": true,
+        sourcefile: true,
+        "файлисточника": true
     };
 
     var minColumnWidthPx = 90;
+
+    var columnLabelMap = {
+        rownumber: "№",
+        category: "Категория",
+        family: "Семейство",
+        typename: "Типоразмер",
+        include: "Включить",
+        thumbnailpath: "Миниатюра",
+        thumbnail: "Миниатюра",
+        iconpath: "Миниатюра",
+        totalthicknessmm: "Толщина типа, мм",
+        name: "Наименование",
+        count: "Количество",
+        area: "Площадь",
+        length: "Длина",
+        value: "Значение",
+        materialname_old: "Старое наименование материала",
+        materialname_new: "Новое наименование материала",
+        description_old: "Старое описание материала",
+        description_new: "Новое описание материала",
+        family_old: "Старое наименование семейства",
+        family_new: "Новое наименование семейства",
+        typename_old: "Старое наименование типа",
+        typename_new: "Новое наименование типа",
+        deletematerial: "Удалить материал",
+        colorr: "Красный канал",
+        colorg: "Зеленый канал",
+        colorb: "Синий канал",
+        linestyleid: "ID стиля линии",
+        linestyle: "Стиль линии",
+        lineweight: "Вес линии",
+        linepattern: "Шаблон линии",
+        fillpatternid: "ID штриховки",
+        fillpatternname: "Наименование штриховки",
+        fillpatterntarget: "Назначение штриховки",
+        fillpatternisdrafting: "Чертежная штриховка"
+    };
 
     function parseDashboardData() {
         var dataNode = document.getElementById("dashboard-data");
@@ -61,6 +103,16 @@
 
     function toLowerSafe(value) {
         return String(value || "").toLowerCase();
+    }
+
+    function getColumnLabel(columnName) {
+        var lowered = toLowerSafe(columnName);
+
+        if (columnLabelMap.hasOwnProperty(lowered)) {
+            return columnLabelMap[lowered];
+        }
+
+        return String(columnName || "");
     }
 
     function tryParseNumber(value) {
@@ -129,7 +181,7 @@
                 continue;
             }
 
-            var label = columnName === "RowNumber" ? "№" : columnName;
+            var label = getColumnLabel(columnName);
 
             displayColumns.push({
                 index: i,
@@ -152,6 +204,23 @@
             displayColumns.unshift(rowNumberColumn);
         }
 
+        var thumbnailPosition = -1;
+
+        for (var k = 0; k < displayColumns.length; k++) {
+            var loweredName = toLowerSafe(displayColumns[k].name);
+
+            if (loweredName === "thumbnailpath" || loweredName === "thumbnail" || loweredName === "iconpath") {
+                thumbnailPosition = k;
+                break;
+            }
+        }
+
+        if (thumbnailPosition >= 0) {
+            var thumbnailColumn = displayColumns.splice(thumbnailPosition, 1)[0];
+            var insertIndex = displayColumns.length > 0 && toLowerSafe(displayColumns[0].name) === "rownumber" ? 1 : 0;
+            displayColumns.splice(insertIndex, 0, thumbnailColumn);
+        }
+
         return displayColumns;
     }
 
@@ -162,12 +231,19 @@
         var priority = [
             "№",
             "Category",
+            "Категория",
             "Family",
+            "Семейство",
             "TypeName",
+            "Типоразмер",
             "ThumbnailPath",
             "Thumbnail",
             "IconPath",
+            "Миниатюра",
+            "TotalThicknessMm",
+            "Толщина типа, мм",
             "Name",
+            "Наименование",
             "MaterialName_Old",
             "MaterialName_New",
             "Description_Old",

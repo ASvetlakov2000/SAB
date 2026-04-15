@@ -2,6 +2,7 @@
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
+using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Views;
 using System;
 using System.IO;
@@ -75,6 +76,9 @@ namespace RevitLibraryBuilder.Commands
                         TaskDialog.Show(commandTitle, exportResult.FatalError);
                         return Result.Failed;
                     }
+
+                    // Блок сохранения пути в runtime-памяти для dashboard.
+                    ThumbnailFoldersRuntimeStore.SetSystemFamilyImagesFolder(outputFolder);
 
                     string summary = BuildSummary(exportResult);
 

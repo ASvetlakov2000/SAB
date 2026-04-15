@@ -1,4 +1,4 @@
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +10,20 @@ namespace RevitLibraryBuilder.Services
     /// </summary>
     public static class ThumbnailPathResolverService
     {
+        private const string PiePrefix = "Пирог";
+
+        private static readonly object CacheSyncRoot = new object();
+        private static readonly Dictionary<string, Dictionary<string, string>> FolderLookupCache =
+            new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+
+        public static void ResetCache()
+        {
+            lock (CacheSyncRoot)
+            {
+                FolderLookupCache.Clear();
+            }
+        }
+
         public static string ResolveForElementType(ElementType elementType)
         {
             if (elementType == null)
@@ -48,26 +62,149 @@ namespace RevitLibraryBuilder.Services
                     continue;
                 }
 
-                for (int j = 0; j < candidateNames.Count; j++)
-                {
-                    string name = candidateNames[j];
-                    string pngPath = Path.Combine(folder, name + ".png");
+                string resolvedByDirectPath = TryResolveByDirectPath(folder, candidateNames);
 
-                    if (File.Exists(pngPath))
-                    {
-                        try
-                        {
-                            return Path.GetFullPath(pngPath);
-                        }
-                        catch
-                        {
-                            return pngPath;
-                        }
-                    }
+                if (!string.IsNullOrWhiteSpace(resolvedByDirectPath))
+                {
+                    return resolvedByDirectPath;
+                }
+
+                string resolvedByLookup = TryResolveByFolderLookup(folder, candidateNames);
+
+                if (!string.IsNullOrWhiteSpace(resolvedByLookup))
+                {
+                    return resolvedByLookup;
                 }
             }
 
             return string.Empty;
+        }
+
+        private static string TryResolveByDirectPath(string folder, List<string> candidateNames)
+        {
+            for (int i = 0; i < candidateNames.Count; i++)
+            {
+                string name = candidateNames[i];
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    continue;
+                }
+
+                string pngPath = Path.Combine(folder, name + ".png");
+
+                if (File.Exists(pngPath))
+                {
+                    return NormalizeOutputPath(pngPath);
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static string TryResolveByFolderLookup(string folder, List<string> candidateNames)
+        {
+            Dictionary<string, string> lookup = GetOrBuildFolderLookup(folder);
+
+            if (lookup == null || lookup.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            for (int i = 0; i < candidateNames.Count; i++)
+            {
+                string candidate = candidateNames[i];
+
+                if (string.IsNullOrWhiteSpace(candidate))
+                {
+                    continue;
+                }
+
+                string normalizedKey = NormalizeLookupKey(candidate);
+
+                if (string.IsNullOrWhiteSpace(normalizedKey))
+                {
+                    continue;
+                }
+
+                string resolvedPath;
+
+                if (lookup.TryGetValue(normalizedKey, out resolvedPath) && File.Exists(resolvedPath))
+                {
+                    return NormalizeOutputPath(resolvedPath);
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private static Dictionary<string, string> GetOrBuildFolderLookup(string folder)
+        {
+            lock (CacheSyncRoot)
+            {
+                Dictionary<string, string> cached;
+
+                if (FolderLookupCache.TryGetValue(folder, out cached))
+                {
+                    return cached;
+                }
+            }
+
+            Dictionary<string, string> built = BuildFolderLookup(folder);
+
+            lock (CacheSyncRoot)
+            {
+                FolderLookupCache[folder] = built;
+            }
+
+            return built;
+        }
+
+        private static Dictionary<string, string> BuildFolderLookup(string folder)
+        {
+            Dictionary<string, string> lookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+            {
+                return lookup;
+            }
+
+            string[] files;
+
+            try
+            {
+                files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+            }
+            catch
+            {
+                return lookup;
+            }
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                string filePath = files[i];
+                string extension = Path.GetExtension(filePath);
+
+                if (!string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                string key = NormalizeLookupKey(fileName);
+
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    continue;
+                }
+
+                if (!lookup.ContainsKey(key))
+                {
+                    lookup[key] = filePath;
+                }
+            }
+
+            return lookup;
         }
 
         private static List<string> BuildFolderSearchOrder(bool? preferLoadable, string loadableFolder, string systemFolder)
@@ -100,8 +237,11 @@ namespace RevitLibraryBuilder.Services
         {
             List<string> candidates = new List<string>();
 
-            string safeTypeName = MakeSafeFileName(typeName);
-            string safeFamilyName = MakeSafeFileName(familyName);
+            string rawTypeName = (typeName ?? string.Empty).Trim();
+            string rawFamilyName = (familyName ?? string.Empty).Trim();
+
+            string safeTypeName = MakeSafeFileName(rawTypeName);
+            string safeFamilyName = MakeSafeFileName(rawFamilyName);
             string safeFamilyType = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(safeFamilyName) && !string.IsNullOrWhiteSpace(safeTypeName))
@@ -109,17 +249,63 @@ namespace RevitLibraryBuilder.Services
                 safeFamilyType = MakeSafeFileName(safeFamilyName + "_" + safeTypeName);
             }
 
-            if (!string.IsNullOrWhiteSpace(safeTypeName))
+            AddUnique(candidates, rawTypeName);
+            AddUnique(candidates, safeTypeName);
+            AddUnique(candidates, safeFamilyType);
+
+            if (!string.IsNullOrWhiteSpace(rawFamilyName) && !string.IsNullOrWhiteSpace(rawTypeName))
             {
-                candidates.Add(safeTypeName);
+                AddUnique(candidates, rawFamilyName + "_" + rawTypeName);
+                AddUnique(candidates, PiePrefix + "_" + rawFamilyName + "_" + rawTypeName);
             }
 
-            if (!string.IsNullOrWhiteSpace(safeFamilyType))
+            if (!string.IsNullOrWhiteSpace(safeFamilyName) && !string.IsNullOrWhiteSpace(safeTypeName))
             {
-                candidates.Add(safeFamilyType);
+                AddUnique(candidates, PiePrefix + "_" + safeFamilyName + "_" + safeTypeName);
             }
+
+            AddUnique(candidates, PiePrefix + "_" + safeTypeName);
 
             return candidates;
+        }
+
+        private static void AddUnique(List<string> values, string value)
+        {
+            if (values == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                if (string.Equals(values[i], value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+
+            values.Add(value);
+        }
+
+        private static string NormalizeLookupKey(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            string normalized = value.Trim().ToLowerInvariant();
+            normalized = normalized.Replace(" ", string.Empty);
+            normalized = normalized.Replace("_", string.Empty);
+            normalized = normalized.Replace("-", string.Empty);
+            normalized = normalized.Replace(".", string.Empty);
+
+            return normalized;
         }
 
         private static string GetFamilyName(ElementType elementType)
@@ -162,6 +348,23 @@ namespace RevitLibraryBuilder.Services
             }
 
             return result.Trim();
+        }
+
+        private static string NormalizeOutputPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                return Path.GetFullPath(path);
+            }
+            catch
+            {
+                return path;
+            }
         }
     }
 }
