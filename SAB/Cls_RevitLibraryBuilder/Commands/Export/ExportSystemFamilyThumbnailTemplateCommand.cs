@@ -73,7 +73,6 @@ namespace RevitLibraryBuilder.Commands
                     {
                         message = exportResult.FatalError;
                         ShowErrorNotification(commandTitle, exportResult.FatalError);
-                        TaskDialog.Show(commandTitle, exportResult.FatalError);
                         return Result.Failed;
                     }
 
@@ -85,7 +84,6 @@ namespace RevitLibraryBuilder.Commands
                     if (exportResult.SkippedCount > 0)
                     {
                         ToastNotifier.ShowWarning("Legend image export completed", summary, 16);
-                        TaskDialog.Show(commandTitle, summary);
                     }
                     else
                     {
@@ -103,7 +101,6 @@ namespace RevitLibraryBuilder.Commands
             {
                 message = exception.Message;
                 ShowErrorNotification("Export Legend Component Images", exception.Message);
-                TaskDialog.Show("Export Legend Component Images", exception.ToString());
                 return Result.Failed;
             }
         }

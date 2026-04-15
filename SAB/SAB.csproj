@@ -114,6 +114,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesByCategoryCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesSingleFileCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportMaterialNamingCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\LoadSystemFamilyTypeImagesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportTypeNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\DeleteSelectedTypesAndFamiliesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByBoundaryCommand.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\PostActions\PostActionViewService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\MaterialNamingApplyService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\LoadableFamilyThumbnailExportService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\SystemFamilyTypeImageLoaderService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\ThumbnailFoldersRuntimeStore.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\ThumbnailPathResolverService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeCollectorService.cs" />
