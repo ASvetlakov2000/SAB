@@ -17,8 +17,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Create Floor Plan", message);
+                    message = "Активный UIDocument недоступен.";
+                    TaskDialog.Show("Создание плана этажа", message);
                     return Result.Failed;
                 }
 
@@ -26,8 +26,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
-                    TaskDialog.Show("Create Floor Plan", message);
+                    message = "Документ недоступен.";
+                    TaskDialog.Show("Создание плана этажа", message);
                     return Result.Failed;
                 }
 
@@ -35,8 +35,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (sourceView == null)
                 {
-                    message = "Active view is not available.";
-                    TaskDialog.Show("Create Floor Plan", message);
+                    message = "Активный вид недоступен.";
+                    TaskDialog.Show("Создание плана этажа", message);
                     return Result.Failed;
                 }
 
@@ -51,7 +51,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (createdView == null)
                 {
-                    message = "The floor plan view could not be created.";
+                    message = "Не удалось создать вид плана этажа.";
                     return Result.Failed;
                 }
 
@@ -60,7 +60,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Create Floor Plan", exception.ToString());
+                TaskDialog.Show("Создание плана этажа", exception.ToString());
                 return Result.Failed;
             }
         }

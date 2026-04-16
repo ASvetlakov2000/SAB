@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
@@ -26,7 +26,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
+                    message = "Активный UIDocument недоступен.";
                     ToastNotifier.ShowError(commandTitle, message, 12);
                     return Result.Failed;
                 }
@@ -35,7 +35,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
+                    message = "Документ недоступен.";
                     ToastNotifier.ShowError(commandTitle, message, 12);
                     return Result.Failed;
                 }

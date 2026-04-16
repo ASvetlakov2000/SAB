@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.DB;
 using System;
 using System.Collections.Generic;
 
@@ -25,19 +25,19 @@ namespace RevitLibraryBuilder.Services.Views
             // Block responsible for input validation.
             if (document == null)
             {
-                result.FatalError = "Document is not available.";
+                result.FatalError = "Документ недоступен.";
                 return result;
             }
 
             if (legendView == null)
             {
-                result.FatalError = "Active view is not available.";
+                result.FatalError = "Активный вид недоступен.";
                 return result;
             }
 
             if (legendView.ViewType != ViewType.Legend)
             {
-                result.FatalError = "Active view must be a Legend view.";
+                result.FatalError = "Активный вид должен быть типа Легенда.";
                 return result;
             }
 
@@ -68,7 +68,7 @@ namespace RevitLibraryBuilder.Services.Views
 
                 if (candidateTypeIds.Count == 0)
                 {
-                    result.AddSkipped(categoryName, string.Empty, "No ElementType found for this category.");
+                    result.AddSkipped(categoryName, string.Empty, "Для этой категории не найдено ни одного типоразмера.");
                     continue;
                 }
 
@@ -166,7 +166,7 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (document == null || legendViewId == ElementId.InvalidElementId)
             {
-                errorText = "Legend view is not available for template search.";
+                errorText = "Вид легенды недоступен для поиска шаблонного компонента.";
                 return false;
             }
 
@@ -185,7 +185,7 @@ namespace RevitLibraryBuilder.Services.Views
                 return true;
             }
 
-            errorText = "Template legend component was not found on active Legend view. Place one legend component manually and rerun command.";
+            errorText = "На активном виде Легенда не найден шаблонный компонент. Разместите один компонент вручную и запустите команду повторно.";
             return false;
         }
 
@@ -205,13 +205,13 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (document == null)
             {
-                errorText = "Document is not available for copy operation.";
+                errorText = "Документ недоступен для операции копирования.";
                 return false;
             }
 
             if (legendViewId == ElementId.InvalidElementId || sourceComponentId == ElementId.InvalidElementId)
             {
-                errorText = "Legend view id or source component id is invalid.";
+                errorText = "Некорректный идентификатор вида легенды или исходного компонента.";
                 return false;
             }
 
@@ -220,13 +220,13 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (sourceLegendView == null || sourceLegendView.ViewType != ViewType.Legend)
             {
-                errorText = "Source legend view is invalid for copy operation.";
+                errorText = "Исходный вид легенды недействителен для операции копирования.";
                 return false;
             }
 
             if (!IsLegendComponentOnView(sourceComponent, legendViewId))
             {
-                errorText = "Source legend component is invalid or not owned by active Legend view.";
+                errorText = "Исходный компонент легенды недействителен или не принадлежит активному виду Легенда.";
                 return false;
             }
 
@@ -243,13 +243,13 @@ namespace RevitLibraryBuilder.Services.Views
             }
             catch (Exception exception)
             {
-                errorText = "Failed to copy legend component: " + exception.Message;
+                errorText = "Не удалось скопировать компонент легенды: " + exception.Message;
                 return false;
             }
 
             if (copiedIds == null || copiedIds.Count == 0)
             {
-                errorText = "Copy operation returned no new elements.";
+                errorText = "Операция копирования не вернула новых элементов.";
                 return false;
             }
 
@@ -272,7 +272,7 @@ namespace RevitLibraryBuilder.Services.Views
                 return true;
             }
 
-            errorText = "Copied legend component was not found among returned copied ids.";
+            errorText = "Скопированный компонент легенды не найден среди возвращенных идентификаторов.";
             return false;
         }
 
@@ -289,13 +289,13 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (document == null || legendComponent == null || targetTypeId == ElementId.InvalidElementId)
             {
-                errorText = "Not enough data to assign represented type.";
+                errorText = "Недостаточно данных для назначения представляемого типоразмера.";
                 return false;
             }
 
             if (!legendComponent.IsValidObject)
             {
-                errorText = "Legend component became invalid before type assignment.";
+                errorText = "Компонент легенды стал недействителен до назначения типоразмера.";
                 return false;
             }
 
@@ -303,7 +303,7 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (targetType == null || !targetType.IsValidObject)
             {
-                errorText = "Target ElementType is missing or invalid. TypeId=" + targetTypeId.IntegerValue;
+                errorText = "Целевой типоразмер отсутствует или недействителен. TypeId=" + targetTypeId.IntegerValue;
                 return false;
             }
 
@@ -311,20 +311,20 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (representedParameter == null)
             {
-                errorText = "Parameter LEGEND_COMPONENT was not found.";
+                errorText = "Параметр LEGEND_COMPONENT не найден.";
                 return false;
             }
 
             if (representedParameter.IsReadOnly)
             {
-                errorText = "Parameter LEGEND_COMPONENT is read-only.";
+                errorText = "Параметр LEGEND_COMPONENT доступен только для чтения.";
                 return false;
             }
 
             if (representedParameter.StorageType != StorageType.ElementId &&
                 representedParameter.StorageType != StorageType.Integer)
             {
-                errorText = "Unsupported storage type of LEGEND_COMPONENT parameter.";
+                errorText = "Неподдерживаемый тип хранения параметра LEGEND_COMPONENT.";
                 return false;
             }
 
@@ -346,12 +346,12 @@ namespace RevitLibraryBuilder.Services.Views
                     return true;
                 }
 
-                errorText = "Assigned type was not applied to LEGEND_COMPONENT parameter.";
+                errorText = "Назначенный тип не применился к параметру LEGEND_COMPONENT.";
                 return false;
             }
             catch (Exception exception)
             {
-                errorText = "Failed to assign represented type: " + exception.Message;
+                errorText = "Не удалось назначить представляемый тип: " + exception.Message;
                 return false;
             }
         }
@@ -368,7 +368,7 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (legendComponent == null)
             {
-                errorText = "Copied legend component was not found before type assignment.";
+                errorText = "Скопированный компонент легенды не найден перед назначением типа.";
                 return false;
             }
 
@@ -549,7 +549,7 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (type == null)
             {
-                return "UnknownType(" + typeId.IntegerValue + ")";
+                return "НеизвестныйТип(" + typeId.IntegerValue + ")";
             }
 
             string familyName = type.FamilyName ?? string.Empty;
@@ -636,14 +636,14 @@ namespace RevitLibraryBuilder.Services.Views
         public string BuildSummaryText()
         {
             string summary =
-                "Requested categories: " + RequestedCategoriesCount +
-                "\nRequested types: " + RequestedTypeCount +
-                "\nPlaced components: " + PlacedCount +
-                "\nSkipped items: " + _skipped.Count;
+                "Категорий в обработке: " + RequestedCategoriesCount +
+                "\nТипов в обработке: " + RequestedTypeCount +
+                "\nРасставлено компонентов: " + PlacedCount +
+                "\nПропущено: " + _skipped.Count;
 
             if (_skipped.Count > 0)
             {
-                summary += "\n\nSkip details:";
+                summary += "\n\nПричины пропуска:";
 
                 for (int i = 0; i < _skipped.Count; i++)
                 {

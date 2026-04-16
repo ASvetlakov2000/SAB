@@ -22,7 +22,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Place Line Styles", exception.ToString());
+                TaskDialog.Show("Размещение стилей линий", exception.ToString());
                 return Result.Failed;
             }
         }

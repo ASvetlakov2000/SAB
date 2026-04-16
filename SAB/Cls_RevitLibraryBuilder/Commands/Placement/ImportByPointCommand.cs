@@ -26,8 +26,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Import By Point", message);
+                    message = "Активный UIDocument недоступен.";
+                    TaskDialog.Show("Импорт по точке", message);
                     return Result.Failed;
                 }
 
@@ -35,8 +35,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
-                    TaskDialog.Show("Import By Point", message);
+                    message = "Документ недоступен.";
+                    TaskDialog.Show("Импорт по точке", message);
                     return Result.Failed;
                 }
 
@@ -51,7 +51,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (csvRows == null || csvRows.Count == 0)
                 {
-                    TaskDialog.Show("Import By Point", "CSV import failed or returned no rows.");
+                    TaskDialog.Show("Импорт по точке", "Импорт из файла не выполнен или файл не содержит строк.");
                     return Result.Cancelled;
                 }
 
@@ -61,7 +61,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (includedRowCount <= 0)
                 {
-                    TaskDialog.Show("Import By Point", "No rows with Include=TRUE were found.");
+                    TaskDialog.Show("Импорт по точке", "Не найдено строк, отмеченных для импорта.");
                     return Result.Cancelled;
                 }
 
@@ -69,7 +69,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (level == null)
                 {
-                    TaskDialog.Show("Import By Point", "No valid Level was found for placement.");
+                    TaskDialog.Show("Импорт по точке", "Не найден подходящий уровень для размещения.");
                     return Result.Failed;
                 }
 
@@ -96,7 +96,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Import By Point", exception.ToString());
+                TaskDialog.Show("Импорт по точке", exception.ToString());
                 return Result.Failed;
             }
         }
@@ -105,7 +105,7 @@ namespace RevitLibraryBuilder.Commands
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Filter = "CSV (*.csv)|*.csv";
+                dialog.Filter = "Файл CSV (*.csv)|*.csv";
 
                 if (dialog.ShowDialog() != DialogResult.OK)
                 {

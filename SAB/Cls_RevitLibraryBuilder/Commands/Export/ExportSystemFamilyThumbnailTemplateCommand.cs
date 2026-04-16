@@ -15,7 +15,7 @@ using asBIM;
 namespace RevitLibraryBuilder.Commands
 {
     /// <summary>
-    /// Exports PNG images for all legend components on active Legend view.
+    /// Экспорт PNG изображений для всех компонентов легенды на активном виде Легенда.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportSystemFamilyThumbnailTemplateCommand : IExternalCommand
@@ -26,12 +26,12 @@ namespace RevitLibraryBuilder.Commands
         {
             try
             {
-                string commandTitle = "Export Legend Component Images";
+                const string commandTitle = "Экспорт изображений компонентов легенды";
                 UIDocument uiDocument = commandData.Application.ActiveUIDocument;
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
+                    message = "Активный UIDocument недоступен.";
                     ShowErrorNotification(commandTitle, message);
                     return Result.Failed;
                 }
@@ -40,7 +40,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null || document.ActiveView == null)
                 {
-                    message = "Document or active view is not available.";
+                    message = "Документ или активный вид недоступен.";
                     ShowErrorNotification(commandTitle, message);
                     return Result.Failed;
                 }
@@ -49,14 +49,14 @@ namespace RevitLibraryBuilder.Commands
 
                 if (activeView.ViewType != ViewType.Legend)
                 {
-                    message = "Open a Legend view before running this command.";
+                    message = "Перед запуском команды откройте вид Легенда.";
                     ShowErrorNotification(commandTitle, message);
                     return Result.Failed;
                 }
 
-                // Block responsible for selecting output folder for image export.
+                // Блок выбора папки для экспорта изображений.
                 string selectedRootFolder = OpenFolder.SelectFolderPath(
-                    "Select folder for exporting legend component images",
+                    "Выберите папку для экспорта изображений компонентов легенды",
                     ExportFolderName);
 
                 if (string.IsNullOrWhiteSpace(selectedRootFolder))
@@ -78,11 +78,10 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
-                // Block responsible for writing report with detailed reasons.
-                string reportPath = WriteExportReport(outputFolder, exportResult);
+                // Блок формирования только одного отчета: проблемные наименования типоразмеров.
                 string problemNamesReportPath = WriteProblemTypeNameReport(outputFolder, exportResult);
 
-                // Block responsible for creating separate legend for manual correction of problematic names.
+                // Блок создания отдельного вида для ручной корректировки проблемных типоразмеров.
                 string problematicLegendViewName = string.Empty;
 
                 if (exportResult.ProblemNameIssues.Count > 0)
@@ -96,21 +95,25 @@ namespace RevitLibraryBuilder.Commands
                 // Блок сохранения пути в runtime-памяти для dashboard.
                 ThumbnailFoldersRuntimeStore.SetSystemFamilyImagesFolder(outputFolder);
 
-                string summary = BuildSummary(exportResult, reportPath, problematicLegendViewName);
-                summary = AppendProblemReportInfo(summary, problemNamesReportPath);
+                string summary = BuildSummary(exportResult, problematicLegendViewName);
+
+                if (!string.IsNullOrWhiteSpace(problemNamesReportPath) && File.Exists(problemNamesReportPath))
+                {
+                    summary += "\n\nОтчет о проблемных наименованиях типоразмеров по ссылке ниже";
+                }
 
                 if (exportResult.SkippedCount > 0)
                 {
                     ToastNotifier.ShowFolderLinkWarning(
-                        "Legend image export completed with issues",
+                        "Экспорт изображений легенды завершен с замечаниями",
                         summary,
-                        outputFolder,
+                        string.IsNullOrWhiteSpace(problemNamesReportPath) ? outputFolder : problemNamesReportPath,
                         18);
                 }
                 else
                 {
                     ToastNotifier.ShowFolderLinkSuccess(
-                        "Legend image export completed",
+                        "Экспорт изображений легенды завершен",
                         summary,
                         outputFolder,
                         16);
@@ -121,126 +124,34 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                ShowErrorNotification("Export Legend Component Images", exception.Message);
+                ShowErrorNotification("Экспорт изображений компонентов легенды", exception.Message);
                 return Result.Failed;
             }
         }
 
         /// <summary>
-        /// Builds human-readable summary for final user notification.
+        /// Формирует короткую итоговую сводку без перечисления проблемных элементов.
         /// </summary>
         private static string BuildSummary(
             LegendComponentImageExportResult exportResult,
-            string reportPath,
             string problematicLegendViewName)
         {
             StringBuilder summary = new StringBuilder();
-            summary.AppendLine("Total legend components on view: " + exportResult.TotalLegendComponentsOnView);
-            summary.AppendLine("Exported images: " + exportResult.ExportedCount);
-            summary.AppendLine("Skipped items: " + exportResult.SkippedCount);
-            summary.AppendLine("Problematic type names: " + exportResult.ProblematicNamesCount);
-
-            if (!string.IsNullOrWhiteSpace(reportPath) && File.Exists(reportPath))
-            {
-                summary.AppendLine("Report: " + Path.GetFileName(reportPath));
-            }
+            summary.AppendLine("Всего компонентов легенды на виде: " + exportResult.TotalLegendComponentsOnView);
+            summary.AppendLine("Экспортировано изображений: " + exportResult.ExportedCount);
+            summary.AppendLine("Пропущено: " + exportResult.SkippedCount);
+            summary.AppendLine("Проблемных имен типов: " + exportResult.ProblematicNamesCount);
 
             if (!string.IsNullOrWhiteSpace(problematicLegendViewName))
             {
-                summary.AppendLine("Created legend for manual rename: " + problematicLegendViewName);
-            }
-
-            if (exportResult.SkippedDetails.Count > 0)
-            {
-                summary.AppendLine();
-                summary.AppendLine("Skip details:");
-
-                int limit = Math.Min(10, exportResult.SkippedDetails.Count);
-
-                for (int i = 0; i < limit; i++)
-                {
-                    summary.AppendLine((i + 1) + ". " + exportResult.SkippedDetails[i]);
-                }
-
-                if (exportResult.SkippedDetails.Count > limit)
-                {
-                    summary.AppendLine("... and " + (exportResult.SkippedDetails.Count - limit) + " more. See report file.");
-                }
+                summary.AppendLine("Создан вид легенды для ручной корректировки: " + problematicLegendViewName);
             }
 
             return summary.ToString().Trim();
         }
 
-        private static string AppendProblemReportInfo(string summary, string problemNamesReportPath)
-        {
-            if (string.IsNullOrWhiteSpace(problemNamesReportPath) || !File.Exists(problemNamesReportPath))
-            {
-                return summary;
-            }
-
-            StringBuilder builder = new StringBuilder(summary ?? string.Empty);
-
-            if (builder.Length > 0)
-            {
-                builder.AppendLine();
-            }
-
-            builder.Append("Problematic type names report: ").Append(Path.GetFileName(problemNamesReportPath));
-            return builder.ToString();
-        }
-
         /// <summary>
-        /// Creates detailed CSV report with export status by each legend component.
-        /// </summary>
-        private static string WriteExportReport(string outputFolder, LegendComponentImageExportResult exportResult)
-        {
-            if (exportResult == null || exportResult.ReportItems == null || exportResult.ReportItems.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            try
-            {
-                string reportFileName = "Отчет_экспорта_PNG_пирогов_" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".csv";
-                string reportPath = Path.Combine(outputFolder, reportFileName);
-
-                List<string> header = new List<string>
-                {
-                    "OriginalTypeName",
-                    "ExportedFileName",
-                    "Status",
-                    "ErrorText"
-                };
-
-                List<List<string>> rows = new List<List<string>>();
-
-                for (int i = 0; i < exportResult.ReportItems.Count; i++)
-                {
-                    LegendComponentImageExportReportItem item = exportResult.ReportItems[i];
-
-                    rows.Add(new List<string>
-                    {
-                        item.OriginalTypeName ?? string.Empty,
-                        item.ExportedFileName ?? string.Empty,
-                        item.Status ?? string.Empty,
-                        item.ErrorText ?? string.Empty
-                    });
-                }
-
-                CsvTableService csvTableService = new CsvTableService();
-                csvTableService.Write(reportPath, header, rows);
-
-                return reportPath;
-            }
-            catch
-            {
-                // Report generation must not break successful export flow.
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Writes separate CSV report only for problematic type names with forbidden Windows symbols.
+        /// Записывает CSV отчет только по проблемным именам типов (запрещенные символы Windows).
         /// </summary>
         private static string WriteProblemTypeNameReport(string outputFolder, LegendComponentImageExportResult exportResult)
         {
@@ -251,13 +162,17 @@ namespace RevitLibraryBuilder.Commands
 
             try
             {
-                string reportFileName = "Проблемные_типы_запрещенные_символы_" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".csv";
+                string reportFileName =
+                    "Проблемные_типы_запрещенные_символы_" +
+                    DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) +
+                    ".csv";
+
                 string reportPath = Path.Combine(outputFolder, reportFileName);
 
                 List<string> header = new List<string>
                 {
-                    "TypeName",
-                    "ReasonRu"
+                    "ИмяТипа",
+                    "Причина"
                 };
 
                 List<List<string>> rows = new List<List<string>>();
@@ -275,6 +190,7 @@ namespace RevitLibraryBuilder.Commands
 
                 CsvTableService csvTableService = new CsvTableService();
                 csvTableService.Write(reportPath, header, rows);
+
                 return reportPath;
             }
             catch
@@ -284,7 +200,7 @@ namespace RevitLibraryBuilder.Commands
         }
 
         /// <summary>
-        /// Creates dedicated output folder path inside user-selected root path.
+        /// Создает путь к папке экспорта внутри выбранной пользователем директории.
         /// </summary>
         private static string BuildExportFolderPath(string rootFolder)
         {

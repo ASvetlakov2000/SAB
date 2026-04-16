@@ -20,8 +20,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Delete Types/Families", message);
+                    message = "Активный UIDocument недоступен.";
+                    TaskDialog.Show("Удаление типов/семейств", message);
                     return Result.Failed;
                 }
 
@@ -29,8 +29,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null || document.ActiveView == null)
                 {
-                    message = "Document or active view is not available.";
-                    TaskDialog.Show("Delete Types/Families", message);
+                    message = "Документ или активный вид недоступен.";
+                    TaskDialog.Show("Удаление типов/семейств", message);
                     return Result.Failed;
                 }
 
@@ -39,7 +39,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (selectedIds == null || selectedIds.Count == 0)
                 {
-                    TaskDialog.Show("Delete Types/Families", "No elements selected.");
+                    TaskDialog.Show("Удаление типов/семейств", "Элементы не выбраны.");
                     return Result.Cancelled;
                 }
 
@@ -68,7 +68,7 @@ namespace RevitLibraryBuilder.Commands
                     graphicsStyleIds.Count == 0 &&
                     fillPatternIds.Count == 0)
                 {
-                    TaskDialog.Show("Delete Types/Families", "No deletable objects were found in selection.");
+                    TaskDialog.Show("Удаление типов/семейств", "В выбранных элементах не найдено объектов для удаления.");
                     return Result.Cancelled;
                 }
 
@@ -97,16 +97,16 @@ namespace RevitLibraryBuilder.Commands
 
                 if (result.Errors.Count > 0)
                 {
-                    TaskDialog.Show("Delete Types/Families", string.Join("\n", result.Errors));
+                    TaskDialog.Show("Удаление типов/семейств", string.Join("\n", result.Errors));
                 }
 
-                ShowNotification("Delete Types/Families", "Deleted: " + result.DeletedCount);
+                ShowNotification("Удаление типов/семейств", "Deleted: " + result.DeletedCount);
                 return Result.Succeeded;
             }
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Delete Types/Families", exception.ToString());
+                TaskDialog.Show("Удаление типов/семейств", exception.ToString());
                 return Result.Failed;
             }
         }

@@ -21,8 +21,8 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Place Line Styles", message);
+                    message = "Активный UIDocument недоступен.";
+                    TaskDialog.Show("Размещение стилей линий", message);
                     return Result.Failed;
                 }
 
@@ -30,8 +30,8 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
-                    TaskDialog.Show("Place Line Styles", message);
+                    message = "Документ недоступен.";
+                    TaskDialog.Show("Размещение стилей линий", message);
                     return Result.Failed;
                 }
 
@@ -41,7 +41,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 if (draftingView == null)
                 {
                     message = "Не удалось получить или создать вид \"" + TargetViewName + "\".";
-                    TaskDialog.Show("Place Line Styles", message);
+                    TaskDialog.Show("Размещение стилей линий", message);
                     return Result.Failed;
                 }
 
@@ -52,16 +52,16 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (activeView == null)
                 {
-                    message = "Active view is not available.";
-                    TaskDialog.Show("Place Line Styles", message);
+                    message = "Активный вид недоступен.";
+                    TaskDialog.Show("Размещение стилей линий", message);
                     return Result.Failed;
                 }
 
                 if (activeView.ViewType != ViewType.DraftingView)
                 {
                     TaskDialog.Show(
-                        "Place Line Styles",
-                        "Команда работает только в Drafting View.\n" +
+                        "Размещение стилей линий",
+                        "Команда работает только в чертежном виде.\n" +
                         "Текущий вид: " + activeView.Name + "\n" +
                         "Тип вида: " + activeView.ViewType);
                     return Result.Cancelled;
@@ -79,7 +79,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 if (styleNames.Count == 0)
                 {
                     TaskDialog.Show(
-                        "Place Line Styles",
+                        "Размещение стилей линий",
                         "В выбранном CSV не найдено ни одного имени стиля линий.");
                     return Result.Cancelled;
                 }
@@ -89,8 +89,8 @@ namespace RevitLibraryBuilder.Services.Placement
                 if (textNoteType == null)
                 {
                     TaskDialog.Show(
-                        "Place Line Styles",
-                        "В проекте не найден TextNoteType для создания подписей.");
+                        "Размещение стилей линий",
+                        "В проекте не найден тип текстовых примечаний для создания подписей.");
                     return Result.Failed;
                 }
 
@@ -99,8 +99,8 @@ namespace RevitLibraryBuilder.Services.Placement
                 if (linesCategory == null)
                 {
                     TaskDialog.Show(
-                        "Place Line Styles",
-                        "В проекте не найдена категория Lines.");
+                        "Размещение стилей линий",
+                        "В проекте не найдена категория линий.");
                     return Result.Failed;
                 }
 
@@ -177,7 +177,7 @@ namespace RevitLibraryBuilder.Services.Placement
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Place Line Styles", exception.ToString());
+                TaskDialog.Show("Размещение стилей линий", exception.ToString());
                 return Result.Failed;
             }
         }
@@ -206,7 +206,7 @@ namespace RevitLibraryBuilder.Services.Placement
 
             if (draftingViewFamilyType == null)
             {
-                TaskDialog.Show("Place Line Styles", "Не найден ViewFamilyType для Drafting View.");
+                TaskDialog.Show("Размещение стилей линий", "Не найден тип семейства вида для чертежного вида.");
                 return null;
             }
 
@@ -301,8 +301,8 @@ namespace RevitLibraryBuilder.Services.Placement
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Title = "Select CSV file with line styles";
-                dialog.Filter = "CSV (*.csv)|*.csv";
+                dialog.Title = "Выберите CSV-файл со стилями линий";
+                dialog.Filter = "Файл CSV (*.csv)|*.csv";
                 dialog.Multiselect = false;
 
                 DialogResult dialogResult = dialog.ShowDialog();

@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
@@ -26,7 +26,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
+                    message = "Активный UIDocument недоступен.";
                     ShowErrorNotification("Импорт наименований типоразмеров", message);
                     return Result.Failed;
                 }
@@ -35,7 +35,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null || document.ActiveView == null)
                 {
-                    message = "Document or active view is not available.";
+                    message = "Документ или активный вид недоступен.";
                     ShowErrorNotification("Импорт наименований типоразмеров", message);
                     return Result.Failed;
                 }

@@ -24,8 +24,8 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Place Fill Patterns", message);
+                    message = "Активный UIDocument недоступен.";
+                    TaskDialog.Show("Размещение штриховок", message);
                     return Result.Failed;
                 }
 
@@ -33,8 +33,8 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
-                    TaskDialog.Show("Place Fill Patterns", message);
+                    message = "Документ недоступен.";
+                    TaskDialog.Show("Размещение штриховок", message);
                     return Result.Failed;
                 }
 
@@ -43,8 +43,8 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (draftingView == null)
                 {
-                    message = "Failed to get or create drafting view: " + TargetViewName;
-                    TaskDialog.Show("Place Fill Patterns", message);
+                    message = "Не удалось получить или создать чертежный вид: " + TargetViewName;
+                    TaskDialog.Show("Размещение штриховок", message);
                     return Result.Failed;
                 }
 
@@ -55,7 +55,7 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (activeView == null || activeView.ViewType != ViewType.DraftingView)
                 {
-                    TaskDialog.Show("Place Fill Patterns", "Active view must be a Drafting View.");
+                    TaskDialog.Show("Размещение штриховок", "Активный вид должен быть чертежным видом.");
                     return Result.Cancelled;
                 }
 
@@ -71,7 +71,7 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (importedRecords.Count == 0)
                 {
-                    TaskDialog.Show("Place Fill Patterns", "No valid fill pattern rows were found in CSV.");
+                    TaskDialog.Show("Размещение штриховок", "В файле не найдено корректных строк штриховок.");
                     return Result.Cancelled;
                 }
 
@@ -81,13 +81,13 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 if (textNoteType == null)
                 {
-                    TaskDialog.Show("Place Fill Patterns", "TextNoteType not found.");
+                    TaskDialog.Show("Размещение штриховок", "Не найден тип текстовых примечаний.");
                     return Result.Failed;
                 }
 
                 if (baseFilledRegionType == null)
                 {
-                    TaskDialog.Show("Place Fill Patterns", "Base FilledRegionType not found.");
+                    TaskDialog.Show("Размещение штриховок", "Не найден базовый тип залитой области.");
                     return Result.Failed;
                 }
 
@@ -176,7 +176,7 @@ namespace RevitLibraryBuilder.Services.Placement
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Place Fill Patterns", exception.ToString());
+                TaskDialog.Show("Размещение штриховок", exception.ToString());
                 return Result.Failed;
             }
         }
@@ -245,7 +245,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 }
 
                 TaskDialog.Show(
-                    "Place Fill Patterns",
+                    "Размещение штриховок",
                     "Skipped row because sanitized name is empty.\nOriginal: " + originalName + "\nSanitized: " + sanitizedName);
 
                 return null;

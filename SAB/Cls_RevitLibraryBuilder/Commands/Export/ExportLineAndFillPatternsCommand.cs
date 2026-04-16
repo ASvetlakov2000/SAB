@@ -22,7 +22,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Export Line And Fill Patterns", exception.ToString());
+                TaskDialog.Show("Экспорт линий и штриховок", exception.ToString());
                 return Result.Failed;
             }
         }

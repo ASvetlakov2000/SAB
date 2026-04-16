@@ -33,7 +33,7 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (uiDocument == null)
             {
-                result.FatalError = "UIDocument is not available.";
+                result.FatalError = "Активный UIDocument недоступен.";
                 return result;
             }
 
@@ -41,19 +41,19 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (document == null)
             {
-                result.FatalError = "Document is not available.";
+                result.FatalError = "Документ недоступен.";
                 return result;
             }
 
             if (legendView == null || legendView.ViewType != ViewType.Legend)
             {
-                result.FatalError = "Active view must be a Legend view.";
+                result.FatalError = "Активный вид должен быть типа Легенда.";
                 return result;
             }
 
             if (string.IsNullOrWhiteSpace(outputFolderPath))
             {
-                result.FatalError = "Output folder path is empty.";
+                result.FatalError = "Путь к папке экспорта не задан.";
                 return result;
             }
 
@@ -68,7 +68,7 @@ namespace RevitLibraryBuilder.Services.Views
 
             if (legendComponents.Count == 0)
             {
-                result.FatalError = "No OST_LegendComponents were found on active Legend view.";
+                result.FatalError = "На активном виде Легенда не найдены компоненты легенды OST_LegendComponents.";
                 return result;
             }
 
@@ -81,7 +81,7 @@ namespace RevitLibraryBuilder.Services.Views
 
                 if (legendComponent == null || !legendComponent.IsValidObject)
                 {
-                    result.AddSkipped("LegendComponent_<invalid>", string.Empty, "Компонент легенды невалиден до начала экспорта.");
+                    result.AddSkipped("КомпонентЛегенды_<невалиден>", string.Empty, "Компонент легенды недействителен до начала экспорта.");
                     continue;
                 }
 
@@ -144,7 +144,7 @@ namespace RevitLibraryBuilder.Services.Views
 
                     if (string.IsNullOrWhiteSpace(exportedPath))
                     {
-                        throw new InvalidOperationException("Файл PNG не найден после выполнения экспорта.");
+                        throw new InvalidOperationException("PNG-файл не найден после выполнения экспорта.");
                     }
 
                     string finalPath = EnsureExpectedFileName(exportedPath, expectedFilePath);
@@ -714,7 +714,7 @@ namespace RevitLibraryBuilder.Services.Views
             {
                 OriginalTypeName = originalTypeName ?? string.Empty,
                 ExportedFileName = exportedFileName ?? string.Empty,
-                Status = "Exported",
+                Status = "Экспортировано",
                 ErrorText = string.Empty
             });
         }
@@ -729,7 +729,7 @@ namespace RevitLibraryBuilder.Services.Views
             {
                 OriginalTypeName = safeTypeName,
                 ExportedFileName = exportedFileName ?? string.Empty,
-                Status = "Skipped",
+                Status = "Пропущено",
                 ErrorText = safeReason
             });
         }

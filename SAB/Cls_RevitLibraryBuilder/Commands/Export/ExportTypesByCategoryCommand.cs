@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System;
@@ -25,7 +25,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (uidoc == null)
                 {
-                    message = "Active UIDocument is not available.";
+                    message = "Активный UIDocument недоступен.";
                     TaskDialog.Show("Экспорт", message);
                     return Result.Failed;
                 }
@@ -34,7 +34,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (doc == null)
                 {
-                    message = "Document is not available.";
+                    message = "Документ недоступен.";
                     TaskDialog.Show("Экспорт", message);
                     return Result.Failed;
                 }

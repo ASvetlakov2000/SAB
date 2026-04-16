@@ -27,8 +27,8 @@ namespace RevitLibraryBuilder.Commands
                 // Block responsible for active document and view validation.
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    ToastNotifier.ShowError("Place Legend Components", message, 12);
+                    message = "Активный UIDocument недоступен.";
+                    ToastNotifier.ShowError("Расстановка компонентов легенды", message, 12);
                     return Result.Failed;
                 }
 
@@ -36,8 +36,8 @@ namespace RevitLibraryBuilder.Commands
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
-                    ToastNotifier.ShowError("Place Legend Components", message, 12);
+                    message = "Документ недоступен.";
+                    ToastNotifier.ShowError("Расстановка компонентов легенды", message, 12);
                     return Result.Failed;
                 }
 
@@ -45,15 +45,15 @@ namespace RevitLibraryBuilder.Commands
 
                 if (activeView == null)
                 {
-                    message = "Active view is not available.";
-                    ToastNotifier.ShowError("Place Legend Components", message, 12);
+                    message = "Активный вид недоступен.";
+                    ToastNotifier.ShowError("Расстановка компонентов легенды", message, 12);
                     return Result.Failed;
                 }
 
                 if (activeView.ViewType != ViewType.Legend)
                 {
-                    message = "Open a Legend view before running this command.";
-                    ToastNotifier.ShowError("Place Legend Components", message, 12);
+                    message = "Перед запуском команды откройте вид Легенда.";
+                    ToastNotifier.ShowError("Расстановка компонентов легенды", message, 12);
                     return Result.Failed;
                 }
 
@@ -71,7 +71,7 @@ namespace RevitLibraryBuilder.Commands
                     {
                         transaction.RollBack();
                         message = placementResult.FatalError;
-                        ToastNotifier.ShowError("Place Legend Components", placementResult.FatalError, 14);
+                        ToastNotifier.ShowError("Расстановка компонентов легенды", placementResult.FatalError, 14);
                         return Result.Failed;
                     }
 
@@ -89,19 +89,19 @@ namespace RevitLibraryBuilder.Commands
                     if (!string.IsNullOrWhiteSpace(folderToOpen))
                     {
                         ToastNotifier.ShowFolderLinkWarning(
-                            "Legend component placement completed with issues",
+                            "Расстановка компонентов легенды завершена с замечаниями",
                             summaryText,
                             folderToOpen,
                             18);
                     }
                     else
                     {
-                        ToastNotifier.ShowWarning("Legend component placement completed with issues", summaryText, 18);
+                        ToastNotifier.ShowWarning("Расстановка компонентов легенды завершена с замечаниями", summaryText, 18);
                     }
                 }
                 else
                 {
-                    ToastNotifier.ShowSuccess("Legend component placement completed", summaryText, 12);
+                    ToastNotifier.ShowSuccess("Расстановка компонентов легенды завершена", summaryText, 12);
                 }
 
                 return Result.Succeeded;
@@ -109,7 +109,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                ToastNotifier.ShowError("Place Legend Components", message, 12);
+                ToastNotifier.ShowError("Расстановка компонентов легенды", message, 12);
                 return Result.Failed;
             }
         }
@@ -120,20 +120,20 @@ namespace RevitLibraryBuilder.Commands
         private static string BuildSummaryText(LegendComponentPlacementResult placementResult, string reportPath)
         {
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("Requested categories: " + placementResult.RequestedCategoriesCount);
-            builder.AppendLine("Requested types: " + placementResult.RequestedTypeCount);
-            builder.AppendLine("Placed components: " + placementResult.PlacedCount);
-            builder.AppendLine("Skipped items: " + placementResult.SkippedDetails.Count);
+            builder.AppendLine("Категорий в обработке: " + placementResult.RequestedCategoriesCount);
+            builder.AppendLine("Типов в обработке: " + placementResult.RequestedTypeCount);
+            builder.AppendLine("Расставлено компонентов: " + placementResult.PlacedCount);
+            builder.AppendLine("Пропущено: " + placementResult.SkippedDetails.Count);
 
             if (!string.IsNullOrWhiteSpace(reportPath) && File.Exists(reportPath))
             {
-                builder.AppendLine("Report: " + Path.GetFileName(reportPath));
+                builder.AppendLine("Отчет: " + Path.GetFileName(reportPath));
             }
 
             if (placementResult.SkippedDetails.Count > 0)
             {
                 builder.AppendLine();
-                builder.AppendLine("Skip details:");
+                builder.AppendLine("Причины пропуска:");
 
                 int limit = Math.Min(10, placementResult.SkippedDetails.Count);
 
@@ -144,7 +144,7 @@ namespace RevitLibraryBuilder.Commands
 
                 if (placementResult.SkippedDetails.Count > limit)
                 {
-                    builder.AppendLine("... and " + (placementResult.SkippedDetails.Count - limit) + " more. See report file.");
+                    builder.AppendLine("... и еще " + (placementResult.SkippedDetails.Count - limit) + ". Подробнее в файле отчета.");
                 }
             }
 
@@ -178,8 +178,8 @@ namespace RevitLibraryBuilder.Commands
                 List<string> header = new List<string>
                 {
                     "Category",
-                    "TypeName",
-                    "ErrorText"
+                    "ИмяТипа",
+                    "ТекстОшибки"
                 };
 
                 List<List<string>> rows = new List<List<string>>();

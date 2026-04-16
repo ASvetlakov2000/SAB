@@ -22,7 +22,7 @@ namespace RevitLibraryBuilder.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Place Fill Patterns", exception.ToString());
+                TaskDialog.Show("Размещение штриховок", exception.ToString());
                 return Result.Failed;
             }
         }

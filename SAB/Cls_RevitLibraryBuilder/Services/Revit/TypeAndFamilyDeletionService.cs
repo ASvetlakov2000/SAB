@@ -19,7 +19,7 @@ namespace RevitLibraryBuilder.Services.Revit
 
             if (document == null)
             {
-                result.Errors.Add("Document is not available.");
+                result.Errors.Add("Документ недоступен.");
                 return result;
             }
 

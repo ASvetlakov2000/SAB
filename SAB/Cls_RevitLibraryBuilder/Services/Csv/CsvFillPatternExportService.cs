@@ -20,8 +20,8 @@ namespace RevitLibraryBuilder.Services.Csv
 
                 if (uiDocument == null)
                 {
-                    message = "Active UIDocument is not available.";
-                    TaskDialog.Show("Export Line And Fill Patterns", message);
+                    message = "Активный UIDocument недоступен.";
+                    TaskDialog.Show("Экспорт линий и штриховок", message);
                     return Result.Failed;
                 }
 
@@ -29,8 +29,8 @@ namespace RevitLibraryBuilder.Services.Csv
 
                 if (document == null)
                 {
-                    message = "Document is not available.";
-                    TaskDialog.Show("Export Line And Fill Patterns", message);
+                    message = "Документ недоступен.";
+                    TaskDialog.Show("Экспорт линий и штриховок", message);
                     return Result.Failed;
                 }
 
@@ -54,7 +54,7 @@ namespace RevitLibraryBuilder.Services.Csv
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("Export Line And Fill Patterns", exception.ToString());
+                TaskDialog.Show("Экспорт линий и штриховок", exception.ToString());
                 return Result.Failed;
             }
         }
@@ -64,7 +64,7 @@ namespace RevitLibraryBuilder.Services.Csv
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Title = "Select CSV file with fill patterns";
-                dialog.Filter = "CSV (*.csv)|*.csv";
+                dialog.Filter = "Файл CSV (*.csv)|*.csv";
                 dialog.Multiselect = false;
 
                 DialogResult dialogResult = dialog.ShowDialog();

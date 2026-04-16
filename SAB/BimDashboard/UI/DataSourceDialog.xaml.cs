@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -222,25 +222,25 @@ namespace SAB.BimDashboard.UI
 
                 if (string.IsNullOrWhiteSpace(filePath))
                 {
-                    MessageBox.Show("Укажите путь к файлу данных.", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Укажите путь к файлу данных.", "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (!File.Exists(filePath))
                 {
-                    MessageBox.Show("Файл не найден: " + filePath, "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Файл не найден: " + filePath, "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (SelectedSourceType == DataSourceType.Csv && !string.Equals(Path.GetExtension(filePath), ".csv", StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show("Для источника CSV нужен файл с расширением .csv.", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Для источника CSV нужен файл с расширением .csv.", "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (SelectedSourceType == DataSourceType.Excel && !string.Equals(Path.GetExtension(filePath), ".xlsx", StringComparison.OrdinalIgnoreCase))
                 {
-                    MessageBox.Show("Для источника Excel нужен файл с расширением .xlsx.", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Для источника Excel нужен файл с расширением .xlsx.", "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 

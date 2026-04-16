@@ -32,7 +32,7 @@ namespace RevitLibraryBuilder.Services.PostActions
         {
             if (document == null)
             {
-                TaskDialog.Show("Create View", "Document is not available.");
+                TaskDialog.Show("Создание вида", "Документ недоступен.");
                 return;
             }
 
@@ -43,7 +43,7 @@ namespace RevitLibraryBuilder.Services.PostActions
 
             if (string.IsNullOrWhiteSpace(categoryNameFromCsv))
             {
-                TaskDialog.Show("Create View", "Category value from CSV is missing.");
+                TaskDialog.Show("Создание вида", "В файле отсутствует значение категории.");
                 return;
             }
 
@@ -51,7 +51,7 @@ namespace RevitLibraryBuilder.Services.PostActions
 
             if (sourceView == null)
             {
-                TaskDialog.Show("Create View", "Active view is not available.");
+                TaskDialog.Show("Создание вида", "Активный вид недоступен.");
                 return;
             }
 
@@ -75,7 +75,7 @@ namespace RevitLibraryBuilder.Services.PostActions
             }
             catch (Exception exception)
             {
-                TaskDialog.Show("Create View", exception.ToString());
+                TaskDialog.Show("Создание вида", exception.ToString());
             }
         }
 
@@ -97,7 +97,7 @@ namespace RevitLibraryBuilder.Services.PostActions
         {
             if (document == null)
             {
-                TaskDialog.Show("Create View", "Document is not available.");
+                TaskDialog.Show("Создание вида", "Документ недоступен.");
                 return null;
             }
 
@@ -108,13 +108,13 @@ namespace RevitLibraryBuilder.Services.PostActions
 
             if (sourceView == null)
             {
-                TaskDialog.Show("Create View", "Source view is not available.");
+                TaskDialog.Show("Создание вида", "Исходный вид недоступен.");
                 return null;
             }
 
             if (string.IsNullOrWhiteSpace(categoryNameFromCsv))
             {
-                TaskDialog.Show("Create View", "Category value from CSV is missing.");
+                TaskDialog.Show("Создание вида", "В файле отсутствует значение категории.");
                 return null;
             }
 
@@ -140,7 +140,7 @@ namespace RevitLibraryBuilder.Services.PostActions
                     if (createdView == null)
                     {
                         transaction.RollBack();
-                        TaskDialog.Show("Create View", "The floor plan view could not be created.");
+                        TaskDialog.Show("Создание вида", "Не удалось создать вид плана этажа.");
                         return null;
                     }
 
@@ -155,7 +155,7 @@ namespace RevitLibraryBuilder.Services.PostActions
             }
             catch (Exception exception)
             {
-                TaskDialog.Show("Create View", exception.ToString());
+                TaskDialog.Show("Создание вида", exception.ToString());
                 return null;
             }
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -30,8 +30,8 @@ namespace SAB.BimDashboard.Commands
 
                 if (commandData == null || commandData.Application == null)
                 {
-                    message = "ExternalCommandData или UIApplication недоступны.";
-                    TaskDialog.Show("BIM Dashboard", message);
+                    message = "Входные данные команды или UIApplication недоступны.";
+                    TaskDialog.Show("БИМ Дашборд", message);
                     return Result.Failed;
                 }
 
@@ -79,7 +79,7 @@ namespace SAB.BimDashboard.Commands
 
                 if (providerResult == null || providerResult.Records == null || providerResult.Records.Count == 0)
                 {
-                    TaskDialog.Show("BIM Dashboard", "Источник данных не вернул записей для построения dashboard.");
+                    TaskDialog.Show("БИМ Дашборд", "Источник данных не вернул записей для построения дашборда.");
                     return Result.Cancelled;
                 }
 
@@ -116,7 +116,7 @@ namespace SAB.BimDashboard.Commands
                 if (providerResult.Warnings != null && providerResult.Warnings.Count > 0)
                 {
                     string warningText = string.Join("\n", providerResult.Warnings);
-                    TaskDialog.Show("BIM Dashboard", "Dashboard построен, но есть предупреждения:\n\n" + warningText);
+                    TaskDialog.Show("БИМ Дашборд", "Дашборд построен, но есть предупреждения:\n\n" + warningText);
                 }
 
                 return Result.Succeeded;
@@ -124,7 +124,7 @@ namespace SAB.BimDashboard.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("BIM Dashboard", "Ошибка построения dashboard:\n\n" + exception.Message);
+                TaskDialog.Show("БИМ Дашборд", "Ошибка построения дашборда:\n\n" + exception.Message);
                 // ShowDebug("Ошибка", exception.ToString());
                 return Result.Failed;
             }
@@ -137,7 +137,7 @@ namespace SAB.BimDashboard.Commands
                 return;
             }
 
-            TaskDialog.Show("BIM Dashboard DEBUG", step + "\n\n" + text);
+            TaskDialog.Show("БИМ Дашборд ОТЛАДКА", step + "\n\n" + text);
         }
     }
 }
