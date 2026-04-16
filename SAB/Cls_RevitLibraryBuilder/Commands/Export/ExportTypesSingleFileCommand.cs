@@ -8,6 +8,7 @@ using SAB;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -72,27 +73,23 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Cancelled;
                 }
 
-                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                string outputFolder = OpenFolder.SelectFolderPath(
+                    "Выберите папку для экспорта одного CSV",
+                    BuildSuggestedFileName(doc.Title, "ALL_CATEGORIES.csv"));
+
+                if (string.IsNullOrWhiteSpace(outputFolder))
                 {
-                    // Настраиваемый текст подсказки для выбора папки экспорта
-                    folderDialog.Description = "Выберите папку для экспорта одного CSV";
-
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        return Result.Cancelled;
-                    }
-
-                    // Настраиваемый путь сохранения CSV (выбирается пользователем)
-                    string outputFolder = folderDialog.SelectedPath;
-                    CsvExportService exportService = new CsvExportService();
-                    exportService.ExportToSingleCsv(filteredTypes, doc, outputFolder);
-
-                    ToastNotifier.ShowFolderLinkSuccess(
-                        "Экспорт завершен",
-                        "\nCSV (только выбранные категории) сохранен:\n",
-                        outputFolder,
-                        durationSeconds: 10);
+                    return Result.Cancelled;
                 }
+
+                CsvExportService exportService = new CsvExportService();
+                exportService.ExportToSingleCsv(filteredTypes, doc, outputFolder);
+
+                ToastNotifier.ShowFolderLinkSuccess(
+                    "Экспорт завершен",
+                    "\nCSV (только выбранные категории) сохранен:\n",
+                    outputFolder,
+                    durationSeconds: 10);
 
                 return Result.Succeeded;
             }
@@ -129,6 +126,18 @@ namespace RevitLibraryBuilder.Commands
             }
 
             return ids;
+        }
+
+        private static string BuildSuggestedFileName(string documentTitle, string suffix)
+        {
+            string safeTitle = string.IsNullOrWhiteSpace(documentTitle) ? "Project" : documentTitle.Trim();
+
+            foreach (char invalidCharacter in System.IO.Path.GetInvalidFileNameChars())
+            {
+                safeTitle = safeTitle.Replace(invalidCharacter, '_');
+            }
+
+            return safeTitle + "_" + suffix;
         }
     }
 }

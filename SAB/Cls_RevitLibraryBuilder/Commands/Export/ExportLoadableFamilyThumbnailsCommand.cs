@@ -6,7 +6,7 @@ using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Revit;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -48,35 +48,33 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Cancelled;
                 }
 
-                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                // Блок выбора корневой папки через диалог с полем пути.
+                string rootFolder = OpenFolder.SelectFolderPath(
+                    "Выберите папку для выгрузки миниатюр загружаемых семейств",
+                    "PNG_Family");
+
+                if (string.IsNullOrWhiteSpace(rootFolder))
                 {
-                    // Блок выбора корневой папки, где будет создана папка PNG_Family.
-                    folderDialog.Description = "Выберите папку для выгрузки миниатюр загружаемых семейств";
-
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        return Result.Cancelled;
-                    }
-
-                    string rootFolder = folderDialog.SelectedPath;
-                    LoadableFamilyThumbnailExportResult exportResult =
-                        thumbnailService.ExportToFolder(document, allTypes, rootFolder);
-
-                    if (exportResult.ExportedCount == 0)
-                    {
-                        ToastNotifier.ShowWarning("Выгрузка миниатюр семейств", "Не удалось выгрузить миниатюры.", 10);
-                        return Result.Cancelled;
-                    }
-
-                    // Блок сохранения пути для дальнейшего использования в dashboard.
-                    ThumbnailFoldersRuntimeStore.SetLoadableFamilyImagesFolder(exportResult.OutputFolderPath);
-
-                    ToastNotifier.ShowFolderLinkSuccess(
-                        "Выгрузка миниатюр завершена",
-                        "PNG миниатюры загружаемых семейств сохранены:\n",
-                        exportResult.OutputFolderPath,
-                        12);
+                    return Result.Cancelled;
                 }
+
+                LoadableFamilyThumbnailExportResult exportResult =
+                    thumbnailService.ExportToFolder(document, allTypes, rootFolder);
+
+                if (exportResult.ExportedCount == 0)
+                {
+                    ToastNotifier.ShowWarning("Выгрузка миниатюр семейств", "Не удалось выгрузить миниатюры.", 10);
+                    return Result.Cancelled;
+                }
+
+                // Блок сохранения пути для дальнейшего использования в dashboard.
+                ThumbnailFoldersRuntimeStore.SetLoadableFamilyImagesFolder(exportResult.OutputFolderPath);
+
+                ToastNotifier.ShowFolderLinkSuccess(
+                    "Выгрузка миниатюр завершена",
+                    "PNG миниатюры загружаемых семейств сохранены:\n",
+                    exportResult.OutputFolderPath,
+                    12);
 
                 return Result.Succeeded;
             }

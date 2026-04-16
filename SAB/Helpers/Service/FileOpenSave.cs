@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -40,7 +41,7 @@ namespace asBIM
             return path;
         }
     }
-    
+
     public static class CreateFile
     {
         ///<summary>
@@ -66,8 +67,84 @@ namespace asBIM
             return path;
         }
     }
-    
-    
+
+    ///<summary>
+    /// Класс для выбора папки через диалог с полем пути.
+    /// Подходит для сценариев, где нужно вставить путь вручную.
+    ///</summary>
+    public static class OpenFolder
+    {
+        ///<summary>
+        /// Возвращает выбранную папку через диалог с предзаполненным именем.
+        /// </summary>
+        /// <param name="title">Заголовок окна.</param>
+        /// <param name="suggestedName">Предзаполненное имя в поле.</param>
+        /// <param name="initialDirectory">Стартовая директория.</param>
+        /// <returns>Путь к папке или пустая строка при отмене.</returns>
+        public static string SelectFolderPath(string title, string suggestedName = "", string initialDirectory = "")
+        {
+            string safeSuggestedName = string.IsNullOrWhiteSpace(suggestedName) ? "Output" : suggestedName;
+
+            using var saveDialog = new SaveFileDialog
+            {
+                Title = title,
+                Filter = "All files (*.*)|*.*",
+                FileName = safeSuggestedName,
+                AddExtension = false,
+                CheckFileExists = false,
+                CheckPathExists = true,
+                OverwritePrompt = false,
+                ValidateNames = false
+            };
+
+            if (!string.IsNullOrWhiteSpace(initialDirectory) && Directory.Exists(initialDirectory))
+            {
+                saveDialog.InitialDirectory = initialDirectory;
+            }
+            else
+            {
+                saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
+
+            if (saveDialog.ShowDialog() != DialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            return ResolveFolderPath(saveDialog.FileName);
+        }
+
+        // Блок преобразования выбранного значения из диалога в путь к папке.
+        private static string ResolveFolderPath(string selectedPath)
+        {
+            if (string.IsNullOrWhiteSpace(selectedPath))
+            {
+                return string.Empty;
+            }
+
+            string normalizedPath = selectedPath.Trim().Trim('"');
+
+            if (Directory.Exists(normalizedPath))
+            {
+                return normalizedPath;
+            }
+
+            if (normalizedPath.EndsWith("\\") || normalizedPath.EndsWith("/"))
+            {
+                return normalizedPath.TrimEnd('\\', '/');
+            }
+
+            string folderPath = Path.GetDirectoryName(normalizedPath);
+
+            if (!string.IsNullOrWhiteSpace(folderPath))
+            {
+                return folderPath;
+            }
+
+            return normalizedPath;
+        }
+    }
+
     ///<summary>
     /// Класс для таймера в уведомлении
     ///</summary>
@@ -75,7 +152,7 @@ namespace asBIM
     {
         public double timeInSecOutput;
         public double timeInMinOutput;
-        
+
         // TODO: Если количество минут = 0
         public static TimeOfWorkConverter ConvertTime(double timeInSec)
         {

@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Revit;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -49,30 +50,25 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Cancelled;
                 }
 
-                // 🔹 Выбор папки
-                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
-                {
-                    // Настраиваемый текст подсказки для выбора папки экспорта
-                    folderDialog.Description = "Выберите папку для экспорта CSV (по категориям)";
+                // 🔹 Выбор папки через диалог с полем пути
+                string outputFolder = OpenFolder.SelectFolderPath(
+                    "Выберите папку для экспорта CSV (по категориям)",
+                    "EXPORT_BY_CATEGORY.csv");
 
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
-                        return Result.Cancelled;
+                if (string.IsNullOrWhiteSpace(outputFolder))
+                    return Result.Cancelled;
 
-                    // Настраиваемый путь сохранения CSV (выбирается пользователем)
-                    string outputFolder = folderDialog.SelectedPath;
+                // 🔹 Экспорт
+                CsvExportService exportService = new CsvExportService();
+                exportService.ExportToCsv(types, doc, outputFolder);
 
-                    // 🔹 Экспорт
-                    CsvExportService exportService = new CsvExportService();
-                    exportService.ExportToCsv(types, doc, outputFolder);
-
-                    // 🔹 Уведомление
-                    ToastNotifier.ShowFolderLinkSuccess(
-                        "Экспорт завершен",
-                        "\nCSV файлы (по категориям) сохранены:\n",
-                        outputFolder,
-                        durationSeconds: 10
-                    );
-                }
+                // 🔹 Уведомление
+                ToastNotifier.ShowFolderLinkSuccess(
+                    "Экспорт завершен",
+                    "\nCSV файлы (по категориям) сохранены:\n",
+                    outputFolder,
+                    durationSeconds: 10
+                );
 
                 return Result.Succeeded;
             }

@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
+using asBIM;
 
 namespace RevitLibraryBuilder.Services.Csv
 {
@@ -350,17 +351,9 @@ namespace RevitLibraryBuilder.Services.Csv
         // Block responsible for selecting the folder for CSV export
         private static string RequestExportFolderPath()
         {
-            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
-            {
-                dialog.Description = "Select folder for Line Styles and Fill Patterns export";
-
-                if (dialog.ShowDialog() != DialogResult.OK)
-                {
-                    return null;
-                }
-
-                return dialog.SelectedPath;
-            }
+            return OpenFolder.SelectFolderPath(
+                "Select folder for Line Styles and Fill Patterns export",
+                "LineStyles.csv");
         }
 
         private static string GetValue(List<string> values, int index)

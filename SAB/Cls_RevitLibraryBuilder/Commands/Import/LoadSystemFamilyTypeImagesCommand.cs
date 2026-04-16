@@ -1,4 +1,4 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
@@ -6,7 +6,7 @@ using RevitLibraryBuilder.Services.Revit;
 using System;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -73,17 +73,9 @@ namespace RevitLibraryBuilder.Commands
         // Block responsible for selecting a folder with exported images.
         private static string RequestFolderPath()
         {
-            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
-            {
-                dialog.Description = "Выберите папку с изображениями типов";
-
-                if (dialog.ShowDialog() != DialogResult.OK)
-                {
-                    return null;
-                }
-
-                return dialog.SelectedPath;
-            }
+            return OpenFolder.SelectFolderPath(
+                "Выберите папку с изображениями типов",
+                "PNG_Pirogi");
         }
 
         // Block responsible for building user-friendly completion summary.

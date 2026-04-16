@@ -6,7 +6,7 @@ using RevitLibraryBuilder.Models;
 using RevitLibraryBuilder.Services.Csv;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -46,28 +46,25 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Cancelled;
                 }
 
-                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                // Блок выбора папки через диалог с полем пути и предзаполненным именем файла.
+                string outputFolder = OpenFolder.SelectFolderPath(
+                    "Выберите папку для XLSX выгрузки наименований материалов",
+                    BuildSuggestedFileName(document.Title, "MATERIAL_NAMING.xlsx"));
+
+                if (string.IsNullOrWhiteSpace(outputFolder))
                 {
-                    // Блок выбора папки для XLSX материалов
-                    folderDialog.Description = "Выберите папку для XLSX выгрузки наименований материалов";
-
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        return Result.Cancelled;
-                    }
-
-                    string outputFolder = folderDialog.SelectedPath;
-
-                    MaterialNamingCsvService csvService = new MaterialNamingCsvService();
-                    string filePath = csvService.WriteMaterialXlsx(outputFolder, document.Title, rows);
-
-                    string folderPath = System.IO.Path.GetDirectoryName(filePath) ?? outputFolder;
-                    ToastNotifier.ShowFolderLinkSuccess(
-                        "Выгрузка завершена",
-                        "XLSX для переименования материалов сохранен:\n",
-                        folderPath,
-                        10);
+                    return Result.Cancelled;
                 }
+
+                MaterialNamingCsvService csvService = new MaterialNamingCsvService();
+                string filePath = csvService.WriteMaterialXlsx(outputFolder, document.Title, rows);
+
+                string folderPath = System.IO.Path.GetDirectoryName(filePath) ?? outputFolder;
+                ToastNotifier.ShowFolderLinkSuccess(
+                    "Выгрузка завершена",
+                    "XLSX для переименования материалов сохранен:\n",
+                    folderPath,
+                    10);
 
                 return Result.Succeeded;
             }
@@ -157,6 +154,18 @@ namespace RevitLibraryBuilder.Commands
         private static void ShowErrorNotification(string title, string text)
         {
             ToastNotifier.ShowError(title, text, 12);
+        }
+
+        private static string BuildSuggestedFileName(string documentTitle, string suffix)
+        {
+            string safeTitle = string.IsNullOrWhiteSpace(documentTitle) ? "Project" : documentTitle.Trim();
+
+            foreach (char invalidCharacter in System.IO.Path.GetInvalidFileNameChars())
+            {
+                safeTitle = safeTitle.Replace(invalidCharacter, '_');
+            }
+
+            return safeTitle + "_" + suffix;
         }
     }
 }

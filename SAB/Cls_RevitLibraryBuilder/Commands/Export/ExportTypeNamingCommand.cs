@@ -6,7 +6,7 @@ using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Revit;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -47,27 +47,24 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Cancelled;
                 }
 
-                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                // Блок выбора папки через диалог с полем пути и предзаполненным именем файла.
+                string outputFolder = OpenFolder.SelectFolderPath(
+                    "Выберите папку для XLSX выгрузки наименований типоразмеров",
+                    BuildSuggestedFileName(document.Title, "TYPE_NAMING.xlsx"));
+
+                if (string.IsNullOrWhiteSpace(outputFolder))
                 {
-                    // Блок выбора папки для XLSX наименований
-                    folderDialog.Description = "Выберите папку для XLSX выгрузки наименований типоразмеров";
-
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
-                    {
-                        return Result.Cancelled;
-                    }
-
-                    string outputFolder = folderDialog.SelectedPath;
-
-                    TypeNamingCsvService typeNamingService = new TypeNamingCsvService();
-                    string filePath = typeNamingService.WriteTypeNamingXlsx(outputFolder, document.Title, allTypes);
-
-                    ToastNotifier.ShowFolderLinkSuccess(
-                        "Выгрузка завершена",
-                        "XLSX для переименования типоразмеров сохранен:\n",
-                        System.IO.Path.GetDirectoryName(filePath) ?? outputFolder,
-                        10);
+                    return Result.Cancelled;
                 }
+
+                TypeNamingCsvService typeNamingService = new TypeNamingCsvService();
+                string filePath = typeNamingService.WriteTypeNamingXlsx(outputFolder, document.Title, allTypes);
+
+                ToastNotifier.ShowFolderLinkSuccess(
+                    "Выгрузка завершена",
+                    "XLSX для переименования типоразмеров сохранен:\n",
+                    System.IO.Path.GetDirectoryName(filePath) ?? outputFolder,
+                    10);
 
                 return Result.Succeeded;
             }
@@ -82,6 +79,18 @@ namespace RevitLibraryBuilder.Commands
         private static void ShowErrorNotification(string title, string text)
         {
             ToastNotifier.ShowError(title, text, 12);
+        }
+
+        private static string BuildSuggestedFileName(string documentTitle, string suffix)
+        {
+            string safeTitle = string.IsNullOrWhiteSpace(documentTitle) ? "Project" : documentTitle.Trim();
+
+            foreach (char invalidCharacter in System.IO.Path.GetInvalidFileNameChars())
+            {
+                safeTitle = safeTitle.Replace(invalidCharacter, '_');
+            }
+
+            return safeTitle + "_" + suffix;
         }
     }
 }

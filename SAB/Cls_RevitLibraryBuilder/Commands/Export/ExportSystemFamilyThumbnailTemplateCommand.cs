@@ -7,7 +7,7 @@ using RevitLibraryBuilder.Services.Views;
 using System;
 using System.IO;
 using System.Text;
-using Forms = System.Windows.Forms;
+using asBIM;
 
 namespace RevitLibraryBuilder.Commands
 {
@@ -51,48 +51,46 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
-                using (Forms.FolderBrowserDialog folderDialog = new Forms.FolderBrowserDialog())
+                // Block responsible for selecting output folder for image export.
+                string selectedRootFolder = OpenFolder.SelectFolderPath(
+                    "Select folder for exporting legend component images",
+                    ExportFolderName);
+
+                if (string.IsNullOrWhiteSpace(selectedRootFolder))
                 {
-                    // Block responsible for selecting output folder for image export.
-                    folderDialog.Description = "Select folder for exporting legend component images";
+                    return Result.Cancelled;
+                }
 
-                    if (folderDialog.ShowDialog() != Forms.DialogResult.OK)
-                    {
-                        return Result.Cancelled;
-                    }
+                string outputFolder = BuildExportFolderPath(selectedRootFolder);
+                Directory.CreateDirectory(outputFolder);
 
-                    string selectedRootFolder = folderDialog.SelectedPath;
-                    string outputFolder = BuildExportFolderPath(selectedRootFolder);
-                    Directory.CreateDirectory(outputFolder);
+                LegendComponentImageExportService exportService = new LegendComponentImageExportService();
+                LegendComponentImageExportResult exportResult =
+                    exportService.ExportAllFromActiveLegend(uiDocument, activeView, outputFolder);
 
-                    LegendComponentImageExportService exportService = new LegendComponentImageExportService();
-                    LegendComponentImageExportResult exportResult =
-                        exportService.ExportAllFromActiveLegend(uiDocument, activeView, outputFolder);
+                if (!string.IsNullOrWhiteSpace(exportResult.FatalError))
+                {
+                    message = exportResult.FatalError;
+                    ShowErrorNotification(commandTitle, exportResult.FatalError);
+                    return Result.Failed;
+                }
 
-                    if (!string.IsNullOrWhiteSpace(exportResult.FatalError))
-                    {
-                        message = exportResult.FatalError;
-                        ShowErrorNotification(commandTitle, exportResult.FatalError);
-                        return Result.Failed;
-                    }
+                // Блок сохранения пути в runtime-памяти для dashboard.
+                ThumbnailFoldersRuntimeStore.SetSystemFamilyImagesFolder(outputFolder);
 
-                    // Блок сохранения пути в runtime-памяти для dashboard.
-                    ThumbnailFoldersRuntimeStore.SetSystemFamilyImagesFolder(outputFolder);
+                string summary = BuildSummary(exportResult);
 
-                    string summary = BuildSummary(exportResult);
-
-                    if (exportResult.SkippedCount > 0)
-                    {
-                        ToastNotifier.ShowWarning("Legend image export completed", summary, 16);
-                    }
-                    else
-                    {
-                        ToastNotifier.ShowFolderLinkSuccess(
-                            "Legend image export completed",
-                            summary + "\n\nOutput folder:",
-                            outputFolder,
-                            14);
-                    }
+                if (exportResult.SkippedCount > 0)
+                {
+                    ToastNotifier.ShowWarning("Legend image export completed", summary, 16);
+                }
+                else
+                {
+                    ToastNotifier.ShowFolderLinkSuccess(
+                        "Legend image export completed",
+                        summary + "\n\nOutput folder:",
+                        outputFolder,
+                        14);
                 }
 
                 return Result.Succeeded;
