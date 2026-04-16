@@ -180,6 +180,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Helpers\Notifications\ToastNotifications\ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð²Ñ‹Ð·Ð¾Ð²Ð°_ToastNotifier.txt" />
+    <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_16.png" />
+    <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_32.png" />
+    <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_16.png" />
+    <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_32.png" />
+    <EmbeddedResource Include="Resources\LoadSystemFamilyTypeImagesCommand_16.png" />
+    <EmbeddedResource Include="Resources\LoadSystemFamilyTypeImagesCommand_32.png" />
     <EmbeddedResource Include="Resources\GenerateDashboardCommand_16.png" />
     <EmbeddedResource Include="Resources\GenerateDashboardCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportMaterialNamingCommand_16.png" />
@@ -237,6 +243,3 @@
   </Target>
   <Import Project="..\packages\Microsoft.NETFramework.ReferenceAssemblies.net481.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net481.targets" Condition="Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net481.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net481.targets')" />
 </Project>
-
-
-

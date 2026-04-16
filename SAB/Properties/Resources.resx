@@ -130,11 +130,23 @@
   <data name="ExportLineAndFillPatternsCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportLineAndFillPatternsCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ExportLoadableFamilyThumbnailsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ExportLoadableFamilyThumbnailsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ExportLoadableFamilyThumbnailsCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ExportLoadableFamilyThumbnailsCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="ExportMaterialNamingCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportMaterialNamingCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="ExportMaterialNamingCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportMaterialNamingCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ExportSystemFamilyThumbnailTemplateCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ExportSystemFamilyThumbnailTemplateCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ExportSystemFamilyThumbnailTemplateCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ExportSystemFamilyThumbnailTemplateCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="ExportTypeNamingCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportTypeNamingCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -189,6 +201,12 @@
   </data>
   <data name="ImportTypeNamingCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImportTypeNamingCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LoadSystemFamilyTypeImagesCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LoadSystemFamilyTypeImagesCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LoadSystemFamilyTypeImagesCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LoadSystemFamilyTypeImagesCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PlaceFillPatternsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PlaceFillPatternsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

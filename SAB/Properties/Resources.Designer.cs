@@ -103,6 +103,26 @@ namespace SAB.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        public static byte[] ExportLoadableFamilyThumbnailsCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("ExportLoadableFamilyThumbnailsCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ExportLoadableFamilyThumbnailsCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("ExportLoadableFamilyThumbnailsCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         public static byte[] ExportMaterialNamingCommand_16 {
             get {
                 object obj = ResourceManager.GetObject("ExportMaterialNamingCommand_16", resourceCulture);
@@ -116,6 +136,26 @@ namespace SAB.Properties {
         public static byte[] ExportMaterialNamingCommand_32 {
             get {
                 object obj = ResourceManager.GetObject("ExportMaterialNamingCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ExportSystemFamilyThumbnailTemplateCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("ExportSystemFamilyThumbnailTemplateCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] ExportSystemFamilyThumbnailTemplateCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("ExportSystemFamilyThumbnailTemplateCommand_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -296,6 +336,26 @@ namespace SAB.Properties {
         public static byte[] ImportTypeNamingCommand_32 {
             get {
                 object obj = ResourceManager.GetObject("ImportTypeNamingCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] LoadSystemFamilyTypeImagesCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("LoadSystemFamilyTypeImagesCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] LoadSystemFamilyTypeImagesCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("LoadSystemFamilyTypeImagesCommand_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }

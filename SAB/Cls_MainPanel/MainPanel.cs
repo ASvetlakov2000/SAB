@@ -71,28 +71,21 @@ namespace SAB
                 "SAB_ExportLoadableFamilyThumbnails",
                 "Экспорт PNG семейств",
                 "RevitLibraryBuilder.Commands.ExportLoadableFamilyThumbnailsCommand",
-                "SAB.Resources.ExportTypeNamingCommand_32.png",
-                "SAB.Resources.ExportTypeNamingCommand_16.png");
+                "SAB.Resources.ExportLoadableFamilyThumbnailsCommand_32.png",
+                "SAB.Resources.ExportLoadableFamilyThumbnailsCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
                 "SAB_ExportSystemFamilyThumbnailTemplate",
                 "Экспорт PNG пирогов",
                 "RevitLibraryBuilder.Commands.ExportSystemFamilyThumbnailTemplateCommand",
-                "SAB.Resources.ExportMaterialNamingCommand_32.png",
-                "SAB.Resources.ExportMaterialNamingCommand_16.png");
+                "SAB.Resources.ExportSystemFamilyThumbnailTemplateCommand_32.png",
+                "SAB.Resources.ExportSystemFamilyThumbnailTemplateCommand_16.png");
 
-            Ribbon.AddPushButtonToSplit(
-                exportSplit,
-                "SAB_LoadSystemFamilyTypeImages",
-                "Загрузить Type Image",
-                "RevitLibraryBuilder.Commands.LoadSystemFamilyTypeImagesCommand",
-                "SAB.Resources.ImportMaterialNamingCommand_32.png",
-                "SAB.Resources.ImportMaterialNamingCommand_16.png");
 
             libraryPanel.AddSeparator();
 
-            // Блок кнопок импорта наименований
+            // Блок кнопок импорта наименований и изображений
             SplitButton namingImportSplit = libraryPanel.AddItem(
                 new SplitButtonData("SAB_NamingImportSplit", "Переименование")) as SplitButton;
 
@@ -111,6 +104,14 @@ namespace SAB
                 "RevitLibraryBuilder.Commands.ImportMaterialNamingCommand",
                 "SAB.Resources.ImportMaterialNamingCommand_32.png",
                 "SAB.Resources.ImportMaterialNamingCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                namingImportSplit,
+                "SAB_LoadSystemFamilyTypeImages",
+                "Загрузить PNG пироги",
+                "RevitLibraryBuilder.Commands.LoadSystemFamilyTypeImagesCommand",
+                "SAB.Resources.LoadSystemFamilyTypeImagesCommand_32.png",
+                "SAB.Resources.LoadSystemFamilyTypeImagesCommand_16.png");
 
             libraryPanel.AddSeparator();
 
@@ -150,14 +151,8 @@ namespace SAB
                 "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
                 "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
 
-            libraryPanel.AddSeparator();
-
-            // Блок кнопок аннотаций
-            SplitButton annotationSplit = libraryPanel.AddItem(
-                new SplitButtonData("SAB_AnnotationSplit", "Аннотации")) as SplitButton;
-
             Ribbon.AddPushButtonToSplit(
-                annotationSplit,
+                placementSplit,
                 "SAB_PlaceLineStyles",
                 "Размещение линий",
                 "RevitLibraryBuilder.Commands.PlaceLineStylesCommand",
@@ -165,7 +160,7 @@ namespace SAB
                 "SAB.Resources.PlaceLineStylesCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
-                annotationSplit,
+                placementSplit,
                 "SAB_PlaceFillPatterns",
                 "Размещение штриховок",
                 "RevitLibraryBuilder.Commands.PlaceFillPatternsCommand",
@@ -173,13 +168,11 @@ namespace SAB
                 "SAB.Resources.PlaceFillPatternsCommand_16.png");
 
             libraryPanel.AddSeparator();
+            
 
             // Блок кнопок удаления
-            SplitButton deleteSplit = libraryPanel.AddItem(
-                new SplitButtonData("SAB_DeleteSplit", "Удаление")) as SplitButton;
-
-            Ribbon.AddPushButtonToSplit(
-                deleteSplit,
+            Ribbon.AddPushButtonSingle(
+                libraryPanel,
                 "SAB_DeleteElements",
                 "Удаление элементов",
                 "RevitLibraryBuilder.Commands.DeleteSelectedTypesAndFamiliesCommand",
@@ -187,6 +180,7 @@ namespace SAB
                 "SAB.Resources.DeleteSelectedTypesAndFamiliesCommand_16.png");
 
             libraryPanel.AddSeparator();
+
 
             // Блок запуска MVP dashboard
             Ribbon.AddPushButtonSingle(
