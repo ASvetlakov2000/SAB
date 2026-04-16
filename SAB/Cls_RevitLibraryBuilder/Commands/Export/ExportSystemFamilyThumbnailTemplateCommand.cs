@@ -1,10 +1,13 @@
-﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Services;
+using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Views;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using asBIM;
@@ -75,22 +78,29 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
+                // Block responsible for writing report with detailed reasons.
+                string reportPath = WriteExportReport(outputFolder, exportResult);
+
                 // Блок сохранения пути в runtime-памяти для dashboard.
                 ThumbnailFoldersRuntimeStore.SetSystemFamilyImagesFolder(outputFolder);
 
-                string summary = BuildSummary(exportResult);
+                string summary = BuildSummary(exportResult, reportPath);
 
                 if (exportResult.SkippedCount > 0)
                 {
-                    ToastNotifier.ShowWarning("Legend image export completed", summary, 16);
+                    ToastNotifier.ShowFolderLinkWarning(
+                        "Legend image export completed with issues",
+                        summary,
+                        outputFolder,
+                        18);
                 }
                 else
                 {
                     ToastNotifier.ShowFolderLinkSuccess(
                         "Legend image export completed",
-                        summary + "\n\nOutput folder:",
+                        summary,
                         outputFolder,
-                        14);
+                        16);
                 }
 
                 return Result.Succeeded;
@@ -106,25 +116,90 @@ namespace RevitLibraryBuilder.Commands
         /// <summary>
         /// Builds human-readable summary for final user notification.
         /// </summary>
-        private static string BuildSummary(LegendComponentImageExportResult exportResult)
+        private static string BuildSummary(LegendComponentImageExportResult exportResult, string reportPath)
         {
             StringBuilder summary = new StringBuilder();
             summary.AppendLine("Total legend components on view: " + exportResult.TotalLegendComponentsOnView);
             summary.AppendLine("Exported images: " + exportResult.ExportedCount);
             summary.AppendLine("Skipped items: " + exportResult.SkippedCount);
+            summary.AppendLine("Sanitized file names: " + exportResult.RenamedCount);
+
+            if (!string.IsNullOrWhiteSpace(reportPath) && File.Exists(reportPath))
+            {
+                summary.AppendLine("Report: " + Path.GetFileName(reportPath));
+            }
 
             if (exportResult.SkippedDetails.Count > 0)
             {
                 summary.AppendLine();
                 summary.AppendLine("Skip details:");
 
-                for (int i = 0; i < exportResult.SkippedDetails.Count; i++)
+                int limit = Math.Min(10, exportResult.SkippedDetails.Count);
+
+                for (int i = 0; i < limit; i++)
                 {
                     summary.AppendLine((i + 1) + ". " + exportResult.SkippedDetails[i]);
+                }
+
+                if (exportResult.SkippedDetails.Count > limit)
+                {
+                    summary.AppendLine("... and " + (exportResult.SkippedDetails.Count - limit) + " more. See report file.");
                 }
             }
 
             return summary.ToString().Trim();
+        }
+
+        /// <summary>
+        /// Creates detailed CSV report with export status by each legend component.
+        /// </summary>
+        private static string WriteExportReport(string outputFolder, LegendComponentImageExportResult exportResult)
+        {
+            if (exportResult == null || exportResult.ReportItems == null || exportResult.ReportItems.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                string reportFileName = "Отчет_экспорта_PNG_пирогов_" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".csv";
+                string reportPath = Path.Combine(outputFolder, reportFileName);
+
+                List<string> header = new List<string>
+                {
+                    "OriginalTypeName",
+                    "NormalizedFileName",
+                    "ExportedFileName",
+                    "Status",
+                    "ErrorText"
+                };
+
+                List<List<string>> rows = new List<List<string>>();
+
+                for (int i = 0; i < exportResult.ReportItems.Count; i++)
+                {
+                    LegendComponentImageExportReportItem item = exportResult.ReportItems[i];
+
+                    rows.Add(new List<string>
+                    {
+                        item.OriginalTypeName ?? string.Empty,
+                        item.NormalizedFileName ?? string.Empty,
+                        item.ExportedFileName ?? string.Empty,
+                        item.Status ?? string.Empty,
+                        item.ErrorText ?? string.Empty
+                    });
+                }
+
+                CsvTableService csvTableService = new CsvTableService();
+                csvTableService.Write(reportPath, header, rows);
+
+                return reportPath;
+            }
+            catch
+            {
+                // Report generation must not break successful export flow.
+                return string.Empty;
+            }
         }
 
         /// <summary>

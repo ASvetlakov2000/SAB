@@ -12,6 +12,13 @@ namespace RevitLibraryBuilder.Services.Views
     /// </summary>
     public class LegendComponentImageExportService
     {
+        private static readonly HashSet<string> ReservedWindowsFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "CON", "PRN", "AUX", "NUL",
+            "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+            "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+        };
+
         /// <summary>
         /// Runs sequential image export for all legend components on active legend view.
         /// </summary>
@@ -72,24 +79,27 @@ namespace RevitLibraryBuilder.Services.Views
 
                 if (legendComponent == null || !legendComponent.IsValidObject)
                 {
-                    result.AddSkipped("LegendComponent_<invalid>", "Legend component is invalid before export.");
+                    result.AddSkipped("LegendComponent_<invalid>", "LegendComponent_invalid", "Legend component is invalid before export.");
                     continue;
                 }
 
-                string exportName = ResolveLegendComponentExportName(document, legendComponent);
-                string safeFileName = SanitizeFileNamePart(exportName);
+                string originalExportName = ResolveLegendComponentExportName(document, legendComponent);
+                bool wasNameSanitized;
+                string normalizedBaseName = NormalizeExportFileName(originalExportName, out wasNameSanitized);
 
-                if (string.IsNullOrWhiteSpace(safeFileName))
+                if (string.IsNullOrWhiteSpace(normalizedBaseName))
                 {
-                    safeFileName = "LegendComponent_" + legendComponent.Id.IntegerValue;
+                    normalizedBaseName = "LegendComponent_" + legendComponent.Id.IntegerValue;
+                    bool ignored;
+                    normalizedBaseName = NormalizeExportFileName(normalizedBaseName, out ignored);
                 }
 
-                string uniquePngPath = BuildUniquePngPath(outputFolderPath, safeFileName);
-                string exportFilePathWithoutExtension = Path.Combine(
-                    outputFolderPath,
-                    Path.GetFileNameWithoutExtension(uniquePngPath));
+                string uniquePngPath = BuildUniquePngPath(outputFolderPath, normalizedBaseName);
+                string intendedBaseName = Path.GetFileNameWithoutExtension(uniquePngPath);
+                string exportFilePathWithoutExtension = Path.Combine(outputFolderPath, intendedBaseName);
 
                 bool temporaryIsolationEnabled = false;
+                HashSet<string> filesBeforeExport = CapturePngFileSnapshot(outputFolderPath);
 
                 try
                 {
@@ -118,22 +128,23 @@ namespace RevitLibraryBuilder.Services.Views
                     DateTime exportStartUtc = DateTime.UtcNow;
                     ExportCurrentViewAsPng(document, exportFilePathWithoutExtension);
 
-                    // If Revit saved file using alternate naming convention, resolve actual output.
-                    string exportedPath = ResolveExportedPngPath(
+                    // Block responsible for finding real exported file path even if Revit changed file name.
+                    string exportedPath = ResolveExportedPngPathAfterExport(
                         outputFolderPath,
-                        Path.GetFileNameWithoutExtension(uniquePngPath),
-                        exportStartUtc);
+                        intendedBaseName,
+                        exportStartUtc,
+                        filesBeforeExport);
 
                     if (string.IsNullOrWhiteSpace(exportedPath))
                     {
                         throw new InvalidOperationException("PNG file was not found after export.");
                     }
 
-                    result.AddExported(exportedPath);
+                    result.AddExported(originalExportName, intendedBaseName, exportedPath, wasNameSanitized);
                 }
                 catch (Exception exception)
                 {
-                    result.AddSkipped(exportName, exception.Message);
+                    result.AddSkipped(originalExportName, intendedBaseName, exception.Message);
                 }
                 finally
                 {
@@ -325,7 +336,8 @@ namespace RevitLibraryBuilder.Services.Views
         /// </summary>
         private static string BuildUniquePngPath(string folderPath, string baseName)
         {
-            string sanitizedBaseName = SanitizeFileNamePart(baseName);
+            bool ignored;
+            string sanitizedBaseName = NormalizeExportFileName(baseName, out ignored);
 
             if (string.IsNullOrWhiteSpace(sanitizedBaseName))
             {
@@ -352,78 +364,166 @@ namespace RevitLibraryBuilder.Services.Views
         }
 
         /// <summary>
-        /// Resolves exported PNG path if Revit appended additional parts to file name.
+        /// Captures current file snapshot before export.
         /// </summary>
-        private static string ResolveExportedPngPath(
-            string folderPath,
-            string baseFileNameWithoutExtension,
-            DateTime exportStartUtc)
+        private static HashSet<string> CapturePngFileSnapshot(string folderPath)
         {
-            string exactPath = Path.Combine(folderPath, baseFileNameWithoutExtension + ".png");
+            HashSet<string> snapshot = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+            {
+                return snapshot;
+            }
+
+            string[] files = Directory.GetFiles(folderPath, "*.png", SearchOption.TopDirectoryOnly);
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                snapshot.Add(files[i]);
+            }
+
+            return snapshot;
+        }
+
+        /// <summary>
+        /// Resolves exported PNG path and tolerates Revit filename changes.
+        /// </summary>
+        private static string ResolveExportedPngPathAfterExport(
+            string folderPath,
+            string intendedBaseName,
+            DateTime exportStartUtc,
+            HashSet<string> filesBeforeExport)
+        {
+            string exactPath = Path.Combine(folderPath, intendedBaseName + ".png");
 
             if (File.Exists(exactPath))
             {
                 return exactPath;
             }
 
-            string[] candidateFiles = Directory.GetFiles(folderPath, baseFileNameWithoutExtension + "*.png");
+            string[] allPngFiles = Directory.GetFiles(folderPath, "*.png", SearchOption.TopDirectoryOnly);
 
-            if (candidateFiles.Length > 0)
+            string newestNewFile = string.Empty;
+            DateTime newestWriteTime = DateTime.MinValue;
+
+            // Block responsible for finding files newly created by current export iteration.
+            for (int i = 0; i < allPngFiles.Length; i++)
             {
-                string newestCandidate = string.Empty;
-                DateTime newestWriteTime = DateTime.MinValue;
+                string candidate = allPngFiles[i];
 
-                for (int i = 0; i < candidateFiles.Length; i++)
+                if (filesBeforeExport != null && filesBeforeExport.Contains(candidate))
                 {
-                    DateTime writeTime = File.GetLastWriteTimeUtc(candidateFiles[i]);
-
-                    if (writeTime < exportStartUtc.AddSeconds(-1))
-                    {
-                        continue;
-                    }
-
-                    if (newestCandidate.Length == 0 || writeTime > newestWriteTime)
-                    {
-                        newestCandidate = candidateFiles[i];
-                        newestWriteTime = writeTime;
-                    }
+                    continue;
                 }
 
-                if (!string.IsNullOrWhiteSpace(newestCandidate))
+                DateTime writeTime = File.GetLastWriteTimeUtc(candidate);
+
+                if (writeTime < exportStartUtc.AddSeconds(-1))
                 {
-                    return newestCandidate;
+                    continue;
+                }
+
+                if (newestNewFile.Length == 0 || writeTime > newestWriteTime)
+                {
+                    newestNewFile = candidate;
+                    newestWriteTime = writeTime;
                 }
             }
 
-            return string.Empty;
+            if (!string.IsNullOrWhiteSpace(newestNewFile))
+            {
+                return newestNewFile;
+            }
+
+            string[] prefixedCandidates = Directory.GetFiles(folderPath, intendedBaseName + "*.png", SearchOption.TopDirectoryOnly);
+
+            for (int i = 0; i < prefixedCandidates.Length; i++)
+            {
+                string candidate = prefixedCandidates[i];
+                DateTime writeTime = File.GetLastWriteTimeUtc(candidate);
+
+                if (writeTime < exportStartUtc.AddSeconds(-1))
+                {
+                    continue;
+                }
+
+                if (newestNewFile.Length == 0 || writeTime > newestWriteTime)
+                {
+                    newestNewFile = candidate;
+                    newestWriteTime = writeTime;
+                }
+            }
+
+            return newestNewFile;
         }
 
         /// <summary>
-        /// Sanitizes file name part against OS-forbidden characters.
+        /// Normalizes export file names for Windows file system and Revit image export behavior.
         /// </summary>
-        private static string SanitizeFileNamePart(string rawName)
+        private static string NormalizeExportFileName(string rawName, out bool wasSanitized)
         {
-            if (string.IsNullOrWhiteSpace(rawName))
+            string original = rawName ?? string.Empty;
+            string value = original.Trim();
+
+            if (string.IsNullOrWhiteSpace(value))
             {
+                wasSanitized = !string.IsNullOrWhiteSpace(original);
                 return string.Empty;
             }
 
             char[] invalidChars = Path.GetInvalidFileNameChars();
-            char[] buffer = rawName.ToCharArray();
+            char[] buffer = value.ToCharArray();
 
             for (int i = 0; i < buffer.Length; i++)
             {
-                for (int j = 0; j < invalidChars.Length; j++)
+                char current = buffer[i];
+
+                bool replaceWithUnderscore = false;
+
+                if (current == '.')
                 {
-                    if (buffer[i] == invalidChars[j])
+                    // Block responsible for preventing Revit file name truncation on dots in base file name.
+                    replaceWithUnderscore = true;
+                }
+                else
+                {
+                    for (int j = 0; j < invalidChars.Length; j++)
                     {
-                        buffer[i] = '_';
-                        break;
+                        if (current == invalidChars[j])
+                        {
+                            replaceWithUnderscore = true;
+                            break;
+                        }
                     }
+                }
+
+                if (replaceWithUnderscore)
+                {
+                    buffer[i] = '_';
                 }
             }
 
-            return new string(buffer).Trim();
+            string normalized = new string(buffer).Trim();
+
+            while (normalized.Contains("__"))
+            {
+                normalized = normalized.Replace("__", "_");
+            }
+
+            normalized = normalized.Trim(' ', '.');
+
+            if (normalized.Length > 150)
+            {
+                normalized = normalized.Substring(0, 150).Trim(' ', '.');
+            }
+
+            if (ReservedWindowsFileNames.Contains(normalized))
+            {
+                normalized += "_file";
+            }
+
+            wasSanitized = !string.Equals(original.Trim(), normalized, StringComparison.Ordinal);
+            return normalized;
         }
 
         /// <summary>
@@ -444,6 +544,8 @@ namespace RevitLibraryBuilder.Services.Views
     {
         private readonly List<string> _exportedFiles = new List<string>();
         private readonly List<string> _skippedDetails = new List<string>();
+        private readonly List<string> _renamedDetails = new List<string>();
+        private readonly List<LegendComponentImageExportReportItem> _reportItems = new List<LegendComponentImageExportReportItem>();
 
         public int TotalLegendComponentsOnView { get; set; }
 
@@ -455,6 +557,11 @@ namespace RevitLibraryBuilder.Services.Views
         public int SkippedCount
         {
             get { return _skippedDetails.Count; }
+        }
+
+        public int RenamedCount
+        {
+            get { return _renamedDetails.Count; }
         }
 
         public string FatalError { get; set; }
@@ -469,14 +576,72 @@ namespace RevitLibraryBuilder.Services.Views
             get { return _skippedDetails.AsReadOnly(); }
         }
 
-        public void AddExported(string filePath)
+        public IReadOnlyList<string> RenamedDetails
         {
-            _exportedFiles.Add(filePath);
+            get { return _renamedDetails.AsReadOnly(); }
         }
 
-        public void AddSkipped(string itemName, string reason)
+        public IReadOnlyList<LegendComponentImageExportReportItem> ReportItems
         {
-            _skippedDetails.Add(itemName + " => " + reason);
+            get { return _reportItems.AsReadOnly(); }
         }
+
+        public void AddExported(string originalName, string normalizedName, string filePath, bool wasNameSanitized)
+        {
+            _exportedFiles.Add(filePath);
+
+            string exportedFileName = Path.GetFileName(filePath) ?? string.Empty;
+
+            if (wasNameSanitized)
+            {
+                _renamedDetails.Add((originalName ?? string.Empty) + " -> " + exportedFileName);
+            }
+
+            _reportItems.Add(new LegendComponentImageExportReportItem
+            {
+                OriginalTypeName = originalName ?? string.Empty,
+                NormalizedFileName = normalizedName ?? string.Empty,
+                ExportedFileName = exportedFileName,
+                ExportedFilePath = filePath ?? string.Empty,
+                Status = "Exported",
+                ErrorText = wasNameSanitized ? "File name was normalized for safe export." : string.Empty
+            });
+        }
+
+        public void AddSkipped(string itemName, string normalizedName, string reason)
+        {
+            string safeName = itemName ?? string.Empty;
+            string safeReason = reason ?? string.Empty;
+
+            _skippedDetails.Add(safeName + " => " + safeReason);
+
+            _reportItems.Add(new LegendComponentImageExportReportItem
+            {
+                OriginalTypeName = safeName,
+                NormalizedFileName = normalizedName ?? string.Empty,
+                ExportedFileName = string.Empty,
+                ExportedFilePath = string.Empty,
+                Status = "Skipped",
+                ErrorText = safeReason
+            });
+        }
+    }
+
+    /// <summary>
+    /// Report row DTO for image export diagnostics.
+    /// </summary>
+    public class LegendComponentImageExportReportItem
+    {
+        public string OriginalTypeName { get; set; }
+
+        public string NormalizedFileName { get; set; }
+
+        public string ExportedFileName { get; set; }
+
+        public string ExportedFilePath { get; set; }
+
+        public string Status { get; set; }
+
+        public string ErrorText { get; set; }
     }
 }

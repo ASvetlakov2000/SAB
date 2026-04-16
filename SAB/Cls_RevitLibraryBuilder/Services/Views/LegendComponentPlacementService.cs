@@ -68,7 +68,7 @@ namespace RevitLibraryBuilder.Services.Views
 
                 if (candidateTypeIds.Count == 0)
                 {
-                    result.AddSkipped(categoryName, "No ElementType found for this category.");
+                    result.AddSkipped(categoryName, string.Empty, "No ElementType found for this category.");
                     continue;
                 }
 
@@ -90,7 +90,7 @@ namespace RevitLibraryBuilder.Services.Views
                             out copiedComponentId,
                             out copyError))
                     {
-                        result.AddSkipped(categoryName, targetTypeName + " => " + copyError);
+                        result.AddSkipped(categoryName, targetTypeName, copyError);
                         continue;
                     }
 
@@ -101,13 +101,12 @@ namespace RevitLibraryBuilder.Services.Views
                     {
                         // Block responsible for cleaning failed copy to keep result view predictable.
                         TryDeleteElement(document, copiedComponentId);
-                        result.AddSkipped(categoryName, targetTypeName + " => " + assignError);
+                        result.AddSkipped(categoryName, targetTypeName, assignError);
                         continue;
                     }
 
                     // Move placement chain forward for next vertical copy.
                     previousComponentId = copiedComponentId;
-                    result.PlacedCount++;
                     result.AddPlaced(categoryName, targetTypeName);
                 }
             }
@@ -563,12 +562,16 @@ namespace RevitLibraryBuilder.Services.Views
     {
         private readonly List<string> _placed = new List<string>();
         private readonly List<string> _skipped = new List<string>();
+        private readonly List<LegendComponentPlacementIssue> _issues = new List<LegendComponentPlacementIssue>();
 
         public int RequestedCategoriesCount { get; set; }
 
         public int RequestedTypeCount { get; set; }
 
-        public int PlacedCount { get; set; }
+        public int PlacedCount
+        {
+            get { return _placed.Count; }
+        }
 
         public string FatalError { get; set; }
 
@@ -582,14 +585,38 @@ namespace RevitLibraryBuilder.Services.Views
             get { return _skipped.AsReadOnly(); }
         }
 
+        public IReadOnlyList<LegendComponentPlacementIssue> Issues
+        {
+            get { return _issues.AsReadOnly(); }
+        }
+
         public void AddPlaced(string categoryName, string typeDisplayName)
         {
             _placed.Add("[" + categoryName + "] " + typeDisplayName);
         }
 
-        public void AddSkipped(string categoryName, string reason)
+        public void AddSkipped(string categoryName, string typeDisplayName, string reason)
         {
-            _skipped.Add("[" + categoryName + "] " + reason);
+            string safeCategory = categoryName ?? string.Empty;
+            string safeTypeName = typeDisplayName ?? string.Empty;
+            string safeReason = reason ?? string.Empty;
+
+            string formatted = "[" + safeCategory + "] ";
+
+            if (!string.IsNullOrWhiteSpace(safeTypeName))
+            {
+                formatted += safeTypeName + " => ";
+            }
+
+            formatted += safeReason;
+            _skipped.Add(formatted);
+
+            _issues.Add(new LegendComponentPlacementIssue
+            {
+                Category = safeCategory,
+                TypeName = safeTypeName,
+                ErrorText = safeReason
+            });
         }
 
         public string BuildSummaryText()
@@ -612,5 +639,17 @@ namespace RevitLibraryBuilder.Services.Views
 
             return summary;
         }
+    }
+
+    /// <summary>
+    /// Report row DTO for failed placement diagnostics.
+    /// </summary>
+    public class LegendComponentPlacementIssue
+    {
+        public string Category { get; set; }
+
+        public string TypeName { get; set; }
+
+        public string ErrorText { get; set; }
     }
 }
