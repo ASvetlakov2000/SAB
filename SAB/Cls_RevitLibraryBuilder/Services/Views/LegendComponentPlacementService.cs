@@ -448,6 +448,20 @@ namespace RevitLibraryBuilder.Services.Views
                     continue;
                 }
 
+                // Block responsible for skipping in-place model families.
+                // In-place types are not required for legend export/placement pipeline.
+                FamilySymbol familySymbol = type as FamilySymbol;
+
+                if (familySymbol != null)
+                {
+                    Family family = familySymbol.Family;
+
+                    if (family != null && family.IsInPlace)
+                    {
+                        continue;
+                    }
+                }
+
                 result.Add(type.Id);
             }
 

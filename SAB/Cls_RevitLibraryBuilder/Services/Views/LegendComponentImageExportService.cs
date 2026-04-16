@@ -12,6 +12,8 @@ namespace RevitLibraryBuilder.Services.Views
     /// </summary>
     public class LegendComponentImageExportService
     {
+        private const string ProblemLegendBaseName = "Пироги_Проблемные типы_Наименования";
+
         private static readonly HashSet<string> ReservedWindowsFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "CON", "PRN", "AUX", "NUL",
@@ -79,31 +81,37 @@ namespace RevitLibraryBuilder.Services.Views
 
                 if (legendComponent == null || !legendComponent.IsValidObject)
                 {
-                    result.AddSkipped("LegendComponent_<invalid>", "LegendComponent_invalid", "Legend component is invalid before export.");
+                    result.AddSkipped("LegendComponent_<invalid>", string.Empty, "Компонент легенды невалиден до начала экспорта.");
                     continue;
                 }
 
-                string originalExportName = ResolveLegendComponentExportName(document, legendComponent);
-                bool wasNameSanitized;
-                string normalizedBaseName = NormalizeExportFileName(originalExportName, out wasNameSanitized);
+                LegendRepresentedTypeInfo typeInfo = ResolveLegendRepresentedTypeInfo(document, legendComponent);
+                string originalTypeName = typeInfo.TypeName;
 
-                if (string.IsNullOrWhiteSpace(normalizedBaseName))
+                string invalidNameReason;
+
+                // Блок проверки имени файла: имя типа должно сохраняться без изменений, если символы допустимы в Windows.
+                if (!TryValidateWindowsFileName(originalTypeName, out invalidNameReason))
                 {
-                    normalizedBaseName = "LegendComponent_" + legendComponent.Id.IntegerValue;
-                    bool ignored;
-                    normalizedBaseName = NormalizeExportFileName(normalizedBaseName, out ignored);
+                    result.AddInvalidNameIssue(typeInfo.RepresentedTypeId, originalTypeName, invalidNameReason);
+                    result.AddSkipped(originalTypeName, string.Empty, invalidNameReason);
+                    continue;
                 }
 
-                string uniquePngPath = BuildUniquePngPath(outputFolderPath, normalizedBaseName);
-                string intendedBaseName = Path.GetFileNameWithoutExtension(uniquePngPath);
-                string exportFilePathWithoutExtension = Path.Combine(outputFolderPath, intendedBaseName);
-
+                string expectedFilePath = Path.Combine(outputFolderPath, originalTypeName + ".png");
+                string expectedFilePathWithoutExtension = Path.Combine(outputFolderPath, originalTypeName);
                 bool temporaryIsolationEnabled = false;
-                HashSet<string> filesBeforeExport = CapturePngFileSnapshot(outputFolderPath);
 
                 try
                 {
-                    // Block responsible for turning on temporary isolation for one component.
+                    HashSet<string> filesBeforeExport = CapturePngFileSnapshot(outputFolderPath);
+
+                    // If file already exists, remove it so current export keeps exact target name.
+                    if (File.Exists(expectedFilePath))
+                    {
+                        File.Delete(expectedFilePath);
+                    }
+
                     using (Transaction isolateTransaction = new Transaction(document, "Temporary isolate legend component"))
                     {
                         isolateTransaction.Start();
@@ -126,25 +134,25 @@ namespace RevitLibraryBuilder.Services.Views
                     }
 
                     DateTime exportStartUtc = DateTime.UtcNow;
-                    ExportCurrentViewAsPng(document, exportFilePathWithoutExtension);
+                    ExportCurrentViewAsPng(document, expectedFilePathWithoutExtension);
 
-                    // Block responsible for finding real exported file path even if Revit changed file name.
                     string exportedPath = ResolveExportedPngPathAfterExport(
                         outputFolderPath,
-                        intendedBaseName,
+                        expectedFilePath,
                         exportStartUtc,
                         filesBeforeExport);
 
                     if (string.IsNullOrWhiteSpace(exportedPath))
                     {
-                        throw new InvalidOperationException("PNG file was not found after export.");
+                        throw new InvalidOperationException("Файл PNG не найден после выполнения экспорта.");
                     }
 
-                    result.AddExported(originalExportName, intendedBaseName, exportedPath, wasNameSanitized);
+                    string finalPath = EnsureExpectedFileName(exportedPath, expectedFilePath);
+                    result.AddExported(originalTypeName, Path.GetFileName(finalPath), finalPath);
                 }
                 catch (Exception exception)
                 {
-                    result.AddSkipped(originalExportName, intendedBaseName, exception.Message);
+                    result.AddSkipped(originalTypeName, Path.GetFileName(expectedFilePath), exception.Message);
                 }
                 finally
                 {
@@ -156,6 +164,103 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Creates dedicated legend view that contains only components with problematic type names.
+        /// </summary>
+        public string CreateProblematicTypesLegendView(
+            Document document,
+            View sourceLegendView,
+            IReadOnlyList<LegendComponentImageProblemNameIssue> issues)
+        {
+            if (document == null || sourceLegendView == null || sourceLegendView.ViewType != ViewType.Legend)
+            {
+                return string.Empty;
+            }
+
+            if (issues == null || issues.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            HashSet<int> problematicTypeIds = new HashSet<int>();
+
+            for (int i = 0; i < issues.Count; i++)
+            {
+                LegendComponentImageProblemNameIssue issue = issues[i];
+
+                if (issue == null || issue.RepresentedTypeId == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                problematicTypeIds.Add(issue.RepresentedTypeId.IntegerValue);
+            }
+
+            if (problematicTypeIds.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                using (Transaction transaction = new Transaction(document, "Create problematic legend view"))
+                {
+                    transaction.Start();
+
+                    ElementId duplicateId = sourceLegendView.Duplicate(ViewDuplicateOption.Duplicate);
+
+                    if (duplicateId == ElementId.InvalidElementId)
+                    {
+                        transaction.RollBack();
+                        return string.Empty;
+                    }
+
+                    View duplicateLegend = document.GetElement(duplicateId) as View;
+
+                    if (duplicateLegend == null || duplicateLegend.ViewType != ViewType.Legend)
+                    {
+                        transaction.RollBack();
+                        return string.Empty;
+                    }
+
+                    List<ElementId> componentsToDelete = new List<ElementId>();
+                    FilteredElementCollector collector = new FilteredElementCollector(document, duplicateLegend.Id);
+                    collector.OfCategory(BuiltInCategory.OST_LegendComponents);
+                    collector.WhereElementIsNotElementType();
+
+                    foreach (Element component in collector)
+                    {
+                        if (component == null || !component.IsValidObject)
+                        {
+                            continue;
+                        }
+
+                        ElementId representedTypeId = ResolveRepresentedTypeId(component);
+
+                        if (representedTypeId == ElementId.InvalidElementId ||
+                            !problematicTypeIds.Contains(representedTypeId.IntegerValue))
+                        {
+                            componentsToDelete.Add(component.Id);
+                        }
+                    }
+
+                    if (componentsToDelete.Count > 0)
+                    {
+                        document.Delete(componentsToDelete);
+                    }
+
+                    duplicateLegend.Name = BuildUniqueLegendViewName(document, ProblemLegendBaseName);
+                    transaction.Commit();
+
+                    return duplicateLegend.Name;
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -237,37 +342,56 @@ namespace RevitLibraryBuilder.Services.Views
         }
 
         /// <summary>
-        /// Reads represented type for legend component and returns export file name.
+        /// Reads represented type info for legend component.
         /// </summary>
-        private static string ResolveLegendComponentExportName(Document document, Element legendComponent)
+        private static LegendRepresentedTypeInfo ResolveLegendRepresentedTypeInfo(Document document, Element legendComponent)
         {
-            Parameter representedParameter = legendComponent.get_Parameter(BuiltInParameter.LEGEND_COMPONENT);
+            LegendRepresentedTypeInfo info = new LegendRepresentedTypeInfo();
+            info.RepresentedTypeId = ResolveRepresentedTypeId(legendComponent);
 
-            if (representedParameter != null)
+            if (info.RepresentedTypeId != ElementId.InvalidElementId)
             {
-                ElementId representedTypeId = ElementId.InvalidElementId;
+                ElementType representedType = document.GetElement(info.RepresentedTypeId) as ElementType;
 
-                if (representedParameter.StorageType == StorageType.ElementId)
+                if (representedType != null && !string.IsNullOrWhiteSpace(representedType.Name))
                 {
-                    representedTypeId = representedParameter.AsElementId();
-                }
-                else if (representedParameter.StorageType == StorageType.Integer)
-                {
-                    representedTypeId = new ElementId(representedParameter.AsInteger());
-                }
-
-                if (representedTypeId != ElementId.InvalidElementId)
-                {
-                    ElementType representedType = document.GetElement(representedTypeId) as ElementType;
-
-                    if (representedType != null && !string.IsNullOrWhiteSpace(representedType.Name))
-                    {
-                        return representedType.Name;
-                    }
+                    info.TypeName = representedType.Name;
+                    return info;
                 }
             }
 
-            return "LegendComponent_" + legendComponent.Id.IntegerValue;
+            info.TypeName = "LegendComponent_" + legendComponent.Id.IntegerValue;
+            return info;
+        }
+
+        /// <summary>
+        /// Resolves represented type id from legend component parameter.
+        /// </summary>
+        private static ElementId ResolveRepresentedTypeId(Element legendComponent)
+        {
+            if (legendComponent == null || !legendComponent.IsValidObject)
+            {
+                return ElementId.InvalidElementId;
+            }
+
+            Parameter representedParameter = legendComponent.get_Parameter(BuiltInParameter.LEGEND_COMPONENT);
+
+            if (representedParameter == null)
+            {
+                return ElementId.InvalidElementId;
+            }
+
+            if (representedParameter.StorageType == StorageType.ElementId)
+            {
+                return representedParameter.AsElementId();
+            }
+
+            if (representedParameter.StorageType == StorageType.Integer)
+            {
+                return new ElementId(representedParameter.AsInteger());
+            }
+
+            return ElementId.InvalidElementId;
         }
 
         /// <summary>
@@ -332,39 +456,7 @@ namespace RevitLibraryBuilder.Services.Views
         }
 
         /// <summary>
-        /// Creates unique PNG path by adding suffixes if file already exists.
-        /// </summary>
-        private static string BuildUniquePngPath(string folderPath, string baseName)
-        {
-            bool ignored;
-            string sanitizedBaseName = NormalizeExportFileName(baseName, out ignored);
-
-            if (string.IsNullOrWhiteSpace(sanitizedBaseName))
-            {
-                sanitizedBaseName = "LegendComponent";
-            }
-
-            int suffix = 0;
-
-            while (true)
-            {
-                string name = suffix == 0
-                    ? sanitizedBaseName
-                    : sanitizedBaseName + "_" + suffix;
-
-                string candidatePath = Path.Combine(folderPath, name + ".png");
-
-                if (!File.Exists(candidatePath))
-                {
-                    return candidatePath;
-                }
-
-                suffix++;
-            }
-        }
-
-        /// <summary>
-        /// Captures current file snapshot before export.
+        /// Captures current PNG files before export iteration.
         /// </summary>
         private static HashSet<string> CapturePngFileSnapshot(string folderPath)
         {
@@ -386,32 +478,28 @@ namespace RevitLibraryBuilder.Services.Views
         }
 
         /// <summary>
-        /// Resolves exported PNG path and tolerates Revit filename changes.
+        /// Resolves exported PNG path and tolerates internal Revit renaming.
         /// </summary>
         private static string ResolveExportedPngPathAfterExport(
             string folderPath,
-            string intendedBaseName,
+            string expectedFilePath,
             DateTime exportStartUtc,
             HashSet<string> filesBeforeExport)
         {
-            string exactPath = Path.Combine(folderPath, intendedBaseName + ".png");
-
-            if (File.Exists(exactPath))
+            if (File.Exists(expectedFilePath))
             {
-                return exactPath;
+                return expectedFilePath;
             }
 
             string[] allPngFiles = Directory.GetFiles(folderPath, "*.png", SearchOption.TopDirectoryOnly);
-
             string newestNewFile = string.Empty;
             DateTime newestWriteTime = DateTime.MinValue;
 
-            // Block responsible for finding files newly created by current export iteration.
             for (int i = 0; i < allPngFiles.Length; i++)
             {
                 string candidate = allPngFiles[i];
 
-                if (filesBeforeExport != null && filesBeforeExport.Contains(candidate))
+                if (filesBeforeExport.Contains(candidate))
                 {
                     continue;
                 }
@@ -423,31 +511,7 @@ namespace RevitLibraryBuilder.Services.Views
                     continue;
                 }
 
-                if (newestNewFile.Length == 0 || writeTime > newestWriteTime)
-                {
-                    newestNewFile = candidate;
-                    newestWriteTime = writeTime;
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(newestNewFile))
-            {
-                return newestNewFile;
-            }
-
-            string[] prefixedCandidates = Directory.GetFiles(folderPath, intendedBaseName + "*.png", SearchOption.TopDirectoryOnly);
-
-            for (int i = 0; i < prefixedCandidates.Length; i++)
-            {
-                string candidate = prefixedCandidates[i];
-                DateTime writeTime = File.GetLastWriteTimeUtc(candidate);
-
-                if (writeTime < exportStartUtc.AddSeconds(-1))
-                {
-                    continue;
-                }
-
-                if (newestNewFile.Length == 0 || writeTime > newestWriteTime)
+                if (string.IsNullOrWhiteSpace(newestNewFile) || writeTime > newestWriteTime)
                 {
                     newestNewFile = candidate;
                     newestWriteTime = writeTime;
@@ -458,72 +522,121 @@ namespace RevitLibraryBuilder.Services.Views
         }
 
         /// <summary>
-        /// Normalizes export file names for Windows file system and Revit image export behavior.
+        /// Ensures final file name equals target type name (without auto-renaming leftovers).
         /// </summary>
-        private static string NormalizeExportFileName(string rawName, out bool wasSanitized)
+        private static string EnsureExpectedFileName(string actualPath, string expectedPath)
         {
-            string original = rawName ?? string.Empty;
-            string value = original.Trim();
-
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.Equals(actualPath, expectedPath, StringComparison.OrdinalIgnoreCase))
             {
-                wasSanitized = !string.IsNullOrWhiteSpace(original);
-                return string.Empty;
+                return expectedPath;
+            }
+
+            if (File.Exists(expectedPath))
+            {
+                File.Delete(expectedPath);
+            }
+
+            File.Move(actualPath, expectedPath);
+            return expectedPath;
+        }
+
+        /// <summary>
+        /// Validates that file name is Windows-compatible without changing source type name.
+        /// </summary>
+        private static bool TryValidateWindowsFileName(string fileName, out string reason)
+        {
+            reason = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                reason = "Имя типоразмера пустое. Экспорт невозможен.";
+                return false;
+            }
+
+            string value = fileName;
+
+            if (value.EndsWith(" ", StringComparison.Ordinal) || value.EndsWith(".", StringComparison.Ordinal))
+            {
+                reason = "Имя типоразмера заканчивается точкой или пробелом, что запрещено в Windows.";
+                return false;
             }
 
             char[] invalidChars = Path.GetInvalidFileNameChars();
-            char[] buffer = value.ToCharArray();
+            List<string> invalidSymbols = new List<string>();
 
-            for (int i = 0; i < buffer.Length; i++)
+            for (int i = 0; i < value.Length; i++)
             {
-                char current = buffer[i];
+                char current = value[i];
 
-                bool replaceWithUnderscore = false;
-
-                if (current == '.')
+                for (int j = 0; j < invalidChars.Length; j++)
                 {
-                    // Block responsible for preventing Revit file name truncation on dots in base file name.
-                    replaceWithUnderscore = true;
-                }
-                else
-                {
-                    for (int j = 0; j < invalidChars.Length; j++)
+                    if (current == invalidChars[j])
                     {
-                        if (current == invalidChars[j])
+                        string display = current == '\\' ? "\\" : current.ToString();
+
+                        if (!invalidSymbols.Contains(display))
                         {
-                            replaceWithUnderscore = true;
-                            break;
+                            invalidSymbols.Add(display);
                         }
+
+                        break;
                     }
                 }
+            }
 
-                if (replaceWithUnderscore)
+            if (invalidSymbols.Count > 0)
+            {
+                reason = "Имя типоразмера содержит запрещенные символы Windows: " + string.Join(" ", invalidSymbols) + ".";
+                return false;
+            }
+
+            if (ReservedWindowsFileNames.Contains(value))
+            {
+                reason = "Имя типоразмера совпадает с зарезервированным именем Windows: " + value + ".";
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Builds unique view name by appending numeric suffix.
+        /// </summary>
+        private static string BuildUniqueLegendViewName(Document document, string baseName)
+        {
+            string candidate = baseName;
+            int suffix = 1;
+
+            while (IsViewNameExists(document, candidate))
+            {
+                candidate = baseName + "_" + suffix;
+                suffix++;
+            }
+
+            return candidate;
+        }
+
+        private static bool IsViewNameExists(Document document, string viewName)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(document);
+            collector.OfClass(typeof(View));
+
+            foreach (Element element in collector)
+            {
+                View view = element as View;
+
+                if (view == null)
                 {
-                    buffer[i] = '_';
+                    continue;
+                }
+
+                if (string.Equals(view.Name, viewName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
                 }
             }
 
-            string normalized = new string(buffer).Trim();
-
-            while (normalized.Contains("__"))
-            {
-                normalized = normalized.Replace("__", "_");
-            }
-
-            normalized = normalized.Trim(' ', '.');
-
-            if (normalized.Length > 150)
-            {
-                normalized = normalized.Substring(0, 150).Trim(' ', '.');
-            }
-
-            if (ReservedWindowsFileNames.Contains(normalized))
-            {
-                normalized += "_file";
-            }
-
-            wasSanitized = !string.Equals(original.Trim(), normalized, StringComparison.Ordinal);
-            return normalized;
+            return false;
         }
 
         /// <summary>
@@ -535,6 +648,13 @@ namespace RevitLibraryBuilder.Services.Views
 
             public double Vertical { get; set; }
         }
+
+        private class LegendRepresentedTypeInfo
+        {
+            public ElementId RepresentedTypeId { get; set; }
+
+            public string TypeName { get; set; }
+        }
     }
 
     /// <summary>
@@ -544,8 +664,8 @@ namespace RevitLibraryBuilder.Services.Views
     {
         private readonly List<string> _exportedFiles = new List<string>();
         private readonly List<string> _skippedDetails = new List<string>();
-        private readonly List<string> _renamedDetails = new List<string>();
         private readonly List<LegendComponentImageExportReportItem> _reportItems = new List<LegendComponentImageExportReportItem>();
+        private readonly List<LegendComponentImageProblemNameIssue> _problemNameIssues = new List<LegendComponentImageProblemNameIssue>();
 
         public int TotalLegendComponentsOnView { get; set; }
 
@@ -559,9 +679,9 @@ namespace RevitLibraryBuilder.Services.Views
             get { return _skippedDetails.Count; }
         }
 
-        public int RenamedCount
+        public int ProblematicNamesCount
         {
-            get { return _renamedDetails.Count; }
+            get { return _problemNameIssues.Count; }
         }
 
         public string FatalError { get; set; }
@@ -576,53 +696,51 @@ namespace RevitLibraryBuilder.Services.Views
             get { return _skippedDetails.AsReadOnly(); }
         }
 
-        public IReadOnlyList<string> RenamedDetails
-        {
-            get { return _renamedDetails.AsReadOnly(); }
-        }
-
         public IReadOnlyList<LegendComponentImageExportReportItem> ReportItems
         {
             get { return _reportItems.AsReadOnly(); }
         }
 
-        public void AddExported(string originalName, string normalizedName, string filePath, bool wasNameSanitized)
+        public IReadOnlyList<LegendComponentImageProblemNameIssue> ProblemNameIssues
+        {
+            get { return _problemNameIssues.AsReadOnly(); }
+        }
+
+        public void AddExported(string originalTypeName, string exportedFileName, string filePath)
         {
             _exportedFiles.Add(filePath);
 
-            string exportedFileName = Path.GetFileName(filePath) ?? string.Empty;
-
-            if (wasNameSanitized)
-            {
-                _renamedDetails.Add((originalName ?? string.Empty) + " -> " + exportedFileName);
-            }
-
             _reportItems.Add(new LegendComponentImageExportReportItem
             {
-                OriginalTypeName = originalName ?? string.Empty,
-                NormalizedFileName = normalizedName ?? string.Empty,
-                ExportedFileName = exportedFileName,
-                ExportedFilePath = filePath ?? string.Empty,
+                OriginalTypeName = originalTypeName ?? string.Empty,
+                ExportedFileName = exportedFileName ?? string.Empty,
                 Status = "Exported",
-                ErrorText = wasNameSanitized ? "File name was normalized for safe export." : string.Empty
+                ErrorText = string.Empty
             });
         }
 
-        public void AddSkipped(string itemName, string normalizedName, string reason)
+        public void AddSkipped(string typeName, string exportedFileName, string reason)
         {
-            string safeName = itemName ?? string.Empty;
+            string safeTypeName = typeName ?? string.Empty;
             string safeReason = reason ?? string.Empty;
-
-            _skippedDetails.Add(safeName + " => " + safeReason);
+            _skippedDetails.Add(safeTypeName + " => " + safeReason);
 
             _reportItems.Add(new LegendComponentImageExportReportItem
             {
-                OriginalTypeName = safeName,
-                NormalizedFileName = normalizedName ?? string.Empty,
-                ExportedFileName = string.Empty,
-                ExportedFilePath = string.Empty,
+                OriginalTypeName = safeTypeName,
+                ExportedFileName = exportedFileName ?? string.Empty,
                 Status = "Skipped",
                 ErrorText = safeReason
+            });
+        }
+
+        public void AddInvalidNameIssue(ElementId representedTypeId, string typeName, string reason)
+        {
+            _problemNameIssues.Add(new LegendComponentImageProblemNameIssue
+            {
+                RepresentedTypeId = representedTypeId,
+                TypeName = typeName ?? string.Empty,
+                ErrorText = reason ?? string.Empty
             });
         }
     }
@@ -634,13 +752,21 @@ namespace RevitLibraryBuilder.Services.Views
     {
         public string OriginalTypeName { get; set; }
 
-        public string NormalizedFileName { get; set; }
-
         public string ExportedFileName { get; set; }
 
-        public string ExportedFilePath { get; set; }
-
         public string Status { get; set; }
+
+        public string ErrorText { get; set; }
+    }
+
+    /// <summary>
+    /// DTO for problematic type names that cannot be exported as Windows file names.
+    /// </summary>
+    public class LegendComponentImageProblemNameIssue
+    {
+        public ElementId RepresentedTypeId { get; set; }
+
+        public string TypeName { get; set; }
 
         public string ErrorText { get; set; }
     }

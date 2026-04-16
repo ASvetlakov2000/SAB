@@ -80,11 +80,24 @@ namespace RevitLibraryBuilder.Commands
 
                 // Block responsible for writing report with detailed reasons.
                 string reportPath = WriteExportReport(outputFolder, exportResult);
+                string problemNamesReportPath = WriteProblemTypeNameReport(outputFolder, exportResult);
+
+                // Block responsible for creating separate legend for manual correction of problematic names.
+                string problematicLegendViewName = string.Empty;
+
+                if (exportResult.ProblemNameIssues.Count > 0)
+                {
+                    problematicLegendViewName = exportService.CreateProblematicTypesLegendView(
+                        document,
+                        activeView,
+                        exportResult.ProblemNameIssues);
+                }
 
                 // Блок сохранения пути в runtime-памяти для dashboard.
                 ThumbnailFoldersRuntimeStore.SetSystemFamilyImagesFolder(outputFolder);
 
-                string summary = BuildSummary(exportResult, reportPath);
+                string summary = BuildSummary(exportResult, reportPath, problematicLegendViewName);
+                summary = AppendProblemReportInfo(summary, problemNamesReportPath);
 
                 if (exportResult.SkippedCount > 0)
                 {
@@ -116,17 +129,25 @@ namespace RevitLibraryBuilder.Commands
         /// <summary>
         /// Builds human-readable summary for final user notification.
         /// </summary>
-        private static string BuildSummary(LegendComponentImageExportResult exportResult, string reportPath)
+        private static string BuildSummary(
+            LegendComponentImageExportResult exportResult,
+            string reportPath,
+            string problematicLegendViewName)
         {
             StringBuilder summary = new StringBuilder();
             summary.AppendLine("Total legend components on view: " + exportResult.TotalLegendComponentsOnView);
             summary.AppendLine("Exported images: " + exportResult.ExportedCount);
             summary.AppendLine("Skipped items: " + exportResult.SkippedCount);
-            summary.AppendLine("Sanitized file names: " + exportResult.RenamedCount);
+            summary.AppendLine("Problematic type names: " + exportResult.ProblematicNamesCount);
 
             if (!string.IsNullOrWhiteSpace(reportPath) && File.Exists(reportPath))
             {
                 summary.AppendLine("Report: " + Path.GetFileName(reportPath));
+            }
+
+            if (!string.IsNullOrWhiteSpace(problematicLegendViewName))
+            {
+                summary.AppendLine("Created legend for manual rename: " + problematicLegendViewName);
             }
 
             if (exportResult.SkippedDetails.Count > 0)
@@ -150,6 +171,24 @@ namespace RevitLibraryBuilder.Commands
             return summary.ToString().Trim();
         }
 
+        private static string AppendProblemReportInfo(string summary, string problemNamesReportPath)
+        {
+            if (string.IsNullOrWhiteSpace(problemNamesReportPath) || !File.Exists(problemNamesReportPath))
+            {
+                return summary;
+            }
+
+            StringBuilder builder = new StringBuilder(summary ?? string.Empty);
+
+            if (builder.Length > 0)
+            {
+                builder.AppendLine();
+            }
+
+            builder.Append("Problematic type names report: ").Append(Path.GetFileName(problemNamesReportPath));
+            return builder.ToString();
+        }
+
         /// <summary>
         /// Creates detailed CSV report with export status by each legend component.
         /// </summary>
@@ -168,7 +207,6 @@ namespace RevitLibraryBuilder.Commands
                 List<string> header = new List<string>
                 {
                     "OriginalTypeName",
-                    "NormalizedFileName",
                     "ExportedFileName",
                     "Status",
                     "ErrorText"
@@ -183,7 +221,6 @@ namespace RevitLibraryBuilder.Commands
                     rows.Add(new List<string>
                     {
                         item.OriginalTypeName ?? string.Empty,
-                        item.NormalizedFileName ?? string.Empty,
                         item.ExportedFileName ?? string.Empty,
                         item.Status ?? string.Empty,
                         item.ErrorText ?? string.Empty
@@ -198,6 +235,50 @@ namespace RevitLibraryBuilder.Commands
             catch
             {
                 // Report generation must not break successful export flow.
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Writes separate CSV report only for problematic type names with forbidden Windows symbols.
+        /// </summary>
+        private static string WriteProblemTypeNameReport(string outputFolder, LegendComponentImageExportResult exportResult)
+        {
+            if (exportResult == null || exportResult.ProblemNameIssues == null || exportResult.ProblemNameIssues.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                string reportFileName = "Проблемные_типы_запрещенные_символы_" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".csv";
+                string reportPath = Path.Combine(outputFolder, reportFileName);
+
+                List<string> header = new List<string>
+                {
+                    "TypeName",
+                    "ReasonRu"
+                };
+
+                List<List<string>> rows = new List<List<string>>();
+
+                for (int i = 0; i < exportResult.ProblemNameIssues.Count; i++)
+                {
+                    LegendComponentImageProblemNameIssue issue = exportResult.ProblemNameIssues[i];
+
+                    rows.Add(new List<string>
+                    {
+                        issue.TypeName ?? string.Empty,
+                        issue.ErrorText ?? string.Empty
+                    });
+                }
+
+                CsvTableService csvTableService = new CsvTableService();
+                csvTableService.Write(reportPath, header, rows);
+                return reportPath;
+            }
+            catch
+            {
                 return string.Empty;
             }
         }
