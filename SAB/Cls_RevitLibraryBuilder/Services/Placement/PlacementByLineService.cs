@@ -1,4 +1,4 @@
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 using RevitLibraryBuilder.Models;
 using System.Collections.Generic;
 
@@ -8,11 +8,11 @@ namespace RevitLibraryBuilder.Services.Placement
     {
         private readonly Document _doc;
 
-        // Настраиваемая длина создаваемой стены (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð°Ñ Ð´Ð»Ð¸Ð½Ð° ÑÐ¾Ð·Ð´Ð°Ð²Ð°ÐµÐ¼Ð¾Ð¹ ÑÑ‚ÐµÐ½Ñ‹ (Ð¼Ð¼)
         private readonly double _length = 2000 / 304.8;
-        // Настраиваемая высота создаваемой стены (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð°Ñ Ð²Ñ‹ÑÐ¾Ñ‚Ð° ÑÐ¾Ð·Ð´Ð°Ð²Ð°ÐµÐ¼Ð¾Ð¹ ÑÑ‚ÐµÐ½Ñ‹ (Ð¼Ð¼)
         private readonly double _height = 3000 / 304.8;
-        // Настраиваемый шаг между линиями размещения по оси Y (футы)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ñ‹Ð¹ ÑˆÐ°Ð³ Ð¼ÐµÐ¶Ð´Ñƒ Ð»Ð¸Ð½Ð¸ÑÐ¼Ð¸ Ñ€Ð°Ð·Ð¼ÐµÑ‰ÐµÐ½Ð¸Ñ Ð¿Ð¾ Ð¾ÑÐ¸ Y (Ñ„ÑƒÑ‚Ñ‹)
         private readonly double _lineOffset = 5;
 
         public PlacementByLineService(Document doc)
@@ -32,7 +32,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 {
                     ElementTypeCsvModel row = elements[i];
 
-                    if (row == null || !row.Include)
+                    if (row == null)
                     {
                         continue;
                     }
@@ -87,3 +87,4 @@ namespace RevitLibraryBuilder.Services.Placement
         }
     }
 }
+

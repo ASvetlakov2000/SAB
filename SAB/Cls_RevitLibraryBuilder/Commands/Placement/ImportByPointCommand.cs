@@ -1,4 +1,4 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
@@ -57,13 +57,6 @@ namespace RevitLibraryBuilder.Commands
 
                 // Block responsible for extracting category name from CSV
                 string categoryName = ResolveCategoryFromCsv(csvRows);
-                int includedRowCount = CountIncludedRows(csvRows);
-
-                if (includedRowCount <= 0)
-                {
-                    TaskDialog.Show("Импорт по точке", "Не найдено строк, отмеченных для импорта.");
-                    return Result.Cancelled;
-                }
 
                 Level level = ResolveLevel(document);
 
@@ -73,7 +66,7 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
-                int placedCount = includedRowCount;
+                int placedCount = csvRows.Count;
 
                 if (HostedDoorWindowPlacementService.IsDoorOrWindowCategory(categoryName))
                 {
@@ -132,21 +125,6 @@ namespace RevitLibraryBuilder.Commands
             }
 
             return null;
-        }
-
-        private static int CountIncludedRows(List<ElementTypeCsvModel> rows)
-        {
-            int count = 0;
-
-            for (int i = 0; i < rows.Count; i++)
-            {
-                if (rows[i] != null && rows[i].Include)
-                {
-                    count++;
-                }
-            }
-
-            return count;
         }
 
         private static string ResolveCategoryFromCsv(List<ElementTypeCsvModel> rows)

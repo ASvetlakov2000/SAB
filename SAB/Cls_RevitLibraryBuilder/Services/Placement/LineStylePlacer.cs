@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -343,10 +343,8 @@ namespace RevitLibraryBuilder.Services.Placement
                     continue;
                 }
 
-                if (!ContainsValue(styleNames, parsedStyleName))
-                {
-                    styleNames.Add(parsedStyleName);
-                }
+                // No deduplication: every CSV row must be processed.
+                styleNames.Add(parsedStyleName);
             }
 
             return styleNames;
@@ -400,19 +398,6 @@ namespace RevitLibraryBuilder.Services.Placement
                 normalizedValue == "line style name")
             {
                 return true;
-            }
-
-            return false;
-        }
-
-        private static bool ContainsValue(List<string> values, string value)
-        {
-            for (int i = 0; i < values.Count; i++)
-            {
-                if (string.Equals(values[i], value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
             }
 
             return false;

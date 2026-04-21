@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
@@ -8,19 +8,19 @@ namespace RevitLibraryBuilder.Services.Placement
 {
     public class HostedDoorWindowPlacementService
     {
-        private const string HostWallTypeName = "Стена условная_Основа";
+        private const string HostWallTypeName = "Ð¡Ñ‚ÐµÐ½Ð° ÑƒÑÐ»Ð¾Ð²Ð½Ð°Ñ_ÐžÑÐ½Ð¾Ð²Ð°";
 
-        // Настраиваемая толщина условной стены (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð°Ñ Ñ‚Ð¾Ð»Ñ‰Ð¸Ð½Ð° ÑƒÑÐ»Ð¾Ð²Ð½Ð¾Ð¹ ÑÑ‚ÐµÐ½Ñ‹ (Ð¼Ð¼)
         private const double HostWallThicknessMm = 300.0;
-        // Настраиваемая длина условной стены (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð°Ñ Ð´Ð»Ð¸Ð½Ð° ÑƒÑÐ»Ð¾Ð²Ð½Ð¾Ð¹ ÑÑ‚ÐµÐ½Ñ‹ (Ð¼Ð¼)
         private const double HostWallLengthMm = 50000.0;
-        // Настраиваемая высота условной стены (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð°Ñ Ð²Ñ‹ÑÐ¾Ñ‚Ð° ÑƒÑÐ»Ð¾Ð²Ð½Ð¾Ð¹ ÑÑ‚ÐµÐ½Ñ‹ (Ð¼Ð¼)
         private const double HostWallHeightMm = 3000.0;
-        // Настраиваемый отступ первого размещения от начала стены (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ñ‹Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ñ€Ð°Ð·Ð¼ÐµÑ‰ÐµÐ½Ð¸Ñ Ð¾Ñ‚ Ð½Ð°Ñ‡Ð°Ð»Ð° ÑÑ‚ÐµÐ½Ñ‹ (Ð¼Ð¼)
         private const double StartOffsetMm = 1000.0;
-        // Настраиваемый шаг между размещаемыми экземплярами (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ñ‹Ð¹ ÑˆÐ°Ð³ Ð¼ÐµÐ¶Ð´Ñƒ Ñ€Ð°Ð·Ð¼ÐµÑ‰Ð°ÐµÐ¼Ñ‹Ð¼Ð¸ ÑÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€Ð°Ð¼Ð¸ (Ð¼Ð¼)
         private const double PlacementStepMm = 2000.0;
-        // Настраиваемая высота вставки окон относительно уровня (мм)
+        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ð°Ñ Ð²Ñ‹ÑÐ¾Ñ‚Ð° Ð²ÑÑ‚Ð°Ð²ÐºÐ¸ Ð¾ÐºÐ¾Ð½ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ ÑƒÑ€Ð¾Ð²Ð½Ñ (Ð¼Ð¼)
         private const double WindowSillHeightMm = 1000.0;
 
         private readonly Document _document;
@@ -49,20 +49,20 @@ namespace RevitLibraryBuilder.Services.Placement
 
             if (level == null)
             {
-                throw new InvalidOperationException("Не найден подходящий уровень для размещения дверей/окон.");
+                throw new InvalidOperationException("ÐÐµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð¿Ð¾Ð´Ñ…Ð¾Ð´ÑÑ‰Ð¸Ð¹ ÑƒÑ€Ð¾Ð²ÐµÐ½ÑŒ Ð´Ð»Ñ Ñ€Ð°Ð·Ð¼ÐµÑ‰ÐµÐ½Ð¸Ñ Ð´Ð²ÐµÑ€ÐµÐ¹/Ð¾ÐºÐ¾Ð½.");
             }
 
             using (Transaction transaction = new Transaction(_document, "Hosted Doors/Windows Placement"))
             {
                 transaction.Start();
 
-                // Block responsible for creating or reusing wall type "Стена условная_Основа"
+                // Block responsible for creating or reusing wall type "Ð¡Ñ‚ÐµÐ½Ð° ÑƒÑÐ»Ð¾Ð²Ð½Ð°Ñ_ÐžÑÐ½Ð¾Ð²Ð°"
                 WallType hostWallType = GetOrCreateHostWallType();
 
                 if (hostWallType == null)
                 {
                     transaction.RollBack();
-                    throw new InvalidOperationException("Не удалось получить или создать тип стены 'Стена условная_Основа'.");
+                    throw new InvalidOperationException("ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¸Ð»Ð¸ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ñ‚Ð¸Ð¿ ÑÑ‚ÐµÐ½Ñ‹ 'Ð¡Ñ‚ÐµÐ½Ð° ÑƒÑÐ»Ð¾Ð²Ð½Ð°Ñ_ÐžÑÐ½Ð¾Ð²Ð°'.");
                 }
 
                 // Block responsible for creating the host wall instance
@@ -71,7 +71,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 if (hostWall == null)
                 {
                     transaction.RollBack();
-                    throw new InvalidOperationException("Не удалось создать экземпляр host-стены.");
+                    throw new InvalidOperationException("ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ ÑÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€ host-ÑÑ‚ÐµÐ½Ñ‹.");
                 }
 
                 // Block responsible for hosted placement of Doors/Windows into the generated wall
@@ -149,7 +149,7 @@ namespace RevitLibraryBuilder.Services.Placement
             {
                 ElementTypeCsvModel row = rows[i];
 
-                if (row == null || !row.Include)
+                if (row == null)
                 {
                     continue;
                 }
@@ -195,7 +195,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 }
                 catch
                 {
-                    // Пропускаем проблемный экземпляр, продолжаем остальные строки.
+                    // ÐŸÑ€Ð¾Ð¿ÑƒÑÐºÐ°ÐµÐ¼ Ð¿Ñ€Ð¾Ð±Ð»ÐµÐ¼Ð½Ñ‹Ð¹ ÑÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€, Ð¿Ñ€Ð¾Ð´Ð¾Ð»Ð¶Ð°ÐµÐ¼ Ð¾ÑÑ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÑÑ‚Ñ€Ð¾ÐºÐ¸.
                 }
             }
 
@@ -286,7 +286,7 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 string name = level.Name.Trim().ToUpperInvariant();
 
-                if (name == "ПЕРВЫЙ ЭТАЖ" || name == "1 ЭТАЖ")
+                if (name == "ÐŸÐ•Ð Ð’Ð«Ð™ Ð­Ð¢ÐÐ–" || name == "1 Ð­Ð¢ÐÐ–")
                 {
                     return level;
                 }
@@ -386,7 +386,7 @@ namespace RevitLibraryBuilder.Services.Placement
             }
 
             string normalized = categoryName.Trim().ToUpperInvariant();
-            return normalized == "DOORS" || normalized == "ДВЕРИ";
+            return normalized == "DOORS" || normalized == "Ð”Ð’Ð•Ð Ð˜";
         }
 
         private static bool IsWindowCategory(string categoryName)
@@ -397,7 +397,8 @@ namespace RevitLibraryBuilder.Services.Placement
             }
 
             string normalized = categoryName.Trim().ToUpperInvariant();
-            return normalized == "WINDOWS" || normalized == "ОКНА";
+            return normalized == "WINDOWS" || normalized == "ÐžÐšÐÐ";
         }
     }
 }
+

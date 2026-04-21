@@ -45,8 +45,13 @@ namespace RevitLibraryBuilder.Services.Placement
                 int placedCount = 0;
                 List<string> skippedElements = new List<string>();
 
-                foreach (var e in elements.Where(x => x.Include))
+                foreach (ElementTypeCsvModel e in elements)
                 {
+                    if (e == null)
+                    {
+                        continue;
+                    }
+
                     try
                     {
                         // Определяем категорию и ищем тип
@@ -141,3 +146,4 @@ namespace RevitLibraryBuilder.Services.Placement
         }
     }
 }
+

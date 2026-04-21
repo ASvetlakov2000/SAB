@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -14,7 +14,10 @@ namespace RevitLibraryBuilder.Services.Placement
         private const string TargetViewName = "Библиотека_Штриховки";
         private const int TargetViewScale = 20;
         private const string InvalidNamesReportFileName = "Штриховки с запрещенными символами.csv";
-        private static readonly char[] ProhibitedNameCharacters = new char[] { '{', '}', '[', ']', ';', '<', '>', '?', '^', '~' };
+
+        // Запрещенные символы для имен типов Revit (ElementType.Duplicate)
+        private static readonly char[] ProhibitedNameCharacters =
+            { '{', '}', '[', ']', '|', ';', '<', '>', '?', '`', '~' };
 
         public Result Execute(ExternalCommandData commandData, ref string message)
         {
@@ -75,7 +78,6 @@ namespace RevitLibraryBuilder.Services.Placement
                     return Result.Cancelled;
                 }
 
-                List<FillPatternCsvRecord> orderedRecords = OrderRecordsByTarget(importedRecords);
                 TextNoteType textNoteType = GetTextNoteType(document);
                 FilledRegionType baseFilledRegionType = GetBaseFilledRegionType(document);
 
@@ -91,26 +93,26 @@ namespace RevitLibraryBuilder.Services.Placement
                     return Result.Failed;
                 }
 
-                List<FilledRegionType> newlyCreatedTypes = new List<FilledRegionType>();
+                List<FilledRegionType> resolvedTypes = new List<FilledRegionType>();
                 List<InvalidNameReportRow> invalidNameReportRows = new List<InvalidNameReportRow>();
 
                 using (Transaction transaction = new Transaction(document, "Place Fill Patterns From CSV"))
                 {
                     transaction.Start();
 
-                    // Block responsible for creating only missing FilledRegionType objects
-                    for (int i = 0; i < orderedRecords.Count; i++)
+                    // Block responsible for resolving FilledRegionType for every CSV row in source order
+                    for (int i = 0; i < importedRecords.Count; i++)
                     {
-                        FillPatternCsvRecord record = orderedRecords[i];
-                        FilledRegionType createdType = CreateFilledRegionTypeIfMissing(
+                        FillPatternCsvRecord record = importedRecords[i];
+                        FilledRegionType resolvedType = CreateOrGetFilledRegionType(
                             document,
                             baseFilledRegionType,
                             record,
                             invalidNameReportRows);
 
-                        if (createdType != null)
+                        if (resolvedType != null)
                         {
-                            newlyCreatedTypes.Add(createdType);
+                            resolvedTypes.Add(resolvedType);
                         }
                     }
 
@@ -123,9 +125,9 @@ namespace RevitLibraryBuilder.Services.Placement
                     // Настраиваемое смещение подписи вниз от штриховки (мм)
                     double textOffsetBelow = ConvertMillimetersToInternalUnits(250.0);
 
-                    for (int index = 0; index < newlyCreatedTypes.Count; index++)
+                    for (int index = 0; index < resolvedTypes.Count; index++)
                     {
-                        FilledRegionType filledRegionType = newlyCreatedTypes[index];
+                        FilledRegionType filledRegionType = resolvedTypes[index];
 
                         // Block responsible for horizontal spacing between FilledRegions
                         double currentX = (regionSize + regionSpacing) * index;
@@ -141,8 +143,7 @@ namespace RevitLibraryBuilder.Services.Placement
                         loop.Append(Line.CreateBound(p3, p4));
                         loop.Append(Line.CreateBound(p4, p1));
 
-                        IList<CurveLoop> loops = new List<CurveLoop>();
-                        loops.Add(loop);
+                        IList<CurveLoop> loops = new List<CurveLoop> { loop };
 
                         FilledRegion.Create(document, filledRegionType.Id, activeView.Id, loops);
 
@@ -169,7 +170,7 @@ namespace RevitLibraryBuilder.Services.Placement
 
                 ShowSuccessNotification(
                     "Размещение элементов",
-                    "Элементов размещено " + newlyCreatedTypes.Count);
+                    "Элементов размещено " + resolvedTypes.Count);
 
                 return Result.Succeeded;
             }
@@ -181,36 +182,8 @@ namespace RevitLibraryBuilder.Services.Placement
             }
         }
 
-        // Block responsible for ordering rows: Drafting first, Model second
-        private static List<FillPatternCsvRecord> OrderRecordsByTarget(List<FillPatternCsvRecord> importedRecords)
-        {
-            List<FillPatternCsvRecord> ordered = new List<FillPatternCsvRecord>();
-
-            for (int i = 0; i < importedRecords.Count; i++)
-            {
-                FillPatternCsvRecord record = importedRecords[i];
-
-                if (IsDraftingTarget(record.Target))
-                {
-                    ordered.Add(record);
-                }
-            }
-
-            for (int i = 0; i < importedRecords.Count; i++)
-            {
-                FillPatternCsvRecord record = importedRecords[i];
-
-                if (!IsDraftingTarget(record.Target))
-                {
-                    ordered.Add(record);
-                }
-            }
-
-            return ordered;
-        }
-
-        // Block responsible for creating a new FilledRegionType only when no duplicate exists
-        private static FilledRegionType CreateFilledRegionTypeIfMissing(
+        // Block responsible for creating a new FilledRegionType or using existing one
+        private static FilledRegionType CreateOrGetFilledRegionType(
             Document document,
             FilledRegionType baseFilledRegionType,
             FillPatternCsvRecord record,
@@ -227,27 +200,20 @@ namespace RevitLibraryBuilder.Services.Placement
 
             InvalidNameReportRow reportRow = null;
 
-            if (!string.IsNullOrWhiteSpace(invalidCharactersFound))
+            if (!string.IsNullOrWhiteSpace(invalidCharactersFound) || !string.Equals(originalName, sanitizedName, StringComparison.Ordinal))
             {
-                reportRow = new InvalidNameReportRow();
-                reportRow.RowIndex = record.RowIndex;
-                reportRow.OriginalName = originalName;
-                reportRow.SanitizedName = sanitizedName;
-                reportRow.InvalidCharactersFound = invalidCharactersFound;
+                reportRow = new InvalidNameReportRow
+                {
+                    RowIndex = record.RowIndex,
+                    OriginalName = originalName,
+                    SanitizedName = sanitizedName,
+                    InvalidCharactersFound = invalidCharactersFound
+                };
             }
 
             if (string.IsNullOrWhiteSpace(sanitizedName))
             {
-                if (reportRow != null)
-                {
-                    reportRow.SkipReason = "Sanitized name is empty";
-                    invalidNameReportRows.Add(reportRow);
-                }
-
-                TaskDialog.Show(
-                    "Размещение штриховок",
-                    "Skipped row because sanitized name is empty.\nOriginal: " + originalName + "\nSanitized: " + sanitizedName);
-
+                AddReportRowIfNeeded(invalidNameReportRows, reportRow, record, originalName, sanitizedName, "Санитизированное имя пустое");
                 return null;
             }
 
@@ -255,13 +221,8 @@ namespace RevitLibraryBuilder.Services.Placement
 
             if (existingType != null)
             {
-                if (reportRow != null)
-                {
-                    reportRow.SkipReason = "FilledRegionType already exists";
-                    invalidNameReportRows.Add(reportRow);
-                }
-
-                return null;
+                AddReportRowIfNeeded(invalidNameReportRows, reportRow, record, originalName, sanitizedName, "Использован существующий FilledRegionType");
+                return existingType;
             }
 
             FillPatternTarget target = IsDraftingTarget(record.Target)
@@ -285,25 +246,25 @@ namespace RevitLibraryBuilder.Services.Placement
 
             if (foregroundPattern == null)
             {
-                if (reportRow != null)
-                {
-                    reportRow.SkipReason = "Foreground FillPattern not found or not created";
-                    invalidNameReportRows.Add(reportRow);
-                }
-
+                AddReportRowIfNeeded(invalidNameReportRows, reportRow, record, originalName, sanitizedName, "Не найден или не создан штриховой образец переднего плана");
                 return null;
             }
 
-            FilledRegionType newType = baseFilledRegionType.Duplicate(sanitizedName) as FilledRegionType;
+            FilledRegionType newType;
+
+            try
+            {
+                newType = baseFilledRegionType.Duplicate(sanitizedName) as FilledRegionType;
+            }
+            catch (Autodesk.Revit.Exceptions.ArgumentException exception)
+            {
+                AddReportRowIfNeeded(invalidNameReportRows, reportRow, record, originalName, sanitizedName, "Ошибка имени при создании типа: " + exception.Message);
+                return null;
+            }
 
             if (newType == null)
             {
-                if (reportRow != null)
-                {
-                    reportRow.SkipReason = "FilledRegionType duplication failed";
-                    invalidNameReportRows.Add(reportRow);
-                }
-
+                AddReportRowIfNeeded(invalidNameReportRows, reportRow, record, originalName, sanitizedName, "Не удалось дублировать FilledRegionType");
                 return null;
             }
 
@@ -320,15 +281,41 @@ namespace RevitLibraryBuilder.Services.Placement
             }
             catch
             {
+                // Пропускаем ошибку параметра маскирования и продолжаем размещение.
             }
 
-            if (reportRow != null)
-            {
-                reportRow.SkipReason = "Processed with sanitized name";
-                invalidNameReportRows.Add(reportRow);
-            }
-
+            AddReportRowIfNeeded(invalidNameReportRows, reportRow, record, originalName, sanitizedName, "Создан и обработан с санитизированным именем");
             return newType;
+        }
+
+        private static void AddReportRowIfNeeded(
+            List<InvalidNameReportRow> invalidNameReportRows,
+            InvalidNameReportRow reportRow,
+            FillPatternCsvRecord record,
+            string originalName,
+            string sanitizedName,
+            string reason)
+        {
+            if (invalidNameReportRows == null)
+            {
+                return;
+            }
+
+            InvalidNameReportRow rowToAdd = reportRow;
+
+            if (rowToAdd == null)
+            {
+                rowToAdd = new InvalidNameReportRow
+                {
+                    RowIndex = record != null ? record.RowIndex : 0,
+                    OriginalName = originalName ?? string.Empty,
+                    SanitizedName = sanitizedName ?? string.Empty,
+                    InvalidCharactersFound = string.Empty
+                };
+            }
+
+            rowToAdd.SkipReason = reason;
+            invalidNameReportRows.Add(rowToAdd);
         }
 
         // Block responsible for finding or creating FillPatternElement
@@ -542,12 +529,28 @@ namespace RevitLibraryBuilder.Services.Placement
                 return string.Empty;
             }
 
-            string sanitized = originalName.Trim();
+            StringBuilder result = new StringBuilder();
+            string source = originalName.Trim();
 
-            for (int i = 0; i < ProhibitedNameCharacters.Length; i++)
+            for (int i = 0; i < source.Length; i++)
             {
-                sanitized = sanitized.Replace(ProhibitedNameCharacters[i].ToString(), "_");
+                char character = source[i];
+
+                if (char.IsControl(character))
+                {
+                    continue;
+                }
+
+                if (IsProhibitedCharacter(character))
+                {
+                    result.Append('_');
+                    continue;
+                }
+
+                result.Append(character);
             }
+
+            string sanitized = result.ToString();
 
             while (sanitized.Contains("__"))
             {
