@@ -91,7 +91,21 @@ namespace RevitLibraryBuilder.Services
                     continue;
                 }
 
-                string pngPath = Path.Combine(folder, name + ".png");
+                // Block responsible for safe path composition:
+                // raw Revit type/family names may contain characters invalid for Windows file paths.
+                string safeName = MakeSafeFileName(name);
+
+                if (string.IsNullOrWhiteSpace(safeName))
+                {
+                    continue;
+                }
+
+                string pngPath = TryCombinePath(folder, safeName + ".png");
+
+                if (string.IsNullOrWhiteSpace(pngPath))
+                {
+                    continue;
+                }
 
                 if (File.Exists(pngPath))
                 {
@@ -100,6 +114,23 @@ namespace RevitLibraryBuilder.Services
             }
 
             return string.Empty;
+        }
+
+        private static string TryCombinePath(string folder, string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(folder) || string.IsNullOrWhiteSpace(fileName))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                return Path.Combine(folder, fileName);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private static string TryResolveByFolderLookup(string folder, List<string> candidateNames)

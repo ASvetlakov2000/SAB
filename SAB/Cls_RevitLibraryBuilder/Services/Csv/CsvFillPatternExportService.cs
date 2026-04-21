@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
+using RevitLibraryBuilder.Services;
 using asBIM;
 
 namespace RevitLibraryBuilder.Services.Csv
@@ -34,12 +35,14 @@ namespace RevitLibraryBuilder.Services.Csv
                     return Result.Failed;
                 }
 
-                string folderPath = RequestExportFolderPath();
+                string selectedFolderPath = RequestExportFolderPath();
 
-                if (string.IsNullOrWhiteSpace(folderPath))
+                if (string.IsNullOrWhiteSpace(selectedFolderPath))
                 {
                     return Result.Cancelled;
                 }
+
+                string folderPath = ExportFolderRoutingService.ResolveCategoryExportFolder(selectedFolderPath);
 
                 ExportLineStyles(document, folderPath);
                 ExportFillPatterns(document, folderPath);
@@ -353,7 +356,7 @@ namespace RevitLibraryBuilder.Services.Csv
         {
             return OpenFolder.SelectFolderPath(
                 "Select folder for Line Styles and Fill Patterns export",
-                "LineStyles.csv");
+                "ctg");
         }
 
         private static string GetValue(List<string> values, int index)

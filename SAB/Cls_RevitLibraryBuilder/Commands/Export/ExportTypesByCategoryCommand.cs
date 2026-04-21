@@ -1,4 +1,4 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System;
@@ -11,7 +11,7 @@ using asBIM;
 namespace RevitLibraryBuilder.Commands
 {
     /// <summary>
-    /// Экспорт типов — ОТДЕЛЬНЫЕ CSV по категориям
+    /// Экспорт типов — отдельные CSV по категориям.
     /// </summary>
     [Transaction(TransactionMode.Manual)]
     public class ExportTypesByCategoryCommand : IExternalCommand
@@ -20,7 +20,6 @@ namespace RevitLibraryBuilder.Commands
         {
             try
             {
-                // 🔹 Получаем документ
                 UIDocument uidoc = commandData.Application.ActiveUIDocument;
 
                 if (uidoc == null)
@@ -39,36 +38,35 @@ namespace RevitLibraryBuilder.Commands
                     return Result.Failed;
                 }
 
-                // 🔹 Сбор типов
                 TypeCollectorService collector = new TypeCollectorService();
                 var types = collector.CollectAllTypes(doc);
 
-                // 🔹 Проверка
                 if (types == null || types.Count == 0)
                 {
                     MessageBox.Show("Типы элементов не найдены.", "Экспорт", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return Result.Cancelled;
                 }
 
-                // 🔹 Выбор папки через диалог с полем пути
                 string outputFolder = OpenFolder.SelectFolderPath(
                     "Выберите папку для экспорта CSV (по категориям)",
-                    "EXPORT_BY_CATEGORY.csv");
+                    "ctg");
 
                 if (string.IsNullOrWhiteSpace(outputFolder))
+                {
                     return Result.Cancelled;
+                }
 
-                // 🔹 Экспорт
+                outputFolder = ExportFolderRoutingService.ResolveCategoryExportFolder(outputFolder);
+                ExportFolderRoutingService.ConfigureThumbnailFoldersForCategoryExport(outputFolder);
+
                 CsvExportService exportService = new CsvExportService();
                 exportService.ExportToCsv(types, doc, outputFolder);
 
-                // 🔹 Уведомление
                 ToastNotifier.ShowFolderLinkSuccess(
                     "Экспорт завершен",
                     "\nCSV файлы (по категориям) сохранены:\n",
                     outputFolder,
-                    durationSeconds: 10
-                );
+                    durationSeconds: 10);
 
                 return Result.Succeeded;
             }

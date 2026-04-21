@@ -75,12 +75,15 @@ namespace RevitLibraryBuilder.Commands
 
                 string outputFolder = OpenFolder.SelectFolderPath(
                     "Выберите папку для экспорта одного CSV",
-                    BuildSuggestedFileName(doc.Title, "ALL_CATEGORIES.csv"));
+                    "ctg");
 
                 if (string.IsNullOrWhiteSpace(outputFolder))
                 {
                     return Result.Cancelled;
                 }
+
+                outputFolder = ExportFolderRoutingService.ResolveCategoryExportFolder(outputFolder);
+                ExportFolderRoutingService.ConfigureThumbnailFoldersForCategoryExport(outputFolder);
 
                 CsvExportService exportService = new CsvExportService();
                 exportService.ExportToSingleCsv(filteredTypes, doc, outputFolder);

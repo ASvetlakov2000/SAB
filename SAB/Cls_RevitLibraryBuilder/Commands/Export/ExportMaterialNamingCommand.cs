@@ -1,8 +1,9 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
 using RevitLibraryBuilder.Models;
+using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Csv;
 using System;
 using System.Collections.Generic;
@@ -49,12 +50,14 @@ namespace RevitLibraryBuilder.Commands
                 // Блок выбора папки через диалог с полем пути и предзаполненным именем файла.
                 string outputFolder = OpenFolder.SelectFolderPath(
                     "Выберите папку для XLSX выгрузки наименований материалов",
-                    BuildSuggestedFileName(document.Title, "MATERIAL_NAMING.xlsx"));
+                    "name");
 
                 if (string.IsNullOrWhiteSpace(outputFolder))
                 {
                     return Result.Cancelled;
                 }
+
+                outputFolder = ExportFolderRoutingService.ResolveNamingExportFolder(outputFolder);
 
                 MaterialNamingCsvService csvService = new MaterialNamingCsvService();
                 string filePath = csvService.WriteMaterialXlsx(outputFolder, document.Title, rows);

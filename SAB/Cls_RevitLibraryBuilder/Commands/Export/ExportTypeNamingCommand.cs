@@ -1,7 +1,8 @@
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
+using RevitLibraryBuilder.Services;
 using RevitLibraryBuilder.Services.Csv;
 using RevitLibraryBuilder.Services.Revit;
 using System;
@@ -50,12 +51,14 @@ namespace RevitLibraryBuilder.Commands
                 // Блок выбора папки через диалог с полем пути и предзаполненным именем файла.
                 string outputFolder = OpenFolder.SelectFolderPath(
                     "Выберите папку для XLSX выгрузки наименований типоразмеров",
-                    BuildSuggestedFileName(document.Title, "TYPE_NAMING.xlsx"));
+                    "name");
 
                 if (string.IsNullOrWhiteSpace(outputFolder))
                 {
                     return Result.Cancelled;
                 }
+
+                outputFolder = ExportFolderRoutingService.ResolveNamingExportFolder(outputFolder);
 
                 TypeNamingCsvService typeNamingService = new TypeNamingCsvService();
                 string filePath = typeNamingService.WriteTypeNamingXlsx(outputFolder, document.Title, allTypes);

@@ -9,7 +9,7 @@ namespace RevitLibraryBuilder.Services.Placement
     {
         private readonly Document _doc;
 
-        // ÐÐ°ÑÑ‚Ñ€Ð°Ð¸Ð²Ð°ÐµÐ¼Ñ‹Ð¹ ÑˆÐ°Ð³ Ð¼ÐµÐ¶Ð´Ñƒ ÑÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€Ð°Ð¼Ð¸ Ð¿Ñ€Ð¸ Ñ€Ð°Ð·Ð¼ÐµÑ‰ÐµÐ½Ð¸Ð¸ Ð¿Ð¾ Ñ‚Ð¾Ñ‡ÐºÐ°Ð¼ (Ð¼Ð¼)
+        // Настраиваемый шаг между экземплярами при размещении по точкам (мм)
         private readonly double _step = 2000 / 304.8;
 
         public PlacementByPointService(Document doc)
@@ -83,4 +83,3 @@ namespace RevitLibraryBuilder.Services.Placement
         }
     }
 }
-
