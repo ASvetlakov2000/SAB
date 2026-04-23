@@ -7,6 +7,7 @@ namespace SAB
     {
         private const string RibbonTabName = "SAB";
         private const string RibbonPanelName = "Библиотека";
+        private const string RegulationsPanelName = "Регламент";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -21,6 +22,7 @@ namespace SAB
             }
 
             RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
+            RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
 
             // Блок кнопок экспорта
             SplitButton exportSplit = libraryPanel.AddItem(
@@ -188,6 +190,15 @@ namespace SAB
                 "SAB_GenerateDashboard",
                 "HTML \nпросмотр",
                 "SAB.BimDashboard.Commands.GenerateDashboardCommand",
+                "SAB.Resources.GenerateDashboardCommand_32.png",
+                "SAB.Resources.GenerateDashboardCommand_16.png");
+
+            // Блок кнопок регламентов и инструкций в HTML.
+            Ribbon.AddPushButtonSingle(
+                regulationsPanel,
+                "SAB_OpenNamingStandardsHtml",
+                "Стандарты \nНаименования",
+                "RevitLibraryBuilder.Commands.Regulations.OpenNamingStandardsHtmlCommand",
                 "SAB.Resources.GenerateDashboardCommand_32.png",
                 "SAB.Resources.GenerateDashboardCommand_16.png");
 

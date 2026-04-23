@@ -122,6 +122,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByPointCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceFillPatternsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceLineStylesCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Regulations\OpenNamingStandardsHtmlCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\PlaceLegendComponentsByCategoriesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\CreateFloorPlanFromPlacementCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Helpers\PlacementMath.cs" />
@@ -149,6 +150,8 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementByPointService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\PlacementServiceFactory.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\PostActions\PostActionViewService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Regulations\HtmlRegulationLaunchOptions.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Regulations\HtmlRegulationLauncherService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\MaterialNamingApplyService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\LoadableFamilyThumbnailExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\SystemFamilyTypeImageLoaderService.cs" />

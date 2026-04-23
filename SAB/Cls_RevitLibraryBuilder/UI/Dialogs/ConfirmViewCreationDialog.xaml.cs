@@ -1,119 +1,112 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
 {
-    public partial class ConfirmViewCreationDialog : Window
+    /// <summary>
+    /// Simple confirmation dialog for view creation actions.
+    /// </summary>
+    public class ConfirmViewCreationDialog : Window
     {
+        private readonly TextBlock _messageTextBlock;
+        private readonly Button _yesButton;
+        private readonly Button _noButton;
+
         public bool Result { get; private set; }
 
         public ConfirmViewCreationDialog(string categoryName)
-            : this("Создать план с категорией?", "Да", "Нет")
+            : this(BuildCategoryQuestion(categoryName), "Да", "Нет")
         {
         }
 
         public ConfirmViewCreationDialog(string titleText, string yesButtonText, string noButtonText)
         {
-            BuildUi(titleText, yesButtonText, noButtonText);
-        }
+            string safeTitle = string.IsNullOrWhiteSpace(titleText) ? "Подтвердите действие" : titleText.Trim();
+            string safeYesText = string.IsNullOrWhiteSpace(yesButtonText) ? "Да" : yesButtonText.Trim();
+            string safeNoText = string.IsNullOrWhiteSpace(noButtonText) ? "Нет" : noButtonText.Trim();
 
-        private void BuildUi(string titleText, string yesButtonText, string noButtonText)
-        {
-            Title = "Confirm";
-            Width = 320;
-            Height = 150;
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            WindowStyle = WindowStyle.None;
-            AllowsTransparency = true;
-            Background = Brushes.Transparent;
-            Topmost = true;
+            // Basic window parameters.
+            Title = "Подтверждение";
+            Width = 420;
+            Height = 190;
+            MinWidth = 380;
+            MinHeight = 170;
             ResizeMode = ResizeMode.NoResize;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             ShowInTaskbar = false;
 
-            Border border = new Border
+            Grid rootGrid = new Grid
             {
-                CornerRadius = new CornerRadius(8),
-                Background = new SolidColorBrush(Color.FromRgb(0x67, 0x6C, 0x73)),
-                BorderBrush = Brushes.White,
-                BorderThickness = new Thickness(3),
-                Padding = new Thickness(20)
+                Margin = new Thickness(14)
             };
 
-            StackPanel rootPanel = new StackPanel
-            {
-                Width = 300,
-                Height = 90,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
+            rootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            TextBlock titleBlock = new TextBlock
+            _messageTextBlock = new TextBlock
             {
-                Text = string.IsNullOrWhiteSpace(titleText) ? "Создать план с категорией?" : titleText,
-                FontSize = 20,
-                FontWeight = FontWeights.Bold,
-                Foreground = Brushes.White,
-                Margin = new Thickness(0, 0, 0, 10),
-                HorizontalAlignment = HorizontalAlignment.Center
+                Text = safeTitle,
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(2, 2, 2, 12),
+                FontSize = 13
             };
+            Grid.SetRow(_messageTextBlock, 0);
+            rootGrid.Children.Add(_messageTextBlock);
 
-            StackPanel buttonsPanel = new StackPanel
+            StackPanel buttonPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 20, 0, 0)
+                HorizontalAlignment = HorizontalAlignment.Right
             };
+            Grid.SetRow(buttonPanel, 1);
 
-            Button noButton = CreateDialogButton(string.IsNullOrWhiteSpace(noButtonText) ? "Нет" : noButtonText);
-            noButton.Margin = new Thickness(0, 0, 0, 10);
-            noButton.Click += No_Click;
-
-            Button yesButton = CreateDialogButton(string.IsNullOrWhiteSpace(yesButtonText) ? "Да" : yesButtonText);
-            yesButton.Margin = new Thickness(30, 0, 0, 10);
-            yesButton.Click += Yes_Click;
-
-            buttonsPanel.Children.Add(noButton);
-            buttonsPanel.Children.Add(yesButton);
-
-            rootPanel.Children.Add(titleBlock);
-            rootPanel.Children.Add(buttonsPanel);
-
-            border.Child = rootPanel;
-            Content = border;
-        }
-
-        private static Button CreateDialogButton(string caption)
-        {
-            return new Button
+            _yesButton = new Button
             {
-                Content = caption,
-                Width = 80,
-                Height = 30,
-                FontSize = 18,
-                Background = new SolidColorBrush(Color.FromRgb(0x67, 0x6C, 0x73)),
-                Foreground = Brushes.White,
-                BorderBrush = Brushes.White,
-                BorderThickness = new Thickness(2),
-                Padding = new Thickness(6, 2, 6, 2),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
+                Width = 95,
+                Height = 28,
+                Margin = new Thickness(0, 0, 8, 0),
+                Content = safeYesText,
+                IsDefault = true
             };
+            _yesButton.Click += YesButton_Click;
+
+            _noButton = new Button
+            {
+                Width = 95,
+                Height = 28,
+                Content = safeNoText,
+                IsCancel = true
+            };
+            _noButton.Click += NoButton_Click;
+
+            buttonPanel.Children.Add(_yesButton);
+            buttonPanel.Children.Add(_noButton);
+            rootGrid.Children.Add(buttonPanel);
+
+            Content = rootGrid;
         }
 
-        private void Yes_Click(object sender, RoutedEventArgs e)
+        private void YesButton_Click(object sender, RoutedEventArgs e)
         {
             Result = true;
             DialogResult = true;
             Close();
         }
 
-        private void No_Click(object sender, RoutedEventArgs e)
+        private void NoButton_Click(object sender, RoutedEventArgs e)
         {
             Result = false;
             DialogResult = false;
             Close();
+        }
+
+        private static string BuildCategoryQuestion(string categoryName)
+        {
+            string safeCategory = string.IsNullOrWhiteSpace(categoryName) ? "Без категории" : categoryName.Trim();
+            return "Создать план с категорией: " + safeCategory + "?";
         }
     }
 }

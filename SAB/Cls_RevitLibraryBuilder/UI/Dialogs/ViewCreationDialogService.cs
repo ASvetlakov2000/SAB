@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -6,17 +7,33 @@ namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
 {
     public static class ViewCreationDialogService
     {
-        public static bool Ask(string name)
+        public static bool Ask(string categoryName)
         {
-            var dialog = new ConfirmViewCreationDialog(name);
+            ConfirmViewCreationDialog dialog = new ConfirmViewCreationDialog(categoryName)
+            {
+                ShowInTaskbar = false,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
 
-            var helper = new WindowInteropHelper(dialog);
+            IntPtr ownerHandle = IntPtr.Zero;
 
-            helper.Owner = System.Diagnostics.Process
-                .GetCurrentProcess()
-                .MainWindowHandle;
+            try
+            {
+                ownerHandle = Process.GetCurrentProcess().MainWindowHandle;
+            }
+            catch
+            {
+                ownerHandle = IntPtr.Zero;
+            }
 
-            return dialog.ShowDialog() == true && dialog.Result;
+            if (ownerHandle != IntPtr.Zero)
+            {
+                WindowInteropHelper helper = new WindowInteropHelper(dialog);
+                helper.Owner = ownerHandle;
+            }
+
+            bool? dialogResult = dialog.ShowDialog();
+            return dialogResult == true && dialog.Result;
         }
     }
 }
