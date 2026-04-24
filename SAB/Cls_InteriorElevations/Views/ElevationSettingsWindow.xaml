@@ -1,0 +1,167 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Interior Elevations"
+        Height="760"
+        Width="650"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <GroupBox Grid.Row="0" Header="View Settings" Margin="0,0,0,8">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Elevation view family type:" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
+                              ItemsSource="{Binding ElevationViewFamilyTypes}"
+                              SelectedItem="{Binding SelectedElevationViewFamilyType}"
+                              DisplayMemberPath="DisplayName" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Elevation view template:" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"
+                              ItemsSource="{Binding ViewTemplates}"
+                              SelectedItem="{Binding SelectedViewTemplate}"
+                              DisplayMemberPath="DisplayName" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" Text="View scale:" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ViewScaleText, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="Crop Settings" Margin="0,0,0,8">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Top offset (mm):" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Text="{Binding TopOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Bottom offset (mm):" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Text="{Binding BottomOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Left offset (mm):" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Text="{Binding LeftOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Right offset (mm):" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,8" Text="{Binding RightOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="View depth / far clip offset (mm):" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,8" Text="{Binding ViewDepthMmText, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" Text="Marker offset from line (mm):" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding MarkerOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="2" Header="Naming Settings" Margin="0,0,0,8">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="View name prefix:" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Text="{Binding ViewNamePrefix, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <CheckBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"
+                              Content="Use room number in view name"
+                              IsChecked="{Binding UseRoomNumberInViewName}" />
+
+                    <CheckBox Grid.Row="2" Grid.Column="1"
+                              Content="Use room name in view name"
+                              IsChecked="{Binding UseRoomNameInViewName}" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="3" Header="Sheet Settings" Margin="0,0,0,8">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
+                              Content="Create sheet"
+                              IsChecked="{Binding CreateSheet}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Title block type:" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"
+                              ItemsSource="{Binding TitleBlockTypes}"
+                              SelectedItem="{Binding SelectedTitleBlockType}"
+                              DisplayMemberPath="DisplayName"
+                              IsEnabled="{Binding CreateSheet}" />
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Columns count:" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,8"
+                             Text="{Binding ColumnsCountText, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding CreateSheet}" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Start X (mm):" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,8"
+                             Text="{Binding StartXmmText, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding CreateSheet}" />
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Start Y (mm):" />
+                    <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,8"
+                             Text="{Binding StartYmmText, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding CreateSheet}" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Step X (mm):" />
+                    <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,8"
+                             Text="{Binding StepXmmText, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding CreateSheet}" />
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" Text="Step Y (mm):" />
+                    <TextBox Grid.Row="6" Grid.Column="1"
+                             Text="{Binding StepYmmText, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding CreateSheet}" />
+                </Grid>
+            </GroupBox>
+
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="OkButton" Width="100" Height="30" Margin="0,0,8,0" Content="OK" />
+                <Button x:Name="CancelButton" Width="100" Height="30" Content="Cancel" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

@@ -193,6 +193,15 @@ namespace SAB
                 "SAB.Resources.GenerateDashboardCommand_32.png",
                 "SAB.Resources.GenerateDashboardCommand_16.png");
 
+            // Блок запуска генератора внутренних разверток по выбранным детализационным линиям.
+            Ribbon.AddPushButtonSingle(
+                libraryPanel,
+                "SAB_CreateInteriorElevations",
+                "Interior \nElevations",
+                "SAB.InteriorElevations.Commands.CreateInteriorElevationsCommand",
+                "SAB.Resources.GenerateDashboardCommand_32.png",
+                "SAB.Resources.GenerateDashboardCommand_16.png");
+
             // Блок кнопок регламентов и инструкций в HTML.
             // Блок кнопок регламентов и инструкций в HTML.
             Ribbon.AddPushButtonSingle(

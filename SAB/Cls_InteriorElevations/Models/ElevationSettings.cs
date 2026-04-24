@@ -1,12 +1,37 @@
-﻿namespace InteriorElevations.Models
+﻿using Autodesk.Revit.DB;
+
+namespace SAB.InteriorElevations.Models
 {
     public class ElevationSettings
     {
-        public double CropOffsetTop { get; set; } = 2500;       // мм сверху от уровня
-        public double CropOffsetBottom { get; set; } = 0;       // мм от уровня
-        public double CropOffsetSide { get; set; } = 100;       // мм по бокам линии
-        public double CropOffsetLine { get; set; } = 150;       // мм смещение от линии
-        public int DefaultViewScale { get; set; } = 100;        // Масштаб вида
-        public string ViewNameFormat { get; set; } = "Развертка пом {0}_{1}-{2}";
+        public ElementId ViewTemplateId { get; set; }
+
+        public ElementId ElevationViewFamilyTypeId { get; set; }
+
+        public int ViewScale { get; set; }
+
+        public double TopOffsetMm { get; set; }
+
+        public double BottomOffsetMm { get; set; }
+
+        public double LeftOffsetMm { get; set; }
+
+        public double RightOffsetMm { get; set; }
+
+        public double ViewDepthMm { get; set; }
+
+        public double MarkerOffsetMm { get; set; }
+
+        public bool CreateSheet { get; set; }
+
+        public ElementId TitleBlockTypeId { get; set; }
+
+        public SheetLayoutSettings SheetLayoutSettings { get; set; }
+
+        public string ViewNamePrefix { get; set; }
+
+        public bool UseRoomNumberInViewName { get; set; }
+
+        public bool UseRoomNameInViewName { get; set; }
     }
 }
