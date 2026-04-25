@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using Autodesk.Revit.DB;
 using SAB.InteriorElevations.Models;
+using SAB.InteriorElevations.Services.Marks;
+using SAB.InteriorElevations.Utils;
 
 namespace SAB.InteriorElevations.ViewModels
 {
@@ -27,20 +29,21 @@ namespace SAB.InteriorElevations.ViewModels
         private RevitElementOption _selectedElevationViewFamilyType;
         private RevitElementOption _selectedViewTemplate;
         private RevitElementOption _selectedTitleBlockType;
+        private RevitElementOption _selectedPlanCornerMarkType;
+        private RevitElementOption _selectedSheetCornerMarkType;
         private bool _createSheet;
-        private string _viewNamePrefix;
-        private bool _useRoomNumberInViewName;
-        private bool _useRoomNameInViewName;
 
-        public ElevationSettingsViewModel(Document document)
+        public ElevationSettingsViewModel(Document document, ElevationSettings initialSettings = null)
         {
             _document = document;
 
             ElevationViewFamilyTypes = new ObservableCollection<RevitElementOption>();
             ViewTemplates = new ObservableCollection<RevitElementOption>();
             TitleBlockTypes = new ObservableCollection<RevitElementOption>();
+            PlanCornerMarkTypes = new ObservableCollection<RevitElementOption>();
+            SheetCornerMarkTypes = new ObservableCollection<RevitElementOption>();
 
-            // Block with default user-editable parameters for MVP.
+            // Блок значений по умолчанию, которые пользователь может менять в окне.
             ViewScaleText = "50";
             TopOffsetMmText = "3000";
             BottomOffsetMmText = "0";
@@ -48,10 +51,6 @@ namespace SAB.InteriorElevations.ViewModels
             RightOffsetMmText = "100";
             ViewDepthMmText = "3000";
             MarkerOffsetMmText = "250";
-
-            _viewNamePrefix = string.Empty;
-            _useRoomNumberInViewName = true;
-            _useRoomNameInViewName = true;
 
             ColumnsCountText = "2";
             StartXmmText = "150";
@@ -62,8 +61,13 @@ namespace SAB.InteriorElevations.ViewModels
             LoadElevationViewFamilyTypes();
             LoadViewTemplates();
             LoadTitleBlockTypes();
+            LoadCornerMarkTypes(PlanCornerMarkTypes, CornerMarkConstants.PlanFamilyName);
+            LoadCornerMarkTypes(SheetCornerMarkTypes, CornerMarkConstants.SheetFamilyName);
 
             _createSheet = TitleBlockTypes.Count > 0;
+
+            // Блок восстановления последних сохраненных значений из предыдущей сессии.
+            ApplyInitialSettings(initialSettings);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -73,6 +77,10 @@ namespace SAB.InteriorElevations.ViewModels
         public ObservableCollection<RevitElementOption> ViewTemplates { get; private set; }
 
         public ObservableCollection<RevitElementOption> TitleBlockTypes { get; private set; }
+
+        public ObservableCollection<RevitElementOption> PlanCornerMarkTypes { get; private set; }
+
+        public ObservableCollection<RevitElementOption> SheetCornerMarkTypes { get; private set; }
 
         public RevitElementOption SelectedElevationViewFamilyType
         {
@@ -101,6 +109,26 @@ namespace SAB.InteriorElevations.ViewModels
             {
                 _selectedTitleBlockType = value;
                 OnPropertyChanged("SelectedTitleBlockType");
+            }
+        }
+
+        public RevitElementOption SelectedPlanCornerMarkType
+        {
+            get { return _selectedPlanCornerMarkType; }
+            set
+            {
+                _selectedPlanCornerMarkType = value;
+                OnPropertyChanged("SelectedPlanCornerMarkType");
+            }
+        }
+
+        public RevitElementOption SelectedSheetCornerMarkType
+        {
+            get { return _selectedSheetCornerMarkType; }
+            set
+            {
+                _selectedSheetCornerMarkType = value;
+                OnPropertyChanged("SelectedSheetCornerMarkType");
             }
         }
 
@@ -138,36 +166,6 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string StepYmmText { get; set; }
 
-        public string ViewNamePrefix
-        {
-            get { return _viewNamePrefix; }
-            set
-            {
-                _viewNamePrefix = value;
-                OnPropertyChanged("ViewNamePrefix");
-            }
-        }
-
-        public bool UseRoomNumberInViewName
-        {
-            get { return _useRoomNumberInViewName; }
-            set
-            {
-                _useRoomNumberInViewName = value;
-                OnPropertyChanged("UseRoomNumberInViewName");
-            }
-        }
-
-        public bool UseRoomNameInViewName
-        {
-            get { return _useRoomNameInViewName; }
-            set
-            {
-                _useRoomNameInViewName = value;
-                OnPropertyChanged("UseRoomNameInViewName");
-            }
-        }
-
         public bool TryBuildSettings(out ElevationSettings settings, out string validationMessage)
         {
             settings = null;
@@ -196,16 +194,20 @@ namespace SAB.InteriorElevations.ViewModels
                 ? SelectedTitleBlockType.Id
                 : ElementId.InvalidElementId;
 
+            elevationSettings.PlanCornerMarkTypeId = SelectedPlanCornerMarkType != null
+                ? SelectedPlanCornerMarkType.Id
+                : ElementId.InvalidElementId;
+
+            elevationSettings.SheetCornerMarkTypeId = CreateSheet && SelectedSheetCornerMarkType != null
+                ? SelectedSheetCornerMarkType.Id
+                : ElementId.InvalidElementId;
+
             elevationSettings.SheetLayoutSettings = new SheetLayoutSettings();
             elevationSettings.SheetLayoutSettings.ColumnsCount = ParseInt(ColumnsCountText);
             elevationSettings.SheetLayoutSettings.StartXmm = ParseDouble(StartXmmText);
             elevationSettings.SheetLayoutSettings.StartYmm = ParseDouble(StartYmmText);
             elevationSettings.SheetLayoutSettings.StepXmm = ParseDouble(StepXmmText);
             elevationSettings.SheetLayoutSettings.StepYmm = ParseDouble(StepYmmText);
-
-            elevationSettings.ViewNamePrefix = ViewNamePrefix;
-            elevationSettings.UseRoomNumberInViewName = UseRoomNumberInViewName;
-            elevationSettings.UseRoomNameInViewName = UseRoomNameInViewName;
 
             settings = elevationSettings;
             return true;
@@ -215,86 +217,96 @@ namespace SAB.InteriorElevations.ViewModels
         {
             if (SelectedElevationViewFamilyType == null)
             {
-                return "Elevation ViewFamilyType is not selected.";
+                return "Не выбран тип вида развертки.";
+            }
+
+            if (SelectedPlanCornerMarkType == null)
+            {
+                return "Не выбран тип семейства марки угла на плане.";
             }
 
             int viewScale;
             if (!TryParseInt(ViewScaleText, out viewScale) || viewScale <= 0)
             {
-                return "View scale must be a positive integer.";
+                return "Масштаб вида должен быть положительным целым числом.";
             }
 
             double top;
             if (!TryParseDouble(TopOffsetMmText, out top) || top < 0)
             {
-                return "Top offset must be a non-negative number (mm).";
+                return "Верхний отступ должен быть неотрицательным числом (мм).";
             }
 
             double bottom;
             if (!TryParseDouble(BottomOffsetMmText, out bottom) || bottom < 0)
             {
-                return "Bottom offset must be a non-negative number (mm).";
+                return "Нижний отступ должен быть неотрицательным числом (мм).";
             }
 
             double left;
             if (!TryParseDouble(LeftOffsetMmText, out left) || left < 0)
             {
-                return "Left offset must be a non-negative number (mm).";
+                return "Левый отступ должен быть неотрицательным числом (мм).";
             }
 
             double right;
             if (!TryParseDouble(RightOffsetMmText, out right) || right < 0)
             {
-                return "Right offset must be a non-negative number (mm).";
+                return "Правый отступ должен быть неотрицательным числом (мм).";
             }
 
             double depth;
             if (!TryParseDouble(ViewDepthMmText, out depth) || depth <= 0)
             {
-                return "View depth must be a positive number (mm).";
+                return "Смещение дальнего предела должно быть положительным числом (мм).";
             }
 
             double markerOffset;
-            if (!TryParseDouble(MarkerOffsetMmText, out markerOffset) || markerOffset <= 0)
+            if (!TryParseDouble(MarkerOffsetMmText, out markerOffset) || markerOffset < 0)
             {
-                return "Marker offset must be a positive number (mm).";
+                return "Отступ вида от линии должен быть неотрицательным числом (мм).";
             }
 
             if (CreateSheet)
             {
                 if (SelectedTitleBlockType == null)
                 {
-                    return "Create sheet is enabled, but title block type is not selected.";
+                    return "Включено создание листа, но не выбран тип основной надписи.";
+                }
+
+                if (SelectedSheetCornerMarkType == null)
+                {
+                    return "Включено создание листа, но не выбран тип семейства марки угла на листе.";
                 }
 
                 int columns;
                 if (!TryParseInt(ColumnsCountText, out columns) || columns <= 0)
                 {
-                    return "Columns count must be a positive integer.";
+                    return "Количество колонок должно быть положительным целым числом.";
                 }
 
                 double startX;
                 if (!TryParseDouble(StartXmmText, out startX))
                 {
-                    return "Sheet start X must be a valid number (mm).";
+                    return "Начальная координата X на листе должна быть числом (мм).";
                 }
 
                 double startY;
                 if (!TryParseDouble(StartYmmText, out startY))
                 {
-                    return "Sheet start Y must be a valid number (mm).";
+                    return "Начальная координата Y на листе должна быть числом (мм).";
                 }
 
                 double stepX;
                 if (!TryParseDouble(StepXmmText, out stepX) || stepX <= 0)
                 {
-                    return "Sheet step X must be a positive number (mm).";
+                    return "Шаг по X должен быть положительным числом (мм).";
                 }
 
                 double stepY;
                 if (!TryParseDouble(StepYmmText, out stepY) || stepY <= 0)
                 {
-                    return "Sheet step Y must be a positive number (mm).";
+                    return "Шаг по Y должен быть положительным числом (мм).";
                 }
             }
 
@@ -345,7 +357,7 @@ namespace SAB.InteriorElevations.ViewModels
         {
             RevitElementOption emptyOption = new RevitElementOption();
             emptyOption.Id = ElementId.InvalidElementId;
-            emptyOption.DisplayName = "<None>";
+            emptyOption.DisplayName = "<Не выбран>";
             ViewTemplates.Add(emptyOption);
 
             List<RevitElementOption> options = new List<RevitElementOption>();
@@ -370,7 +382,7 @@ namespace SAB.InteriorElevations.ViewModels
                 options.Add(option);
             }
 
-            // Fallback block: if no elevation templates were found, list all templates.
+            // Если шаблонов разверток нет, даем выбрать любой шаблон вида.
             if (options.Count == 0)
             {
                 FilteredElementCollector fallbackCollector = new FilteredElementCollector(_document).OfClass(typeof(View));
@@ -441,6 +453,52 @@ namespace SAB.InteriorElevations.ViewModels
             }
         }
 
+        private void LoadCornerMarkTypes(ObservableCollection<RevitElementOption> targetCollection, string requiredFamilyName)
+        {
+            List<RevitElementOption> options = new List<RevitElementOption>();
+
+            FilteredElementCollector collector = new FilteredElementCollector(_document).OfClass(typeof(FamilySymbol));
+            foreach (Element element in collector)
+            {
+                FamilySymbol familySymbol = element as FamilySymbol;
+                if (familySymbol == null)
+                {
+                    continue;
+                }
+
+                string familyName = familySymbol.Family != null ? familySymbol.Family.Name : familySymbol.FamilyName;
+                if (!string.Equals(familyName, requiredFamilyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                RevitElementOption option = new RevitElementOption();
+                option.Id = familySymbol.Id;
+                option.DisplayName = familyName + " : " + familySymbol.Name;
+                options.Add(option);
+            }
+
+            options.Sort(delegate(RevitElementOption left, RevitElementOption right)
+            {
+                return string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
+            });
+
+            for (int index = 0; index < options.Count; index++)
+            {
+                targetCollection.Add(options[index]);
+            }
+
+            if (targetCollection == PlanCornerMarkTypes && PlanCornerMarkTypes.Count > 0)
+            {
+                SelectedPlanCornerMarkType = PlanCornerMarkTypes[0];
+            }
+
+            if (targetCollection == SheetCornerMarkTypes && SheetCornerMarkTypes.Count > 0)
+            {
+                SelectedSheetCornerMarkType = SheetCornerMarkTypes[0];
+            }
+        }
+
         private int ParseInt(string text)
         {
             int value;
@@ -450,6 +508,146 @@ namespace SAB.InteriorElevations.ViewModels
             }
 
             return value;
+        }
+
+        private void ApplyInitialSettings(ElevationSettings initialSettings)
+        {
+            if (initialSettings == null)
+            {
+                return;
+            }
+
+            // Восстанавливаем тип вида развертки только если тип доступен в текущем документе.
+            RevitElementOption elevationTypeOption = FindOptionById(ElevationViewFamilyTypes, initialSettings.ElevationViewFamilyTypeId);
+            if (elevationTypeOption != null)
+            {
+                SelectedElevationViewFamilyType = elevationTypeOption;
+            }
+
+            // Если ранее шаблон не выбирали, оставляем вариант "<Не выбран>".
+            if (initialSettings.ViewTemplateId == null || RevitElementIdUtils.AreEqual(initialSettings.ViewTemplateId, ElementId.InvalidElementId))
+            {
+                if (ViewTemplates.Count > 0)
+                {
+                    SelectedViewTemplate = ViewTemplates[0];
+                }
+            }
+            else
+            {
+                RevitElementOption templateOption = FindOptionById(ViewTemplates, initialSettings.ViewTemplateId);
+                if (templateOption != null)
+                {
+                    SelectedViewTemplate = templateOption;
+                }
+            }
+
+            if (initialSettings.ViewScale > 0)
+            {
+                ViewScaleText = initialSettings.ViewScale.ToString(CultureInfo.CurrentCulture);
+            }
+
+            if (initialSettings.TopOffsetMm >= 0)
+            {
+                TopOffsetMmText = FormatDouble(initialSettings.TopOffsetMm);
+            }
+
+            if (initialSettings.BottomOffsetMm >= 0)
+            {
+                BottomOffsetMmText = FormatDouble(initialSettings.BottomOffsetMm);
+            }
+
+            if (initialSettings.LeftOffsetMm >= 0)
+            {
+                LeftOffsetMmText = FormatDouble(initialSettings.LeftOffsetMm);
+            }
+
+            if (initialSettings.RightOffsetMm >= 0)
+            {
+                RightOffsetMmText = FormatDouble(initialSettings.RightOffsetMm);
+            }
+
+            if (initialSettings.ViewDepthMm > 0)
+            {
+                ViewDepthMmText = FormatDouble(initialSettings.ViewDepthMm);
+            }
+
+            if (initialSettings.MarkerOffsetMm >= 0)
+            {
+                MarkerOffsetMmText = FormatDouble(initialSettings.MarkerOffsetMm);
+            }
+
+            // Включаем создание листа только если в проекте есть доступные типы основной надписи.
+            CreateSheet = initialSettings.CreateSheet && TitleBlockTypes.Count > 0;
+            RevitElementOption titleBlockOption = FindOptionById(TitleBlockTypes, initialSettings.TitleBlockTypeId);
+            if (titleBlockOption != null)
+            {
+                SelectedTitleBlockType = titleBlockOption;
+            }
+
+            RevitElementOption planMarkOption = FindOptionById(PlanCornerMarkTypes, initialSettings.PlanCornerMarkTypeId);
+            if (planMarkOption != null)
+            {
+                SelectedPlanCornerMarkType = planMarkOption;
+            }
+
+            RevitElementOption sheetMarkOption = FindOptionById(SheetCornerMarkTypes, initialSettings.SheetCornerMarkTypeId);
+            if (sheetMarkOption != null)
+            {
+                SelectedSheetCornerMarkType = sheetMarkOption;
+            }
+
+            SheetLayoutSettings savedLayout = initialSettings.SheetLayoutSettings;
+            if (savedLayout == null)
+            {
+                return;
+            }
+
+            if (savedLayout.ColumnsCount > 0)
+            {
+                ColumnsCountText = savedLayout.ColumnsCount.ToString(CultureInfo.CurrentCulture);
+            }
+
+            StartXmmText = FormatDouble(savedLayout.StartXmm);
+            StartYmmText = FormatDouble(savedLayout.StartYmm);
+
+            if (savedLayout.StepXmm > 0)
+            {
+                StepXmmText = FormatDouble(savedLayout.StepXmm);
+            }
+
+            if (savedLayout.StepYmm > 0)
+            {
+                StepYmmText = FormatDouble(savedLayout.StepYmm);
+            }
+        }
+
+        private RevitElementOption FindOptionById(ObservableCollection<RevitElementOption> options, ElementId elementId)
+        {
+            if (options == null || elementId == null || RevitElementIdUtils.AreEqual(elementId, ElementId.InvalidElementId))
+            {
+                return null;
+            }
+
+            for (int i = 0; i < options.Count; i++)
+            {
+                RevitElementOption option = options[i];
+                if (option == null || option.Id == null)
+                {
+                    continue;
+                }
+
+                if (RevitElementIdUtils.AreEqual(option.Id, elementId))
+                {
+                    return option;
+                }
+            }
+
+            return null;
+        }
+
+        private string FormatDouble(double value)
+        {
+            return value.ToString("0.###", CultureInfo.CurrentCulture);
         }
 
         private double ParseDouble(string text)

@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Services.Elevations;
 
 namespace SAB.InteriorElevations.Services.Reports
@@ -13,38 +14,58 @@ namespace SAB.InteriorElevations.Services.Reports
             ElevationViewCreationResult creationResult,
             ViewSheet createdSheet,
             int placedViewportCount,
+            int placedPlanMarksCount,
+            int placedSheetMarksCount,
             IList<string> warnings)
         {
+            int createdCount = creationResult != null ? creationResult.CreatedViews.Count : 0;
+            int failedCount = creationResult != null ? creationResult.FailedViews.Count : 0;
+
             StringBuilder reportBuilder = new StringBuilder();
-            reportBuilder.AppendLine("SAB Interior Elevations report");
-            reportBuilder.AppendLine(string.Empty);
-            reportBuilder.AppendLine("Selected lines: " + selectedLinesCount);
-            reportBuilder.AppendLine("Created elevations: " + creationResult.CreatedViews.Count);
-            reportBuilder.AppendLine("Failed elevations: " + creationResult.FailedViews.Count);
+            reportBuilder.AppendLine("Отчет SAB по созданию разверток");
+            reportBuilder.AppendLine();
+            reportBuilder.AppendLine("Выбрано линий: " + selectedLinesCount);
+            reportBuilder.AppendLine("Создано разверток: " + createdCount);
+            reportBuilder.AppendLine("Не удалось создать: " + failedCount);
+            reportBuilder.AppendLine("Марок углов на плане: " + placedPlanMarksCount);
+            reportBuilder.AppendLine("Марок углов на листе: " + placedSheetMarksCount);
 
             if (createdSheet != null)
             {
-                reportBuilder.AppendLine("Created sheet: " + createdSheet.SheetNumber + " | " + createdSheet.Name);
-                reportBuilder.AppendLine("Placed viewports: " + placedViewportCount);
+                reportBuilder.AppendLine("Создан лист: " + createdSheet.SheetNumber + " | " + createdSheet.Name);
+                reportBuilder.AppendLine("Размещено видовых экранов: " + placedViewportCount);
             }
             else
             {
-                reportBuilder.AppendLine("Sheet: not created");
-                reportBuilder.AppendLine("Placed viewports: 0");
+                reportBuilder.AppendLine("Лист: не создан");
+                reportBuilder.AppendLine("Размещено видовых экранов: 0");
             }
 
             if (warnings != null && warnings.Count > 0)
             {
-                reportBuilder.AppendLine(string.Empty);
-                reportBuilder.AppendLine("Warnings:");
+                reportBuilder.AppendLine();
+                reportBuilder.AppendLine("Предупреждения: " + warnings.Count);
 
-                for (int i = 0; i < warnings.Count; i++)
+                int maxWarningsToShow = Math.Min(5, warnings.Count);
+                for (int i = 0; i < maxWarningsToShow; i++)
                 {
                     reportBuilder.AppendLine((i + 1) + ". " + warnings[i]);
                 }
+
+                if (warnings.Count > maxWarningsToShow)
+                {
+                    reportBuilder.AppendLine("... и еще " + (warnings.Count - maxWarningsToShow) + " предупреждений.");
+                }
             }
 
-            TaskDialog.Show("SAB Interior Elevations", reportBuilder.ToString());
+            if (createdCount > 0)
+            {
+                ToastNotifier.ShowSuccess("SAB Развертки", reportBuilder.ToString(), 15);
+            }
+            else
+            {
+                ToastNotifier.ShowWarning("SAB Развертки", reportBuilder.ToString(), 15);
+            }
         }
     }
 }

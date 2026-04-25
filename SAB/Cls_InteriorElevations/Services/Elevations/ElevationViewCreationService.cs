@@ -58,27 +58,32 @@ namespace SAB.InteriorElevations.Services.Elevations
 
                 try
                 {
+                    ElementId markerElementId;
                     ViewSection createdView = _markerService.CreateElevationForLine(
                         document,
                         activePlanView,
                         lineData,
                         settings.ElevationViewFamilyTypeId,
                         settings.ViewScale,
+                        out markerElementId,
                         warnings);
 
                     if (createdView == null)
                     {
                         viewData.IsCreated = false;
-                        viewData.FailureReason = "Elevation view was not created by ElevationMarker.";
+                        viewData.FailureReason = "Вид развертки не был создан маркером.";
                         result.FailedViews.Add(viewData);
                         continue;
                     }
 
-                    // Block responsible for naming order and uniqueness.
-                    string uniqueViewName = _namingService.GenerateUniqueElevationViewName(lineData.RoomData, lineData.Index, settings);
+                    // Блок именования: последовательность 1-2, 2-3, 3-4 и т.д.
+                    int startPointNumber = lineData.Index;
+                    int endPointNumber = lineData.Index + 1;
+
+                    string uniqueViewName = _namingService.GenerateUniqueElevationViewName(lineData.RoomData, startPointNumber, endPointNumber);
                     createdView.Name = uniqueViewName;
 
-                    // Block responsible for assigning user-defined scale before optional template lock.
+                    // Масштаб назначаем до шаблона, чтобы шаблон мог переопределить параметр при необходимости.
                     if (settings.ViewScale > 0)
                     {
                         createdView.Scale = settings.ViewScale;
@@ -99,10 +104,20 @@ namespace SAB.InteriorElevations.Services.Elevations
                             if (warnings != null)
                             {
                                 warnings.Add(
-                                    "Template was not applied to view " + uniqueViewName +
+                                    "Не удалось применить шаблон к виду " + uniqueViewName +
                                     ": " + templateException.Message);
                             }
                         }
+                    }
+
+                    // После применения шаблона повторно включаем отображение границы обрезки.
+                    try
+                    {
+                        createdView.CropBoxVisible = true;
+                    }
+                    catch
+                    {
+                        // Если шаблон заблокировал параметр, оставляем как есть без остановки команды.
                     }
 
                     viewData.ViewId = createdView.Id;
@@ -111,6 +126,9 @@ namespace SAB.InteriorElevations.Services.Elevations
                     viewData.IsCreated = true;
                     viewData.CropApplied = cropApplied;
                     viewData.TemplateApplied = templateApplied;
+                    viewData.StartCornerNumber = startPointNumber;
+                    viewData.EndCornerNumber = endPointNumber;
+                    viewData.MarkerElementId = markerElementId;
 
                     result.CreatedViews.Add(viewData);
                 }
@@ -123,7 +141,7 @@ namespace SAB.InteriorElevations.Services.Elevations
                     if (warnings != null)
                     {
                         warnings.Add(
-                            "Failed to create elevation for line " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
+                            "Не удалось создать развертку для линии " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
                             ": " + exception.Message);
                     }
                 }

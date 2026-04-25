@@ -3,8 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
-using System.Windows.Media;
-using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.ViewModels;
 
@@ -20,11 +19,9 @@ namespace SAB.InteriorElevations.Views
         {
             _viewModel = viewModel;
 
-            // Important block: load window structure from XAML file to keep layout maintainable.
+            // Основной блок инициализации окна: загружаем XAML, назначаем DataContext и подключаем кнопки.
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
-
-            // After runtime XAML load, hook action buttons explicitly.
             AttachButtonHandlers();
         }
 
@@ -37,7 +34,7 @@ namespace SAB.InteriorElevations.Views
 
             if (!File.Exists(xamlPath))
             {
-                throw new InvalidOperationException("Elevation settings XAML file was not found: " + xamlPath);
+                throw new InvalidOperationException("Файл настроек не найден: " + xamlPath);
             }
 
             using (FileStream stream = File.OpenRead(xamlPath))
@@ -45,8 +42,11 @@ namespace SAB.InteriorElevations.Views
                 Window loadedWindow = XamlReader.Load(stream) as Window;
                 if (loadedWindow == null)
                 {
-                    throw new InvalidOperationException("Failed to parse ElevationSettingsWindow.xaml.");
+                    throw new InvalidOperationException("Не удалось распарсить ElevationSettingsWindow.xaml.");
                 }
+
+                _okButton = loadedWindow.FindName("OkButton") as Button;
+                _cancelButton = loadedWindow.FindName("CancelButton") as Button;
 
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
@@ -59,12 +59,19 @@ namespace SAB.InteriorElevations.Views
 
         private void AttachButtonHandlers()
         {
-            _okButton = FindElementByName<Button>(Content as DependencyObject, "OkButton");
-            _cancelButton = FindElementByName<Button>(Content as DependencyObject, "CancelButton");
+            if (_okButton == null)
+            {
+                _okButton = FindElementByName<Button>(Content as DependencyObject, "OkButton");
+            }
+
+            if (_cancelButton == null)
+            {
+                _cancelButton = FindElementByName<Button>(Content as DependencyObject, "CancelButton");
+            }
 
             if (_okButton == null || _cancelButton == null)
             {
-                throw new InvalidOperationException("Failed to bind OK/Cancel buttons in the settings window.");
+                throw new InvalidOperationException("Не удалось привязать кнопки ОК/Отмена в окне настроек.");
             }
 
             _okButton.Click += OkButton_Click;
@@ -78,18 +85,21 @@ namespace SAB.InteriorElevations.Views
                 return null;
             }
 
-            int childrenCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int i = 0; i < childrenCount; i++)
+            FrameworkElement frameworkElement = root as FrameworkElement;
+            if (frameworkElement != null && string.Equals(frameworkElement.Name, name, StringComparison.Ordinal))
             {
-                DependencyObject child = VisualTreeHelper.GetChild(root, i);
-                T typedChild = child as T;
+                return frameworkElement as T;
+            }
 
-                if (typedChild != null && string.Equals(typedChild.Name, name, StringComparison.Ordinal))
+            foreach (object childObject in LogicalTreeHelper.GetChildren(root))
+            {
+                DependencyObject childDependencyObject = childObject as DependencyObject;
+                if (childDependencyObject == null)
                 {
-                    return typedChild;
+                    continue;
                 }
 
-                T nestedChild = FindElementByName<T>(child, name);
+                T nestedChild = FindElementByName<T>(childDependencyObject, name);
                 if (nestedChild != null)
                 {
                     return nestedChild;
@@ -106,7 +116,7 @@ namespace SAB.InteriorElevations.Views
 
             if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
             {
-                TaskDialog.Show("SAB Interior Elevations", validationMessage);
+                ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;
             }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
 using SAB.InteriorElevations.Utils;
 
 namespace SAB.InteriorElevations.Services.Selection
@@ -11,68 +12,90 @@ namespace SAB.InteriorElevations.Services.Selection
         {
             Lines = new List<DetailLine>();
             Warnings = new List<string>();
+            IsCancelled = false;
         }
 
         public List<DetailLine> Lines { get; private set; }
 
         public List<string> Warnings { get; private set; }
+
+        public bool IsCancelled { get; set; }
     }
 
     public class DetailLineSelectionService
     {
-        public DetailLineSelectionResult GetSelectedLines(UIDocument uiDocument, View activeView)
+        public DetailLineSelectionResult PickDetailLines(UIDocument uiDocument, View activeView)
         {
             DetailLineSelectionResult result = new DetailLineSelectionResult();
 
             if (uiDocument == null || activeView == null)
             {
-                result.Warnings.Add("Unable to read current selection because document or active view is null.");
+                result.Warnings.Add("Не удалось начать выбор линий, потому что документ или активный вид недоступен.");
+                return result;
+            }
+
+            IList<Reference> pickedReferences;
+            try
+            {
+                pickedReferences = uiDocument.Selection.PickObjects(
+                    ObjectType.Element,
+                    new DetailLineSelectionFilter(activeView.Id),
+                    "Выберите линии, вдоль которых будут созданы развертки");
+            }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+            {
+                result.IsCancelled = true;
+                return result;
+            }
+
+            if (pickedReferences == null || pickedReferences.Count == 0)
+            {
+                result.Warnings.Add("Линии не выбраны.");
                 return result;
             }
 
             Document document = uiDocument.Document;
-            ICollection<ElementId> selectedIds = uiDocument.Selection.GetElementIds();
 
-            if (selectedIds == null || selectedIds.Count == 0)
+            for (int i = 0; i < pickedReferences.Count; i++)
             {
-                result.Warnings.Add("No elements are selected. Select detail lines in the active plan view and run the command again.");
-                return result;
-            }
+                Reference reference = pickedReferences[i];
+                if (reference == null)
+                {
+                    continue;
+                }
 
-            foreach (ElementId elementId in selectedIds)
-            {
-                Element element = document.GetElement(elementId);
+                Element element = document.GetElement(reference);
                 DetailLine detailLine = element as DetailLine;
 
                 if (detailLine == null)
                 {
-                    result.Warnings.Add("Element " + RevitElementIdUtils.GetElementIdValue(elementId) + " is not a detail line and was skipped.");
+                    result.Warnings.Add("Элемент не является линией детализации и был пропущен.");
                     continue;
                 }
 
                 if (!RevitElementIdUtils.AreEqual(detailLine.OwnerViewId, activeView.Id))
                 {
-                    result.Warnings.Add("Detail line " + RevitElementIdUtils.GetElementIdValue(elementId) + " is not placed in the active view and was skipped.");
+                    result.Warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " находится не в активном виде и была пропущена.");
                     continue;
                 }
 
                 Curve sourceCurve = GetCurve(detailLine);
                 if (sourceCurve == null)
                 {
-                    result.Warnings.Add("Detail line " + RevitElementIdUtils.GetElementIdValue(elementId) + " has no valid curve and was skipped.");
+                    result.Warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " не содержит корректной кривой и была пропущена.");
                     continue;
                 }
 
                 Line line = sourceCurve as Line;
                 if (line == null)
                 {
-                    result.Warnings.Add("Detail line " + RevitElementIdUtils.GetElementIdValue(elementId) + " is not linear and was skipped.");
+                    result.Warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " не является прямым отрезком и была пропущена.");
                     continue;
                 }
 
                 if (line.Length <= 1e-9)
                 {
-                    result.Warnings.Add("Detail line " + RevitElementIdUtils.GetElementIdValue(elementId) + " has zero length and was skipped.");
+                    result.Warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " имеет нулевую длину и была пропущена.");
                     continue;
                 }
 
@@ -107,6 +130,32 @@ namespace SAB.InteriorElevations.Services.Selection
             }
 
             return null;
+        }
+
+        private class DetailLineSelectionFilter : ISelectionFilter
+        {
+            private readonly ElementId _activeViewId;
+
+            public DetailLineSelectionFilter(ElementId activeViewId)
+            {
+                _activeViewId = activeViewId;
+            }
+
+            public bool AllowElement(Element element)
+            {
+                DetailLine detailLine = element as DetailLine;
+                if (detailLine == null)
+                {
+                    return false;
+                }
+
+                return RevitElementIdUtils.AreEqual(detailLine.OwnerViewId, _activeViewId);
+            }
+
+            public bool AllowReference(Reference reference, XYZ position)
+            {
+                return false;
+            }
         }
     }
 }

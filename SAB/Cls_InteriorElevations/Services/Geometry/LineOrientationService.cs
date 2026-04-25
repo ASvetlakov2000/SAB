@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
 using SAB.InteriorElevations.Models;
@@ -16,18 +15,20 @@ namespace SAB.InteriorElevations.Services.Geometry
                 return false;
             }
 
-            double markerOffsetFeet = UnitConversionUtils.MillimetersToFeet(markerOffsetMm);
-            if (markerOffsetFeet <= 1e-9)
+            Room selectedRoom = document.GetElement(roomData.RoomElementId) as Room;
+            if (selectedRoom == null)
             {
-                markerOffsetFeet = UnitConversionUtils.MillimetersToFeet(200.0);
                 if (warnings != null)
                 {
-                    warnings.Add("Marker offset was invalid, default value 200 mm was used.");
+                    warnings.Add("Не удалось получить выбранное помещение для расчета направления разверток.");
                 }
+
+                return false;
             }
 
-            double probeDistanceFeet = Math.Max(markerOffsetFeet, UnitConversionUtils.MillimetersToFeet(150.0));
-            XYZ roomCenter = TryGetRoomCenter(document, roomData);
+            double probeDistanceFeet = UnitConversionUtils.MillimetersToFeet(150.0);
+            double markerOffsetFeet = UnitConversionUtils.MillimetersToFeet(markerOffsetMm);
+            XYZ roomCenter = TryGetRoomCenter(selectedRoom);
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -38,7 +39,7 @@ namespace SAB.InteriorElevations.Services.Geometry
                 {
                     if (warnings != null)
                     {
-                        warnings.Add("Line " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) + " has invalid XY direction and was skipped.");
+                        warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) + " имеет некорректное направление в плоскости XY.");
                     }
 
                     return false;
@@ -52,8 +53,8 @@ namespace SAB.InteriorElevations.Services.Geometry
                 XYZ probePointA = lineData.MidPoint + normalA * probeDistanceFeet;
                 XYZ probePointB = lineData.MidPoint + normalB * probeDistanceFeet;
 
-                bool isAInside = IsPointInsideTargetRoom(document, roomData, probePointA);
-                bool isBInside = IsPointInsideTargetRoom(document, roomData, probePointB);
+                bool isAInside = selectedRoom.IsPointInRoom(probePointA);
+                bool isBInside = selectedRoom.IsPointInRoom(probePointB);
 
                 XYZ insideNormal;
                 if (isAInside && !isBInside)
@@ -66,44 +67,39 @@ namespace SAB.InteriorElevations.Services.Geometry
                 }
                 else
                 {
-                    // Fallback logic: choose the normal that points toward the detected room center.
+                    // Если проверка по точкам не дала однозначный ответ, используем центр помещения.
                     insideNormal = ChooseNormalByRoomCenter(normalA, normalB, lineData.MidPoint, roomCenter);
-
-                    if (warnings != null)
-                    {
-                        warnings.Add(
-                            "Line " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
-                            " inside direction was resolved by fallback rule.");
-                    }
                 }
 
                 lineData.InsideNormal = insideNormal;
-                lineData.MarkerPoint = lineData.MidPoint + insideNormal * markerOffsetFeet;
+
+                // Блок смещения точки установки ElevationMarker от середины линии по перпендикуляру.
+                // По формуле: normalDirection = lineDirection.CrossProduct(XYZ.BasisZ).Normalize().
+                XYZ normalDirection = direction.CrossProduct(XYZ.BasisZ);
+                if (normalDirection.GetLength() <= 1e-9)
+                {
+                    normalDirection = insideNormal;
+                }
+                else
+                {
+                    normalDirection = normalDirection.Normalize();
+                }
+
+                // Приводим перпендикуляр к направлению "внутрь помещения", чтобы сохранить корректный взгляд развертки.
+                if (normalDirection.DotProduct(insideNormal) < 0.0)
+                {
+                    normalDirection = -normalDirection;
+                }
+
+                lineData.MarkerPoint = lineData.MidPoint + normalDirection * markerOffsetFeet;
                 lineData.RoomData = roomData;
             }
 
             return true;
         }
 
-        private bool IsPointInsideTargetRoom(Document document, RoomData roomData, XYZ point)
+        private XYZ TryGetRoomCenter(Room room)
         {
-            Room room = document.GetRoomAtPoint(point);
-            if (room == null)
-            {
-                return false;
-            }
-
-            return RevitElementIdUtils.AreEqual(room.Id, roomData.RoomElementId);
-        }
-
-        private XYZ TryGetRoomCenter(Document document, RoomData roomData)
-        {
-            if (document == null || roomData == null)
-            {
-                return XYZ.Zero;
-            }
-
-            Room room = document.GetElement(roomData.RoomElementId) as Room;
             if (room == null)
             {
                 return XYZ.Zero;

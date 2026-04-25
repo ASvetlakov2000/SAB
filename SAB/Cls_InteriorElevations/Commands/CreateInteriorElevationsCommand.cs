@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Services.Elevations;
 using SAB.InteriorElevations.Services.Geometry;
+using SAB.InteriorElevations.Services.Marks;
 using SAB.InteriorElevations.Services.Reports;
 using SAB.InteriorElevations.Services.Rooms;
 using SAB.InteriorElevations.Services.Selection;
+using SAB.InteriorElevations.Services.Settings;
 using SAB.InteriorElevations.Services.Sheets;
+using SAB.InteriorElevations.Utils;
 using SAB.InteriorElevations.ViewModels;
 using SAB.InteriorElevations.Views;
 
@@ -26,54 +30,100 @@ namespace SAB.InteriorElevations.Commands
                 UIDocument uiDocument = uiApplication.ActiveUIDocument;
                 if (uiDocument == null)
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Active UI document is not available.");
+                    ToastNotifier.ShowError("SAB Развертки", "Не удалось получить активный UI-документ Revit.");
                     return Result.Failed;
                 }
 
                 Document document = uiDocument.Document;
                 if (document == null)
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Active Revit document is not available.");
+                    ToastNotifier.ShowError("SAB Развертки", "Не удалось получить активный документ Revit.");
                     return Result.Failed;
                 }
 
                 View activeView = document.ActiveView;
                 if (!IsSupportedPlanView(activeView))
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Active view must be a floor plan or ceiling plan.");
+                    ToastNotifier.ShowWarning("SAB Развертки", "Активный вид должен быть планом этажа или потолка.");
                     return Result.Cancelled;
                 }
 
                 ViewPlan activePlanView = activeView as ViewPlan;
                 if (activePlanView == null)
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Active plan view is invalid.");
+                    ToastNotifier.ShowWarning("SAB Развертки", "Активный плановый вид некорректен.");
+                    return Result.Cancelled;
+                }
+
+                ElementId activePlanLevelId;
+                if (!TryGetPlanLevelId(activePlanView, out activePlanLevelId))
+                {
+                    ToastNotifier.ShowWarning(
+                        "SAB Развертки",
+                        "Не удалось определить уровень активного плана. Создание разверток отменено.");
                     return Result.Cancelled;
                 }
 
                 List<string> warnings = new List<string>();
 
-                // Block 1: selection and line ordering by stable ElementId.
-                DetailLineSelectionService selectionService = new DetailLineSelectionService();
-                DetailLineSelectionResult selectionResult = selectionService.GetSelectedLines(uiDocument, activeView);
+                ToastNotifier.ShowInfo("SAB Развертки", "Выберите линии, вдоль которых будут созданы развертки.");
 
+                DetailLineSelectionService selectionService = new DetailLineSelectionService();
+                DetailLineSelectionResult selectionResult = selectionService.PickDetailLines(uiDocument, activeView);
                 AppendWarnings(warnings, selectionResult.Warnings);
+
+                if (selectionResult.IsCancelled)
+                {
+                    return Result.Cancelled;
+                }
 
                 if (selectionResult.Lines.Count == 0)
                 {
-                    TaskDialog.Show(
-                        "SAB Interior Elevations",
-                        "No valid detail lines selected. Select detail lines in the active plan view and run the command again.");
+                    ToastNotifier.ShowWarning(
+                        "SAB Развертки",
+                        "Не выбраны корректные линии детализации. Выберите линии и запустите команду снова.");
+                    return Result.Cancelled;
+                }
+
+                ToastNotifier.ShowInfo("SAB Развертки", "Выберите помещение, для которого будут созданы развертки.");
+
+                RoomDetectionService roomDetectionService = new RoomDetectionService();
+                RoomData roomData;
+                string roomSelectionError;
+                if (!roomDetectionService.TryPickRoomData(uiDocument, out roomData, out roomSelectionError))
+                {
+                    if (!string.IsNullOrWhiteSpace(roomSelectionError))
+                    {
+                        ToastNotifier.ShowWarning("SAB Развертки", roomSelectionError);
+                    }
 
                     return Result.Cancelled;
                 }
 
-                // Block 2: settings window (MVVM).
-                ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document);
+                if (!RevitElementIdUtils.AreEqual(roomData.LevelId, activePlanLevelId))
+                {
+                    ToastNotifier.ShowWarning(
+                        "SAB Развертки",
+                        "Выбранное помещение находится на другом уровне. Выберите помещение на уровне активного плана.");
+                    return Result.Cancelled;
+                }
+
+                ElevationSettingsStorageService settingsStorageService = new ElevationSettingsStorageService();
+                ElevationSettings savedSettings = null;
+                try
+                {
+                    savedSettings = settingsStorageService.LoadSettings();
+                }
+                catch (Exception loadException)
+                {
+                    warnings.Add("Не удалось загрузить сохраненные настройки: " + loadException.Message);
+                }
+
+                ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document, savedSettings);
                 ElevationSettingsWindow settingsWindow = new ElevationSettingsWindow(settingsViewModel);
 
                 bool? dialogResult = settingsWindow.ShowDialog();
-                if (!dialogResult.HasValue || dialogResult.Value == false)
+                if (!dialogResult.HasValue || !dialogResult.Value)
                 {
                     return Result.Cancelled;
                 }
@@ -81,44 +131,39 @@ namespace SAB.InteriorElevations.Commands
                 ElevationSettings settings = settingsWindow.SelectedSettings;
                 if (settings == null)
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Settings were not returned from the dialog window.");
+                    ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло значения параметров.");
                     return Result.Cancelled;
                 }
 
                 string settingsValidationMessage;
                 if (!ValidateSettings(document, settings, out settingsValidationMessage))
                 {
-                    TaskDialog.Show("SAB Interior Elevations", settingsValidationMessage);
+                    ToastNotifier.ShowWarning("SAB Развертки", settingsValidationMessage);
                     return Result.Cancelled;
                 }
 
-                // Block 3: geometry model conversion.
+                try
+                {
+                    settingsStorageService.SaveSettings(settings);
+                }
+                catch (Exception saveException)
+                {
+                    warnings.Add("Не удалось сохранить настройки: " + saveException.Message);
+                }
+
                 ElevationGeometryService elevationGeometryService = new ElevationGeometryService();
                 List<ElevationLineData> elevationLines = elevationGeometryService.BuildElevationLineData(selectionResult.Lines, warnings);
                 if (elevationLines.Count == 0)
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Selected lines do not contain valid linear geometry.");
+                    ToastNotifier.ShowWarning("SAB Развертки", "Выбранные линии не содержат корректной линейной геометрии.");
                     return Result.Cancelled;
                 }
 
-                // Block 4: room detection.
-                RoomDetectionService roomDetectionService = new RoomDetectionService();
-                RoomData roomData;
-                if (!roomDetectionService.TryDetectRoom(document, elevationLines, out roomData, warnings))
-                {
-                    TaskDialog.Show(
-                        "SAB Interior Elevations",
-                        "Room could not be detected from selected lines. Ensure the contour is inside a valid room and run the command again.");
-
-                    return Result.Cancelled;
-                }
-
-                // Block 5: orientation rule (point 0 = left, point 1 = right, view direction = inside room).
                 LineOrientationService lineOrientationService = new LineOrientationService();
                 bool orientationAssigned = lineOrientationService.TryAssignInsideNormals(document, elevationLines, roomData, settings.MarkerOffsetMm, warnings);
                 if (!orientationAssigned)
                 {
-                    TaskDialog.Show("SAB Interior Elevations", "Failed to resolve inside normals for selected lines.");
+                    ToastNotifier.ShowWarning("SAB Развертки", "Не удалось определить направление разверток для выбранных линий.");
                     return Result.Cancelled;
                 }
 
@@ -133,17 +178,23 @@ namespace SAB.InteriorElevations.Commands
 
                 SheetCreationService sheetCreationService = new SheetCreationService();
                 ViewportPlacementService viewportPlacementService = new ViewportPlacementService();
+                PlanCornerMarkPlacementService planCornerMarkPlacementService = new PlanCornerMarkPlacementService();
+                SheetCornerMarkPlacementService sheetCornerMarkPlacementService = new SheetCornerMarkPlacementService();
                 ElevationCreationReportService reportService = new ElevationCreationReportService();
 
                 ElevationViewCreationResult creationResult;
                 ViewSheet createdSheet = null;
                 int placedViewportCount = 0;
+                int placedPlanMarksCount = 0;
+                int placedSheetMarksCount = 0;
 
-                using (TransactionGroup transactionGroup = new TransactionGroup(document, "SAB Interior Elevations"))
+                ToastNotifier.ShowInfo("SAB Развертки", "Создание разверток запущено. Дождитесь завершения операции.");
+
+                using (TransactionGroup transactionGroup = new TransactionGroup(document, "SAB Развертки стен"))
                 {
                     transactionGroup.Start();
 
-                    using (Transaction transaction = new Transaction(document, "Create Interior Elevations"))
+                    using (Transaction transaction = new Transaction(document, "Создать развертки стен"))
                     {
                         transaction.Start();
 
@@ -154,22 +205,47 @@ namespace SAB.InteriorElevations.Commands
                             settings,
                             warnings);
 
+                        if (creationResult.CreatedViews.Count > 0)
+                        {
+                            placedPlanMarksCount = planCornerMarkPlacementService.PlacePlanCornerMarks(
+                                document,
+                                activePlanView,
+                                elevationLines,
+                                roomData,
+                                settings.PlanCornerMarkTypeId,
+                                warnings);
+                        }
+
                         if (settings.CreateSheet && creationResult.CreatedViews.Count > 0)
                         {
                             createdSheet = sheetCreationService.CreateSheet(document, settings, roomData, namingService);
 
                             if (createdSheet != null)
                             {
-                                placedViewportCount = viewportPlacementService.PlaceViewsOnSheet(
+                                ViewportPlacementResult placementResult = viewportPlacementService.PlaceViewsOnSheet(
                                     document,
                                     createdSheet,
                                     creationResult.CreatedViews,
                                     settings.SheetLayoutSettings,
                                     warnings);
+
+                                if (placementResult != null)
+                                {
+                                    placedViewportCount = placementResult.PlacedCount;
+
+                                    placedSheetMarksCount = sheetCornerMarkPlacementService.PlaceSheetCornerMarks(
+                                        document,
+                                        createdSheet,
+                                        roomData,
+                                        settings.SheetCornerMarkTypeId,
+                                        creationResult.CreatedViews,
+                                        placementResult,
+                                        warnings);
+                                }
                             }
                             else
                             {
-                                warnings.Add("Sheet creation was enabled, but the sheet was not created.");
+                                warnings.Add("Включено создание листа, но лист не был создан.");
                             }
                         }
 
@@ -184,6 +260,8 @@ namespace SAB.InteriorElevations.Commands
                     creationResult,
                     createdSheet,
                     placedViewportCount,
+                    placedPlanMarksCount,
+                    placedSheetMarksCount,
                     warnings);
 
                 return creationResult.CreatedViews.Count > 0 ? Result.Succeeded : Result.Cancelled;
@@ -195,7 +273,7 @@ namespace SAB.InteriorElevations.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("SAB Interior Elevations", "Unexpected error: " + exception.Message);
+                ToastNotifier.ShowError("SAB Развертки", "Неожиданная ошибка: " + exception.Message);
                 return Result.Failed;
             }
         }
@@ -229,14 +307,14 @@ namespace SAB.InteriorElevations.Commands
 
             if (settings.ElevationViewFamilyTypeId == null || settings.ElevationViewFamilyTypeId == ElementId.InvalidElementId)
             {
-                validationMessage = "Elevation ViewFamilyType is not selected.";
+                validationMessage = "Не выбран тип вида развертки.";
                 return false;
             }
 
             ViewFamilyType viewFamilyType = document.GetElement(settings.ElevationViewFamilyTypeId) as ViewFamilyType;
             if (viewFamilyType == null || viewFamilyType.ViewFamily != ViewFamily.Elevation)
             {
-                validationMessage = "Selected elevation ViewFamilyType is invalid.";
+                validationMessage = "Выбран некорректный тип вида развертки.";
                 return false;
             }
 
@@ -245,32 +323,45 @@ namespace SAB.InteriorElevations.Commands
                 View templateView = document.GetElement(settings.ViewTemplateId) as View;
                 if (templateView == null || !templateView.IsTemplate)
                 {
-                    validationMessage = "Selected view template does not exist or is not a template.";
+                    validationMessage = "Выбранный шаблон вида не существует или не является шаблоном.";
                     return false;
                 }
             }
 
             if (settings.ViewScale <= 0)
             {
-                validationMessage = "View scale must be greater than zero.";
+                validationMessage = "Масштаб вида должен быть больше нуля.";
                 return false;
             }
 
             if (settings.ViewDepthMm <= 0)
             {
-                validationMessage = "View depth must be greater than zero.";
+                validationMessage = "Смещение дальнего предела должно быть больше нуля.";
                 return false;
             }
 
-            if (settings.MarkerOffsetMm <= 0)
+            if (settings.MarkerOffsetMm < 0)
             {
-                validationMessage = "Marker offset must be greater than zero.";
+                validationMessage = "Отступ вида от линии должен быть неотрицательным.";
                 return false;
             }
 
             if (settings.TopOffsetMm < 0 || settings.BottomOffsetMm < 0 || settings.LeftOffsetMm < 0 || settings.RightOffsetMm < 0)
             {
-                validationMessage = "Crop offsets must be zero or greater.";
+                validationMessage = "Отступы обрезки должны быть неотрицательными.";
+                return false;
+            }
+
+            FamilySymbol planMarkType = document.GetElement(settings.PlanCornerMarkTypeId) as FamilySymbol;
+            if (planMarkType == null)
+            {
+                validationMessage = "Не выбран или не найден тип марки угла на плане.";
+                return false;
+            }
+
+            if (!IsSymbolFromFamily(planMarkType, CornerMarkConstants.PlanFamilyName))
+            {
+                validationMessage = "Тип марки угла на плане должен относиться к семейству '" + CornerMarkConstants.PlanFamilyName + "'.";
                 return false;
             }
 
@@ -278,37 +369,90 @@ namespace SAB.InteriorElevations.Commands
             {
                 if (settings.TitleBlockTypeId == null || settings.TitleBlockTypeId == ElementId.InvalidElementId)
                 {
-                    validationMessage = "Sheet creation is enabled, but title block type is not selected.";
+                    validationMessage = "Включено создание листа, но не выбран тип основной надписи.";
                     return false;
                 }
 
                 FamilySymbol titleBlockType = document.GetElement(settings.TitleBlockTypeId) as FamilySymbol;
                 if (titleBlockType == null)
                 {
-                    validationMessage = "Selected title block type does not exist.";
+                    validationMessage = "Выбранный тип основной надписи не существует.";
+                    return false;
+                }
+
+                FamilySymbol sheetMarkType = document.GetElement(settings.SheetCornerMarkTypeId) as FamilySymbol;
+                if (sheetMarkType == null)
+                {
+                    validationMessage = "Включено создание листа, но не выбран тип марки угла на листе.";
+                    return false;
+                }
+
+                if (!IsSymbolFromFamily(sheetMarkType, CornerMarkConstants.SheetFamilyName))
+                {
+                    validationMessage = "Тип марки угла на листе должен относиться к семейству '" + CornerMarkConstants.SheetFamilyName + "'.";
                     return false;
                 }
 
                 if (settings.SheetLayoutSettings == null)
                 {
-                    validationMessage = "Sheet layout settings are not defined.";
+                    validationMessage = "Не заданы параметры размещения видов на листе.";
                     return false;
                 }
 
                 if (settings.SheetLayoutSettings.ColumnsCount <= 0)
                 {
-                    validationMessage = "Columns count must be greater than zero.";
+                    validationMessage = "Количество колонок должно быть больше нуля.";
                     return false;
                 }
 
                 if (settings.SheetLayoutSettings.StepXmm <= 0 || settings.SheetLayoutSettings.StepYmm <= 0)
                 {
-                    validationMessage = "Sheet step values must be greater than zero.";
+                    validationMessage = "Шаги размещения на листе должны быть больше нуля.";
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private bool IsSymbolFromFamily(FamilySymbol symbol, string familyName)
+        {
+            if (symbol == null || string.IsNullOrWhiteSpace(familyName))
+            {
+                return false;
+            }
+
+            string currentFamilyName = symbol.Family != null ? symbol.Family.Name : symbol.FamilyName;
+            return string.Equals(currentFamilyName, familyName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool TryGetPlanLevelId(ViewPlan viewPlan, out ElementId levelId)
+        {
+            levelId = ElementId.InvalidElementId;
+
+            if (viewPlan == null)
+            {
+                return false;
+            }
+
+            if (viewPlan.GenLevel != null && viewPlan.GenLevel.Id != null && viewPlan.GenLevel.Id != ElementId.InvalidElementId)
+            {
+                levelId = viewPlan.GenLevel.Id;
+                return true;
+            }
+
+            Parameter levelParameter = viewPlan.get_Parameter(BuiltInParameter.PLAN_VIEW_LEVEL);
+            if (levelParameter != null)
+            {
+                ElementId parameterLevelId = levelParameter.AsElementId();
+                if (parameterLevelId != null && parameterLevelId != ElementId.InvalidElementId)
+                {
+                    levelId = parameterLevelId;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

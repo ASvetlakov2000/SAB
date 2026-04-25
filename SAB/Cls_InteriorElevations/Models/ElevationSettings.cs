@@ -26,12 +26,10 @@ namespace SAB.InteriorElevations.Models
 
         public ElementId TitleBlockTypeId { get; set; }
 
+        public ElementId PlanCornerMarkTypeId { get; set; }
+
+        public ElementId SheetCornerMarkTypeId { get; set; }
+
         public SheetLayoutSettings SheetLayoutSettings { get; set; }
-
-        public string ViewNamePrefix { get; set; }
-
-        public bool UseRoomNumberInViewName { get; set; }
-
-        public bool UseRoomNameInViewName { get; set; }
     }
 }

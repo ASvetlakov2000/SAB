@@ -21,29 +21,27 @@ namespace SAB.InteriorElevations.Services.Elevations
             CollectExistingNames(document);
         }
 
-        public string GenerateUniqueElevationViewName(RoomData roomData, int index, ElevationSettings settings)
+        public string GenerateUniqueElevationViewName(RoomData roomData, int startPointNumber, int endPointNumber)
         {
-            string roomNumber = roomData != null ? roomData.RoomNumber : "000";
-            string roomName = roomData != null ? roomData.RoomName : "Room";
-            string indexText = index.ToString("00");
+            string roomNumber = roomData != null ? roomData.RoomNumber : "Без номера";
+            string roomName = roomData != null ? roomData.RoomName : "Без имени";
 
-            string prefix = settings != null ? settings.ViewNamePrefix : string.Empty;
-            bool useRoomNumber = settings == null || settings.UseRoomNumberInViewName;
-            bool useRoomName = settings == null || settings.UseRoomNameInViewName;
+            string baseName =
+                "ELV_r" + roomNumber +
+                "_" + roomName +
+                "_Elev_" + startPointNumber + "-" + endPointNumber;
 
-            string baseName = BuildViewBaseName(prefix, useRoomNumber ? roomNumber : string.Empty, useRoomName ? roomName : string.Empty, indexText);
-            baseName = RevitNameUtils.SanitizeName(baseName, "Interior_Elevation_" + indexText);
-
+            baseName = RevitNameUtils.SanitizeName(baseName, "ELV_rБез номера_Без имени_Elev_1-2");
             return GetUniqueName(baseName, _usedViewNames, "_", 2);
         }
 
         public string GenerateUniqueSheetName(RoomData roomData)
         {
-            string roomNumber = roomData != null ? roomData.RoomNumber : "000";
-            string roomName = roomData != null ? roomData.RoomName : "Room";
+            string roomNumber = roomData != null ? roomData.RoomNumber : "Без номера";
+            string roomName = roomData != null ? roomData.RoomName : "Без имени";
 
-            string baseName = RevitNameUtils.BuildJoinedName("_", "Interior Elevations", roomNumber, roomName);
-            baseName = RevitNameUtils.SanitizeName(baseName, "Interior Elevations");
+            string baseName = "Развертки стен помещения №" + roomNumber + " " + roomName;
+            baseName = RevitNameUtils.SanitizeName(baseName, "Развертки стен помещения №Без номера Без имени");
 
             return GetUniqueName(baseName, _usedSheetNames, "_", 2);
         }
@@ -51,35 +49,9 @@ namespace SAB.InteriorElevations.Services.Elevations
         public string GenerateUniqueSheetNumber(RoomData roomData)
         {
             string roomNumber = roomData != null ? roomData.RoomNumber : "000";
-            string baseNumber = RevitNameUtils.SanitizeName("IE-" + roomNumber, "IE-000");
+            string baseNumber = RevitNameUtils.SanitizeName("ELV-" + roomNumber, "ELV-000");
 
             return GetUniqueName(baseNumber, _usedSheetNumbers, "-", 2);
-        }
-
-        private string BuildViewBaseName(string prefix, string roomNumber, string roomName, string indexText)
-        {
-            List<string> parts = new List<string>();
-
-            if (!string.IsNullOrWhiteSpace(prefix))
-            {
-                parts.Add(prefix.Trim());
-            }
-
-            if (!string.IsNullOrWhiteSpace(roomNumber))
-            {
-                parts.Add(roomNumber.Trim());
-            }
-
-            if (!string.IsNullOrWhiteSpace(roomName))
-            {
-                parts.Add(roomName.Trim());
-            }
-
-            parts.Add("Elevation");
-            parts.Add(indexText);
-
-            string[] array = parts.ToArray();
-            return RevitNameUtils.BuildJoinedName("_", array);
         }
 
         private string GetUniqueName(string baseValue, HashSet<string> nameStorage, string suffixSeparator, int suffixDigits)

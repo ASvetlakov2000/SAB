@@ -14,8 +14,11 @@ namespace SAB.InteriorElevations.Services.Elevations
             ElevationLineData lineData,
             ElementId elevationViewFamilyTypeId,
             int viewScale,
+            out ElementId markerElementId,
             IList<string> warnings)
         {
+            markerElementId = ElementId.InvalidElementId;
+
             if (document == null || planView == null || lineData == null)
             {
                 return null;
@@ -33,16 +36,17 @@ namespace SAB.InteriorElevations.Services.Elevations
                 if (warnings != null)
                 {
                     warnings.Add(
-                        "Failed to create elevation for line " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
-                        ": marker has no available elevation index.");
+                        "Не удалось создать развертку для линии " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
+                        ": у маркера нет свободного индекса вида.");
                 }
 
                 return null;
             }
 
             ViewSection viewSection = marker.CreateElevation(document, planView.Id, elevationIndex);
+            markerElementId = marker.Id;
 
-            // Important logic block: marker rotation is used to align the created view with inside room direction.
+            // Важный блок: разворот маркера к внутренней нормали помещения.
             RotateMarkerToDirection(document, marker, lineData.MarkerPoint, lineData.InsideNormal, viewSection, warnings, lineData.LineElementId);
             return viewSection;
         }
@@ -77,8 +81,8 @@ namespace SAB.InteriorElevations.Services.Elevations
                 if (warnings != null)
                 {
                     warnings.Add(
-                        "Could not rotate elevation marker for line " + RevitElementIdUtils.GetElementIdValue(lineElementId) +
-                        " because direction vectors are invalid.");
+                        "Не удалось повернуть маркер развертки для линии " + RevitElementIdUtils.GetElementIdValue(lineElementId) +
+                        ": векторы направления некорректны.");
                 }
 
                 return;
@@ -97,7 +101,7 @@ namespace SAB.InteriorElevations.Services.Elevations
 
             if (dotAfterRotation < 0.99)
             {
-                // Fallback block: if the first rotation still leaves opposite orientation, rotate by 180 degrees.
+                // Возвращаем прежнюю механику: дополнительный поворот на 180°, если направление осталось противоположным.
                 Line axis = Line.CreateBound(markerPoint, markerPoint + XYZ.BasisZ);
                 ElementTransformUtils.RotateElement(document, marker.Id, axis, Math.PI);
                 document.Regenerate();
@@ -109,8 +113,8 @@ namespace SAB.InteriorElevations.Services.Elevations
             if (dotAfterRotation < 0.95 && warnings != null)
             {
                 warnings.Add(
-                    "Elevation direction check for line " + RevitElementIdUtils.GetElementIdValue(lineElementId) +
-                    " did not reach strict alignment threshold.");
+                    "Проверка направления развертки для линии " + RevitElementIdUtils.GetElementIdValue(lineElementId) +
+                    " не прошла строгий порог совпадения после поворота.");
             }
         }
 

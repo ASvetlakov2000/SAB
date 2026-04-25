@@ -20,6 +20,12 @@ namespace SAB.InteriorElevations.Models
 
         public bool TemplateApplied { get; set; }
 
+        public int StartCornerNumber { get; set; }
+
+        public int EndCornerNumber { get; set; }
+
+        public ElementId MarkerElementId { get; set; }
+
         public string FailureReason { get; set; }
     }
 }

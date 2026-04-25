@@ -34,7 +34,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                 return null;
             }
 
-            // Block responsible for unique sheet metadata.
+            // Блок уникальных параметров листа.
             sheet.Name = namingService.GenerateUniqueSheetName(roomData);
             sheet.SheetNumber = namingService.GenerateUniqueSheetNumber(roomData);
 

@@ -202,6 +202,22 @@ namespace SAB
                 "SAB.Resources.GenerateDashboardCommand_32.png",
                 "SAB.Resources.GenerateDashboardCommand_16.png");
 
+            Ribbon.AddPushButtonSingle(
+                libraryPanel,
+                "SAB_MoveInteriorElevationViewports",
+                "Перенос \nразверток",
+                "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
+                "SAB.Resources.GenerateDashboardCommand_32.png",
+                "SAB.Resources.GenerateDashboardCommand_16.png");
+
+            Ribbon.AddPushButtonSingle(
+                libraryPanel,
+                "SAB_AlignPlanCornerMarks",
+                "Выровнять \nмарки углов",
+                "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
+                "SAB.Resources.GenerateDashboardCommand_32.png",
+                "SAB.Resources.GenerateDashboardCommand_16.png");
+
             // Блок кнопок регламентов и инструкций в HTML.
             // Блок кнопок регламентов и инструкций в HTML.
             Ribbon.AddPushButtonSingle(

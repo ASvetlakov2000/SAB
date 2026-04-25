@@ -27,7 +27,7 @@ namespace SAB.InteriorElevations.Services.Geometry
                 {
                     if (warnings != null)
                     {
-                        warnings.Add("Detail line " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " is not linear and was skipped.");
+                        warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " не является прямым отрезком и была пропущена.");
                     }
 
                     continue;
@@ -41,7 +41,7 @@ namespace SAB.InteriorElevations.Services.Geometry
                 {
                     if (warnings != null)
                     {
-                        warnings.Add("Detail line " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " has zero geometric length and was skipped.");
+                        warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(detailLine.Id) + " имеет нулевую длину и была пропущена.");
                     }
 
                     continue;

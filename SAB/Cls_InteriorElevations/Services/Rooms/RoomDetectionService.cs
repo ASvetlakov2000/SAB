@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Utils;
 
@@ -8,120 +9,46 @@ namespace SAB.InteriorElevations.Services.Rooms
 {
     public class RoomDetectionService
     {
-        public bool TryDetectRoom(Document document, IList<ElevationLineData> lines, out RoomData roomData, IList<string> warnings)
+        public bool TryPickRoomData(UIDocument uiDocument, out RoomData roomData, out string errorMessage)
         {
             roomData = null;
+            errorMessage = string.Empty;
 
-            if (document == null || lines == null || lines.Count == 0)
+            if (uiDocument == null || uiDocument.Document == null)
             {
+                errorMessage = "Не удалось получить активный документ Revit.";
                 return false;
             }
 
-            List<XYZ> probePoints = BuildProbePoints(lines);
-            for (int i = 0; i < probePoints.Count; i++)
+            Reference pickedReference;
+            try
             {
-                Room room = TryGetRoomWithVerticalOffsets(document, probePoints[i]);
-                if (room == null)
-                {
-                    continue;
-                }
-
-                roomData = BuildRoomData(room);
-                return true;
+                pickedReference = uiDocument.Selection.PickObject(
+                    ObjectType.Element,
+                    new RoomSelectionFilter(),
+                    "Выберите помещение для создания разверток");
+            }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+            {
+                errorMessage = string.Empty;
+                return false;
             }
 
-            if (warnings != null)
+            if (pickedReference == null)
             {
-                warnings.Add("Room detection failed. Verify that selected detail lines are drawn inside a room boundary in the current model phase.");
+                errorMessage = "Помещение не выбрано.";
+                return false;
             }
 
-            return false;
-        }
-
-        private List<XYZ> BuildProbePoints(IList<ElevationLineData> lines)
-        {
-            List<XYZ> points = new List<XYZ>();
-
-            // Block 1: first attempt uses approximate contour center.
-            XYZ contourCenter = CalculateContourCenter(lines);
-            points.Add(contourCenter);
-
-            // Block 2: fallback attempts use line midpoints and shifted midpoint points.
-            for (int i = 0; i < lines.Count; i++)
+            Room room = uiDocument.Document.GetElement(pickedReference) as Room;
+            if (room == null)
             {
-                ElevationLineData lineData = lines[i];
-                points.Add(lineData.MidPoint);
-
-                XYZ direction = new XYZ(lineData.LineDirection.X, lineData.LineDirection.Y, 0.0);
-                if (direction.GetLength() <= 1e-9)
-                {
-                    continue;
-                }
-
-                direction = direction.Normalize();
-                XYZ normalA = new XYZ(-direction.Y, direction.X, 0.0).Normalize();
-                XYZ normalB = new XYZ(direction.Y, -direction.X, 0.0).Normalize();
-
-                double probeDistance = UnitConversionUtils.MillimetersToFeet(250.0);
-                points.Add(lineData.MidPoint + normalA * probeDistance);
-                points.Add(lineData.MidPoint + normalB * probeDistance);
+                errorMessage = "Выбранный элемент не является помещением.";
+                return false;
             }
 
-            return points;
-        }
-
-        private XYZ CalculateContourCenter(IList<ElevationLineData> lines)
-        {
-            double sumX = 0.0;
-            double sumY = 0.0;
-            double sumZ = 0.0;
-            int pointCount = 0;
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                ElevationLineData lineData = lines[i];
-
-                sumX += lineData.StartPoint.X;
-                sumY += lineData.StartPoint.Y;
-                sumZ += lineData.StartPoint.Z;
-                pointCount++;
-
-                sumX += lineData.EndPoint.X;
-                sumY += lineData.EndPoint.Y;
-                sumZ += lineData.EndPoint.Z;
-                pointCount++;
-            }
-
-            if (pointCount == 0)
-            {
-                return XYZ.Zero;
-            }
-
-            return new XYZ(sumX / pointCount, sumY / pointCount, sumZ / pointCount);
-        }
-
-        private Room TryGetRoomWithVerticalOffsets(Document document, XYZ sourcePoint)
-        {
-            double[] offsets =
-            {
-                0.0,
-                UnitConversionUtils.MillimetersToFeet(50.0),
-                UnitConversionUtils.MillimetersToFeet(150.0),
-                UnitConversionUtils.MillimetersToFeet(300.0),
-                UnitConversionUtils.MillimetersToFeet(-50.0)
-            };
-
-            for (int i = 0; i < offsets.Length; i++)
-            {
-                XYZ probePoint = new XYZ(sourcePoint.X, sourcePoint.Y, sourcePoint.Z + offsets[i]);
-                Room room = document.GetRoomAtPoint(probePoint);
-                if (room != null)
-                {
-                    return room;
-                }
-            }
-
-            return null;
+            roomData = BuildRoomData(room);
+            return true;
         }
 
         private RoomData BuildRoomData(Room room)
@@ -136,11 +63,24 @@ namespace SAB.InteriorElevations.Services.Rooms
 
             RoomData roomData = new RoomData();
             roomData.RoomElementId = room.Id;
-            roomData.RoomName = RevitNameUtils.SanitizeName(roomName, "Room");
-            roomData.RoomNumber = RevitNameUtils.SanitizeName(roomNumber, "000");
+            roomData.RoomName = RevitNameUtils.SanitizeName(roomName, "Без имени");
+            roomData.RoomNumber = RevitNameUtils.SanitizeName(roomNumber, "Без номера");
             roomData.LevelId = room.LevelId;
 
             return roomData;
+        }
+
+        private class RoomSelectionFilter : ISelectionFilter
+        {
+            public bool AllowElement(Element element)
+            {
+                return element is Room;
+            }
+
+            public bool AllowReference(Reference reference, XYZ position)
+            {
+                return false;
+            }
         }
     }
 }
