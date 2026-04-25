@@ -51,8 +51,16 @@ namespace SAB.InteriorElevations.Views
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
                 Height = loadedWindow.Height;
+                MinWidth = loadedWindow.MinWidth;
+                MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
                 ResizeMode = loadedWindow.ResizeMode;
+                Style = loadedWindow.Style;
+                Background = loadedWindow.Background;
+                FontFamily = loadedWindow.FontFamily;
+                FontSize = loadedWindow.FontSize;
+                FontWeight = loadedWindow.FontWeight;
+                Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
             }
         }

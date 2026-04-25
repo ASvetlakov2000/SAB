@@ -1,156 +1,187 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="SAB Развертки стен"
-        Height="760"
-        Width="680"
+        Height="860"
+        Width="760"
+        MinHeight="700"
+        MinWidth="680"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="CanResizeWithGrip">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Margin="12">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        ResizeMode="CanResizeWithGrip"
+        Style="{DynamicResource MaterialDesignWindow}"
+        TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+        Background="{DynamicResource MaterialDesign.Brush.Background}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14">
+    <Window.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Window.Resources>
 
-            <GroupBox Grid.Row="0" Header="Параметры вида" Margin="0,0,0,8">
-                <Grid Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="300" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Тип вида развертки:" />
-                    <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
-                              ItemsSource="{Binding ElevationViewFamilyTypes}"
-                              SelectedItem="{Binding SelectedElevationViewFamilyType}"
-                              DisplayMemberPath="DisplayName" />
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16">
+                <TextBlock Text="Настройки создания разверток" FontSize="24" FontWeight="Bold" Margin="0,0,0,6" />
+                <TextBlock Text="Заполните параметры вида, обрезки и листа перед созданием." Margin="0,0,0,16" Opacity="0.8" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Шаблон вида развертки:" />
-                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"
-                              ItemsSource="{Binding ViewTemplates}"
-                              SelectedItem="{Binding SelectedViewTemplate}"
-                              DisplayMemberPath="DisplayName" />
+                <materialDesign:Card Padding="16" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Параметры вида" FontSize="18" FontWeight="Bold" Margin="0,0,0,12" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Масштаб вида:" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Text="{Binding ViewScaleText, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox Grid.Row="0" Grid.Column="0" Margin="0,0,8,8"
+                                      materialDesign:HintAssist.Hint="Тип вида развертки"
+                                      ItemsSource="{Binding ElevationViewFamilyTypes}"
+                                      SelectedItem="{Binding SelectedElevationViewFamilyType}"
+                                      DisplayMemberPath="DisplayName" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" Text="Тип марки угла на плане:" />
-                    <ComboBox Grid.Row="3" Grid.Column="1"
-                              ItemsSource="{Binding PlanCornerMarkTypes}"
-                              SelectedItem="{Binding SelectedPlanCornerMarkType}"
-                              DisplayMemberPath="DisplayName" />
-                </Grid>
-            </GroupBox>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="8,0,0,8"
+                                      materialDesign:HintAssist.Hint="Шаблон вида развертки"
+                                      ItemsSource="{Binding ViewTemplates}"
+                                      SelectedItem="{Binding SelectedViewTemplate}"
+                                      DisplayMemberPath="DisplayName" />
 
-            <GroupBox Grid.Row="1" Header="Параметры обрезки" Margin="0,0,0,8">
-                <Grid Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="300" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                            <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,8,8"
+                                     materialDesign:HintAssist.Hint="Масштаб вида"
+                                     Text="{Binding ViewScaleText, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Верхний отступ (мм):" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Text="{Binding TopOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" Margin="8,0,0,8"
+                                      materialDesign:HintAssist.Hint="Тип марки угла на плане"
+                                      ItemsSource="{Binding PlanCornerMarkTypes}"
+                                      SelectedItem="{Binding SelectedPlanCornerMarkType}"
+                                      DisplayMemberPath="DisplayName" />
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Нижний отступ (мм):" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Text="{Binding BottomOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                <materialDesign:Card Padding="16" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Параметры обрезки" FontSize="18" FontWeight="Bold" Margin="0,0,0,12" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Левый отступ (мм):" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Text="{Binding LeftOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Row="0" Grid.Column="0" Margin="0,0,8,8"
+                                     materialDesign:HintAssist.Hint="Верхний отступ (мм)"
+                                     Text="{Binding TopOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Правый отступ (мм):" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,8" Text="{Binding RightOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="8,0,0,8"
+                                     materialDesign:HintAssist.Hint="Нижний отступ (мм)"
+                                     Text="{Binding BottomOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Дальний предел секущего диапазона (мм):" />
-                    <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,8" Text="{Binding ViewDepthMmText, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,8,8"
+                                     materialDesign:HintAssist.Hint="Левый отступ (мм)"
+                                     Text="{Binding LeftOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" Text="Отступ вида от линии (мм):" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding MarkerOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
-                </Grid>
-            </GroupBox>
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="8,0,0,8"
+                                     materialDesign:HintAssist.Hint="Правый отступ (мм)"
+                                     Text="{Binding RightOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
 
-            <GroupBox Grid.Row="2" Header="Параметры листа" Margin="0,0,0,8">
-                <Grid Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="300" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                            <TextBox Grid.Row="2" Grid.Column="0" Margin="0,0,8,0"
+                                     materialDesign:HintAssist.Hint="Дальний предел секущего диапазона (мм)"
+                                     Text="{Binding ViewDepthMmText, UpdateSourceTrigger=PropertyChanged}" />
 
-                    <CheckBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
-                              Content="Создать лист"
-                              IsChecked="{Binding CreateSheet}" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Margin="8,0,0,0"
+                                     materialDesign:HintAssist.Hint="Отступ вида от линии (мм)"
+                                     Text="{Binding MarkerOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Тип основной надписи:" />
-                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"
-                              ItemsSource="{Binding TitleBlockTypes}"
-                              SelectedItem="{Binding SelectedTitleBlockType}"
-                              DisplayMemberPath="DisplayName"
-                              IsEnabled="{Binding CreateSheet}" />
+                <materialDesign:Card Padding="16" Margin="0,0,0,4">
+                    <StackPanel>
+                        <TextBlock Text="Параметры листа" FontSize="18" FontWeight="Bold" Margin="0,0,0,12" />
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Тип марки угла на листе:" />
-                    <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,8"
-                              ItemsSource="{Binding SheetCornerMarkTypes}"
-                              SelectedItem="{Binding SelectedSheetCornerMarkType}"
-                              DisplayMemberPath="DisplayName"
-                              IsEnabled="{Binding CreateSheet}" />
+                        <CheckBox Content="Создать лист"
+                                  IsChecked="{Binding CreateSheet}"
+                                  Margin="0,0,0,12" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Количество колонок:" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,8"
-                             Text="{Binding ColumnsCountText, UpdateSourceTrigger=PropertyChanged}"
-                             IsEnabled="{Binding CreateSheet}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Старт X (мм):" />
-                    <TextBox Grid.Row="4" Grid.Column="1" Margin="0,0,0,8"
-                             Text="{Binding StartXmmText, UpdateSourceTrigger=PropertyChanged}"
-                             IsEnabled="{Binding CreateSheet}" />
+                            <ComboBox Grid.Row="0" Grid.Column="0" Margin="0,0,8,8"
+                                      materialDesign:HintAssist.Hint="Тип основной надписи"
+                                      ItemsSource="{Binding TitleBlockTypes}"
+                                      SelectedItem="{Binding SelectedTitleBlockType}"
+                                      DisplayMemberPath="DisplayName"
+                                      IsEnabled="{Binding CreateSheet}" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Старт Y (мм):" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Margin="0,0,0,8"
-                             Text="{Binding StartYmmText, UpdateSourceTrigger=PropertyChanged}"
-                             IsEnabled="{Binding CreateSheet}" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="8,0,0,8"
+                                      materialDesign:HintAssist.Hint="Тип марки угла на листе"
+                                      ItemsSource="{Binding SheetCornerMarkTypes}"
+                                      SelectedItem="{Binding SelectedSheetCornerMarkType}"
+                                      DisplayMemberPath="DisplayName"
+                                      IsEnabled="{Binding CreateSheet}" />
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,0,8,8" VerticalAlignment="Center" Text="Шаг X (мм):" />
-                    <TextBox Grid.Row="6" Grid.Column="1" Margin="0,0,0,8"
-                             Text="{Binding StepXmmText, UpdateSourceTrigger=PropertyChanged}"
-                             IsEnabled="{Binding CreateSheet}" />
+                            <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,8,8"
+                                     materialDesign:HintAssist.Hint="Количество колонок"
+                                     Text="{Binding ColumnsCountText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding CreateSheet}" />
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center" Text="Шаг Y (мм):" />
-                    <TextBox Grid.Row="7" Grid.Column="1"
-                             Text="{Binding StepYmmText, UpdateSourceTrigger=PropertyChanged}"
-                             IsEnabled="{Binding CreateSheet}" />
-                </Grid>
-            </GroupBox>
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="8,0,0,8"
+                                     materialDesign:HintAssist.Hint="Старт X (мм)"
+                                     Text="{Binding StartXmmText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding CreateSheet}" />
 
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="OkButton" Width="100" Height="30" Margin="0,0,8,0" Content="ОК" />
-                <Button x:Name="CancelButton" Width="100" Height="30" Content="Отмена" />
+                            <TextBox Grid.Row="2" Grid.Column="0" Margin="0,0,8,8"
+                                     materialDesign:HintAssist.Hint="Старт Y (мм)"
+                                     Text="{Binding StartYmmText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding CreateSheet}" />
+
+                            <TextBox Grid.Row="2" Grid.Column="1" Margin="8,0,0,8"
+                                     materialDesign:HintAssist.Hint="Шаг X (мм)"
+                                     Text="{Binding StepXmmText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding CreateSheet}" />
+
+                            <TextBox Grid.Row="3" Grid.Column="0" Margin="0,0,8,0"
+                                     materialDesign:HintAssist.Hint="Шаг Y (мм)"
+                                     Text="{Binding StepYmmText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding CreateSheet}" />
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
             </StackPanel>
-        </Grid>
-    </ScrollViewer>
+        </ScrollViewer>
+
+        <DockPanel Grid.Row="1" Margin="16,8,16,16" LastChildFill="False">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Button x:Name="CancelButton" Width="130" Height="36" Margin="0,0,8,0" Content="Отмена" />
+                <Button x:Name="OkButton" Width="180" Height="36" Content="Создать развертки" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
 </Window>

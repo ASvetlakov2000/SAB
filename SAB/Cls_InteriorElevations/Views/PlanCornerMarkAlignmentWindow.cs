@@ -1,95 +1,143 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
 
 namespace SAB.InteriorElevations.Views
 {
-    public class PlanCornerMarkAlignmentWindow : Window
+    public partial class PlanCornerMarkAlignmentWindow : Window
     {
-        private TextBox _cornerOffsetTextBox;
         private readonly PlanCornerMarkAlignmentSettings _initialSettings;
+
+        private TextBox _cornerOffsetTextBox;
+        private Button _okButton;
+        private Button _cancelButton;
 
         public PlanCornerMarkAlignmentWindow(PlanCornerMarkAlignmentSettings initialSettings)
         {
             _initialSettings = initialSettings;
 
-            Title = "Выравнивание марок углов на плане";
-            Width = 480;
-            Height = 230;
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            ResizeMode = ResizeMode.NoResize;
-
-            BuildWindowContent();
+            InitializeWindowFromXamlFile();
+            AttachButtonHandlers();
+            ApplyInitialSettings();
         }
 
         public PlanCornerMarkAlignmentSettings SelectedSettings { get; private set; }
 
-        private void BuildWindowContent()
+        private void InitializeWindowFromXamlFile()
         {
-            Grid rootGrid = new Grid();
-            rootGrid.Margin = new Thickness(16);
-            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            rootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            string assemblyDirectory = Path.GetDirectoryName(typeof(PlanCornerMarkAlignmentWindow).Assembly.Location);
+            string xamlPath = Path.Combine(assemblyDirectory, "Cls_InteriorElevations", "Views", "PlanCornerMarkAlignmentWindow.xaml");
 
-            TextBlock descriptionTextBlock = new TextBlock();
-            descriptionTextBlock.Text = "Выберите параметры выравнивания марок SA_Марка угла_План.";
-            descriptionTextBlock.TextWrapping = TextWrapping.Wrap;
-            descriptionTextBlock.Margin = new Thickness(0, 0, 0, 12);
-            Grid.SetRow(descriptionTextBlock, 0);
-            rootGrid.Children.Add(descriptionTextBlock);
-
-            StackPanel offsetPanel = new StackPanel();
-            offsetPanel.Orientation = Orientation.Vertical;
-            offsetPanel.Margin = new Thickness(0, 0, 0, 10);
-            Grid.SetRow(offsetPanel, 1);
-
-            TextBlock offsetLabel = new TextBlock();
-            offsetLabel.Text = "Отступ марки от угла (мм):";
-            offsetLabel.Margin = new Thickness(0, 0, 0, 4);
-            offsetPanel.Children.Add(offsetLabel);
-
-            _cornerOffsetTextBox = new TextBox();
-            _cornerOffsetTextBox.MinWidth = 160;
-            _cornerOffsetTextBox.Text = GetInitialCornerOffsetText();
-            offsetPanel.Children.Add(_cornerOffsetTextBox);
-
-            rootGrid.Children.Add(offsetPanel);
-
-            StackPanel buttonsPanel = new StackPanel();
-            buttonsPanel.Orientation = Orientation.Horizontal;
-            buttonsPanel.HorizontalAlignment = HorizontalAlignment.Right;
-            buttonsPanel.Margin = new Thickness(0, 8, 0, 0);
-            Grid.SetRow(buttonsPanel, 3);
-
-            Button okButton = new Button();
-            okButton.Content = "ОК";
-            okButton.Width = 100;
-            okButton.Margin = new Thickness(0, 0, 8, 0);
-            okButton.Click += OkButton_Click;
-            buttonsPanel.Children.Add(okButton);
-
-            Button cancelButton = new Button();
-            cancelButton.Content = "Отмена";
-            cancelButton.Width = 100;
-            cancelButton.Click += CancelButton_Click;
-            buttonsPanel.Children.Add(cancelButton);
-
-            rootGrid.Children.Add(buttonsPanel);
-            Content = rootGrid;
-        }
-
-        private string GetInitialCornerOffsetText()
-        {
-            if (_initialSettings == null)
+            if (!File.Exists(xamlPath))
             {
-                return "80";
+                throw new InvalidOperationException("Файл настроек выравнивания не найден: " + xamlPath);
             }
 
-            return _initialSettings.CornerOffsetMm.ToString("F1", CultureInfo.InvariantCulture);
+            using (FileStream stream = File.OpenRead(xamlPath))
+            {
+                Window loadedWindow = XamlReader.Load(stream) as Window;
+                if (loadedWindow == null)
+                {
+                    throw new InvalidOperationException("Не удалось загрузить PlanCornerMarkAlignmentWindow.xaml.");
+                }
+
+                _cornerOffsetTextBox = loadedWindow.FindName("CornerOffsetTextBox") as TextBox;
+                _okButton = loadedWindow.FindName("OkButton") as Button;
+                _cancelButton = loadedWindow.FindName("CancelButton") as Button;
+
+                Title = loadedWindow.Title;
+                Width = loadedWindow.Width;
+                Height = loadedWindow.Height;
+                MinWidth = loadedWindow.MinWidth;
+                MinHeight = loadedWindow.MinHeight;
+                WindowStartupLocation = loadedWindow.WindowStartupLocation;
+                ResizeMode = loadedWindow.ResizeMode;
+                Style = loadedWindow.Style;
+                Background = loadedWindow.Background;
+                FontFamily = loadedWindow.FontFamily;
+                FontSize = loadedWindow.FontSize;
+                FontWeight = loadedWindow.FontWeight;
+                Content = loadedWindow.Content;
+                Resources = loadedWindow.Resources;
+            }
+        }
+
+        private void AttachButtonHandlers()
+        {
+            if (_cornerOffsetTextBox == null)
+            {
+                _cornerOffsetTextBox = FindElementByName<TextBox>(Content as DependencyObject, "CornerOffsetTextBox");
+            }
+
+            if (_okButton == null)
+            {
+                _okButton = FindElementByName<Button>(Content as DependencyObject, "OkButton");
+            }
+
+            if (_cancelButton == null)
+            {
+                _cancelButton = FindElementByName<Button>(Content as DependencyObject, "CancelButton");
+            }
+
+            if (_cornerOffsetTextBox == null || _okButton == null || _cancelButton == null)
+            {
+                throw new InvalidOperationException("Не удалось привязать элементы окна выравнивания марок.");
+            }
+
+            _okButton.Click += OkButton_Click;
+            _cancelButton.Click += CancelButton_Click;
+        }
+
+        private T FindElementByName<T>(DependencyObject root, string name) where T : FrameworkElement
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            FrameworkElement frameworkElement = root as FrameworkElement;
+            if (frameworkElement != null && string.Equals(frameworkElement.Name, name, StringComparison.Ordinal))
+            {
+                return frameworkElement as T;
+            }
+
+            foreach (object childObject in LogicalTreeHelper.GetChildren(root))
+            {
+                DependencyObject childDependencyObject = childObject as DependencyObject;
+                if (childDependencyObject == null)
+                {
+                    continue;
+                }
+
+                T nestedChild = FindElementByName<T>(childDependencyObject, name);
+                if (nestedChild != null)
+                {
+                    return nestedChild;
+                }
+            }
+
+            return null;
+        }
+
+        private void ApplyInitialSettings()
+        {
+            if (_cornerOffsetTextBox == null)
+            {
+                return;
+            }
+
+            if (_initialSettings == null || _initialSettings.CornerOffsetMm < 0)
+            {
+                _cornerOffsetTextBox.Text = "80";
+                return;
+            }
+
+            _cornerOffsetTextBox.Text = _initialSettings.CornerOffsetMm.ToString("0.###", CultureInfo.CurrentCulture);
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -117,12 +165,12 @@ namespace SAB.InteriorElevations.Views
 
         private bool TryParseMillimeters(string text, out double value)
         {
-            if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+            if (double.TryParse(text, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out value))
             {
                 return true;
             }
 
-            return double.TryParse(text, NumberStyles.Float, CultureInfo.CurrentCulture, out value);
+            return double.TryParse(text, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
