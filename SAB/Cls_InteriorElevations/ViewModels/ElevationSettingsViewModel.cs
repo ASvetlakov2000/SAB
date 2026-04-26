@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,7 +43,7 @@ namespace SAB.InteriorElevations.ViewModels
             PlanCornerMarkTypes = new ObservableCollection<RevitElementOption>();
             SheetCornerMarkTypes = new ObservableCollection<RevitElementOption>();
 
-            // Блок значений по умолчанию, которые пользователь может менять в окне.
+            // Ð‘Ð»Ð¾Ðº Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð¼Ð¾Ð¶ÐµÑ‚ Ð¼ÐµÐ½ÑÑ‚ÑŒ Ð² Ð¾ÐºÐ½Ðµ.
             ViewScaleText = "50";
             TopOffsetMmText = "3000";
             BottomOffsetMmText = "0";
@@ -57,6 +57,7 @@ namespace SAB.InteriorElevations.ViewModels
             StartYmmText = "200";
             StepXmmText = "180";
             StepYmmText = "140";
+            SheetFormatAText = "3";
 
             LoadElevationViewFamilyTypes();
             LoadViewTemplates();
@@ -66,7 +67,7 @@ namespace SAB.InteriorElevations.ViewModels
 
             _createSheet = TitleBlockTypes.Count > 0;
 
-            // Блок восстановления последних сохраненных значений из предыдущей сессии.
+            // Ð‘Ð»Ð¾Ðº Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ñ… ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð½Ñ‹Ñ… Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹ Ð¸Ð· Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰ÐµÐ¹ ÑÐµÑÑÐ¸Ð¸.
             ApplyInitialSettings(initialSettings);
         }
 
@@ -166,6 +167,8 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string StepYmmText { get; set; }
 
+        public string SheetFormatAText { get; set; }
+
         public bool TryBuildSettings(out ElevationSettings settings, out string validationMessage)
         {
             settings = null;
@@ -201,6 +204,7 @@ namespace SAB.InteriorElevations.ViewModels
             elevationSettings.SheetCornerMarkTypeId = CreateSheet && SelectedSheetCornerMarkType != null
                 ? SelectedSheetCornerMarkType.Id
                 : ElementId.InvalidElementId;
+            elevationSettings.SheetFormatAValue = ParseNullableInt(SheetFormatAText);
 
             elevationSettings.SheetLayoutSettings = new SheetLayoutSettings();
             elevationSettings.SheetLayoutSettings.ColumnsCount = ParseInt(ColumnsCountText);
@@ -217,96 +221,104 @@ namespace SAB.InteriorElevations.ViewModels
         {
             if (SelectedElevationViewFamilyType == null)
             {
-                return "Не выбран тип вида развертки.";
+                return "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ Ð²Ð¸Ð´Ð° Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚ÐºÐ¸.";
             }
 
             if (SelectedPlanCornerMarkType == null)
             {
-                return "Не выбран тип семейства марки угла на плане.";
+                return "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð° Ð¼Ð°Ñ€ÐºÐ¸ ÑƒÐ³Ð»Ð° Ð½Ð° Ð¿Ð»Ð°Ð½Ðµ.";
             }
 
             int viewScale;
             if (!TryParseInt(ViewScaleText, out viewScale) || viewScale <= 0)
             {
-                return "Масштаб вида должен быть положительным целым числом.";
+                return "ÐœÐ°ÑÑˆÑ‚Ð°Ð± Ð²Ð¸Ð´Ð° Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ†ÐµÐ»Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼.";
             }
 
             double top;
             if (!TryParseDouble(TopOffsetMmText, out top) || top < 0)
             {
-                return "Верхний отступ должен быть неотрицательным числом (мм).";
+                return "Ð’ÐµÑ€Ñ…Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
             }
 
             double bottom;
             if (!TryParseDouble(BottomOffsetMmText, out bottom) || bottom < 0)
             {
-                return "Нижний отступ должен быть неотрицательным числом (мм).";
+                return "ÐÐ¸Ð¶Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
             }
 
             double left;
             if (!TryParseDouble(LeftOffsetMmText, out left) || left < 0)
             {
-                return "Левый отступ должен быть неотрицательным числом (мм).";
+                return "Ð›ÐµÐ²Ñ‹Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
             }
 
             double right;
             if (!TryParseDouble(RightOffsetMmText, out right) || right < 0)
             {
-                return "Правый отступ должен быть неотрицательным числом (мм).";
+                return "ÐŸÑ€Ð°Ð²Ñ‹Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
             }
 
             double depth;
             if (!TryParseDouble(ViewDepthMmText, out depth) || depth <= 0)
             {
-                return "Смещение дальнего предела должно быть положительным числом (мм).";
+                return "Глубина проекции должна быть положительным числом (мм).";
             }
 
             double markerOffset;
             if (!TryParseDouble(MarkerOffsetMmText, out markerOffset) || markerOffset < 0)
             {
-                return "Отступ вида от линии должен быть неотрицательным числом (мм).";
+                return "ÐžÑ‚ÑÑ‚ÑƒÐ¿ Ð²Ð¸Ð´Ð° Ð¾Ñ‚ Ð»Ð¸Ð½Ð¸Ð¸ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
             }
 
             if (CreateSheet)
             {
                 if (SelectedTitleBlockType == null)
                 {
-                    return "Включено создание листа, но не выбран тип основной надписи.";
+                    return "Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð»Ð¸ÑÑ‚Ð°, Ð½Ð¾ Ð½Ðµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ð½Ð°Ð´Ð¿Ð¸ÑÐ¸.";
                 }
 
                 if (SelectedSheetCornerMarkType == null)
                 {
-                    return "Включено создание листа, но не выбран тип семейства марки угла на листе.";
+                    return "Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð»Ð¸ÑÑ‚Ð°, Ð½Ð¾ Ð½Ðµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð° Ð¼Ð°Ñ€ÐºÐ¸ ÑƒÐ³Ð»Ð° Ð½Ð° Ð»Ð¸ÑÑ‚Ðµ.";
                 }
 
                 int columns;
                 if (!TryParseInt(ColumnsCountText, out columns) || columns <= 0)
                 {
-                    return "Количество колонок должно быть положительным целым числом.";
+                    return "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐºÐ¾Ð»Ð¾Ð½Ð¾Ðº Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ†ÐµÐ»Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼.";
                 }
 
                 double startX;
                 if (!TryParseDouble(StartXmmText, out startX))
                 {
-                    return "Начальная координата X на листе должна быть числом (мм).";
+                    return "ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ð°Ñ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ð° X Ð½Ð° Ð»Ð¸ÑÑ‚Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
                 }
 
                 double startY;
                 if (!TryParseDouble(StartYmmText, out startY))
                 {
-                    return "Начальная координата Y на листе должна быть числом (мм).";
+                    return "ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ð°Ñ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ð° Y Ð½Ð° Ð»Ð¸ÑÑ‚Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
                 }
 
                 double stepX;
                 if (!TryParseDouble(StepXmmText, out stepX) || stepX <= 0)
                 {
-                    return "Шаг по X должен быть положительным числом (мм).";
+                    return "Ð¨Ð°Ð³ Ð¿Ð¾ X Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
                 }
 
                 double stepY;
                 if (!TryParseDouble(StepYmmText, out stepY) || stepY <= 0)
                 {
-                    return "Шаг по Y должен быть положительным числом (мм).";
+                    return "Ð¨Ð°Ð³ Ð¿Ð¾ Y Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                }
+                if (!string.IsNullOrWhiteSpace(SheetFormatAText))
+                {
+                    int sheetFormatAValue;
+                    if (!TryParseInt(SheetFormatAText, out sheetFormatAValue) || sheetFormatAValue < 0)
+                    {
+                        return "Формат листа должен быть целым неотрицательным числом.";
+                    }
                 }
             }
 
@@ -382,7 +394,7 @@ namespace SAB.InteriorElevations.ViewModels
                 options.Add(option);
             }
 
-            // Если шаблонов разверток нет, даем выбрать любой шаблон вида.
+            // Ð•ÑÐ»Ð¸ ÑˆÐ°Ð±Ð»Ð¾Ð½Ð¾Ð² Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚Ð¾Ðº Ð½ÐµÑ‚, Ð´Ð°ÐµÐ¼ Ð²Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð»ÑŽÐ±Ð¾Ð¹ ÑˆÐ°Ð±Ð»Ð¾Ð½ Ð²Ð¸Ð´Ð°.
             if (options.Count == 0)
             {
                 FilteredElementCollector fallbackCollector = new FilteredElementCollector(_document).OfClass(typeof(View));
@@ -510,6 +522,22 @@ namespace SAB.InteriorElevations.ViewModels
             return value;
         }
 
+        private int? ParseNullableInt(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            int value;
+            if (!TryParseInt(text, out value))
+            {
+                return null;
+            }
+
+            return value;
+        }
+
         private void ApplyInitialSettings(ElevationSettings initialSettings)
         {
             if (initialSettings == null)
@@ -517,14 +545,14 @@ namespace SAB.InteriorElevations.ViewModels
                 return;
             }
 
-            // Восстанавливаем тип вида развертки только если тип доступен в текущем документе.
+            // Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ñ‚Ð¸Ð¿ Ð²Ð¸Ð´Ð° Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚ÐºÐ¸ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ñ‚Ð¸Ð¿ Ð´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½ Ð² Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ðµ.
             RevitElementOption elevationTypeOption = FindOptionById(ElevationViewFamilyTypes, initialSettings.ElevationViewFamilyTypeId);
             if (elevationTypeOption != null)
             {
                 SelectedElevationViewFamilyType = elevationTypeOption;
             }
 
-            // Если ранее шаблон не выбирали, оставляем вариант "<Не выбран>".
+            // Ð•ÑÐ»Ð¸ Ñ€Ð°Ð½ÐµÐµ ÑˆÐ°Ð±Ð»Ð¾Ð½ Ð½Ðµ Ð²Ñ‹Ð±Ð¸Ñ€Ð°Ð»Ð¸, Ð¾ÑÑ‚Ð°Ð²Ð»ÑÐµÐ¼ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ "<ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½>".
             if (initialSettings.ViewTemplateId == null || RevitElementIdUtils.AreEqual(initialSettings.ViewTemplateId, ElementId.InvalidElementId))
             {
                 if (ViewTemplates.Count > 0)
@@ -576,7 +604,12 @@ namespace SAB.InteriorElevations.ViewModels
                 MarkerOffsetMmText = FormatDouble(initialSettings.MarkerOffsetMm);
             }
 
-            // Включаем создание листа только если в проекте есть доступные типы основной надписи.
+            if (initialSettings.SheetFormatAValue.HasValue)
+            {
+                SheetFormatAText = initialSettings.SheetFormatAValue.Value.ToString(CultureInfo.CurrentCulture);
+            }
+
+            // Ð’ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð»Ð¸ÑÑ‚Ð° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ ÐµÑÑ‚ÑŒ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹ Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ð½Ð°Ð´Ð¿Ð¸ÑÐ¸.
             CreateSheet = initialSettings.CreateSheet && TitleBlockTypes.Count > 0;
             RevitElementOption titleBlockOption = FindOptionById(TitleBlockTypes, initialSettings.TitleBlockTypeId);
             if (titleBlockOption != null)
@@ -683,3 +716,4 @@ namespace SAB.InteriorElevations.ViewModels
         }
     }
 }
+

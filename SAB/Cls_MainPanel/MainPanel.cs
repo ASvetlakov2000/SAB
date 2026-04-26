@@ -8,6 +8,7 @@ namespace SAB
         private const string RibbonTabName = "SAB";
         private const string RibbonPanelName = "Библиотека";
         private const string RegulationsPanelName = "Регламент";
+        private const string InteriorElevationsPanelName = "Развертки";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -23,6 +24,7 @@ namespace SAB
 
             RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
             RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
+            RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
 
             // Блок кнопок экспорта
             SplitButton exportSplit = libraryPanel.AddItem(
@@ -193,30 +195,6 @@ namespace SAB
                 "SAB.Resources.GenerateDashboardCommand_32.png",
                 "SAB.Resources.GenerateDashboardCommand_16.png");
 
-            // Блок запуска генератора внутренних разверток по выбранным детализационным линиям.
-            Ribbon.AddPushButtonSingle(
-                libraryPanel,
-                "SAB_CreateInteriorElevations",
-                "Interior \nElevations",
-                "SAB.InteriorElevations.Commands.CreateInteriorElevationsCommand",
-                "SAB.Resources.GenerateDashboardCommand_32.png",
-                "SAB.Resources.GenerateDashboardCommand_16.png");
-
-            Ribbon.AddPushButtonSingle(
-                libraryPanel,
-                "SAB_MoveInteriorElevationViewports",
-                "Перенос \nразверток",
-                "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
-                "SAB.Resources.GenerateDashboardCommand_32.png",
-                "SAB.Resources.GenerateDashboardCommand_16.png");
-
-            Ribbon.AddPushButtonSingle(
-                libraryPanel,
-                "SAB_AlignPlanCornerMarks",
-                "Выровнять \nмарки углов",
-                "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
-                "SAB.Resources.GenerateDashboardCommand_32.png",
-                "SAB.Resources.GenerateDashboardCommand_16.png");
 
             // Блок кнопок регламентов и инструкций в HTML.
             // Блок кнопок регламентов и инструкций в HTML.
@@ -227,6 +205,31 @@ namespace SAB
                 "RevitLibraryBuilder.Commands.Regulations.OpenNamingStandardsHtmlCommand",
                 "SAB.Resources.GenerateDashboardCommand_32.png",
                 "SAB.Resources.GenerateDashboardCommand_16.png");
+
+            // Блок кнопок для плагина внутренних разверток.
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
+                "SAB_CreateInteriorElevations",
+                "Создать развертки\nпо линии",
+                "SAB.InteriorElevations.Commands.CreateInteriorElevationsCommand",
+                "SAB.Resources.CreateInteriorElevationsCommand_32.png",
+                "SAB.Resources.CreateInteriorElevationsCommand_16.png");
+
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
+                "SAB_MoveInteriorElevationViewports",
+                "Перенос видов\nна след. лист",
+                "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
+                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png",
+                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png");
+
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
+                "SAB_AlignPlanCornerMarks",
+                "Выровнять марки\nуглов",
+                "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
+                "SAB.Resources.AlignPlanCornerMarksCommand_32.png",
+                "SAB.Resources.AlignPlanCornerMarksCommand_16.png");
 
             return Result.Succeeded;
         }

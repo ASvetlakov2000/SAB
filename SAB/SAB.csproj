@@ -262,6 +262,12 @@
     <EmbeddedResource Include="Resources\PlaceFillPatternsCommand_32.png" />
     <EmbeddedResource Include="Resources\PlaceLineStylesCommand_16.png" />
     <EmbeddedResource Include="Resources\PlaceLineStylesCommand_32.png" />
+    <EmbeddedResource Include="Resources\CreateInteriorElevationsCommand_16.png" />
+    <EmbeddedResource Include="Resources\CreateInteriorElevationsCommand_32.png" />
+    <EmbeddedResource Include="Resources\MoveElevationViewportsToNewSheetCommand_16.png" />
+    <EmbeddedResource Include="Resources\MoveElevationViewportsToNewSheetCommand_32.png" />
+    <EmbeddedResource Include="Resources\AlignPlanCornerMarksCommand_16.png" />
+    <EmbeddedResource Include="Resources\AlignPlanCornerMarksCommand_32.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BimDashboard\Templates\dashboard_template.html">

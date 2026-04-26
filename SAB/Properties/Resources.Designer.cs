@@ -63,6 +63,46 @@ namespace SAB.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        public static byte[] AlignPlanCornerMarksCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("AlignPlanCornerMarksCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] AlignPlanCornerMarksCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("AlignPlanCornerMarksCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] CreateInteriorElevationsCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("CreateInteriorElevationsCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] CreateInteriorElevationsCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("CreateInteriorElevationsCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         public static byte[] DeleteSelectedTypesAndFamiliesCommand_16 {
             get {
                 object obj = ResourceManager.GetObject("DeleteSelectedTypesAndFamiliesCommand_16", resourceCulture);
@@ -356,6 +396,26 @@ namespace SAB.Properties {
         public static byte[] LoadSystemFamilyTypeImagesCommand_32 {
             get {
                 object obj = ResourceManager.GetObject("LoadSystemFamilyTypeImagesCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] MoveElevationViewportsToNewSheetCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("MoveElevationViewportsToNewSheetCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] MoveElevationViewportsToNewSheetCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("MoveElevationViewportsToNewSheetCommand_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }

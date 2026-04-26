@@ -118,6 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AlignPlanCornerMarksCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignPlanCornerMarksCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="AlignPlanCornerMarksCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AlignPlanCornerMarksCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CreateInteriorElevationsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CreateInteriorElevationsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CreateInteriorElevationsCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CreateInteriorElevationsCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="DeleteSelectedTypesAndFamiliesCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DeleteSelectedTypesAndFamiliesCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -207,6 +219,12 @@
   </data>
   <data name="LoadSystemFamilyTypeImagesCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LoadSystemFamilyTypeImagesCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MoveElevationViewportsToNewSheetCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MoveElevationViewportsToNewSheetCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MoveElevationViewportsToNewSheetCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MoveElevationViewportsToNewSheetCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PlaceFillPatternsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PlaceFillPatternsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

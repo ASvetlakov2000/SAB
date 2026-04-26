@@ -30,6 +30,8 @@ namespace SAB.InteriorElevations.Models
 
         public ElementId SheetCornerMarkTypeId { get; set; }
 
+        public int? SheetFormatAValue { get; set; }
+
         public SheetLayoutSettings SheetLayoutSettings { get; set; }
     }
 }

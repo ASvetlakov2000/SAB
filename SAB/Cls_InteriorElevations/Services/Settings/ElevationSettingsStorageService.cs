@@ -9,7 +9,7 @@ namespace SAB.InteriorElevations.Services.Settings
 {
     public class ElevationSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 2;
+        private const int CurrentSchemaVersion = 3;
         private readonly string _settingsFilePath;
 
         public ElevationSettingsStorageService()
@@ -83,6 +83,9 @@ namespace SAB.InteriorElevations.Services.Settings
             settings.TitleBlockTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.TitleBlockTypeIdValue);
             settings.PlanCornerMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.PlanCornerMarkTypeIdValue);
             settings.SheetCornerMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.SheetCornerMarkTypeIdValue);
+            settings.SheetFormatAValue = persistedSettings.HasSheetFormatAValue
+                ? (int?)persistedSettings.SheetFormatAValue
+                : null;
 
             settings.SheetLayoutSettings = new SheetLayoutSettings();
             settings.SheetLayoutSettings.ColumnsCount = persistedSettings.ColumnsCount;
@@ -114,6 +117,8 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.TitleBlockTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.TitleBlockTypeId);
             persistedSettings.PlanCornerMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.PlanCornerMarkTypeId);
             persistedSettings.SheetCornerMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.SheetCornerMarkTypeId);
+            persistedSettings.HasSheetFormatAValue = settings.SheetFormatAValue.HasValue;
+            persistedSettings.SheetFormatAValue = settings.SheetFormatAValue.HasValue ? settings.SheetFormatAValue.Value : 0;
 
             SheetLayoutSettings sheetLayoutSettings = settings.SheetLayoutSettings ?? new SheetLayoutSettings();
             persistedSettings.ColumnsCount = sheetLayoutSettings.ColumnsCount;
@@ -154,6 +159,10 @@ namespace SAB.InteriorElevations.Services.Settings
             public long PlanCornerMarkTypeIdValue { get; set; }
 
             public long SheetCornerMarkTypeIdValue { get; set; }
+
+            public bool HasSheetFormatAValue { get; set; }
+
+            public int SheetFormatAValue { get; set; }
 
             public int ColumnsCount { get; set; }
 
