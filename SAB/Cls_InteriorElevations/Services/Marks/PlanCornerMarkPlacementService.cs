@@ -50,6 +50,8 @@ namespace SAB.InteriorElevations.Services.Marks
 
             int placedCount = 0;
             HashSet<int> placedCornerNumbers = new HashSet<int>();
+            List<XYZ> occupiedCornerPoints = new List<XYZ>();
+            double pointToleranceFeet = UnitConversionUtils.MillimetersToFeet(1.0);
 
             for (int index = 0; index < elevationLines.Count; index++)
             {
@@ -62,26 +64,54 @@ namespace SAB.InteriorElevations.Services.Marks
                 int startCornerNumber = lineData.Index;
                 int endCornerNumber = lineData.Index + 1;
 
-                if (!placedCornerNumbers.Contains(startCornerNumber))
+                if (!placedCornerNumbers.Contains(startCornerNumber) &&
+                    !IsPointOccupied(occupiedCornerPoints, lineData.StartPoint, pointToleranceFeet))
                 {
                     if (TryPlaceCornerMark(document, planView, symbol, lineData.StartPoint, roomData.RoomNumber, startCornerNumber, warnings))
                     {
                         placedCornerNumbers.Add(startCornerNumber);
+                        occupiedCornerPoints.Add(lineData.StartPoint);
                         placedCount++;
                     }
                 }
 
-                if (!placedCornerNumbers.Contains(endCornerNumber))
+                if (!placedCornerNumbers.Contains(endCornerNumber) &&
+                    !IsPointOccupied(occupiedCornerPoints, lineData.EndPoint, pointToleranceFeet))
                 {
                     if (TryPlaceCornerMark(document, planView, symbol, lineData.EndPoint, roomData.RoomNumber, endCornerNumber, warnings))
                     {
                         placedCornerNumbers.Add(endCornerNumber);
+                        occupiedCornerPoints.Add(lineData.EndPoint);
                         placedCount++;
                     }
                 }
             }
 
             return placedCount;
+        }
+
+        private bool IsPointOccupied(IList<XYZ> occupiedPoints, XYZ testPoint, double toleranceFeet)
+        {
+            if (occupiedPoints == null || testPoint == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < occupiedPoints.Count; i++)
+            {
+                XYZ occupiedPoint = occupiedPoints[i];
+                if (occupiedPoint == null)
+                {
+                    continue;
+                }
+
+                if (occupiedPoint.DistanceTo(testPoint) <= toleranceFeet)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool TryPlaceCornerMark(

@@ -102,12 +102,9 @@ namespace SAB.InteriorElevations.Services.Selection
                 result.Lines.Add(detailLine);
             }
 
-            result.Lines.Sort(
-                delegate(DetailLine left, DetailLine right)
-                {
-                    return RevitElementIdUtils.Compare(left.Id, right.Id);
-                });
-
+            // Важный блок: сохраняем исходный порядок выбора пользователя.
+            // PickObjects возвращает ссылки в последовательности кликов,
+            // и дальнейшая нумерация разверток должна идти именно в этом порядке.
             return result;
         }
 
