@@ -196,7 +196,7 @@ namespace SAB
                 "SAB.Resources.GenerateDashboardCommand_16.png");
 
 
-            // Блок кнопок регламентов и инструкций в HTML.
+            //// Блок кнопок регламентов и инструкций в HTML.
             // Блок кнопок регламентов и инструкций в HTML.
             Ribbon.AddPushButtonSingle(
                 regulationsPanel,
