@@ -48,8 +48,8 @@ namespace SAB.BimDashboard.Services.Data
                 throw new InvalidOperationException("Выбран неподдерживаемый CSV файл.");
             }
 
+            DashboardProfileType detectedProfile = DetectProfileByFileName(context.FilePath);
             TabularDataSet dataSet = _tableReader.Read(context.FilePath);
-            ValidateProfileHeaders(dataSet, context.SourceProfile);
 
             List<string> warnings = new List<string>();
             List<UnifiedRecord> records = _tabularRecordMapper.Map(dataSet, warnings);
@@ -61,7 +61,7 @@ namespace SAB.BimDashboard.Services.Data
 
             string sourceFileName = Path.GetFileName(context.FilePath);
             ResolveThumbnailPaths(records, context.FilePath);
-            ThumbnailRuntimePathEnricher.Enrich(records, context.SourceProfile);
+            ThumbnailRuntimePathEnricher.Enrich(records, detectedProfile);
 
             for (int i = 0; i < records.Count; i++)
             {
@@ -85,125 +85,54 @@ namespace SAB.BimDashboard.Services.Data
 
             ProviderResult result = new ProviderResult();
             result.ProjectName = Path.GetFileNameWithoutExtension(context.FilePath);
-            result.SourceProfile = context.SourceProfile.ToString();
+            result.SourceProfile = detectedProfile.ToString();
             result.Records = records;
             result.Warnings.AddRange(warnings);
             return result;
         }
 
-        private static void ValidateProfileHeaders(TabularDataSet dataSet, DashboardProfileType profile)
+        private static DashboardProfileType DetectProfileByFileName(string filePath)
         {
-            if (dataSet == null || dataSet.Headers == null)
+            string fileNameWithoutExtension;
+
+            try
             {
-                throw new InvalidOperationException("CSV не содержит заголовков.");
+                fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath) ?? string.Empty;
+            }
+            catch
+            {
+                throw new InvalidOperationException("Не удалось определить имя CSV файла.");
             }
 
-            List<HeaderGroup> requiredHeaders = GetRequiredHeaders(profile);
-            List<string> missingHeaders = new List<string>();
-
-            for (int i = 0; i < requiredHeaders.Count; i++)
+            if (fileNameWithoutExtension.IndexOf("Системные семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                HeaderGroup requiredHeader = requiredHeaders[i];
-
-                if (!HasAnyHeader(dataSet.Headers, requiredHeader))
-                {
-                    missingHeaders.Add(requiredHeader.DisplayName);
-                }
+                return DashboardProfileType.SystemFamilies;
             }
 
-            if (missingHeaders.Count > 0)
+            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                throw new InvalidOperationException(
-                    "Выбран не тот источник CSV. Отсутствуют колонки: " + string.Join(", ", missingHeaders));
-            }
-        }
-
-        private static List<HeaderGroup> GetRequiredHeaders(DashboardProfileType profile)
-        {
-            if (profile == DashboardProfileType.SystemFamilies)
-            {
-                return new List<HeaderGroup>
-                {
-                    new HeaderGroup("Категория", "Категория", "Category"),
-                    new HeaderGroup("Семейство", "Семейство", "Family"),
-                    new HeaderGroup("Типоразмер", "Типоразмер", "TypeName", "Тип"),
-                    new HeaderGroup("Структура", "Структура", "Structure"),
-                    new HeaderGroup("Толщина типа, мм", "Толщина типа, мм", "TotalThicknessMm")
-                };
+                return DashboardProfileType.LoadableFamilies;
             }
 
-            if (profile == DashboardProfileType.LoadableFamilies)
+            if (fileNameWithoutExtension.IndexOf("Линии", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fileNameWithoutExtension.IndexOf("LineStyles", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return new List<HeaderGroup>
-                {
-                    new HeaderGroup("Категория", "Категория", "Category"),
-                    new HeaderGroup("Семейство", "Семейство", "Family"),
-                    new HeaderGroup("Типоразмер", "Типоразмер", "TypeName", "Тип")
-                };
+                return DashboardProfileType.Lines;
             }
 
-            if (profile == DashboardProfileType.Lines)
+            if (fileNameWithoutExtension.IndexOf("Штриховки", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fileNameWithoutExtension.IndexOf("FillPatterns", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return new List<HeaderGroup>
-                {
-                    new HeaderGroup("Наименование", "Наименование", "Name"),
-                    new HeaderGroup("Категория", "Категория", "Category"),
-                    new HeaderGroup("Вес линии", "Вес линии", "LineWeight"),
-                    new HeaderGroup("Цвет", "Цвет", "Color"),
-                    new HeaderGroup("Образец", "Образец", "Pattern")
-                };
+                return DashboardProfileType.FillPatterns;
             }
 
-            return new List<HeaderGroup>
-            {
-                new HeaderGroup("Наименование", "Наименование", "Name"),
-                new HeaderGroup("Штриховка переднего плана", "Штриховка переднего плана", "ForegroundPattern"),
-                new HeaderGroup("Штриховка заднего плана", "Штриховка заднего плана", "BackgroundPattern"),
-                new HeaderGroup("Маскирование", "Маскирование", "IsMasking"),
-                new HeaderGroup("Тип штриховки", "Тип штриховки", "Target")
-            };
-        }
-
-        private static bool HasAnyHeader(List<string> headers, HeaderGroup headerGroup)
-        {
-            if (headers == null || headerGroup == null || headerGroup.Aliases == null)
-            {
-                return false;
-            }
-
-            for (int aliasIndex = 0; aliasIndex < headerGroup.Aliases.Count; aliasIndex++)
-            {
-                string alias = NormalizeHeader(headerGroup.Aliases[aliasIndex]);
-
-                if (string.IsNullOrWhiteSpace(alias))
-                {
-                    continue;
-                }
-
-                for (int i = 0; i < headers.Count; i++)
-                {
-                    string header = NormalizeHeader(headers[i]);
-
-                    if (string.Equals(header, alias, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private static string NormalizeHeader(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return string.Empty;
-            }
-
-            string normalized = value.Trim();
-            normalized = normalized.Trim('\uFEFF');
-            return normalized;
+            throw new InvalidOperationException(
+                "Имя файла не соответствует поддерживаемым шаблонам.\n" +
+                "Ожидается, что имя содержит:\n" +
+                "- \"Системные семейства_\"\n" +
+                "- \"Загружаемые семейства_\"\n" +
+                "- \"Линии\"\n" +
+                "- \"Штриховки\"");
         }
 
         // Блок пост-обработки путей миниатюр для корректного рендера в HTML.
@@ -307,32 +236,6 @@ namespace SAB.BimDashboard.Services.Data
             {
                 return rawPath;
             }
-        }
-
-        private class HeaderGroup
-        {
-            public HeaderGroup(string displayName, params string[] aliases)
-            {
-                DisplayName = displayName ?? string.Empty;
-                Aliases = new List<string>();
-
-                if (aliases == null)
-                {
-                    return;
-                }
-
-                for (int i = 0; i < aliases.Length; i++)
-                {
-                    if (!string.IsNullOrWhiteSpace(aliases[i]))
-                    {
-                        Aliases.Add(aliases[i]);
-                    }
-                }
-            }
-
-            public string DisplayName { get; private set; }
-
-            public List<string> Aliases { get; private set; }
         }
     }
 }

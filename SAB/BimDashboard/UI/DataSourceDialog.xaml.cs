@@ -79,7 +79,8 @@ namespace SAB.BimDashboard.UI
                 FontSize = 14,
                 BorderBrush = new SolidColorBrush(Colors.Black),
                 BorderThickness = new Thickness(1),
-                Background = new SolidColorBrush(Colors.White)
+                Background = new SolidColorBrush(Colors.White),
+                IsEnabled = false
             };
             _profileComboBox.Items.Add(new ProfileItem("Системные семейства", DashboardProfileType.SystemFamilies));
             _profileComboBox.Items.Add(new ProfileItem("Загружаемые семейства", DashboardProfileType.LoadableFamilies));
@@ -128,7 +129,7 @@ namespace SAB.BimDashboard.UI
                 Margin = new Thickness(2, 10, 2, 0),
                 TextWrapping = TextWrapping.Wrap,
                 Foreground = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
-                Text = "Поддерживается только CSV. Профиль должен соответствовать выбранной таблице."
+                Text = "Поддерживается только CSV. Профиль определяется автоматически по имени файла."
             };
             Grid.SetRow(infoText, 3);
             rootGrid.Children.Add(infoText);
@@ -238,6 +239,13 @@ namespace SAB.BimDashboard.UI
                 {
                     _selectedFilePath = dialog.FileName;
                     _selectedFilePathText.Text = dialog.FileName;
+
+                    DashboardProfileType detectedProfileType;
+
+                    if (TryDetectProfileByFileName(dialog.FileName, out detectedProfileType))
+                    {
+                        SetSelectedProfile(detectedProfileType);
+                    }
                 }
             }
         }
@@ -264,11 +272,94 @@ namespace SAB.BimDashboard.UI
                 return;
             }
 
+            DashboardProfileType detectedProfile;
+
+            if (!TryDetectProfileByFileName(filePath, out detectedProfile))
+            {
+                MessageBox.Show(
+                    "Имя файла не соответствует поддерживаемым шаблонам.\n\n" +
+                    "Ожидается, что имя содержит:\n" +
+                    "- \"Системные семейства_\"\n" +
+                    "- \"Загружаемые семейства_\"\n" +
+                    "- \"Линии\"\n" +
+                    "- \"Штриховки\"",
+                    "BIM Dashboard",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
             SelectedSourceType = DataSourceType.Csv;
             SelectedFilePath = filePath;
+            SelectedProfileType = detectedProfile;
 
             DialogResult = true;
             Close();
+        }
+
+        private bool TryDetectProfileByFileName(string filePath, out DashboardProfileType profileType)
+        {
+            profileType = DashboardProfileType.SystemFamilies;
+
+            string fileNameWithoutExtension = string.Empty;
+
+            try
+            {
+                fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath) ?? string.Empty;
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (fileNameWithoutExtension.IndexOf("Системные семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                profileType = DashboardProfileType.SystemFamilies;
+                return true;
+            }
+
+            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                profileType = DashboardProfileType.LoadableFamilies;
+                return true;
+            }
+
+            if (fileNameWithoutExtension.IndexOf("Линии", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fileNameWithoutExtension.IndexOf("LineStyles", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                profileType = DashboardProfileType.Lines;
+                return true;
+            }
+
+            if (fileNameWithoutExtension.IndexOf("Штриховки", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                fileNameWithoutExtension.IndexOf("FillPatterns", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                profileType = DashboardProfileType.FillPatterns;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SetSelectedProfile(DashboardProfileType profileType)
+        {
+            SelectedProfileType = profileType;
+
+            for (int i = 0; i < _profileComboBox.Items.Count; i++)
+            {
+                ProfileItem item = _profileComboBox.Items[i] as ProfileItem;
+
+                if (item == null)
+                {
+                    continue;
+                }
+
+                if (item.ProfileType == profileType)
+                {
+                    _profileComboBox.SelectedIndex = i;
+                    break;
+                }
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

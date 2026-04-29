@@ -12,7 +12,7 @@ namespace RevitLibraryBuilder.Services.Views
     public class DraftingElementImageExportService
     {
         // Блок параметров длины линий для предпросмотра PNG.
-        private const double PreviewLineLengthMillimeters = 300.0;
+        private const double PreviewLineLengthMillimeters = 2500.0;
         private const double RestoreLineLengthMillimeters = 1000.0;
 
         private static readonly HashSet<string> TechnicalLineStyleNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
