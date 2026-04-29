@@ -61,12 +61,24 @@ namespace RevitLibraryBuilder.Commands
                 outputFolder = ExportFolderRoutingService.ResolveNamingExportFolder(outputFolder);
 
                 TypeNamingCsvService typeNamingService = new TypeNamingCsvService();
-                string filePath = typeNamingService.WriteTypeNamingXlsx(outputFolder, document.Title, allTypes);
+                TypeNamingExportResult exportResult = typeNamingService.WriteTypeNamingXlsxByGroups(
+                    outputFolder,
+                    document.Title,
+                    allTypes,
+                    document);
+
+                if (exportResult == null || exportResult.TotalFilesCount == 0)
+                {
+                    ToastNotifier.ShowWarning("Выгрузка наименований типоразмеров", "Не найдено данных для выгрузки.", 10);
+                    return Result.Cancelled;
+                }
+
+                string notificationText = BuildExportSummary(exportResult);
 
                 ToastNotifier.ShowFolderLinkSuccess(
                     "Выгрузка завершена",
-                    "XLSX для переименования типоразмеров сохранен:\n",
-                    System.IO.Path.GetDirectoryName(filePath) ?? outputFolder,
+                    notificationText,
+                    outputFolder,
                     10);
 
                 return Result.Succeeded;
@@ -84,16 +96,28 @@ namespace RevitLibraryBuilder.Commands
             ToastNotifier.ShowError(title, text, 12);
         }
 
-        private static string BuildSuggestedFileName(string documentTitle, string suffix)
+        private static string BuildExportSummary(TypeNamingExportResult exportResult)
         {
-            string safeTitle = string.IsNullOrWhiteSpace(documentTitle) ? "Project" : documentTitle.Trim();
-
-            foreach (char invalidCharacter in System.IO.Path.GetInvalidFileNameChars())
+            if (exportResult == null || exportResult.Files == null || exportResult.Files.Count == 0)
             {
-                safeTitle = safeTitle.Replace(invalidCharacter, '_');
+                return "Файлы выгрузки не созданы.";
             }
 
-            return safeTitle + "_" + suffix;
+            string text = "Созданы XLSX по группам:\n";
+
+            for (int i = 0; i < exportResult.Files.Count; i++)
+            {
+                TypeNamingExportFileInfo file = exportResult.Files[i];
+
+                if (file == null)
+                {
+                    continue;
+                }
+
+                text += "- " + (file.GroupName ?? "Группа") + ": " + file.RowCount + " строк\n";
+            }
+
+            return text;
         }
     }
 }

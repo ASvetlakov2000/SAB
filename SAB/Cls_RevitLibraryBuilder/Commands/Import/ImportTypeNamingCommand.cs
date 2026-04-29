@@ -76,7 +76,7 @@ namespace RevitLibraryBuilder.Commands
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Title = "Выберите XLSX для переименования типоразмеров";
+                dialog.Title = "Выберите XLSX для переименования типоразмеров (Системные/Загружаемые/Прочее)";
                 dialog.Filter = "XLSX (*.xlsx)|*.xlsx|CSV (*.csv)|*.csv";
                 dialog.Multiselect = false;
 

@@ -12,8 +12,10 @@ namespace RevitLibraryBuilder.Services.Views
     public class DraftingElementImageExportService
     {
         // Блок параметров длины линий для предпросмотра PNG.
-        private const double PreviewLineLengthMillimeters = 300.0;
+        private const double PreviewLineLengthMillimeters = 100.0;
         private const double RestoreLineLengthMillimeters = 1000.0;
+        private const int PreviewViewScale = 5;
+        private const int FinalViewScaleAfterExport = 20;
 
         private static readonly HashSet<string> TechnicalLineStyleNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -36,14 +38,36 @@ namespace RevitLibraryBuilder.Services.Views
         {
             List<Element> elements = CollectLineElements(uiDocument, sourceView);
             HashSet<int> technicalLineElementIds = CollectTechnicalLineElementIds(uiDocument, sourceView);
-            return Export(
-                uiDocument,
-                sourceView,
-                elements,
-                ResolveLineStyleName,
-                outputFolder,
-                technicalLineElementIds,
-                true);
+
+            // На время формирования PNG включаем режим "Тонкие линии".
+            TrySetThinLinesEnabled(true);
+
+            if (uiDocument != null && uiDocument.Document != null && sourceView != null)
+            {
+                SetViewScale(uiDocument.Document, sourceView, PreviewViewScale);
+            }
+
+            try
+            {
+                return Export(
+                    uiDocument,
+                    sourceView,
+                    elements,
+                    ResolveLineStyleName,
+                    outputFolder,
+                    technicalLineElementIds,
+                    true);
+            }
+            finally
+            {
+                if (uiDocument != null && uiDocument.Document != null && sourceView != null)
+                {
+                    SetViewScale(uiDocument.Document, sourceView, FinalViewScaleAfterExport);
+                }
+
+                // После завершения команды режим "Тонкие линии" отключаем.
+                TrySetThinLinesEnabled(false);
+            }
         }
 
         public DraftingImageExportResult ExportFillPatterns(UIDocument uiDocument, ViewDrafting sourceView, string outputFolder)
@@ -159,7 +183,7 @@ namespace RevitLibraryBuilder.Services.Views
 
                     // Блок шагов экспорта для линий:
                     // 1) изоляция целевой линии
-                    // 2) длина = 300 мм
+                    // 2) длина = 100 мм
                     // 3) сброс выделения
                     // 4) выбор линии + ZoomToFit
                     // 5) сброс выделения
@@ -437,6 +461,33 @@ namespace RevitLibraryBuilder.Services.Views
             XYZ newEnd = middlePoint + halfVector;
 
             curve.GeometryCurve = Line.CreateBound(newStart, newEnd);
+        }
+
+        private static void SetViewScale(Document document, ViewDrafting view, int scale)
+        {
+            if (document == null || view == null || !view.IsValidObject || scale <= 0)
+            {
+                return;
+            }
+
+            using (Transaction transaction = new Transaction(document, "Set drafting view scale"))
+            {
+                transaction.Start();
+                view.Scale = scale;
+                transaction.Commit();
+            }
+        }
+
+        private static void TrySetThinLinesEnabled(bool enabled)
+        {
+            try
+            {
+                ThinLinesOptions.AreThinLinesEnabled = enabled;
+            }
+            catch
+            {
+                // Если API не позволяет изменить режим, экспорт продолжается без блокировки.
+            }
         }
 
         private static void ResolveCoordinates(Element element, View view, out double x, out double y)
