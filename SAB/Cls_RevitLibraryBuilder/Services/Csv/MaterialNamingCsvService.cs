@@ -106,8 +106,7 @@ namespace RevitLibraryBuilder.Services.Csv
                 "Модель",
                 "Ключевая заметка",
                 "Маркировка",
-                "DeleteMaterial",
-                "Удалить"
+                "DeleteMaterial"
             };
 
             List<List<string>> dataRows = new List<List<string>>();
@@ -126,8 +125,7 @@ namespace RevitLibraryBuilder.Services.Csv
                     row.Model,
                     row.Keynote,
                     row.Marking,
-                    row.DeleteMaterial ? "TRUE" : "FALSE",
-                    row.DeleteMaterial ? "Да" : "Нет"
+                    row.DeleteMaterial ? "TRUE" : "FALSE"
                 });
             }
 

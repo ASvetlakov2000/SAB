@@ -50,7 +50,7 @@ namespace RevitLibraryBuilder.Services.Csv
             int familyNewIndex = table.FindHeaderIndex("Family_New");
             int typeOldIndex = table.FindHeaderIndex("TypeName_Old");
             int typeNewIndex = table.FindHeaderIndex("TypeName_New");
-            int deleteIndex = FindAnyHeaderIndex(table, "Удалить", "Delete");
+            int deleteIndex = FindAnyHeaderIndex(table, "Удалить", "Delete", "Удалитьф");
 
             List<TypeNamingCsvModel> result = new List<TypeNamingCsvModel>();
 
@@ -193,14 +193,15 @@ namespace RevitLibraryBuilder.Services.Csv
                 "Family_Old",
                 "Family_New",
                 "TypeName_Old",
-                "TypeName_New",
-                "Удалить"
+                "TypeName_New"
             };
 
             if (includeStructureColumn)
             {
                 headers.Add("Structure");
             }
+
+            headers.Add("Удалить");
 
             List<List<string>> rows = new List<List<string>>();
 
