@@ -11,6 +11,20 @@ namespace RevitLibraryBuilder.Services.Views
     /// </summary>
     public class DraftingElementImageExportService
     {
+        // Блок параметров длины линий для предпросмотра PNG.
+        private const double PreviewLineLengthMillimeters = 300.0;
+        private const double RestoreLineLengthMillimeters = 1000.0;
+
+        private static readonly HashSet<string> TechnicalLineStyleNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Эскиз",
+            "Вне пределов",
+            "<Sketch>",
+            "<Beyond>",
+            "Sketch",
+            "Beyond"
+        };
+
         private static readonly HashSet<string> ReservedWindowsFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "CON", "PRN", "AUX", "NUL",
@@ -21,13 +35,31 @@ namespace RevitLibraryBuilder.Services.Views
         public DraftingImageExportResult ExportLineStyles(UIDocument uiDocument, ViewDrafting sourceView, string outputFolder)
         {
             List<Element> elements = CollectLineElements(uiDocument, sourceView);
+            HashSet<int> technicalLineElementIds = CollectTechnicalLineElementIds(uiDocument, sourceView);
+            List<DetailCurve> editableCurves = CollectEditableLineCurves(elements);
 
-            return Export(
-                uiDocument,
-                sourceView,
-                elements,
-                ResolveLineStyleName,
-                outputFolder);
+            if (uiDocument != null && uiDocument.Document != null && editableCurves.Count > 0)
+            {
+                ApplyLineLength(uiDocument.Document, editableCurves, PreviewLineLengthMillimeters);
+            }
+
+            try
+            {
+                return Export(
+                    uiDocument,
+                    sourceView,
+                    elements,
+                    ResolveLineStyleName,
+                    outputFolder,
+                    technicalLineElementIds);
+            }
+            finally
+            {
+                if (uiDocument != null && uiDocument.Document != null && editableCurves.Count > 0)
+                {
+                    ApplyLineLength(uiDocument.Document, editableCurves, RestoreLineLengthMillimeters);
+                }
+            }
         }
 
         public DraftingImageExportResult ExportFillPatterns(UIDocument uiDocument, ViewDrafting sourceView, string outputFolder)
@@ -39,7 +71,8 @@ namespace RevitLibraryBuilder.Services.Views
                 sourceView,
                 elements,
                 ResolveFillPatternName,
-                outputFolder);
+                outputFolder,
+                null);
         }
 
         private DraftingImageExportResult Export(
@@ -47,7 +80,8 @@ namespace RevitLibraryBuilder.Services.Views
             ViewDrafting sourceView,
             List<Element> elements,
             Func<Element, string> nameResolver,
-            string outputFolder)
+            string outputFolder,
+            HashSet<int> hiddenTechnicalElementIds)
         {
             DraftingImageExportResult result = new DraftingImageExportResult();
 
@@ -124,6 +158,8 @@ namespace RevitLibraryBuilder.Services.Views
                     {
                         isolateTransaction.Start();
                         sourceView.IsolateElementsTemporary(new List<ElementId> { element.Id });
+
+                        HideTechnicalElementsInTemporaryMode(sourceView, element.Id.IntegerValue, hiddenTechnicalElementIds);
                         isolateTransaction.Commit();
                     }
 
@@ -196,6 +232,13 @@ namespace RevitLibraryBuilder.Services.Views
                     continue;
                 }
 
+                string styleName = ResolveLineStyleName(curve);
+
+                if (IsTechnicalLineStyle(styleName))
+                {
+                    continue;
+                }
+
                 double x;
                 double y;
                 ResolveCoordinates(curve, sourceView, out x, out y);
@@ -209,6 +252,36 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return ConvertSortItemsToElements(sortItems);
+        }
+
+        private static HashSet<int> CollectTechnicalLineElementIds(UIDocument uiDocument, ViewDrafting sourceView)
+        {
+            HashSet<int> ids = new HashSet<int>();
+            Document document = uiDocument.Document;
+
+            FilteredElementCollector collector = new FilteredElementCollector(document, sourceView.Id)
+                .OfClass(typeof(CurveElement));
+
+            foreach (Element element in collector)
+            {
+                DetailCurve curve = element as DetailCurve;
+
+                if (curve == null || curve.OwnerViewId != sourceView.Id)
+                {
+                    continue;
+                }
+
+                string styleName = ResolveLineStyleName(curve);
+
+                if (!IsTechnicalLineStyle(styleName))
+                {
+                    continue;
+                }
+
+                ids.Add(curve.Id.IntegerValue);
+            }
+
+            return ids;
         }
 
         private static List<Element> CollectFillElements(UIDocument uiDocument, ViewDrafting sourceView)
@@ -279,6 +352,91 @@ namespace RevitLibraryBuilder.Services.Views
             return result;
         }
 
+        private static List<DetailCurve> CollectEditableLineCurves(List<Element> elements)
+        {
+            List<DetailCurve> curves = new List<DetailCurve>();
+
+            if (elements == null)
+            {
+                return curves;
+            }
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                DetailCurve curve = elements[i] as DetailCurve;
+
+                if (curve == null || !curve.IsValidObject)
+                {
+                    continue;
+                }
+
+                curves.Add(curve);
+            }
+
+            return curves;
+        }
+
+        private static void ApplyLineLength(Document document, List<DetailCurve> curves, double targetLengthMillimeters)
+        {
+            if (document == null || curves == null || curves.Count == 0)
+            {
+                return;
+            }
+
+            double targetLength = UnitUtils.ConvertToInternalUnits(targetLengthMillimeters, UnitTypeId.Millimeters);
+
+            using (Transaction transaction = new Transaction(document, "Set preview line length"))
+            {
+                transaction.Start();
+
+                for (int i = 0; i < curves.Count; i++)
+                {
+                    DetailCurve curve = curves[i];
+
+                    if (curve == null || !curve.IsValidObject)
+                    {
+                        continue;
+                    }
+
+                    TrySetDetailCurveLength(curve, targetLength);
+                }
+
+                transaction.Commit();
+            }
+        }
+
+        private static void TrySetDetailCurveLength(DetailCurve curve, double targetLengthInternalUnits)
+        {
+            if (curve == null || !curve.IsValidObject || targetLengthInternalUnits <= 0)
+            {
+                return;
+            }
+
+            Line line = curve.GeometryCurve as Line;
+
+            if (line == null)
+            {
+                return;
+            }
+
+            XYZ start = line.GetEndPoint(0);
+            XYZ end = line.GetEndPoint(1);
+            XYZ direction = end - start;
+
+            if (direction == null || direction.GetLength() < 1e-9)
+            {
+                return;
+            }
+
+            XYZ normalizedDirection = direction.Normalize();
+            XYZ middlePoint = (start + end) * 0.5;
+            XYZ halfVector = normalizedDirection * (targetLengthInternalUnits / 2.0);
+            XYZ newStart = middlePoint - halfVector;
+            XYZ newEnd = middlePoint + halfVector;
+
+            curve.GeometryCurve = Line.CreateBound(newStart, newEnd);
+        }
+
         private static void ResolveCoordinates(Element element, View view, out double x, out double y)
         {
             x = 0;
@@ -319,6 +477,46 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return curve.LineStyle != null ? (curve.LineStyle.Name ?? string.Empty) : string.Empty;
+        }
+
+        private static bool IsTechnicalLineStyle(string styleName)
+        {
+            if (string.IsNullOrWhiteSpace(styleName))
+            {
+                return false;
+            }
+
+            return TechnicalLineStyleNames.Contains(styleName.Trim());
+        }
+
+        private static void HideTechnicalElementsInTemporaryMode(
+            View view,
+            int activeElementId,
+            HashSet<int> hiddenTechnicalElementIds)
+        {
+            if (view == null || hiddenTechnicalElementIds == null || hiddenTechnicalElementIds.Count == 0)
+            {
+                return;
+            }
+
+            List<ElementId> idsToHide = new List<ElementId>();
+
+            foreach (int elementId in hiddenTechnicalElementIds)
+            {
+                if (elementId == activeElementId)
+                {
+                    continue;
+                }
+
+                idsToHide.Add(new ElementId(elementId));
+            }
+
+            if (idsToHide.Count == 0)
+            {
+                return;
+            }
+
+            view.HideElementsTemporary(idsToHide);
         }
 
         private static string ResolveFillPatternName(Element element)

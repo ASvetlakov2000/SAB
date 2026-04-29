@@ -78,6 +78,7 @@ namespace RevitLibraryBuilder.Services.Csv
             };
 
             List<string> exportedFiles = new List<string>();
+            List<List<string>> allRows = new List<List<string>>();
             List<int> categoryIds = new List<int>(groupedByCategory.Keys);
             categoryIds.Sort(delegate (int left, int right)
             {
@@ -109,7 +110,7 @@ namespace RevitLibraryBuilder.Services.Csv
                     string familyName = GetFamilyName(type);
                     string typeName = type.Name ?? string.Empty;
 
-                    rows.Add(new List<string>
+                    List<string> row = new List<string>
                     {
                         categoryName,
                         familyName,
@@ -118,13 +119,24 @@ namespace RevitLibraryBuilder.Services.Csv
                         _layerStructureService.GetLayerStructureText(type, document),
                         "TRUE",
                         _thicknessService.GetTotalThicknessMm(type)
-                    });
+                    };
+
+                    rows.Add(row);
+                    allRows.Add(new List<string>(row));
                 }
 
                 string fileName = BuildFileName(FilePrefix + "_" + categoryName) + ".csv";
                 string filePath = Path.Combine(outputFolder, fileName);
                 _csvTableService.Write(filePath, header, rows);
                 exportedFiles.Add(filePath);
+            }
+
+            if (allRows.Count > 0)
+            {
+                string allFileName = BuildFileName(FilePrefix + "_Все категории") + ".csv";
+                string allFilePath = Path.Combine(outputFolder, allFileName);
+                _csvTableService.Write(allFilePath, header, allRows);
+                exportedFiles.Add(allFilePath);
             }
 
             ExportFolderRoutingService.ConfigureThumbnailFoldersForSystemFamiliesExport(outputFolder);
