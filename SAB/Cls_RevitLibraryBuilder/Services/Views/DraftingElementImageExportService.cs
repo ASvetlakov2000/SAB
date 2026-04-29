@@ -12,7 +12,7 @@ namespace RevitLibraryBuilder.Services.Views
     public class DraftingElementImageExportService
     {
         // Блок параметров длины линий для предпросмотра PNG.
-        private const double PreviewLineLengthMillimeters = 2500.0;
+        private const double PreviewLineLengthMillimeters = 300.0;
         private const double RestoreLineLengthMillimeters = 1000.0;
 
         private static readonly HashSet<string> TechnicalLineStyleNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -159,10 +159,14 @@ namespace RevitLibraryBuilder.Services.Views
 
                     // Блок шагов экспорта для линий:
                     // 1) изоляция целевой линии
-                    // 2) длина линии = 2500 мм
-                    // 3) выбор линии + ZoomToFit
-                    // 4) повторный ZoomToFit
-                    // 5) экспорт изображения
+                    // 2) длина = 300 мм
+                    // 3) сброс выделения
+                    // 4) выбор линии + ZoomToFit
+                    // 5) сброс выделения
+                    // 6) выбор линии + ZoomToFit
+                    // 7) сброс выделения
+                    // 8) повторный ZoomToFit
+                    // 9) экспорт изображения
                     if (useLinePipeline)
                     {
                         DetailCurve detailCurve = element as DetailCurve;
@@ -172,6 +176,8 @@ namespace RevitLibraryBuilder.Services.Views
                             SetSingleDetailCurveLength(document, detailCurve, PreviewLineLengthMillimeters);
                             lineLengthChanged = true;
                         }
+
+                        ClearSelection(uiDocument);
                     }
 
                     uiDocument.RefreshActiveView();
@@ -180,10 +186,17 @@ namespace RevitLibraryBuilder.Services.Views
                     {
                         if (useLinePipeline)
                         {
-                            uiDocument.Selection.SetElementIds(new List<ElementId> { element.Id });
+                            SelectSingleElement(uiDocument, element.Id);
+                            uiView.ZoomToFit();
+
+                            ClearSelection(uiDocument);
+
+                            SelectSingleElement(uiDocument, element.Id);
+                            uiView.ZoomToFit();
+
+                            ClearSelection(uiDocument);
                         }
 
-                        uiView.ZoomToFit();
                         uiView.ZoomToFit();
                     }
 
@@ -210,6 +223,11 @@ namespace RevitLibraryBuilder.Services.Views
                 }
                 finally
                 {
+                    if (useLinePipeline)
+                    {
+                        ClearSelection(uiDocument);
+                    }
+
                     if (useLinePipeline && lineLengthChanged)
                     {
                         DetailCurve detailCurve = element as DetailCurve;
@@ -530,6 +548,26 @@ namespace RevitLibraryBuilder.Services.Views
             }
 
             return null;
+        }
+
+        private static void SelectSingleElement(UIDocument uiDocument, ElementId elementId)
+        {
+            if (uiDocument == null || elementId == null || elementId == ElementId.InvalidElementId)
+            {
+                return;
+            }
+
+            uiDocument.Selection.SetElementIds(new List<ElementId> { elementId });
+        }
+
+        private static void ClearSelection(UIDocument uiDocument)
+        {
+            if (uiDocument == null)
+            {
+                return;
+            }
+
+            uiDocument.Selection.SetElementIds(new List<ElementId>());
         }
 
         private static void ExportCurrentViewAsPng(Document document, string filePathWithoutExtension)
