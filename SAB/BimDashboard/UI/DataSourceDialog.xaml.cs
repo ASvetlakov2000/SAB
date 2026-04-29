@@ -260,18 +260,6 @@ namespace SAB.BimDashboard.UI
                 return;
             }
 
-            if (!File.Exists(filePath))
-            {
-                MessageBox.Show("Файл не найден: " + filePath, "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (!string.Equals(Path.GetExtension(filePath), ".csv", StringComparison.OrdinalIgnoreCase))
-            {
-                MessageBox.Show("Поддерживается только формат .csv", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
             DashboardProfileType detectedProfile;
 
             if (!TryDetectProfileByFileName(filePath, out detectedProfile))

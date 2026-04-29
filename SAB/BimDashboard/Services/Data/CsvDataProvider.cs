@@ -43,21 +43,14 @@ namespace SAB.BimDashboard.Services.Data
                 throw new ArgumentException("Путь к CSV файлу не задан.");
             }
 
-            if (!_tableReader.CanRead(context.FilePath))
-            {
-                throw new InvalidOperationException("Выбран неподдерживаемый CSV файл.");
-            }
-
             DashboardProfileType detectedProfile = DetectProfileByFileName(context.FilePath);
             TabularDataSet dataSet = _tableReader.Read(context.FilePath);
 
             List<string> warnings = new List<string>();
             List<UnifiedRecord> records = _tabularRecordMapper.Map(dataSet, warnings);
 
-            if (records.Count == 0)
-            {
-                throw new InvalidOperationException("CSV прочитан, но данные для dashboard не найдены.");
-            }
+            // Не блокируем открытие dashboard по содержимому CSV.
+            // По требованиям валидация выполняется только по имени файла.
 
             string sourceFileName = Path.GetFileName(context.FilePath);
             ResolveThumbnailPaths(records, context.FilePath);
