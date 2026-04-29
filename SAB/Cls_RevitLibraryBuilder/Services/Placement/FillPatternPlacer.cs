@@ -225,14 +225,10 @@ namespace RevitLibraryBuilder.Services.Placement
                 return existingType;
             }
 
-            FillPatternTarget target = IsDraftingTarget(record.Target)
-                ? FillPatternTarget.Drafting
-                : FillPatternTarget.Model;
-
             FillPatternElement foregroundPattern = GetOrCreateFillPatternElement(
                 document,
                 record.ForegroundPattern,
-                target);
+                FillPatternTarget.Drafting);
 
             FillPatternElement backgroundPattern = null;
 
@@ -241,7 +237,7 @@ namespace RevitLibraryBuilder.Services.Placement
                 backgroundPattern = GetOrCreateFillPatternElement(
                     document,
                     record.BackgroundPattern,
-                    target);
+                    FillPatternTarget.Drafting);
             }
 
             if (foregroundPattern == null)
@@ -273,6 +269,10 @@ namespace RevitLibraryBuilder.Services.Placement
             if (backgroundPattern != null)
             {
                 newType.BackgroundPatternId = backgroundPattern.Id;
+            }
+            else
+            {
+                newType.BackgroundPatternId = ElementId.InvalidElementId;
             }
 
             try
@@ -651,11 +651,6 @@ namespace RevitLibraryBuilder.Services.Placement
             }
 
             return value;
-        }
-
-        private static bool IsDraftingTarget(string target)
-        {
-            return !string.Equals(target, "Model", StringComparison.OrdinalIgnoreCase);
         }
 
         private static double ConvertMillimetersToInternalUnits(double valueInMillimeters)

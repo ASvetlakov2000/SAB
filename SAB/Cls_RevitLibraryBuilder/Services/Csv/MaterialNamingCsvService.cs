@@ -40,6 +40,7 @@ namespace RevitLibraryBuilder.Services.Csv
             int descriptionOldIndex = table.FindHeaderIndex("Description_Old");
             int descriptionNewIndex = table.FindHeaderIndex("Description_New");
             int deleteIndex = table.FindHeaderIndex("DeleteMaterial");
+            int deleteRussianIndex = FindAnyHeaderIndex(table, "Удалить", "Delete");
 
             // Блок сопоставления новых пользовательских столбцов
             int manufacturerIndex = FindAnyHeaderIndex(table, "Изготовитель", "Manufacturer");
@@ -65,7 +66,7 @@ namespace RevitLibraryBuilder.Services.Csv
                     Model = row.GetValue(modelIndex),
                     Keynote = row.GetValue(keynoteIndex),
                     Marking = row.GetValue(markingIndex),
-                    DeleteMaterial = ParseBoolean(row.GetValue(deleteIndex))
+                    DeleteMaterial = ParseBoolean(row.GetValue(deleteIndex)) || ParseBoolean(row.GetValue(deleteRussianIndex))
                 };
 
                 if (string.IsNullOrWhiteSpace(model.MaterialNameOld))
@@ -105,7 +106,8 @@ namespace RevitLibraryBuilder.Services.Csv
                 "Модель",
                 "Ключевая заметка",
                 "Маркировка",
-                "DeleteMaterial"
+                "DeleteMaterial",
+                "Удалить"
             };
 
             List<List<string>> dataRows = new List<List<string>>();
@@ -124,7 +126,8 @@ namespace RevitLibraryBuilder.Services.Csv
                     row.Model,
                     row.Keynote,
                     row.Marking,
-                    row.DeleteMaterial ? "TRUE" : "FALSE"
+                    row.DeleteMaterial ? "TRUE" : "FALSE",
+                    row.DeleteMaterial ? "Да" : "Нет"
                 });
             }
 

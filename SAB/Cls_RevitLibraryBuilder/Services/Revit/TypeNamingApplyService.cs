@@ -43,7 +43,7 @@ namespace RevitLibraryBuilder.Services.Revit
                 bool hasTypeChange = !string.IsNullOrWhiteSpace(row.TypeNameNew) &&
                                      !string.Equals((row.TypeNameOld ?? string.Empty).Trim(), row.TypeNameNew.Trim(), StringComparison.Ordinal);
 
-                if (!hasFamilyChange && !hasTypeChange)
+                if (!row.DeleteType && !hasFamilyChange && !hasTypeChange)
                 {
                     continue;
                 }
@@ -76,6 +76,19 @@ namespace RevitLibraryBuilder.Services.Revit
 
                 try
                 {
+                    if (row.DeleteType)
+                    {
+                        using (Transaction deleteTransaction = new Transaction(document, "Delete type by naming row " + row.RowIndex))
+                        {
+                            deleteTransaction.Start();
+                            document.Delete(mappedId);
+                            deleteTransaction.Commit();
+                        }
+
+                        result.DeletedTypesCount++;
+                        continue;
+                    }
+
                     bool familyRenamed = false;
                     bool typeRenamed = false;
 
@@ -219,6 +232,11 @@ namespace RevitLibraryBuilder.Services.Revit
 
         private static string BuildNewLabel(TypeNamingCsvModel row)
         {
+            if (row.DeleteType)
+            {
+                return "DELETE";
+            }
+
             return (row.Category ?? string.Empty) + " | " +
                    (row.FamilyNew ?? string.Empty) + " | " +
                    (row.TypeNameNew ?? string.Empty);
@@ -235,6 +253,8 @@ namespace RevitLibraryBuilder.Services.Revit
         public int RenamedFamiliesCount { get; set; }
 
         public int RenamedTypesCount { get; set; }
+
+        public int DeletedTypesCount { get; set; }
 
         public List<NamingErrorCsvModel> Errors { get; private set; }
     }

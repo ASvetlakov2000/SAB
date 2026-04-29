@@ -79,6 +79,7 @@ namespace RevitLibraryBuilder.Services.Csv
 
             List<string> exportedFiles = new List<string>();
             List<List<string>> allRows = new List<List<string>>();
+            string modelPrefix = BuildFileName(document.Title);
             List<int> categoryIds = new List<int>(groupedByCategory.Keys);
             categoryIds.Sort(delegate (int left, int right)
             {
@@ -125,7 +126,7 @@ namespace RevitLibraryBuilder.Services.Csv
                     allRows.Add(new List<string>(row));
                 }
 
-                string fileName = BuildFileName(FilePrefix + "_" + categoryName) + ".csv";
+                string fileName = BuildFileName(modelPrefix + "_" + FilePrefix + "_" + categoryName) + ".csv";
                 string filePath = Path.Combine(outputFolder, fileName);
                 _csvTableService.Write(filePath, header, rows);
                 exportedFiles.Add(filePath);
@@ -133,7 +134,7 @@ namespace RevitLibraryBuilder.Services.Csv
 
             if (allRows.Count > 0)
             {
-                string allFileName = BuildFileName(FilePrefix + "_Все категории") + ".csv";
+                string allFileName = BuildFileName(modelPrefix + "_" + FilePrefix + "_Все категории") + ".csv";
                 string allFilePath = Path.Combine(outputFolder, allFileName);
                 _csvTableService.Write(allFilePath, header, allRows);
                 exportedFiles.Add(allFilePath);

@@ -16,5 +16,7 @@
         public string TypeNameOld { get; set; }
 
         public string TypeNameNew { get; set; }
+
+        public bool DeleteType { get; set; }
     }
 }

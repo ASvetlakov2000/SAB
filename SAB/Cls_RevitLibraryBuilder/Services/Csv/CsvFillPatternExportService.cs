@@ -67,7 +67,8 @@ namespace RevitLibraryBuilder.Services.Csv
         public string ExportLineStylesCsv(Document document, string selectedFolderPath)
         {
             string folderPath = ExportFolderRoutingService.ResolveLineFillExportFolder(selectedFolderPath);
-            string filePath = Path.Combine(folderPath, "Линии.csv");
+            string modelPrefix = BuildSafeFileNamePart(document != null ? document.Title : string.Empty);
+            string filePath = Path.Combine(folderPath, modelPrefix + "_Линии.csv");
             List<List<string>> rows = BuildLineStyleRows(document);
 
             List<string> header = new List<string>
@@ -87,7 +88,8 @@ namespace RevitLibraryBuilder.Services.Csv
         public string ExportFillPatternsCsv(Document document, string selectedFolderPath)
         {
             string folderPath = ExportFolderRoutingService.ResolveLineFillExportFolder(selectedFolderPath);
-            string filePath = Path.Combine(folderPath, "Штриховки.csv");
+            string modelPrefix = BuildSafeFileNamePart(document != null ? document.Title : string.Empty);
+            string filePath = Path.Combine(folderPath, modelPrefix + "_Штриховки.csv");
 
             List<string> header = new List<string>
             {
@@ -447,6 +449,20 @@ namespace RevitLibraryBuilder.Services.Csv
             }
 
             return "Drafting";
+        }
+
+        private static string BuildSafeFileNamePart(string value)
+        {
+            string safe = string.IsNullOrWhiteSpace(value) ? "Project" : value.Trim();
+
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+
+            for (int i = 0; i < invalidChars.Length; i++)
+            {
+                safe = safe.Replace(invalidChars[i], '_');
+            }
+
+            return safe;
         }
 
         private static void ShowFolderSuccessNotification(string title, string message, string folderPath)

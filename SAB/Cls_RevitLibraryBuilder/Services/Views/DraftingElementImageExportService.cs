@@ -14,7 +14,7 @@ namespace RevitLibraryBuilder.Services.Views
         // Блок параметров длины линий для предпросмотра PNG.
         private const double PreviewLineLengthMillimeters = 100.0;
         private const double RestoreLineLengthMillimeters = 1000.0;
-        private const int PreviewViewScale = 5;
+        private const int PreviewViewScale = 2;
         private const int FinalViewScaleAfterExport = 20;
 
         private static readonly HashSet<string> TechnicalLineStyleNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)

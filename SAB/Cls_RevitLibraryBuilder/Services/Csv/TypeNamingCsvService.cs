@@ -50,6 +50,7 @@ namespace RevitLibraryBuilder.Services.Csv
             int familyNewIndex = table.FindHeaderIndex("Family_New");
             int typeOldIndex = table.FindHeaderIndex("TypeName_Old");
             int typeNewIndex = table.FindHeaderIndex("TypeName_New");
+            int deleteIndex = FindAnyHeaderIndex(table, "Удалить", "Delete");
 
             List<TypeNamingCsvModel> result = new List<TypeNamingCsvModel>();
 
@@ -65,7 +66,8 @@ namespace RevitLibraryBuilder.Services.Csv
                     FamilyOld = row.GetValue(familyOldIndex),
                     FamilyNew = row.GetValue(familyNewIndex),
                     TypeNameOld = row.GetValue(typeOldIndex),
-                    TypeNameNew = row.GetValue(typeNewIndex)
+                    TypeNameNew = row.GetValue(typeNewIndex),
+                    DeleteType = ParseBoolean(row.GetValue(deleteIndex))
                 };
 
                 if (string.IsNullOrWhiteSpace(model.TypeNameOld))
@@ -191,7 +193,8 @@ namespace RevitLibraryBuilder.Services.Csv
                 "Family_Old",
                 "Family_New",
                 "TypeName_Old",
-                "TypeName_New"
+                "TypeName_New",
+                "Удалить"
             };
 
             if (includeStructureColumn)
@@ -223,6 +226,8 @@ namespace RevitLibraryBuilder.Services.Csv
                 {
                     row.Add(groupedRow.StructureText ?? string.Empty);
                 }
+
+                row.Add(groupedRow.NamingModel.DeleteType ? "Да" : "Нет");
 
                 rows.Add(row);
             }
@@ -411,8 +416,45 @@ namespace RevitLibraryBuilder.Services.Csv
                 FamilyOld = family,
                 FamilyNew = family,
                 TypeNameOld = typeName,
-                TypeNameNew = typeName
+                TypeNameNew = typeName,
+                DeleteType = false
             };
+        }
+
+        private static int FindAnyHeaderIndex(CsvTable table, params string[] headerNames)
+        {
+            if (table == null || headerNames == null)
+            {
+                return -1;
+            }
+
+            for (int i = 0; i < headerNames.Length; i++)
+            {
+                int index = table.FindHeaderIndex(headerNames[i]);
+
+                if (index >= 0)
+                {
+                    return index;
+                }
+            }
+
+            return -1;
+        }
+
+        // Блок чтения признака удаления из naming-таблицы
+        private static bool ParseBoolean(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            string normalized = value.Trim().ToUpperInvariant();
+
+            return normalized == "TRUE" ||
+                   normalized == "1" ||
+                   normalized == "YES" ||
+                   normalized == "ДА";
         }
 
         private CsvTable ReadNamingTable(string filePath)

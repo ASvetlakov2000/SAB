@@ -95,6 +95,7 @@ namespace RevitLibraryBuilder.Commands
             string summary =
                 "Переименовано семейств: " + result.RenamedFamiliesCount + "\n" +
                 "Переименовано типоразмеров: " + result.RenamedTypesCount + "\n" +
+                "Удалено типоразмеров: " + result.DeletedTypesCount + "\n" +
                 "Ошибок: " + result.Errors.Count;
 
             if (!string.IsNullOrWhiteSpace(reportPath) && File.Exists(reportPath))
