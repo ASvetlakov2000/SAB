@@ -11,20 +11,32 @@
         visibleColumnIndexes: [],
         filterColumnIndex: -1,
         sortColumnIndex: -1,
-        sortDirection: "asc"
+        sortDirection: "asc",
+        columnWidthsByIndex: {}
     };
 
     var hiddenColumns = {
         recordtype: true,
         sourcetype: true,
-        sourcefile: true
+        sourcefile: true,
+        include: true,
+        "включить": true
     };
 
     var profileColumnOrders = {
-        systemfamilies: ["rownumber", "миниатюра", "категория", "семейство", "типоразмер", "структура", "толщина типа, мм", "включить"],
-        loadablefamilies: ["rownumber", "миниатюра", "категория", "семейство", "типоразмер", "включить"],
-        lines: ["rownumber", "наименование", "миниатюра", "категория", "вес линии", "цвет", "образец"],
-        fillpatterns: ["rownumber", "наименование", "миниатюра", "штриховка переднего плана", "штриховка заднего плана", "маскирование", "тип штриховки"]
+        systemfamilies: ["rownumber", "миниатюра", "категория", "семейство", "типоразмер", "структура", "толщина типа, мм"],
+        loadablefamilies: ["rownumber", "миниатюра", "категория", "семейство", "типоразмер"],
+        lines: ["rownumber", "наименование", "миниатюра", "цвет", "категория", "вес линии", "образец"],
+        fillpatterns: ["rownumber", "наименование", "миниатюра", "тип штриховки"]
+    };
+
+    var fillPatternsHiddenColumns = {
+        "штриховка переднего плана": true,
+        foregroundpattern: true,
+        "штриховка заднего плана": true,
+        backgroundpattern: true,
+        маскирование: true,
+        ismasking: true
     };
 
     var columnLabelMap = {
@@ -37,7 +49,11 @@
         thumbnail: "Миниатюра",
         iconpath: "Миниатюра",
         totalthicknessmm: "Толщина типа, мм",
-        name: "Наименование"
+        name: "Наименование",
+        "цвет": "Код цвета",
+        color: "Код цвета",
+        codecolor: "Код цвета",
+        colorswatch: "Цвет"
     };
 
     function parseDashboardData() {
@@ -135,6 +151,30 @@
         return [];
     }
 
+    function isCurrentProfile(profileKey) {
+        return normalizeColumnName(state.sourceProfile) === profileKey;
+    }
+
+    function shouldHideColumnForProfile(loweredColumnName) {
+        if (!loweredColumnName) {
+            return false;
+        }
+
+        if (isCurrentProfile("fillpatterns") && fillPatternsHiddenColumns[loweredColumnName]) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function getSyntheticLineColorColumnIndex(sourceColorColumnIndex) {
+        return -100000 - sourceColorColumnIndex;
+    }
+
+    function isLineProfile() {
+        return isCurrentProfile("lines");
+    }
+
     function buildDisplayColumns(columns) {
         var displayColumns = [];
 
@@ -143,6 +183,10 @@
             var lowered = normalizeColumnName(columnName);
 
             if (hiddenColumns[lowered]) {
+                continue;
+            }
+
+            if (shouldHideColumnForProfile(lowered)) {
                 continue;
             }
 
@@ -188,7 +232,55 @@
             }
         }
 
+        if (isLineProfile()) {
+            ordered = injectLineColorPreviewColumn(ordered);
+        }
+
         return ordered;
+    }
+
+    function injectLineColorPreviewColumn(columns) {
+        if (!Array.isArray(columns) || columns.length === 0) {
+            return columns;
+        }
+
+        var colorColumnIndex = -1;
+
+        for (var i = 0; i < columns.length; i++) {
+            var lowered = columns[i].loweredName;
+
+            if (lowered === "цвет" || lowered === "color" || lowered === "код цвета" || lowered === "codecolor") {
+                colorColumnIndex = i;
+                break;
+            }
+        }
+
+        if (colorColumnIndex < 0) {
+            return columns;
+        }
+
+        var colorColumn = columns[colorColumnIndex];
+        var syntheticIndex = getSyntheticLineColorColumnIndex(colorColumn.index);
+        var syntheticColumn = {
+            index: syntheticIndex,
+            name: "ColorSwatch",
+            loweredName: "colorswatch",
+            label: "Цвет",
+            isSyntheticColorPreview: true,
+            sourceColorColumnIndex: colorColumn.index
+        };
+
+        var result = [];
+
+        for (var j = 0; j < columns.length; j++) {
+            if (j === colorColumnIndex) {
+                result.push(syntheticColumn);
+            }
+
+            result.push(columns[j]);
+        }
+
+        return result;
     }
 
     function isColumnVisible(columnIndex) {
@@ -199,6 +291,26 @@
         }
 
         return false;
+    }
+
+    function findDisplayColumnMetaByIndex(columnIndex) {
+        for (var i = 0; i < state.displayColumns.length; i++) {
+            if (state.displayColumns[i].index === columnIndex) {
+                return state.displayColumns[i];
+            }
+        }
+
+        return null;
+    }
+
+    function getRowCellValueByColumnIndex(row, columnIndex) {
+        var columnMeta = findDisplayColumnMetaByIndex(columnIndex);
+
+        if (columnMeta && columnMeta.isSyntheticColorPreview) {
+            return row[columnMeta.sourceColorColumnIndex] || "";
+        }
+
+        return row[columnIndex] || "";
     }
 
     function getVisibleDisplayColumns() {
@@ -281,6 +393,69 @@
         });
 
         wrapper.appendChild(image);
+    }
+
+    function clampColorChannel(value) {
+        var number = Number(value);
+
+        if (isNaN(number)) {
+            return 0;
+        }
+
+        if (number < 0) {
+            return 0;
+        }
+
+        if (number > 255) {
+            return 255;
+        }
+
+        return Math.round(number);
+    }
+
+    function tryParseRgb(rawValue) {
+        var value = String(rawValue || "").trim();
+
+        if (!value) {
+            return null;
+        }
+
+        var parts = value.match(/\d+/g);
+
+        if (!parts || parts.length < 3) {
+            return null;
+        }
+
+        return {
+            r: clampColorChannel(parts[0]),
+            g: clampColorChannel(parts[1]),
+            b: clampColorChannel(parts[2])
+        };
+    }
+
+    function renderLineColorPreviewCell(cell, rawValue) {
+        cell.className = "line-color-preview-td";
+
+        var wrapper = document.createElement("div");
+        wrapper.className = "line-color-cell";
+        cell.appendChild(wrapper);
+
+        var swatch = document.createElement("span");
+        swatch.className = "line-color-swatch";
+        wrapper.appendChild(swatch);
+
+        var parsed = tryParseRgb(rawValue);
+
+        if (parsed) {
+            swatch.style.backgroundColor = "rgb(" + parsed.r + ", " + parsed.g + ", " + parsed.b + ")";
+            swatch.title = parsed.r + ", " + parsed.g + ", " + parsed.b;
+            return;
+        }
+
+        var text = document.createElement("span");
+        text.className = "line-color-text";
+        text.textContent = "—";
+        wrapper.appendChild(text);
     }
 
     function buildColumnVisibilityMenu() {
@@ -403,15 +578,15 @@
         var visibleColumns = getVisibleDisplayColumns();
 
         if (search) {
-            var foundInSearch = false;
+                var foundInSearch = false;
 
-            for (var i = 0; i < visibleColumns.length; i++) {
-                var searchCell = toLowerSafe(row[visibleColumns[i].index]);
+                for (var i = 0; i < visibleColumns.length; i++) {
+                    var searchCell = toLowerSafe(getRowCellValueByColumnIndex(row, visibleColumns[i].index));
 
-                if (searchCell.indexOf(search) >= 0) {
-                    foundInSearch = true;
-                    break;
-                }
+                    if (searchCell.indexOf(search) >= 0) {
+                        foundInSearch = true;
+                        break;
+                    }
             }
 
             if (!foundInSearch) {
@@ -424,7 +599,7 @@
                 var foundInFilter = false;
 
                 for (var j = 0; j < visibleColumns.length; j++) {
-                    var filterCell = toLowerSafe(row[visibleColumns[j].index]);
+                    var filterCell = toLowerSafe(getRowCellValueByColumnIndex(row, visibleColumns[j].index));
 
                     if (filterCell.indexOf(filter) >= 0) {
                         foundInFilter = true;
@@ -436,7 +611,7 @@
                     return false;
                 }
             } else {
-                var targetCell = toLowerSafe(row[state.filterColumnIndex]);
+                var targetCell = toLowerSafe(getRowCellValueByColumnIndex(row, state.filterColumnIndex));
 
                 if (targetCell.indexOf(filter) < 0) {
                     return false;
@@ -454,8 +629,8 @@
             return 0;
         }
 
-        var left = leftRow[index] || "";
-        var right = rightRow[index] || "";
+        var left = getRowCellValueByColumnIndex(leftRow, index);
+        var right = getRowCellValueByColumnIndex(rightRow, index);
 
         var leftNumber = tryParseNumber(left);
         var rightNumber = tryParseNumber(right);
@@ -504,6 +679,51 @@
         resultInfo.textContent = "Показано строк: " + state.filteredRows.length + " из " + state.rows.length;
     }
 
+    function getMinimumColumnWidth(columnMeta) {
+        if (columnMeta && isThumbnailColumn(columnMeta)) {
+            return 120;
+        }
+
+        if (columnMeta && columnMeta.isSyntheticColorPreview) {
+            return 80;
+        }
+
+        return 70;
+    }
+
+    function startColumnResize(mouseDownEvent, columnMeta, colElement) {
+        mouseDownEvent.preventDefault();
+        mouseDownEvent.stopPropagation();
+
+        if (!colElement || !columnMeta) {
+            return;
+        }
+
+        var startX = mouseDownEvent.clientX;
+        var currentWidth = colElement.getBoundingClientRect().width;
+
+        if (!currentWidth || currentWidth <= 0) {
+            currentWidth = state.columnWidthsByIndex[columnMeta.index] || 120;
+        }
+
+        var minWidth = getMinimumColumnWidth(columnMeta);
+
+        function onMouseMove(moveEvent) {
+            var delta = moveEvent.clientX - startX;
+            var nextWidth = Math.max(minWidth, Math.round(currentWidth + delta));
+            colElement.style.width = nextWidth + "px";
+            state.columnWidthsByIndex[columnMeta.index] = nextWidth;
+        }
+
+        function onMouseUp() {
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+    }
+
     function renderTable() {
         var container = document.getElementById("tableContainer");
 
@@ -523,12 +743,30 @@
         var table = document.createElement("table");
         table.className = "data-table";
 
+        var colgroup = document.createElement("colgroup");
+        var colElements = [];
+
+        for (var cg = 0; cg < visibleColumns.length; cg++) {
+            var colMeta = visibleColumns[cg];
+            var col = document.createElement("col");
+            var storedWidth = state.columnWidthsByIndex[colMeta.index];
+
+            if (storedWidth && storedWidth > 0) {
+                col.style.width = storedWidth + "px";
+            }
+
+            colgroup.appendChild(col);
+            colElements.push(col);
+        }
+
+        table.appendChild(colgroup);
+
         var thead = document.createElement("thead");
         var headRow = document.createElement("tr");
 
         for (var headerIndex = 0; headerIndex < visibleColumns.length; headerIndex++) {
-            (function () {
-                var column = visibleColumns[headerIndex];
+            (function (columnPosition) {
+                var column = visibleColumns[columnPosition];
                 var th = document.createElement("th");
                 th.textContent = column.label;
                 th.className = "sortable";
@@ -548,8 +786,16 @@
                     applyAndRender();
                 });
 
+                var resizer = document.createElement("div");
+                resizer.className = "col-resizer";
+                resizer.addEventListener("mousedown", function (event) {
+                    startColumnResize(event, column, colElements[columnPosition]);
+                });
+
+                th.appendChild(resizer);
+
                 headRow.appendChild(th);
-            })();
+            })(headerIndex);
         }
 
         thead.appendChild(headRow);
@@ -564,11 +810,14 @@
             for (var colIndex = 0; colIndex < visibleColumns.length; colIndex++) {
                 var columnMeta = visibleColumns[colIndex];
                 var td = document.createElement("td");
+                var cellValue = getRowCellValueByColumnIndex(sourceRow, columnMeta.index);
 
-                if (isThumbnailColumn(columnMeta)) {
-                    renderThumbnailCell(td, sourceRow[columnMeta.index] || "");
+                if (columnMeta.isSyntheticColorPreview) {
+                    renderLineColorPreviewCell(td, cellValue);
+                } else if (isThumbnailColumn(columnMeta)) {
+                    renderThumbnailCell(td, cellValue);
                 } else {
-                    td.textContent = sourceRow[columnMeta.index] || "";
+                    td.textContent = cellValue;
                 }
 
                 tr.appendChild(td);
