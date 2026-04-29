@@ -23,6 +23,8 @@ namespace SAB.BimDashboard.Models
 
         public string SourceFormat { get; set; }
 
+        public string SourceProfile { get; set; }
+
         public DateTime GeneratedAt { get; set; }
 
         // Блок списка колонок для табличного просмотра.

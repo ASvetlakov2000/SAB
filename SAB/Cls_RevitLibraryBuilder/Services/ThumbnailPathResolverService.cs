@@ -6,7 +6,7 @@ using System.IO;
 namespace RevitLibraryBuilder.Services
 {
     /// <summary>
-    /// Resolves thumbnail file path for element types and tabular rows.
+    /// Resolves thumbnail file path for element types, line styles and fill patterns.
     /// </summary>
     public static class ThumbnailPathResolverService
     {
@@ -51,7 +51,49 @@ namespace RevitLibraryBuilder.Services
             string systemFolder = ThumbnailFoldersRuntimeStore.GetSystemFamilyImagesFolder();
 
             List<string> folders = BuildFolderSearchOrder(preferLoadable, loadableFolder, systemFolder);
-            List<string> candidateNames = BuildCandidateNames(familyName, typeName);
+            List<string> candidateNames = BuildFamilyTypeCandidateNames(familyName, typeName);
+
+            return ResolveFromFolders(folders, candidateNames);
+        }
+
+        public static string ResolveForLineStyle(string styleName)
+        {
+            if (string.IsNullOrWhiteSpace(styleName))
+            {
+                return string.Empty;
+            }
+
+            ThumbnailFoldersRuntimeStore.ClearInvalidPaths();
+            string lineFolder = ThumbnailFoldersRuntimeStore.GetLineImagesFolder();
+
+            List<string> folders = new List<string> { lineFolder };
+            List<string> candidates = BuildSimpleCandidateNames(styleName);
+
+            return ResolveFromFolders(folders, candidates);
+        }
+
+        public static string ResolveForFillPattern(string patternName)
+        {
+            if (string.IsNullOrWhiteSpace(patternName))
+            {
+                return string.Empty;
+            }
+
+            ThumbnailFoldersRuntimeStore.ClearInvalidPaths();
+            string fillFolder = ThumbnailFoldersRuntimeStore.GetFillImagesFolder();
+
+            List<string> folders = new List<string> { fillFolder };
+            List<string> candidates = BuildSimpleCandidateNames(patternName);
+
+            return ResolveFromFolders(folders, candidates);
+        }
+
+        private static string ResolveFromFolders(List<string> folders, List<string> candidateNames)
+        {
+            if (folders == null || candidateNames == null)
+            {
+                return string.Empty;
+            }
 
             for (int i = 0; i < folders.Count; i++)
             {
@@ -91,8 +133,6 @@ namespace RevitLibraryBuilder.Services
                     continue;
                 }
 
-                // Block responsible for safe path composition:
-                // raw Revit type/family names may contain characters invalid for Windows file paths.
                 string safeName = MakeSafeFileName(name);
 
                 if (string.IsNullOrWhiteSpace(safeName))
@@ -204,7 +244,7 @@ namespace RevitLibraryBuilder.Services
 
             try
             {
-                files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+                files = Directory.GetFiles(folder, "*.png", SearchOption.AllDirectories);
             }
             catch
             {
@@ -214,13 +254,6 @@ namespace RevitLibraryBuilder.Services
             for (int i = 0; i < files.Length; i++)
             {
                 string filePath = files[i];
-                string extension = Path.GetExtension(filePath);
-
-                if (!string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
                 string fileName = Path.GetFileNameWithoutExtension(filePath);
                 string key = NormalizeLookupKey(fileName);
 
@@ -264,7 +297,7 @@ namespace RevitLibraryBuilder.Services
             return folders;
         }
 
-        private static List<string> BuildCandidateNames(string familyName, string typeName)
+        private static List<string> BuildFamilyTypeCandidateNames(string familyName, string typeName)
         {
             List<string> candidates = new List<string>();
 
@@ -300,14 +333,21 @@ namespace RevitLibraryBuilder.Services
             return candidates;
         }
 
+        private static List<string> BuildSimpleCandidateNames(string value)
+        {
+            List<string> candidates = new List<string>();
+            string raw = (value ?? string.Empty).Trim();
+            string safe = MakeSafeFileName(raw);
+
+            AddUnique(candidates, raw);
+            AddUnique(candidates, safe);
+
+            return candidates;
+        }
+
         private static void AddUnique(List<string> values, string value)
         {
-            if (values == null)
-            {
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(value))
+            if (values == null || string.IsNullOrWhiteSpace(value))
             {
                 return;
             }
@@ -358,8 +398,7 @@ namespace RevitLibraryBuilder.Services
                 return string.Empty;
             }
 
-            string value = familyNameParameter.AsString();
-            return string.IsNullOrWhiteSpace(value) ? string.Empty : value;
+            return familyNameParameter.AsString() ?? string.Empty;
         }
 
         private static string MakeSafeFileName(string value)

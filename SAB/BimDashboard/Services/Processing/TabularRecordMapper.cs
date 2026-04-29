@@ -66,8 +66,8 @@ namespace SAB.BimDashboard.Services.Processing
                 }
 
                 // Блок извлечения стандартных полей для summary.
-                record.Category = FindFieldValue(record.Fields, "Category", "Категория");
-                record.Name = FindFieldValue(record.Fields, "Name", "Наименование", "TypeName", "Family", "MaterialName_Old", "Description_Old");
+                record.Category = FindFieldValue(record.Fields, "Категория", "Category");
+                record.Name = FindFieldValue(record.Fields, "Наименование", "Name", "Типоразмер", "TypeName", "Семейство", "Family", "MaterialName_Old", "Description_Old");
                 record.Value = ParseNullableDouble(FindFieldValue(record.Fields, "Value", "Значение"));
                 record.Area = ParseNullableDouble(FindFieldValue(record.Fields, "Area", "Площадь"));
                 record.Length = ParseNullableDouble(FindFieldValue(record.Fields, "Length", "Длина"));

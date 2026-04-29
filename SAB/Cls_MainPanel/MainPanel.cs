@@ -32,27 +32,51 @@ namespace SAB
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
-                "SAB_ExportAllCategories",
-                "Экспорт \nвсех категорий",
-                "RevitLibraryBuilder.Commands.ExportTypesSingleFileCommand",
+                "SAB_ExportSystemFamilies",
+                "Экспорт \nсистемных",
+                "RevitLibraryBuilder.Commands.ExportSystemFamiliesCommand",
                 "SAB.Resources.ExportTypesSingleFileCommand_32.png",
                 "SAB.Resources.ExportTypesSingleFileCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
-                "SAB_ExportByCategories",
-                "Экспорт \nпо категориям",
-                "RevitLibraryBuilder.Commands.ExportTypesByCategoryCommand",
+                "SAB_ExportLoadableFamilies",
+                "Экспорт \nзагружаемых",
+                "RevitLibraryBuilder.Commands.ExportLoadableFamiliesCommand",
                 "SAB.Resources.ExportTypesByCategoryCommand_32.png",
                 "SAB.Resources.ExportTypesByCategoryCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
-                "SAB_ExportLineAndFill",
-                "Экспорт \nлиний/штриховок",
-                "RevitLibraryBuilder.Commands.ExportLineAndFillPatternsCommand",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
+                "SAB_ExportLineStyles",
+                "Экспорт \nлиний",
+                "RevitLibraryBuilder.Commands.ExportLineStylesCommand",
+                "SAB.Resources.PlaceLineStylesCommand_32.png",
+                "SAB.Resources.PlaceLineStylesCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportFillPatterns",
+                "Экспорт \nштриховок",
+                "RevitLibraryBuilder.Commands.ExportFillPatternsCommand",
+                "SAB.Resources.PlaceFillPatternsCommand_32.png",
+                "SAB.Resources.PlaceFillPatternsCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportLineStylesPreviewPng",
+                "Экспорт PNG \nлиний",
+                "RevitLibraryBuilder.Commands.ExportLineStylesPreviewPngCommand",
+                "SAB.Resources.PlaceLineStylesCommand_32.png",
+                "SAB.Resources.PlaceLineStylesCommand_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                exportSplit,
+                "SAB_ExportFillPatternsPreviewPng",
+                "Экспорт PNG \nштриховок",
+                "RevitLibraryBuilder.Commands.ExportFillPatternsPreviewPngCommand",
+                "SAB.Resources.PlaceFillPatternsCommand_32.png",
+                "SAB.Resources.PlaceFillPatternsCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 exportSplit,
@@ -152,8 +176,8 @@ namespace SAB
                 "SAB_PlaceLegendComponentsByCategories",
                 "Расставить \nкомп. легенды",
                 "RevitLibraryBuilder.Commands.PlaceLegendComponentsByCategoriesCommand",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_32.png",
-                "SAB.Resources.ExportLineAndFillPatternsCommand_16.png");
+                "SAB.Resources.PlaceFillPatternsCommand_32.png",
+                "SAB.Resources.PlaceFillPatternsCommand_16.png");
 
             Ribbon.AddPushButtonToSplit(
                 placementSplit,

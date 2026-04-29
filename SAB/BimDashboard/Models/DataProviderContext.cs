@@ -10,5 +10,7 @@ namespace SAB.BimDashboard.Models
         public UIApplication UiApplication { get; set; }
 
         public string FilePath { get; set; }
+
+        public DashboardProfileType SourceProfile { get; set; }
     }
 }

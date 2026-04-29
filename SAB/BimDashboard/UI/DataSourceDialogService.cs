@@ -9,7 +9,7 @@ namespace SAB.BimDashboard.UI
     /// </summary>
     public static class DataSourceDialogService
     {
-        public static bool ShowDialog(out DataSourceType sourceType, out string filePath)
+        public static bool ShowDialog(out DataSourceType sourceType, out DashboardProfileType profileType, out string filePath)
         {
             DataSourceDialog dialog = new DataSourceDialog();
 
@@ -19,6 +19,7 @@ namespace SAB.BimDashboard.UI
             bool? dialogResult = dialog.ShowDialog();
 
             sourceType = dialog.SelectedSourceType;
+            profileType = dialog.SelectedProfileType;
             filePath = dialog.SelectedFilePath;
 
             return dialogResult == true;

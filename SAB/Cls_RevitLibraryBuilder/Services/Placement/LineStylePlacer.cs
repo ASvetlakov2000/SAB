@@ -391,6 +391,7 @@ namespace RevitLibraryBuilder.Services.Placement
             string normalizedValue = value.Trim().ToLowerInvariant();
 
             if (normalizedValue == "name" ||
+                normalizedValue == "наименование" ||
                 normalizedValue == "style" ||
                 normalizedValue == "line style" ||
                 normalizedValue == "linestyle" ||

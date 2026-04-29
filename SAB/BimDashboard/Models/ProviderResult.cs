@@ -15,6 +15,8 @@ namespace SAB.BimDashboard.Models
 
         public string ProjectName { get; set; }
 
+        public string SourceProfile { get; set; }
+
         public List<UnifiedRecord> Records { get; set; }
 
         public List<string> Warnings { get; set; }

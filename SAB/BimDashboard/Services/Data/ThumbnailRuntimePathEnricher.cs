@@ -1,4 +1,4 @@
-using RevitLibraryBuilder.Services;
+﻿using RevitLibraryBuilder.Services;
 using SAB.BimDashboard.Models;
 using System;
 using System.Collections.Generic;
@@ -6,11 +6,11 @@ using System.Collections.Generic;
 namespace SAB.BimDashboard.Services.Data
 {
     /// <summary>
-    /// Fills ThumbnailPath from runtime thumbnail folders when source row has no image path.
+    /// Fills thumbnail path from runtime folders when source row has no image path.
     /// </summary>
     internal static class ThumbnailRuntimePathEnricher
     {
-        public static void Enrich(List<UnifiedRecord> records)
+        public static void Enrich(List<UnifiedRecord> records, DashboardProfileType profile)
         {
             if (records == null || records.Count == 0)
             {
@@ -31,18 +31,7 @@ namespace SAB.BimDashboard.Services.Data
                     continue;
                 }
 
-                string familyName = FindFieldValue(record.Fields, "Family", "Семейство");
-                string typeName = FindFieldValue(record.Fields, "TypeName", "Типоразмер", "Тип");
-
-                if (string.IsNullOrWhiteSpace(typeName))
-                {
-                    continue;
-                }
-
-                string resolvedPath = ThumbnailPathResolverService.ResolveByFamilyAndType(
-                    familyName,
-                    typeName,
-                    null);
+                string resolvedPath = ResolveByProfile(record.Fields, profile);
 
                 if (string.IsNullOrWhiteSpace(resolvedPath))
                 {
@@ -53,11 +42,51 @@ namespace SAB.BimDashboard.Services.Data
             }
         }
 
+        private static string ResolveByProfile(Dictionary<string, string> fields, DashboardProfileType profile)
+        {
+            if (fields == null)
+            {
+                return string.Empty;
+            }
+
+            if (profile == DashboardProfileType.Lines)
+            {
+                string lineName = FindFieldValue(fields, "Наименование", "Name");
+                return ThumbnailPathResolverService.ResolveForLineStyle(lineName);
+            }
+
+            if (profile == DashboardProfileType.FillPatterns)
+            {
+                string fillName = FindFieldValue(fields, "Наименование", "Name");
+                return ThumbnailPathResolverService.ResolveForFillPattern(fillName);
+            }
+
+            string familyName = FindFieldValue(fields, "Семейство", "Family");
+            string typeName = FindFieldValue(fields, "Типоразмер", "TypeName", "Тип");
+
+            if (string.IsNullOrWhiteSpace(typeName))
+            {
+                return string.Empty;
+            }
+
+            bool? preferLoadable = profile == DashboardProfileType.LoadableFamilies
+                ? (bool?)true
+                : profile == DashboardProfileType.SystemFamilies
+                    ? (bool?)false
+                    : null;
+
+            return ThumbnailPathResolverService.ResolveByFamilyAndType(
+                familyName,
+                typeName,
+                preferLoadable);
+        }
+
         private static bool HasAnyThumbnailValue(Dictionary<string, string> fields)
         {
             return HasFieldValue(fields, "ThumbnailPath") ||
                    HasFieldValue(fields, "Thumbnail") ||
-                   HasFieldValue(fields, "IconPath");
+                   HasFieldValue(fields, "IconPath") ||
+                   HasFieldValue(fields, "Миниатюра");
         }
 
         private static bool HasFieldValue(Dictionary<string, string> fields, string fieldName)
@@ -111,7 +140,7 @@ namespace SAB.BimDashboard.Services.Data
 
             foreach (KeyValuePair<string, string> pair in fields)
             {
-                if (string.Equals(pair.Key, "ThumbnailPath", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(pair.Key, "Миниатюра", StringComparison.OrdinalIgnoreCase))
                 {
                     existingKey = pair.Key;
                     break;
@@ -124,7 +153,7 @@ namespace SAB.BimDashboard.Services.Data
                 return;
             }
 
-            fields["ThumbnailPath"] = resolvedPath;
+            fields["Миниатюра"] = resolvedPath;
         }
     }
 }

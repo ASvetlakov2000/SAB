@@ -22,6 +22,7 @@ namespace SAB.BimDashboard.Services.Processing
             dashboardData.ProjectName = string.IsNullOrWhiteSpace(providerResult.ProjectName) ? "Без названия" : providerResult.ProjectName;
             dashboardData.SourceName = dashboardData.ProjectName;
             dashboardData.SourceFormat = ResolveSourceFormat(providerResult.Records);
+            dashboardData.SourceProfile = providerResult.SourceProfile ?? string.Empty;
             dashboardData.GeneratedAt = DateTime.Now;
 
             BuildSummary(providerResult.Records, dashboardData.Summary);
@@ -80,22 +81,15 @@ namespace SAB.BimDashboard.Services.Processing
                 return;
             }
 
-            // Блок приоритетных колонок в начале списка.
             string[] preferredColumns =
             {
-                "RecordType",
-                "SourceType",
-                "SourceFile",
                 "RowNumber",
-                "Category",
-                "Family",
-                "TypeName",
-                "Name",
-                "Include",
-                "Count",
-                "Area",
-                "Length",
-                "Value"
+                "Наименование",
+                "Категория",
+                "Семейство",
+                "Типоразмер",
+                "Миниатюра",
+                "ThumbnailPath"
             };
 
             HashSet<string> seenColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -111,7 +105,6 @@ namespace SAB.BimDashboard.Services.Processing
                 }
             }
 
-            // Блок добавления остальных колонок из источника в порядке появления.
             for (int i = 0; i < records.Count; i++)
             {
                 UnifiedRecord record = records[i];
@@ -138,15 +131,12 @@ namespace SAB.BimDashboard.Services.Processing
                 }
             }
 
-            // Если колонки по каким-то причинам пустые, используем минимальный набор.
             if (columns.Count == 0)
             {
-                columns.Add("Name");
-                columns.Add("Category");
-                columns.Add("Value");
+                columns.Add("Наименование");
+                columns.Add("Категория");
             }
 
-            // Блок преобразования каждой записи в строку таблицы (строго по индексам колонок).
             for (int i = 0; i < records.Count; i++)
             {
                 UnifiedRecord record = records[i];
@@ -207,11 +197,12 @@ namespace SAB.BimDashboard.Services.Processing
                 }
             }
 
-            // Блок fallback для стандартных полей, если их нет в Fields.
             switch (column)
             {
+                case "Категория":
                 case "Category":
                     return record.Category ?? string.Empty;
+                case "Наименование":
                 case "Name":
                     return record.Name ?? string.Empty;
                 case "Count":

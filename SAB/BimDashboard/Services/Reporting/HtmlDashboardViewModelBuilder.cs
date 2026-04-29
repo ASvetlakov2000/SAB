@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SAB.BimDashboard.Models;
 
 namespace SAB.BimDashboard.Services.Reporting
@@ -15,11 +15,11 @@ namespace SAB.BimDashboard.Services.Reporting
                 throw new ArgumentNullException(nameof(dashboardData));
             }
 
-            // Блок отвечает за формирование HTML модели.
             HtmlDashboardViewModel htmlModel = new HtmlDashboardViewModel();
             htmlModel.CatalogName = string.IsNullOrWhiteSpace(dashboardData.CatalogName) ? "RevitLibraryBuilder" : dashboardData.CatalogName;
             htmlModel.SourceName = string.IsNullOrWhiteSpace(dashboardData.SourceName) ? "Не указан" : dashboardData.SourceName;
             htmlModel.SourceFormat = string.IsNullOrWhiteSpace(dashboardData.SourceFormat) ? "Не определен" : dashboardData.SourceFormat;
+            htmlModel.SourceProfile = dashboardData.SourceProfile ?? string.Empty;
             htmlModel.GeneratedAt = dashboardData.GeneratedAt;
             htmlModel.Summary = dashboardData.Summary ?? new SummaryData();
 

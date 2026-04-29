@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SAB.BimDashboard.Models
@@ -20,6 +20,8 @@ namespace SAB.BimDashboard.Models
         public string SourceName { get; set; }
 
         public string SourceFormat { get; set; }
+
+        public string SourceProfile { get; set; }
 
         public DateTime GeneratedAt { get; set; }
 

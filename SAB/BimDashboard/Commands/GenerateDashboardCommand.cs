@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -13,110 +13,72 @@ using SAB.BimDashboard.UI;
 namespace SAB.BimDashboard.Commands
 {
     /// <summary>
-    /// Основная команда MVP: выбор источника, построение HTML dashboard и открытие в браузере.
+    /// Команда построения HTML dashboard на основе профильного CSV.
     /// </summary>
     [Transaction(TransactionMode.ReadOnly)]
     public class GenerateDashboardCommand : IExternalCommand
     {
-        // Блок debug-режима: сейчас отключен.
-        // Чтобы вернуть отладочные окна, установите true и раскомментируйте вызовы ShowDebug ниже.
-        private static readonly bool IsDebugMode = false;
-
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
             {
-                // ShowDebug("Шаг 1", "Запуск GenerateDashboardCommand.");
-
                 if (commandData == null || commandData.Application == null)
                 {
                     message = "Входные данные команды или UIApplication недоступны.";
-                    TaskDialog.Show("БИМ Дашборд", message);
+                    TaskDialog.Show("BIM Dashboard", message);
                     return Result.Failed;
                 }
 
-                // Блок выбора источника данных пользователем.
                 DataSourceType selectedSourceType;
+                DashboardProfileType selectedProfileType;
                 string selectedFilePath;
-                bool isConfirmed = DataSourceDialogService.ShowDialog(out selectedSourceType, out selectedFilePath);
 
-                // ShowDebug("Шаг 2", "Диалог выбора источника закрыт.\n" +
-                //                     "isConfirmed = " + isConfirmed + "\n" +
-                //                     "selectedSourceType = " + selectedSourceType + "\n" +
-                //                     "selectedFilePath = " + (selectedFilePath ?? string.Empty));
+                bool isConfirmed = DataSourceDialogService.ShowDialog(
+                    out selectedSourceType,
+                    out selectedProfileType,
+                    out selectedFilePath);
 
                 if (!isConfirmed)
                 {
                     return Result.Cancelled;
                 }
 
-                // Блок создания фабрики провайдеров и выбора нужной реализации.
                 List<IDataProvider> providers = new List<IDataProvider>
                 {
-                    new RevitDataProvider(),
-                    new CsvDataProvider(),
-                    new ExcelDataProvider()
+                    new CsvDataProvider()
                 };
 
                 DataProviderFactory providerFactory = new DataProviderFactory(providers);
                 IDataProvider provider = providerFactory.Create(selectedSourceType);
 
-                // ShowDebug("Шаг 3", "Выбран провайдер: " + provider.GetType().FullName);
-
                 DataProviderContext context = new DataProviderContext
                 {
                     UiApplication = commandData.Application,
-                    FilePath = selectedFilePath
+                    FilePath = selectedFilePath,
+                    SourceProfile = selectedProfileType
                 };
 
-                // Блок отвечает за загрузку исходных данных для HTML.
                 ProviderResult providerResult = provider.Load(context);
-
-                // ShowDebug("Шаг 4", "Источник загружен.\n" +
-                //                     "ProjectName = " + providerResult.ProjectName + "\n" +
-                //                     "Records.Count = " + (providerResult.Records != null ? providerResult.Records.Count : 0) + "\n" +
-                //                     "Warnings.Count = " + (providerResult.Warnings != null ? providerResult.Warnings.Count : 0));
 
                 if (providerResult == null || providerResult.Records == null || providerResult.Records.Count == 0)
                 {
-                    TaskDialog.Show("БИМ Дашборд", "Источник данных не вернул записей для построения дашборда.");
+                    TaskDialog.Show("BIM Dashboard", "Источник данных не вернул записей для построения dashboard.");
                     return Result.Cancelled;
                 }
 
-                // Блок преобразования данных в единую dashboard-модель.
                 DataMapper dataMapper = new DataMapper();
                 DashboardData dashboardData = dataMapper.Map(providerResult);
 
-                string firstRowPreview = string.Empty;
-                if (dashboardData.Rows != null && dashboardData.Rows.Count > 0 && dashboardData.Rows[0] != null)
-                {
-                    firstRowPreview = string.Join(" | ", dashboardData.Rows[0]);
-                }
-
-                // ShowDebug("Шаг 5", "Модель для HTML сформирована.\n" +
-                //                     "CatalogName = " + (dashboardData.CatalogName ?? string.Empty) + "\n" +
-                //                     "SourceName = " + (dashboardData.SourceName ?? string.Empty) + "\n" +
-                //                     "SourceFormat = " + (dashboardData.SourceFormat ?? string.Empty) + "\n" +
-                //                     "Columns.Count = " + (dashboardData.Columns != null ? dashboardData.Columns.Count : 0) + "\n" +
-                //                     "Rows.Count = " + (dashboardData.Rows != null ? dashboardData.Rows.Count : 0) + "\n" +
-                //                     "FirstRow = " + firstRowPreview);
-
-                // Блок генерации HTML и открытия результата пользователю.
                 HtmlReportBuilder htmlReportBuilder = new HtmlReportBuilder();
                 string htmlPath = htmlReportBuilder.Generate(dashboardData);
-
-                // ShowDebug("Шаг 6", "HTML сгенерирован.\nhtmlPath = " + htmlPath);
 
                 IDashboardViewer viewer = new ExternalBrowserDashboardViewer();
                 viewer.Open(htmlPath);
 
-                // ShowDebug("Шаг 7", "Dashboard открыт во внешнем браузере.");
-
-                // Блок информирования о предупреждениях чтения данных.
                 if (providerResult.Warnings != null && providerResult.Warnings.Count > 0)
                 {
                     string warningText = string.Join("\n", providerResult.Warnings);
-                    TaskDialog.Show("БИМ Дашборд", "Дашборд построен, но есть предупреждения:\n\n" + warningText);
+                    TaskDialog.Show("BIM Dashboard", "Dashboard построен, но есть предупреждения:\n\n" + warningText);
                 }
 
                 return Result.Succeeded;
@@ -124,20 +86,9 @@ namespace SAB.BimDashboard.Commands
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show("БИМ Дашборд", "Ошибка построения дашборда:\n\n" + exception.Message);
-                // ShowDebug("Ошибка", exception.ToString());
+                TaskDialog.Show("BIM Dashboard", "Ошибка построения dashboard:\n\n" + exception.Message);
                 return Result.Failed;
             }
-        }
-
-        private static void ShowDebug(string step, string text)
-        {
-            if (!IsDebugMode)
-            {
-                return;
-            }
-
-            TaskDialog.Show("БИМ Дашборд ОТЛАДКА", step + "\n\n" + text);
         }
     }
 }

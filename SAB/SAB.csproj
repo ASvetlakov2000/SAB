@@ -80,6 +80,7 @@
     <Compile Include="BimDashboard\Commands\GenerateDashboardCommand.cs" />
     <Compile Include="BimDashboard\Models\DashboardData.cs" />
     <Compile Include="BimDashboard\Models\DataProviderContext.cs" />
+    <Compile Include="BimDashboard\Models\DashboardProfileType.cs" />
     <Compile Include="BimDashboard\Models\DataSourceType.cs" />
     <Compile Include="BimDashboard\Models\HtmlDashboardViewModel.cs" />
     <Compile Include="BimDashboard\Models\ProviderResult.cs" />
@@ -151,13 +152,16 @@
     <Compile Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml.cs">
       <DependentUpon>ElevationSettingsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLineAndFillPatternsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLoadableFamilyThumbnailsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportMaterialNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemFamilyThumbnailTemplateCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypeNamingCommand.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesByCategoryCommand.cs" />
-    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportTypesSingleFileCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportSystemFamiliesCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLoadableFamiliesCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLineStylesCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportFillPatternsCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLineStylesPreviewPngCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportFillPatternsPreviewPngCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportMaterialNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\LoadSystemFamilyTypeImagesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportTypeNamingCommand.cs" />
@@ -181,10 +185,13 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvGraphicsStyleExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvImportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\FamilyThumbnailCsvExportService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\LoadableFamiliesCsvExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\NamingSpreadsheetExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvTableService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\MaterialNamingCsvService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\SystemFamiliesCsvExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\TypeNamingCsvService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\ElementLayerStructureService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\ElementThicknessService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\FillPatternPlacer.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\HostedDoorWindowPlacementService.cs" />
@@ -206,6 +213,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeNamingApplyService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Revit\TypeAndFamilyDeletionService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\FloorPlanViewService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\Views\DraftingElementImageExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentImageExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentPlacementService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs" />
@@ -227,7 +235,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Helpers\Notifications\ToastNotifications\ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð²Ñ‹Ð·Ð¾Ð²Ð°_ToastNotifier.txt" />
+    <Content Include="Helpers\Notifications\ToastNotifications\Пример вызова_ToastNotifier.txt" />
     <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_16.png" />
     <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_16.png" />

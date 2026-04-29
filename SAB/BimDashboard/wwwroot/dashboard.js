@@ -3,38 +3,29 @@
 
     var state = {
         data: null,
-        catalogName: "RevitLibraryBuilder",
-        sourceName: "-",
-        sourceFormat: "Не определен",
+        sourceProfile: "",
         rawColumns: [],
         displayColumns: [],
         rows: [],
         filteredRows: [],
         visibleColumnIndexes: [],
-        defaultVisibleColumnIndexes: [],
         filterColumnIndex: -1,
         sortColumnIndex: -1,
-        sortDirection: "asc",
-        columnWidths: {},
-        colorRIndex: -1,
-        colorGIndex: -1,
-        colorBIndex: -1
+        sortDirection: "asc"
     };
 
     var hiddenColumns = {
-        filter: true,
-        "фильтр": true,
         recordtype: true,
-        "типзаписи": true,
-        include: true,
-        "включить": true,
         sourcetype: true,
-        "типисточника": true,
-        sourcefile: true,
-        "файлисточника": true
+        sourcefile: true
     };
 
-    var minColumnWidthPx = 90;
+    var profileColumnOrders = {
+        systemfamilies: ["rownumber", "миниатюра", "категория", "семейство", "типоразмер", "структура", "толщина типа, мм", "включить"],
+        loadablefamilies: ["rownumber", "миниатюра", "категория", "семейство", "типоразмер", "включить"],
+        lines: ["rownumber", "наименование", "миниатюра", "категория", "вес линии", "цвет", "образец"],
+        fillpatterns: ["rownumber", "наименование", "миниатюра", "штриховка переднего плана", "штриховка заднего плана", "маскирование", "тип штриховки"]
+    };
 
     var columnLabelMap = {
         rownumber: "№",
@@ -46,31 +37,7 @@
         thumbnail: "Миниатюра",
         iconpath: "Миниатюра",
         totalthicknessmm: "Толщина типа, мм",
-        name: "Наименование",
-        count: "Количество",
-        area: "Площадь",
-        length: "Длина",
-        value: "Значение",
-        materialname_old: "Старое наименование материала",
-        materialname_new: "Новое наименование материала",
-        description_old: "Старое описание материала",
-        description_new: "Новое описание материала",
-        family_old: "Старое наименование семейства",
-        family_new: "Новое наименование семейства",
-        typename_old: "Старое наименование типа",
-        typename_new: "Новое наименование типа",
-        deletematerial: "Удалить материал",
-        colorr: "Красный канал",
-        colorg: "Зеленый канал",
-        colorb: "Синий канал",
-        linestyleid: "ID стиля линии",
-        linestyle: "Стиль линии",
-        lineweight: "Вес линии",
-        linepattern: "Шаблон линии",
-        fillpatternid: "ID штриховки",
-        fillpatternname: "Наименование штриховки",
-        fillpatterntarget: "Назначение штриховки",
-        fillpatternisdrafting: "Чертежная штриховка"
+        name: "Наименование"
     };
 
     function parseDashboardData() {
@@ -90,15 +57,6 @@
         if (element) {
             element.textContent = value;
         }
-    }
-
-    function formatNumber(value, digits) {
-        var number = Number(value || 0);
-
-        return number.toLocaleString("ru-RU", {
-            minimumFractionDigits: digits,
-            maximumFractionDigits: digits
-        });
     }
 
     function toLowerSafe(value) {
@@ -136,149 +94,6 @@
         return parsed;
     }
 
-    function findColumnIndex(columns, columnName) {
-        var target = toLowerSafe(columnName);
-
-        for (var i = 0; i < columns.length; i++) {
-            if (toLowerSafe(columns[i]) === target) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    function resolveSourceFormat(data) {
-        if (data && data.sourceFormat && String(data.sourceFormat).trim()) {
-            return String(data.sourceFormat).trim();
-        }
-
-        var sourceTypeIndex = findColumnIndex(state.rawColumns, "SourceType");
-
-        if (sourceTypeIndex < 0) {
-            return "Не определен";
-        }
-
-        for (var i = 0; i < state.rows.length; i++) {
-            var value = state.rows[i][sourceTypeIndex];
-
-            if (String(value || "").trim()) {
-                return String(value).trim();
-            }
-        }
-
-        return "Не определен";
-    }
-
-    function buildDisplayColumns(columns) {
-        var displayColumns = [];
-
-        for (var i = 0; i < columns.length; i++) {
-            var columnName = String(columns[i] || "");
-            var lowered = toLowerSafe(columnName);
-
-            if (hiddenColumns[lowered]) {
-                continue;
-            }
-
-            var label = getColumnLabel(columnName);
-
-            displayColumns.push({
-                index: i,
-                name: columnName,
-                label: label
-            });
-        }
-
-        var rowNumberPosition = -1;
-
-        for (var j = 0; j < displayColumns.length; j++) {
-            if (toLowerSafe(displayColumns[j].name) === "rownumber") {
-                rowNumberPosition = j;
-                break;
-            }
-        }
-
-        if (rowNumberPosition > 0) {
-            var rowNumberColumn = displayColumns.splice(rowNumberPosition, 1)[0];
-            displayColumns.unshift(rowNumberColumn);
-        }
-
-        var thumbnailPosition = -1;
-
-        for (var k = 0; k < displayColumns.length; k++) {
-            var loweredName = toLowerSafe(displayColumns[k].name);
-
-            if (loweredName === "thumbnailpath" || loweredName === "thumbnail" || loweredName === "iconpath") {
-                thumbnailPosition = k;
-                break;
-            }
-        }
-
-        if (thumbnailPosition >= 0) {
-            var thumbnailColumn = displayColumns.splice(thumbnailPosition, 1)[0];
-            var insertIndex = displayColumns.length > 0 && toLowerSafe(displayColumns[0].name) === "rownumber" ? 1 : 0;
-            displayColumns.splice(insertIndex, 0, thumbnailColumn);
-        }
-
-        return displayColumns;
-    }
-
-    function buildDefaultVisibleColumnIndexes(displayColumns) {
-        var result = [];
-        var seen = {};
-
-        var priority = [
-            "№",
-            "Category",
-            "Категория",
-            "Family",
-            "Семейство",
-            "TypeName",
-            "Типоразмер",
-            "ThumbnailPath",
-            "Thumbnail",
-            "IconPath",
-            "Миниатюра",
-            "TotalThicknessMm",
-            "Толщина типа, мм",
-            "Name",
-            "Наименование",
-            "MaterialName_Old",
-            "MaterialName_New",
-            "Description_Old",
-            "Description_New",
-            "DeleteMaterial"
-        ];
-
-        for (var i = 0; i < priority.length; i++) {
-            var target = toLowerSafe(priority[i]);
-
-            for (var j = 0; j < displayColumns.length; j++) {
-                var column = displayColumns[j];
-
-                if (toLowerSafe(column.name) === target || toLowerSafe(column.label) === target) {
-                    if (!seen[column.index]) {
-                        seen[column.index] = true;
-                        result.push(column.index);
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        if (result.length === 0) {
-            var limit = Math.min(8, displayColumns.length);
-
-            for (var k = 0; k < limit; k++) {
-                result.push(displayColumns[k].index);
-            }
-        }
-
-        return result;
-    }
-
     function normalizeRows(rawRows, columnsCount) {
         var rows = [];
 
@@ -304,6 +119,76 @@
         }
 
         return rows;
+    }
+
+    function normalizeColumnName(name) {
+        return toLowerSafe(name).trim();
+    }
+
+    function getProfileOrder() {
+        var key = normalizeColumnName(state.sourceProfile);
+
+        if (profileColumnOrders.hasOwnProperty(key)) {
+            return profileColumnOrders[key];
+        }
+
+        return [];
+    }
+
+    function buildDisplayColumns(columns) {
+        var displayColumns = [];
+
+        for (var i = 0; i < columns.length; i++) {
+            var columnName = String(columns[i] || "");
+            var lowered = normalizeColumnName(columnName);
+
+            if (hiddenColumns[lowered]) {
+                continue;
+            }
+
+            displayColumns.push({
+                index: i,
+                name: columnName,
+                loweredName: lowered,
+                label: getColumnLabel(columnName)
+            });
+        }
+
+        var order = getProfileOrder();
+
+        if (order.length === 0) {
+            return displayColumns;
+        }
+
+        var ordered = [];
+        var used = {};
+
+        for (var orderIndex = 0; orderIndex < order.length; orderIndex++) {
+            var target = order[orderIndex];
+
+            for (var columnIndex = 0; columnIndex < displayColumns.length; columnIndex++) {
+                var column = displayColumns[columnIndex];
+
+                if (column.loweredName === target || normalizeColumnName(column.label) === target) {
+                    if (!used[column.index]) {
+                        used[column.index] = true;
+                        ordered.push(column);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        for (var i2 = 0; i2 < displayColumns.length; i2++) {
+            var fallbackColumn = displayColumns[i2];
+
+            if (!used[fallbackColumn.index]) {
+                ordered.push(fallbackColumn);
+            }
+        }
+
+        return ordered;
     }
 
     function isColumnVisible(columnIndex) {
@@ -335,8 +220,8 @@
             return false;
         }
 
-        var name = toLowerSafe(columnMeta.name);
-        return name === "thumbnailpath" || name === "thumbnail" || name === "iconpath";
+        var name = normalizeColumnName(columnMeta.name);
+        return name === "миниатюра" || name === "thumbnailpath" || name === "thumbnail" || name === "iconpath";
     }
 
     function normalizeThumbnailSource(rawValue) {
@@ -351,7 +236,6 @@
             return value;
         }
 
-        // Для локальных абсолютных путей Windows формируем file URI.
         if (/^[a-zA-Z]:\\/.test(value)) {
             return "file:///" + value.replace(/\\/g, "/");
         }
@@ -399,67 +283,6 @@
         wrapper.appendChild(image);
     }
 
-    function isColorRColumn(columnMeta) {
-        if (!columnMeta) {
-            return false;
-        }
-
-        return toLowerSafe(columnMeta.name) === "colorr";
-    }
-
-    function parseColorComponent(rawValue) {
-        var parsed = Number(rawValue);
-
-        if (isNaN(parsed)) {
-            return 0;
-        }
-
-        parsed = Math.round(parsed);
-
-        if (parsed < 0) {
-            return 0;
-        }
-
-        if (parsed > 255) {
-            return 255;
-        }
-
-        return parsed;
-    }
-
-    // Легкий fallback для таблиц LineStyles.csv: цветовая плашка по RGB.
-    function renderLineColorCell(cell, row) {
-        var red = parseColorComponent(row[state.colorRIndex]);
-        var green = parseColorComponent(row[state.colorGIndex]);
-        var blue = parseColorComponent(row[state.colorBIndex]);
-
-        var wrapper = document.createElement("div");
-        wrapper.className = "line-color-cell";
-
-        var swatch = document.createElement("span");
-        swatch.className = "line-color-swatch";
-        swatch.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
-
-        var text = document.createElement("span");
-        text.className = "line-color-text";
-        text.textContent = red + ", " + green + ", " + blue;
-
-        wrapper.appendChild(swatch);
-        wrapper.appendChild(text);
-        cell.appendChild(wrapper);
-    }
-
-    function ensureVisibleColumnsNotEmpty() {
-        if (state.visibleColumnIndexes.length > 0) {
-            return;
-        }
-
-        if (state.displayColumns.length > 0) {
-            state.visibleColumnIndexes = [state.displayColumns[0].index];
-        }
-    }
-
-    // Блок отвечает за настройку отображения видимых колонок.
     function buildColumnVisibilityMenu() {
         var menu = document.getElementById("columnVisibilityMenu");
 
@@ -516,17 +339,16 @@
         var selected = [];
 
         for (var i = 0; i < checkboxes.length; i++) {
-            var checkbox = checkboxes[i];
-
-            if (checkbox.checked) {
-                selected.push(Number(checkbox.getAttribute("data-column-index")));
+            if (checkboxes[i].checked) {
+                selected.push(Number(checkboxes[i].getAttribute("data-column-index")));
             }
         }
 
-        state.visibleColumnIndexes = selected;
-        ensureVisibleColumnsNotEmpty();
-        syncColumnMenuChecks();
+        if (selected.length === 0 && state.displayColumns.length > 0) {
+            selected.push(state.displayColumns[0].index);
+        }
 
+        state.visibleColumnIndexes = selected;
         updateFilterColumnOptions();
         applyAndRender();
     }
@@ -557,8 +379,7 @@
         filterColumnSelect.appendChild(createOption("-1", "Все видимые колонки", false));
 
         for (var i = 0; i < visibleColumns.length; i++) {
-            var column = visibleColumns[i];
-            filterColumnSelect.appendChild(createOption(String(column.index), column.label, false));
+            filterColumnSelect.appendChild(createOption(String(visibleColumns[i].index), visibleColumns[i].label, false));
         }
 
         var shouldKeep = false;
@@ -585,8 +406,7 @@
             var foundInSearch = false;
 
             for (var i = 0; i < visibleColumns.length; i++) {
-                var searchColumn = visibleColumns[i];
-                var searchCell = toLowerSafe(row[searchColumn.index]);
+                var searchCell = toLowerSafe(row[visibleColumns[i].index]);
 
                 if (searchCell.indexOf(search) >= 0) {
                     foundInSearch = true;
@@ -604,8 +424,7 @@
                 var foundInFilter = false;
 
                 for (var j = 0; j < visibleColumns.length; j++) {
-                    var filterColumn = visibleColumns[j];
-                    var filterCell = toLowerSafe(row[filterColumn.index]);
+                    var filterCell = toLowerSafe(row[visibleColumns[j].index]);
 
                     if (filterCell.indexOf(filter) >= 0) {
                         foundInFilter = true;
@@ -685,38 +504,6 @@
         resultInfo.textContent = "Показано строк: " + state.filteredRows.length + " из " + state.rows.length;
     }
 
-    function getSavedColumnWidth(columnIndex) {
-        if (state.columnWidths.hasOwnProperty(columnIndex)) {
-            return state.columnWidths[columnIndex];
-        }
-
-        return null;
-    }
-
-    function beginColumnResize(event, columnIndex, colElement) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        var startX = event.clientX;
-        var initialWidth = colElement.getBoundingClientRect().width;
-
-        function onMouseMove(moveEvent) {
-            var delta = moveEvent.clientX - startX;
-            var newWidth = Math.max(minColumnWidthPx, initialWidth + delta);
-
-            state.columnWidths[columnIndex] = newWidth;
-            colElement.style.width = newWidth + "px";
-        }
-
-        function onMouseUp() {
-            document.removeEventListener("mousemove", onMouseMove);
-            document.removeEventListener("mouseup", onMouseUp);
-        }
-
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-    }
-
     function renderTable() {
         var container = document.getElementById("tableContainer");
 
@@ -726,38 +513,15 @@
 
         container.innerHTML = "";
 
-        if (!state.displayColumns.length) {
-            container.innerHTML = '<div class="warning">В источнике нет доступных колонок.</div>';
-            return;
-        }
-
         var visibleColumns = getVisibleDisplayColumns();
 
         if (!visibleColumns.length) {
-            container.innerHTML = '<div class="warning">Выберите хотя бы одну колонку в блоке "Видимые колонки".</div>';
+            container.innerHTML = '<div class="warning">Выберите хотя бы одну колонку.</div>';
             return;
         }
 
         var table = document.createElement("table");
         table.className = "data-table";
-
-        var colGroup = document.createElement("colgroup");
-        var colElements = [];
-
-        for (var i = 0; i < visibleColumns.length; i++) {
-            var visibleColumn = visibleColumns[i];
-            var col = document.createElement("col");
-            var savedWidth = getSavedColumnWidth(visibleColumn.index);
-
-            if (savedWidth !== null) {
-                col.style.width = savedWidth + "px";
-            }
-
-            colGroup.appendChild(col);
-            colElements.push(col);
-        }
-
-        table.appendChild(colGroup);
 
         var thead = document.createElement("thead");
         var headRow = document.createElement("tr");
@@ -765,8 +529,6 @@
         for (var headerIndex = 0; headerIndex < visibleColumns.length; headerIndex++) {
             (function () {
                 var column = visibleColumns[headerIndex];
-                var colElement = colElements[headerIndex];
-
                 var th = document.createElement("th");
                 th.textContent = column.label;
                 th.className = "sortable";
@@ -786,13 +548,6 @@
                     applyAndRender();
                 });
 
-                var resizer = document.createElement("div");
-                resizer.className = "col-resizer";
-                resizer.addEventListener("mousedown", function (resizeEvent) {
-                    beginColumnResize(resizeEvent, column.index, colElement);
-                });
-
-                th.appendChild(resizer);
                 headRow.appendChild(th);
             })();
         }
@@ -812,8 +567,6 @@
 
                 if (isThumbnailColumn(columnMeta)) {
                     renderThumbnailCell(td, sourceRow[columnMeta.index] || "");
-                } else if (isColorRColumn(columnMeta) && state.colorRIndex >= 0 && state.colorGIndex >= 0 && state.colorBIndex >= 0) {
-                    renderLineColorCell(td, sourceRow);
                 } else {
                     td.textContent = sourceRow[columnMeta.index] || "";
                 }
@@ -836,13 +589,11 @@
     }
 
     function initHeader(data) {
-        setText("catalogName", state.catalogName);
-        setText("sourceName", state.sourceName);
-        setText("sourceFormat", state.sourceFormat);
+        setText("catalogName", String(data.catalogName || "RevitLibraryBuilder"));
+        setText("sourceName", String(data.sourceName || "-"));
+        setText("sourceFormat", String(data.sourceFormat || "CSV"));
         setText("generatedAt", new Date(data.generatedAt).toLocaleString("ru-RU"));
-
-        var summary = data.summary || {};
-        setText("totalElementsHeader", formatNumber(summary.totalElements, 0));
+        setText("totalElementsHeader", String((data.summary && data.summary.totalElements) || 0));
     }
 
     function initializeControls() {
@@ -879,9 +630,7 @@
                 }
 
                 state.filterColumnIndex = -1;
-                state.visibleColumnIndexes = state.defaultVisibleColumnIndexes.slice();
                 state.sortDirection = "asc";
-                state.columnWidths = {};
 
                 syncColumnMenuChecks();
                 updateFilterColumnOptions();
@@ -895,19 +644,17 @@
             var data = parseDashboardData();
 
             state.data = data;
-            state.catalogName = String(data.catalogName || "RevitLibraryBuilder");
-            state.sourceName = String(data.sourceName || data.projectName || "Не указан");
+            state.sourceProfile = String(data.sourceProfile || "");
             state.rawColumns = Array.isArray(data.columns) ? data.columns.slice() : [];
-            state.colorRIndex = findColumnIndex(state.rawColumns, "ColorR");
-            state.colorGIndex = findColumnIndex(state.rawColumns, "ColorG");
-            state.colorBIndex = findColumnIndex(state.rawColumns, "ColorB");
             state.rows = normalizeRows(data.rows, state.rawColumns.length);
-            state.sourceFormat = resolveSourceFormat(data);
             state.displayColumns = buildDisplayColumns(state.rawColumns);
-            state.defaultVisibleColumnIndexes = buildDefaultVisibleColumnIndexes(state.displayColumns);
-            state.visibleColumnIndexes = state.defaultVisibleColumnIndexes.slice();
+            state.visibleColumnIndexes = [];
+
+            for (var i = 0; i < state.displayColumns.length; i++) {
+                state.visibleColumnIndexes.push(state.displayColumns[i].index);
+            }
+
             state.filteredRows = state.rows.slice();
-            state.columnWidths = {};
 
             if (state.displayColumns.length > 0) {
                 state.sortColumnIndex = state.displayColumns[0].index;

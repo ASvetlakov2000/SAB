@@ -1,185 +1,226 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using SAB.BimDashboard.Models;
 using Forms = System.Windows.Forms;
 
 namespace SAB.BimDashboard.UI
 {
     /// <summary>
-    /// Диалог выбора источника данных для MVP dashboard.
-    /// Важно: окно собирается программно без XAML, чтобы исключить проблемы pack URI в среде Revit add-in.
+    /// Диалог выбора CSV источника для профильного dashboard.
     /// </summary>
     public partial class DataSourceDialog : Window
     {
-        private RadioButton _revitRadioButton;
-        private RadioButton _csvRadioButton;
-        private RadioButton _excelRadioButton;
-        private TextBox _filePathTextBox;
-        private Button _browseButton;
+        private ComboBox _profileComboBox;
+        private TextBlock _selectedFilePathText;
+        private string _selectedFilePath;
 
         public DataSourceDialog()
         {
-            SelectedSourceType = DataSourceType.Revit;
+            SelectedSourceType = DataSourceType.Csv;
             SelectedFilePath = string.Empty;
+            SelectedProfileType = DashboardProfileType.SystemFamilies;
+            _selectedFilePath = string.Empty;
 
             BuildUi();
-            UpdateSourceState();
+            UpdateProfileSelection();
         }
 
         public DataSourceType SelectedSourceType { get; private set; }
 
+        public DashboardProfileType SelectedProfileType { get; private set; }
+
         public string SelectedFilePath { get; private set; }
 
-        // Блок создания UI программно вместо InitializeComponent.
         private void BuildUi()
         {
             Title = "Источник данных dashboard";
-            Width = 520;
-            Height = 260;
+            Width = 700;
+            Height = 380;
+            MinWidth = 680;
+            MinHeight = 360;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             ResizeMode = ResizeMode.NoResize;
+            Background = new SolidColorBrush(Color.FromRgb(242, 242, 242));
 
             Grid rootGrid = new Grid();
-            rootGrid.Margin = new Thickness(14);
+            rootGrid.Margin = new Thickness(16);
+            rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             rootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            TextBlock header = new TextBlock
+            TextBlock titleText = new TextBlock
             {
-                Margin = new Thickness(0, 0, 0, 10),
-                FontWeight = FontWeights.SemiBold,
-                Text = "Выберите источник данных для HTML dashboard:"
+                Text = "Источник данных для просмотра категорий",
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(Color.FromRgb(17, 17, 17)),
+                Margin = new Thickness(0, 0, 0, 14)
             };
-            Grid.SetRow(header, 0);
-            rootGrid.Children.Add(header);
+            Grid.SetRow(titleText, 0);
+            rootGrid.Children.Add(titleText);
 
-            StackPanel sourcePanel = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
-            Grid.SetRow(sourcePanel, 1);
+            Border profileCard = CreateCardBorder();
+            Grid.SetRow(profileCard, 1);
 
-            _revitRadioButton = new RadioButton
+            StackPanel profilePanel = new StackPanel();
+            profileCard.Child = profilePanel;
+            profilePanel.Children.Add(CreateSectionHeader("Профиль просмотра"));
+
+            _profileComboBox = new ComboBox
             {
-                Content = "Текущая модель Revit",
-                IsChecked = true,
-                Margin = new Thickness(0, 0, 0, 6)
+                Margin = new Thickness(10),
+                Height = 32,
+                FontSize = 14,
+                BorderBrush = new SolidColorBrush(Colors.Black),
+                BorderThickness = new Thickness(1),
+                Background = new SolidColorBrush(Colors.White)
             };
-            _revitRadioButton.Checked += SourceRadioButton_Checked;
-            sourcePanel.Children.Add(_revitRadioButton);
+            _profileComboBox.Items.Add(new ProfileItem("Системные семейства", DashboardProfileType.SystemFamilies));
+            _profileComboBox.Items.Add(new ProfileItem("Загружаемые семейства", DashboardProfileType.LoadableFamilies));
+            _profileComboBox.Items.Add(new ProfileItem("Линии", DashboardProfileType.Lines));
+            _profileComboBox.Items.Add(new ProfileItem("Штриховки", DashboardProfileType.FillPatterns));
+            _profileComboBox.SelectionChanged += ProfileComboBox_SelectionChanged;
+            _profileComboBox.SelectedIndex = 0;
+            profilePanel.Children.Add(_profileComboBox);
 
-            _csvRadioButton = new RadioButton
+            rootGrid.Children.Add(profileCard);
+
+            Border sourceCard = CreateCardBorder();
+            Grid.SetRow(sourceCard, 2);
+            sourceCard.Margin = new Thickness(0, 10, 0, 0);
+
+            StackPanel sourcePanel = new StackPanel();
+            sourceCard.Child = sourcePanel;
+            sourcePanel.Children.Add(CreateSectionHeader("CSV источник"));
+
+            Button browseButton = new Button
             {
-                Content = "CSV файл",
-                Margin = new Thickness(0, 0, 0, 6)
+                Content = "Выбрать источник",
+                Height = 34,
+                Margin = new Thickness(10, 10, 10, 8),
+                FontSize = 14,
+                BorderBrush = new SolidColorBrush(Colors.Black),
+                BorderThickness = new Thickness(1),
+                Background = new SolidColorBrush(Color.FromRgb(225, 225, 225)),
+                Foreground = new SolidColorBrush(Color.FromRgb(16, 16, 16))
             };
-            _csvRadioButton.Checked += SourceRadioButton_Checked;
-            sourcePanel.Children.Add(_csvRadioButton);
+            browseButton.Click += BrowseButton_Click;
+            sourcePanel.Children.Add(browseButton);
 
-            _excelRadioButton = new RadioButton
+            _selectedFilePathText = new TextBlock
             {
-                Content = "Excel файл (XLSX)"
+                Margin = new Thickness(10, 0, 10, 10),
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = new SolidColorBrush(Color.FromRgb(32, 32, 32)),
+                Text = "Источник не выбран"
             };
-            _excelRadioButton.Checked += SourceRadioButton_Checked;
-            sourcePanel.Children.Add(_excelRadioButton);
+            sourcePanel.Children.Add(_selectedFilePathText);
+            rootGrid.Children.Add(sourceCard);
 
-            rootGrid.Children.Add(sourcePanel);
-
-            TextBlock pathLabel = new TextBlock
+            TextBlock infoText = new TextBlock
             {
-                Margin = new Thickness(0, 0, 0, 6),
-                Text = "Путь к файлу (для CSV/XLSX):"
+                Margin = new Thickness(2, 10, 2, 0),
+                TextWrapping = TextWrapping.Wrap,
+                Foreground = new SolidColorBrush(Color.FromRgb(60, 60, 60)),
+                Text = "Поддерживается только CSV. Профиль должен соответствовать выбранной таблице."
             };
-            Grid.SetRow(pathLabel, 2);
-            rootGrid.Children.Add(pathLabel);
+            Grid.SetRow(infoText, 3);
+            rootGrid.Children.Add(infoText);
 
-            Grid pathGrid = new Grid();
-            pathGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            pathGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            Grid.SetRow(pathGrid, 3);
-
-            _filePathTextBox = new TextBox
+            DockPanel actionsPanel = new DockPanel
             {
-                Height = 28,
-                VerticalContentAlignment = VerticalAlignment.Center,
-                IsEnabled = false
+                Margin = new Thickness(0, 16, 0, 0),
+                LastChildFill = false
             };
-            Grid.SetColumn(_filePathTextBox, 0);
-            pathGrid.Children.Add(_filePathTextBox);
+            Grid.SetRow(actionsPanel, 5);
 
-            _browseButton = new Button
-            {
-                Width = 100,
-                Height = 28,
-                Margin = new Thickness(10, 0, 0, 0),
-                Content = "Обзор",
-                IsEnabled = false
-            };
-            _browseButton.Click += BrowseButton_Click;
-            Grid.SetColumn(_browseButton, 1);
-            pathGrid.Children.Add(_browseButton);
-
-            rootGrid.Children.Add(pathGrid);
-
-            StackPanel actionsPanel = new StackPanel
-            {
-                Margin = new Thickness(0, 14, 0, 0),
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-            Grid.SetRow(actionsPanel, 4);
-
-            Button okButton = new Button
-            {
-                Width = 100,
-                Height = 30,
-                Margin = new Thickness(0, 0, 8, 0),
-                Content = "Построить"
-            };
-            okButton.Click += OkButton_Click;
-            actionsPanel.Children.Add(okButton);
-
-            Button cancelButton = new Button
-            {
-                Width = 100,
-                Height = 30,
-                Content = "Отмена"
-            };
+            Button cancelButton = CreateActionButton("Отмена", 150);
             cancelButton.Click += CancelButton_Click;
+            DockPanel.SetDock(cancelButton, Dock.Right);
             actionsPanel.Children.Add(cancelButton);
 
+            Button okButton = CreateActionButton("Открыть просмотрщик", 200);
+            okButton.Margin = new Thickness(0, 0, 8, 0);
+            okButton.Click += OkButton_Click;
+            DockPanel.SetDock(okButton, Dock.Right);
+            actionsPanel.Children.Add(okButton);
+
             rootGrid.Children.Add(actionsPanel);
+
             Content = rootGrid;
         }
 
-        private void SourceRadioButton_Checked(object sender, RoutedEventArgs e)
+        private static Border CreateCardBorder()
         {
-            UpdateSourceState();
+            return new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(252, 252, 252)),
+                BorderBrush = new SolidColorBrush(Colors.Black),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(0)
+            };
         }
 
-        private void UpdateSourceState()
+        private static Border CreateSectionHeader(string text)
         {
-            // Блок переключения режима выбора файла.
-            bool isCsv = _csvRadioButton.IsChecked == true;
-            bool isExcel = _excelRadioButton.IsChecked == true;
-            bool fileSelectionEnabled = isCsv || isExcel;
-
-            _filePathTextBox.IsEnabled = fileSelectionEnabled;
-            _browseButton.IsEnabled = fileSelectionEnabled;
-
-            if (_revitRadioButton.IsChecked == true)
+            Border header = new Border
             {
-                SelectedSourceType = DataSourceType.Revit;
-            }
-            else if (isCsv)
+                Background = new SolidColorBrush(Color.FromRgb(235, 235, 235)),
+                BorderBrush = new SolidColorBrush(Colors.Black),
+                BorderThickness = new Thickness(0, 0, 0, 1),
+                CornerRadius = new CornerRadius(10, 10, 0, 0),
+                Padding = new Thickness(10, 8, 10, 8)
+            };
+
+            TextBlock label = new TextBlock
             {
-                SelectedSourceType = DataSourceType.Csv;
+                Text = text,
+                FontSize = 15,
+                Foreground = new SolidColorBrush(Color.FromRgb(32, 32, 32))
+            };
+
+            header.Child = label;
+            return header;
+        }
+
+        private static Button CreateActionButton(string text, double width)
+        {
+            return new Button
+            {
+                Content = text,
+                Width = width,
+                Height = 36,
+                FontSize = 14,
+                BorderBrush = new SolidColorBrush(Colors.Black),
+                BorderThickness = new Thickness(1),
+                Background = new SolidColorBrush(Color.FromRgb(225, 225, 225)),
+                Foreground = new SolidColorBrush(Color.FromRgb(16, 16, 16))
+            };
+        }
+
+        private void ProfileComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateProfileSelection();
+        }
+
+        private void UpdateProfileSelection()
+        {
+            ProfileItem selected = _profileComboBox.SelectedItem as ProfileItem;
+
+            if (selected != null)
+            {
+                SelectedProfileType = selected.ProfileType;
             }
             else
             {
-                SelectedSourceType = DataSourceType.Excel;
+                SelectedProfileType = DashboardProfileType.SystemFamilies;
             }
         }
 
@@ -188,68 +229,43 @@ namespace SAB.BimDashboard.UI
             using (Forms.OpenFileDialog dialog = new Forms.OpenFileDialog())
             {
                 dialog.Multiselect = false;
-                if (Directory.Exists(@"Z:\IN"))
-                {
-                    dialog.InitialDirectory = @"Z:\IN";
-                }
-
-                if (SelectedSourceType == DataSourceType.Csv)
-                {
-                    dialog.Title = "Выберите CSV файл";
-                    dialog.Filter = "CSV (*.csv)|*.csv|All files (*.*)|*.*";
-                }
-                else
-                {
-                    dialog.Title = "Выберите XLSX файл";
-                    dialog.Filter = "Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-                }
+                dialog.Title = "Выберите CSV источник";
+                dialog.Filter = "CSV (*.csv)|*.csv|All files (*.*)|*.*";
 
                 Forms.DialogResult dialogResult = dialog.ShowDialog();
 
                 if (dialogResult == Forms.DialogResult.OK)
                 {
-                    _filePathTextBox.Text = dialog.FileName;
+                    _selectedFilePath = dialog.FileName;
+                    _selectedFilePathText.Text = dialog.FileName;
                 }
             }
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            // Блок валидации для источников с внешним файлом.
-            if (SelectedSourceType == DataSourceType.Csv || SelectedSourceType == DataSourceType.Excel)
+            string filePath = (_selectedFilePath ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                string filePath = (_filePathTextBox.Text ?? string.Empty).Trim();
-
-                if (string.IsNullOrWhiteSpace(filePath))
-                {
-                    MessageBox.Show("Укажите путь к файлу данных.", "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (!File.Exists(filePath))
-                {
-                    MessageBox.Show("Файл не найден: " + filePath, "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (SelectedSourceType == DataSourceType.Csv && !string.Equals(Path.GetExtension(filePath), ".csv", StringComparison.OrdinalIgnoreCase))
-                {
-                    MessageBox.Show("Для источника CSV нужен файл с расширением .csv.", "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (SelectedSourceType == DataSourceType.Excel && !string.Equals(Path.GetExtension(filePath), ".xlsx", StringComparison.OrdinalIgnoreCase))
-                {
-                    MessageBox.Show("Для источника Excel нужен файл с расширением .xlsx.", "BIM Дашборд", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                SelectedFilePath = filePath;
+                MessageBox.Show("Выберите CSV источник.", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            else
+
+            if (!File.Exists(filePath))
             {
-                SelectedFilePath = string.Empty;
+                MessageBox.Show("Файл не найден: " + filePath, "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+
+            if (!string.Equals(Path.GetExtension(filePath), ".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Поддерживается только формат .csv", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            SelectedSourceType = DataSourceType.Csv;
+            SelectedFilePath = filePath;
 
             DialogResult = true;
             Close();
@@ -259,6 +275,24 @@ namespace SAB.BimDashboard.UI
         {
             DialogResult = false;
             Close();
+        }
+
+        private class ProfileItem
+        {
+            public ProfileItem(string displayName, DashboardProfileType profileType)
+            {
+                DisplayName = displayName;
+                ProfileType = profileType;
+            }
+
+            public string DisplayName { get; private set; }
+
+            public DashboardProfileType ProfileType { get; private set; }
+
+            public override string ToString()
+            {
+                return DisplayName;
+            }
         }
     }
 }

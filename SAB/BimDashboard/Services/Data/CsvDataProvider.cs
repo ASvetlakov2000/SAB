@@ -48,8 +48,8 @@ namespace SAB.BimDashboard.Services.Data
                 throw new InvalidOperationException("Выбран неподдерживаемый CSV файл.");
             }
 
-            // Блок отвечает за сбор исходных данных для HTML из CSV.
             TabularDataSet dataSet = _tableReader.Read(context.FilePath);
+            ValidateProfileHeaders(dataSet, context.SourceProfile);
 
             List<string> warnings = new List<string>();
             List<UnifiedRecord> records = _tabularRecordMapper.Map(dataSet, warnings);
@@ -61,9 +61,8 @@ namespace SAB.BimDashboard.Services.Data
 
             string sourceFileName = Path.GetFileName(context.FilePath);
             ResolveThumbnailPaths(records, context.FilePath);
-            ThumbnailRuntimePathEnricher.Enrich(records);
+            ThumbnailRuntimePathEnricher.Enrich(records, context.SourceProfile);
 
-            // Блок обогащения записей метаданными источника.
             for (int i = 0; i < records.Count; i++)
             {
                 UnifiedRecord record = records[i];
@@ -86,9 +85,96 @@ namespace SAB.BimDashboard.Services.Data
 
             ProviderResult result = new ProviderResult();
             result.ProjectName = Path.GetFileNameWithoutExtension(context.FilePath);
+            result.SourceProfile = context.SourceProfile.ToString();
             result.Records = records;
             result.Warnings.AddRange(warnings);
             return result;
+        }
+
+        private static void ValidateProfileHeaders(TabularDataSet dataSet, DashboardProfileType profile)
+        {
+            if (dataSet == null || dataSet.Headers == null)
+            {
+                throw new InvalidOperationException("CSV не содержит заголовков.");
+            }
+
+            List<string> requiredHeaders = GetRequiredHeaders(profile);
+            List<string> missingHeaders = new List<string>();
+
+            for (int i = 0; i < requiredHeaders.Count; i++)
+            {
+                string requiredHeader = requiredHeaders[i];
+
+                if (!HasHeader(dataSet.Headers, requiredHeader))
+                {
+                    missingHeaders.Add(requiredHeader);
+                }
+            }
+
+            if (missingHeaders.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "Выбран не тот источник CSV. Отсутствуют колонки: " + string.Join(", ", missingHeaders));
+            }
+        }
+
+        private static List<string> GetRequiredHeaders(DashboardProfileType profile)
+        {
+            if (profile == DashboardProfileType.SystemFamilies)
+            {
+                return new List<string>
+                {
+                    "Категория",
+                    "Семейство",
+                    "Типоразмер",
+                    "Структура",
+                    "Толщина типа, мм"
+                };
+            }
+
+            if (profile == DashboardProfileType.LoadableFamilies)
+            {
+                return new List<string>
+                {
+                    "Категория",
+                    "Семейство",
+                    "Типоразмер"
+                };
+            }
+
+            if (profile == DashboardProfileType.Lines)
+            {
+                return new List<string>
+                {
+                    "Наименование",
+                    "Категория",
+                    "Вес линии",
+                    "Цвет",
+                    "Образец"
+                };
+            }
+
+            return new List<string>
+            {
+                "Наименование",
+                "Штриховка переднего плана",
+                "Штриховка заднего плана",
+                "Маскирование",
+                "Тип штриховки"
+            };
+        }
+
+        private static bool HasHeader(List<string> headers, string headerName)
+        {
+            for (int i = 0; i < headers.Count; i++)
+            {
+                if (string.Equals(headers[i], headerName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // Блок пост-обработки путей миниатюр для корректного рендера в HTML.
@@ -115,6 +201,7 @@ namespace SAB.BimDashboard.Services.Data
                     continue;
                 }
 
+                ResolveThumbnailField(record.Fields, "Миниатюра", sourceDirectory);
                 ResolveThumbnailField(record.Fields, "ThumbnailPath", sourceDirectory);
                 ResolveThumbnailField(record.Fields, "Thumbnail", sourceDirectory);
                 ResolveThumbnailField(record.Fields, "IconPath", sourceDirectory);
