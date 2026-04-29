@@ -204,9 +204,9 @@ body {
     border: 1px solid var(--border);
     padding: 8px 10px;
     text-align: left;
-    vertical-align: top;
+    vertical-align: middle;
     min-width: 90px;
-    white-space: normal;
+    white-space: pre-line;
     overflow-wrap: anywhere;
     word-break: break-word;
 }

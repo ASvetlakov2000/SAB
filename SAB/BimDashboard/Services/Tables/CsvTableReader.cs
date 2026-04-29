@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using SAB.BimDashboard.Models;
 
 namespace SAB.BimDashboard.Services.Tables
@@ -33,22 +34,29 @@ namespace SAB.BimDashboard.Services.Tables
                 throw new FileNotFoundException("CSV файл не найден.", filePath);
             }
 
-            string[] lines = File.ReadAllLines(filePath);
+            string[] sourceLines = File.ReadAllLines(filePath);
 
-            if (lines.Length == 0)
+            if (sourceLines.Length == 0)
             {
                 throw new InvalidOperationException("CSV файл пустой.");
             }
 
-            int headerLineIndex = FindFirstNonEmptyLineIndex(lines);
+            List<CsvRecord> records = BuildCsvRecords(sourceLines);
 
-            if (headerLineIndex < 0)
+            if (records.Count == 0)
+            {
+                throw new InvalidOperationException("CSV файл не содержит строк.");
+            }
+
+            int headerRecordIndex = FindFirstNonEmptyRecordIndex(records);
+
+            if (headerRecordIndex < 0)
             {
                 throw new InvalidOperationException("CSV файл не содержит заголовков.");
             }
 
-            char delimiter = DetectDelimiter(lines[headerLineIndex]);
-            List<string> rawHeaders = ParseCsvLine(lines[headerLineIndex], delimiter);
+            char delimiter = DetectDelimiter(records[headerRecordIndex].Text);
+            List<string> rawHeaders = ParseCsvLine(records[headerRecordIndex].Text, delimiter);
 
             if (rawHeaders.Count == 0)
             {
@@ -64,16 +72,16 @@ namespace SAB.BimDashboard.Services.Tables
             dataSet.Headers = TabularHeaderNormalizer.Normalize(rawHeaders);
 
             // Блок отвечает за чтение строк после заголовка и сбор TabularRow.
-            for (int lineIndex = headerLineIndex + 1; lineIndex < lines.Length; lineIndex++)
+            for (int recordIndex = headerRecordIndex + 1; recordIndex < records.Count; recordIndex++)
             {
-                string line = lines[lineIndex];
+                CsvRecord record = records[recordIndex];
 
-                if (string.IsNullOrWhiteSpace(line))
+                if (record == null || string.IsNullOrWhiteSpace(record.Text))
                 {
                     continue;
                 }
 
-                List<string> values = ParseCsvLine(line, delimiter);
+                List<string> values = ParseCsvLine(record.Text, delimiter);
 
                 if (IsRowEmpty(values))
                 {
@@ -84,7 +92,7 @@ namespace SAB.BimDashboard.Services.Tables
 
                 TabularRow row = new TabularRow
                 {
-                    RowNumber = lineIndex + 1
+                    RowNumber = record.StartLineNumber
                 };
 
                 for (int columnIndex = 0; columnIndex < dataSet.Headers.Count; columnIndex++)
@@ -105,17 +113,105 @@ namespace SAB.BimDashboard.Services.Tables
             return dataSet;
         }
 
-        private static int FindFirstNonEmptyLineIndex(string[] lines)
+        private static List<CsvRecord> BuildCsvRecords(string[] sourceLines)
         {
-            for (int i = 0; i < lines.Length; i++)
+            List<CsvRecord> records = new List<CsvRecord>();
+
+            if (sourceLines == null || sourceLines.Length == 0)
             {
-                if (!string.IsNullOrWhiteSpace(lines[i]))
+                return records;
+            }
+
+            StringBuilder buffer = new StringBuilder();
+            bool insideQuotes = false;
+            int recordStartLine = -1;
+
+            for (int index = 0; index < sourceLines.Length; index++)
+            {
+                string line = sourceLines[index] ?? string.Empty;
+
+                if (recordStartLine < 0)
                 {
-                    return i;
+                    recordStartLine = index + 1;
+                }
+
+                if (buffer.Length > 0)
+                {
+                    buffer.Append(Environment.NewLine);
+                }
+
+                buffer.Append(line);
+                UpdateQuoteState(line, ref insideQuotes);
+
+                if (!insideQuotes)
+                {
+                    records.Add(new CsvRecord
+                    {
+                        Text = buffer.ToString(),
+                        StartLineNumber = recordStartLine
+                    });
+
+                    buffer.Clear();
+                    recordStartLine = -1;
+                }
+            }
+
+            if (buffer.Length > 0)
+            {
+                records.Add(new CsvRecord
+                {
+                    Text = buffer.ToString(),
+                    StartLineNumber = recordStartLine > 0 ? recordStartLine : sourceLines.Length
+                });
+            }
+
+            return records;
+        }
+
+        private static int FindFirstNonEmptyRecordIndex(List<CsvRecord> records)
+        {
+            if (records == null)
+            {
+                return -1;
+            }
+
+            for (int index = 0; index < records.Count; index++)
+            {
+                CsvRecord record = records[index];
+
+                if (record != null && !string.IsNullOrWhiteSpace(record.Text))
+                {
+                    return index;
                 }
             }
 
             return -1;
+        }
+
+        private static void UpdateQuoteState(string text, ref bool insideQuotes)
+        {
+            if (text == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                char current = text[i];
+
+                if (current != '"')
+                {
+                    continue;
+                }
+
+                if (insideQuotes && i + 1 < text.Length && text[i + 1] == '"')
+                {
+                    i++;
+                    continue;
+                }
+
+                insideQuotes = !insideQuotes;
+            }
         }
 
         // Блок определения разделителя (поддержка ',', ';', '\t').
@@ -238,6 +334,13 @@ namespace SAB.BimDashboard.Services.Tables
                 string header = "Column" + (headers.Count + 1).ToString(CultureInfo.InvariantCulture);
                 headers.Add(header);
             }
+        }
+
+        private class CsvRecord
+        {
+            public string Text { get; set; }
+
+            public int StartLineNumber { get; set; }
         }
     }
 }

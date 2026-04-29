@@ -43,14 +43,21 @@ namespace SAB.BimDashboard.Services.Data
                 throw new ArgumentException("Путь к CSV файлу не задан.");
             }
 
+            if (!_tableReader.CanRead(context.FilePath))
+            {
+                throw new InvalidOperationException("Выбран неподдерживаемый CSV файл.");
+            }
+
             DashboardProfileType detectedProfile = DetectProfileByFileName(context.FilePath);
             TabularDataSet dataSet = _tableReader.Read(context.FilePath);
 
             List<string> warnings = new List<string>();
             List<UnifiedRecord> records = _tabularRecordMapper.Map(dataSet, warnings);
 
-            // Не блокируем открытие dashboard по содержимому CSV.
-            // По требованиям валидация выполняется только по имени файла.
+            if (records.Count == 0)
+            {
+                throw new InvalidOperationException("CSV прочитан, но данные для dashboard не найдены.");
+            }
 
             string sourceFileName = Path.GetFileName(context.FilePath);
             ResolveThumbnailPaths(records, context.FilePath);
@@ -97,12 +104,12 @@ namespace SAB.BimDashboard.Services.Data
                 throw new InvalidOperationException("Не удалось определить имя CSV файла.");
             }
 
-            if (fileNameWithoutExtension.IndexOf("Системные семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (fileNameWithoutExtension.IndexOf("Системные семейства", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return DashboardProfileType.SystemFamilies;
             }
 
-            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return DashboardProfileType.LoadableFamilies;
             }
@@ -122,8 +129,8 @@ namespace SAB.BimDashboard.Services.Data
             throw new InvalidOperationException(
                 "Имя файла не соответствует поддерживаемым шаблонам.\n" +
                 "Ожидается, что имя содержит:\n" +
-                "- \"Системные семейства_\"\n" +
-                "- \"Загружаемые семейства_\"\n" +
+                "- \"Системные семейства\"\n" +
+                "- \"Загружаемые семейства\"\n" +
                 "- \"Линии\"\n" +
                 "- \"Штриховки\"");
         }

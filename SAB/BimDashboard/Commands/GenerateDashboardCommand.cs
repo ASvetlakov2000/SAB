@@ -60,15 +60,10 @@ namespace SAB.BimDashboard.Commands
 
                 ProviderResult providerResult = provider.Load(context);
 
-                if (providerResult == null)
+                if (providerResult == null || providerResult.Records == null || providerResult.Records.Count == 0)
                 {
-                    TaskDialog.Show("BIM Dashboard", "Источник данных не вернул результат.");
+                    TaskDialog.Show("BIM Dashboard", "Источник данных не вернул записей для построения dashboard.");
                     return Result.Cancelled;
-                }
-
-                if (providerResult.Records == null)
-                {
-                    providerResult.Records = new List<UnifiedRecord>();
                 }
 
                 DataMapper dataMapper = new DataMapper();

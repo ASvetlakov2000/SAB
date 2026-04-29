@@ -38,9 +38,9 @@ namespace SAB.BimDashboard.UI
         {
             Title = "Источник данных dashboard";
             Width = 700;
-            Height = 380;
+            Height = 470;
             MinWidth = 680;
-            MinHeight = 360;
+            MinHeight = 450;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             ResizeMode = ResizeMode.NoResize;
             Background = new SolidColorBrush(Color.FromRgb(242, 242, 242));
@@ -117,7 +117,8 @@ namespace SAB.BimDashboard.UI
             _selectedFilePathText = new TextBlock
             {
                 Margin = new Thickness(10, 0, 10, 10),
-                TextWrapping = TextWrapping.Wrap,
+                TextWrapping = TextWrapping.NoWrap,
+                TextTrimming = TextTrimming.CharacterEllipsis,
                 Foreground = new SolidColorBrush(Color.FromRgb(32, 32, 32)),
                 Text = "Источник не выбран"
             };
@@ -239,6 +240,7 @@ namespace SAB.BimDashboard.UI
                 {
                     _selectedFilePath = dialog.FileName;
                     _selectedFilePathText.Text = dialog.FileName;
+                    _selectedFilePathText.ToolTip = dialog.FileName;
 
                     DashboardProfileType detectedProfileType;
 
@@ -260,6 +262,18 @@ namespace SAB.BimDashboard.UI
                 return;
             }
 
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show("Файл не найден: " + filePath, "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!string.Equals(Path.GetExtension(filePath), ".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Поддерживается только формат .csv", "BIM Dashboard", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             DashboardProfileType detectedProfile;
 
             if (!TryDetectProfileByFileName(filePath, out detectedProfile))
@@ -267,8 +281,8 @@ namespace SAB.BimDashboard.UI
                 MessageBox.Show(
                     "Имя файла не соответствует поддерживаемым шаблонам.\n\n" +
                     "Ожидается, что имя содержит:\n" +
-                    "- \"Системные семейства_\"\n" +
-                    "- \"Загружаемые семейства_\"\n" +
+                    "- \"Системные семейства\"\n" +
+                    "- \"Загружаемые семейства\"\n" +
                     "- \"Линии\"\n" +
                     "- \"Штриховки\"",
                     "BIM Dashboard",
@@ -300,13 +314,13 @@ namespace SAB.BimDashboard.UI
                 return false;
             }
 
-            if (fileNameWithoutExtension.IndexOf("Системные семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (fileNameWithoutExtension.IndexOf("Системные семейства", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 profileType = DashboardProfileType.SystemFamilies;
                 return true;
             }
 
-            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства_", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 profileType = DashboardProfileType.LoadableFamilies;
                 return true;

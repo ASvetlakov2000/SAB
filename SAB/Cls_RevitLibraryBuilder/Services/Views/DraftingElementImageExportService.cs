@@ -36,30 +36,14 @@ namespace RevitLibraryBuilder.Services.Views
         {
             List<Element> elements = CollectLineElements(uiDocument, sourceView);
             HashSet<int> technicalLineElementIds = CollectTechnicalLineElementIds(uiDocument, sourceView);
-            List<DetailCurve> editableCurves = CollectEditableLineCurves(elements);
-
-            if (uiDocument != null && uiDocument.Document != null && editableCurves.Count > 0)
-            {
-                ApplyLineLength(uiDocument.Document, editableCurves, PreviewLineLengthMillimeters);
-            }
-
-            try
-            {
-                return Export(
-                    uiDocument,
-                    sourceView,
-                    elements,
-                    ResolveLineStyleName,
-                    outputFolder,
-                    technicalLineElementIds);
-            }
-            finally
-            {
-                if (uiDocument != null && uiDocument.Document != null && editableCurves.Count > 0)
-                {
-                    ApplyLineLength(uiDocument.Document, editableCurves, RestoreLineLengthMillimeters);
-                }
-            }
+            return Export(
+                uiDocument,
+                sourceView,
+                elements,
+                ResolveLineStyleName,
+                outputFolder,
+                technicalLineElementIds,
+                true);
         }
 
         public DraftingImageExportResult ExportFillPatterns(UIDocument uiDocument, ViewDrafting sourceView, string outputFolder)
@@ -72,7 +56,8 @@ namespace RevitLibraryBuilder.Services.Views
                 elements,
                 ResolveFillPatternName,
                 outputFolder,
-                null);
+                null,
+                false);
         }
 
         private DraftingImageExportResult Export(
@@ -81,7 +66,8 @@ namespace RevitLibraryBuilder.Services.Views
             List<Element> elements,
             Func<Element, string> nameResolver,
             string outputFolder,
-            HashSet<int> hiddenTechnicalElementIds)
+            HashSet<int> hiddenTechnicalElementIds,
+            bool useLinePipeline)
         {
             DraftingImageExportResult result = new DraftingImageExportResult();
 
@@ -144,6 +130,7 @@ namespace RevitLibraryBuilder.Services.Views
                 string expectedPath = Path.Combine(outputFolder, rawName + ".png");
                 string expectedPathWithoutExtension = Path.Combine(outputFolder, rawName);
                 bool isolated = false;
+                bool lineLengthChanged = false;
 
                 try
                 {
@@ -170,10 +157,33 @@ namespace RevitLibraryBuilder.Services.Views
                         uiDocument.ActiveView = sourceView;
                     }
 
+                    // Блок шагов экспорта для линий:
+                    // 1) изоляция целевой линии
+                    // 2) длина линии = 2500 мм
+                    // 3) выбор линии + ZoomToFit
+                    // 4) повторный ZoomToFit
+                    // 5) экспорт изображения
+                    if (useLinePipeline)
+                    {
+                        DetailCurve detailCurve = element as DetailCurve;
+
+                        if (detailCurve != null && detailCurve.IsValidObject)
+                        {
+                            SetSingleDetailCurveLength(document, detailCurve, PreviewLineLengthMillimeters);
+                            lineLengthChanged = true;
+                        }
+                    }
+
                     uiDocument.RefreshActiveView();
 
                     if (uiView != null)
                     {
+                        if (useLinePipeline)
+                        {
+                            uiDocument.Selection.SetElementIds(new List<ElementId> { element.Id });
+                        }
+
+                        uiView.ZoomToFit();
                         uiView.ZoomToFit();
                     }
 
@@ -200,6 +210,16 @@ namespace RevitLibraryBuilder.Services.Views
                 }
                 finally
                 {
+                    if (useLinePipeline && lineLengthChanged)
+                    {
+                        DetailCurve detailCurve = element as DetailCurve;
+
+                        if (detailCurve != null && detailCurve.IsValidObject)
+                        {
+                            SetSingleDetailCurveLength(document, detailCurve, RestoreLineLengthMillimeters);
+                        }
+                    }
+
                     if (isolated)
                     {
                         TryDisableTemporaryIsolation(document, sourceView);
@@ -352,33 +372,9 @@ namespace RevitLibraryBuilder.Services.Views
             return result;
         }
 
-        private static List<DetailCurve> CollectEditableLineCurves(List<Element> elements)
+        private static void SetSingleDetailCurveLength(Document document, DetailCurve curve, double targetLengthMillimeters)
         {
-            List<DetailCurve> curves = new List<DetailCurve>();
-
-            if (elements == null)
-            {
-                return curves;
-            }
-
-            for (int i = 0; i < elements.Count; i++)
-            {
-                DetailCurve curve = elements[i] as DetailCurve;
-
-                if (curve == null || !curve.IsValidObject)
-                {
-                    continue;
-                }
-
-                curves.Add(curve);
-            }
-
-            return curves;
-        }
-
-        private static void ApplyLineLength(Document document, List<DetailCurve> curves, double targetLengthMillimeters)
-        {
-            if (document == null || curves == null || curves.Count == 0)
+            if (document == null || curve == null || !curve.IsValidObject)
             {
                 return;
             }
@@ -388,19 +384,7 @@ namespace RevitLibraryBuilder.Services.Views
             using (Transaction transaction = new Transaction(document, "Set preview line length"))
             {
                 transaction.Start();
-
-                for (int i = 0; i < curves.Count; i++)
-                {
-                    DetailCurve curve = curves[i];
-
-                    if (curve == null || !curve.IsValidObject)
-                    {
-                        continue;
-                    }
-
-                    TrySetDetailCurveLength(curve, targetLength);
-                }
-
+                TrySetDetailCurveLength(curve, targetLength);
                 transaction.Commit();
             }
         }
