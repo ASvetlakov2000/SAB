@@ -218,6 +218,42 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentPlacementService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ViewCreationDialogService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Commands\OpenRoomGeometryToolsCommand.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Commands\CheckRoomAnglesCommand.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Commands\CheckUnplacedRoomsCommand.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Commands\CheckRoomAreaChangesCommand.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Commands\CreateRoomAxesForSelectedRoomCommand.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Commands\CreateRoomAxesForActiveViewRoomsCommand.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RoomGeometryToolsSettings.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RoomAngleIssue.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RoomPlacementIssue.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RoomAreaChangeIssue.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RoomAxisCreationResult.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RoomBoundaryPolygon.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Models\RevitStyleItem.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomCollectorService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomBoundaryService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomAngleCheckService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomPlacementCheckService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomAreaChangeCheckService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomCentroidService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomAxisDirectionService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomAxisClippingService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomAxisCreationService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomDiagnosticGraphicsService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RevitStyleCollectorService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomReportService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomGeometryStartupAction.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomGeometryToolsOrchestratorService.cs" />
+    <Compile Include="Cls_RoomGeometryTools\ViewModels\RoomGeometryToolsViewModel.cs" />
+    <Compile Include="Cls_RoomGeometryTools\UI\RoomGeometryToolsWindow.xaml.cs">
+      <DependentUpon>RoomGeometryToolsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_RoomGeometryTools\Utils\RevitUnitUtils.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Utils\GeometryAngleUtils.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Utils\PolygonUtils.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
     <Compile Include="Helpers\ForRevit\AllCategoriesByPlacement.cs" />
     <Compile Include="Helpers\ForRevit\AllUsedCategoryList.cs" />
     <Compile Include="Helpers\Notifications\ToastNotifications\ToastNotifier.cs" />
@@ -285,6 +321,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_InteriorElevations\Views\PlanCornerMarkAlignmentWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_RoomGeometryTools\UI\RoomGeometryToolsWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="BimDashboard\wwwroot\dashboard.css">

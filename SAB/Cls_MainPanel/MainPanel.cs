@@ -9,6 +9,7 @@ namespace SAB
         private const string RibbonPanelName = "Библиотека";
         private const string RegulationsPanelName = "Регламент";
         private const string InteriorElevationsPanelName = "Развертки";
+        private const string RoomsPanelName = "Помещения";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -25,6 +26,7 @@ namespace SAB
             RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
             RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
+            RibbonPanel roomsPanel = application.CreateRibbonPanel(RibbonTabName, RoomsPanelName);
 
             // Блок кнопок экспорта
             SplitButton exportSplit = libraryPanel.AddItem(
@@ -254,6 +256,15 @@ namespace SAB
                 "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
                 "SAB.Resources.AlignPlanCornerMarksCommand_32.png",
                 "SAB.Resources.AlignPlanCornerMarksCommand_16.png");
+
+            // Блок кнопок для проверки геометрии помещений.
+            Ribbon.AddPushButtonSingle(
+                roomsPanel,
+                "SAB_OpenRoomGeometryTools",
+                "Проверка геометрии\nпомещений",
+                "SAB.RoomGeometryTools.Commands.OpenRoomGeometryToolsCommand",
+                "SAB.Resources.GenerateDashboardCommand_32.png",
+                "SAB.Resources.GenerateDashboardCommand_16.png");
 
             return Result.Succeeded;
         }
