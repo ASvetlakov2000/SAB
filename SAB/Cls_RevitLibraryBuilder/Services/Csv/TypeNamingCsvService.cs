@@ -36,20 +36,11 @@ namespace RevitLibraryBuilder.Services.Csv
 
             // Блок отвечает за чтение столбцов из XLSX файла
             // Колонка Structure (если есть) используется только для просмотра и не участвует в переименовании
-            table.ValidateRequiredColumns(new List<string>
-            {
-                "Category",
-                "Family_Old",
-                "Family_New",
-                "TypeName_Old",
-                "TypeName_New"
-            });
-
-            int categoryIndex = table.FindHeaderIndex("Category");
-            int familyOldIndex = table.FindHeaderIndex("Family_Old");
-            int familyNewIndex = table.FindHeaderIndex("Family_New");
-            int typeOldIndex = table.FindHeaderIndex("TypeName_Old");
-            int typeNewIndex = table.FindHeaderIndex("TypeName_New");
+            int categoryIndex = FindRequiredHeaderIndex(table, "Категория", "Category");
+            int familyOldIndex = FindRequiredHeaderIndex(table, "Старое семейство", "Family_Old");
+            int familyNewIndex = FindRequiredHeaderIndex(table, "Новое семейство", "Family_New");
+            int typeOldIndex = FindRequiredHeaderIndex(table, "Старый типоразмер", "TypeName_Old");
+            int typeNewIndex = FindRequiredHeaderIndex(table, "Новый типоразмер", "TypeName_New");
             int deleteIndex = FindAnyHeaderIndex(table, "Удалить", "Delete", "Удалитьф");
 
             List<TypeNamingCsvModel> result = new List<TypeNamingCsvModel>();
@@ -189,16 +180,16 @@ namespace RevitLibraryBuilder.Services.Csv
             // Блок отвечает за настройку состава столбцов выгрузки
             List<string> headers = new List<string>
             {
-                "Category",
-                "Family_Old",
-                "Family_New",
-                "TypeName_Old",
-                "TypeName_New"
+                "Категория",
+                "Старое семейство",
+                "Новое семейство",
+                "Старый типоразмер",
+                "Новый типоразмер"
             };
 
             if (includeStructureColumn)
             {
-                headers.Add("Structure");
+                headers.Add("Структура");
             }
 
             headers.Add("Удалить");
@@ -228,7 +219,7 @@ namespace RevitLibraryBuilder.Services.Csv
                     row.Add(groupedRow.StructureText ?? string.Empty);
                 }
 
-                row.Add(groupedRow.NamingModel.DeleteType ? "Да" : "Нет");
+                row.Add(groupedRow.NamingModel.DeleteType ? "1" : "0");
 
                 rows.Add(row);
             }
@@ -440,6 +431,19 @@ namespace RevitLibraryBuilder.Services.Csv
             }
 
             return -1;
+        }
+
+        private static int FindRequiredHeaderIndex(CsvTable table, params string[] headerNames)
+        {
+            int index = FindAnyHeaderIndex(table, headerNames);
+
+            if (index >= 0)
+            {
+                return index;
+            }
+
+            string headerText = headerNames != null ? string.Join(" / ", headerNames) : string.Empty;
+            throw new InvalidOperationException("В таблице отсутствует обязательный столбец: " + headerText);
         }
 
         // Блок чтения признака удаления из naming-таблицы

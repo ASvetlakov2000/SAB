@@ -26,20 +26,11 @@ namespace RevitLibraryBuilder.Services.Csv
             CsvTable table = ReadNamingTable(filePath);
 
             // Блок отвечает за чтение столбцов из XLSX файла
-            table.ValidateRequiredColumns(new List<string>
-            {
-                "MaterialName_Old",
-                "MaterialName_New",
-                "Description_Old",
-                "Description_New",
-                "DeleteMaterial"
-            });
-
-            int nameOldIndex = table.FindHeaderIndex("MaterialName_Old");
-            int nameNewIndex = table.FindHeaderIndex("MaterialName_New");
-            int descriptionOldIndex = table.FindHeaderIndex("Description_Old");
-            int descriptionNewIndex = table.FindHeaderIndex("Description_New");
-            int deleteIndex = table.FindHeaderIndex("DeleteMaterial");
+            int nameOldIndex = FindRequiredHeaderIndex(table, "Старое наименование материала", "MaterialName_Old");
+            int nameNewIndex = FindRequiredHeaderIndex(table, "Новое наименование материала", "MaterialName_New");
+            int descriptionOldIndex = FindRequiredHeaderIndex(table, "Старое описание", "Description_Old");
+            int descriptionNewIndex = FindRequiredHeaderIndex(table, "Новое описание", "Description_New");
+            int deleteIndex = FindAnyHeaderIndex(table, "Удалить", "DeleteMaterial", "Delete");
             int deleteRussianIndex = FindAnyHeaderIndex(table, "Удалить", "Delete");
 
             // Блок сопоставления новых пользовательских столбцов
@@ -98,15 +89,15 @@ namespace RevitLibraryBuilder.Services.Csv
             // Блок отвечает за настройку состава столбцов выгрузки
             List<string> headers = new List<string>
             {
-                "MaterialName_Old",
-                "MaterialName_New",
-                "Description_Old",
-                "Description_New",
+                "Старое наименование материала",
+                "Новое наименование материала",
+                "Старое описание",
+                "Новое описание",
                 "Изготовитель",
                 "Модель",
                 "Ключевая заметка",
                 "Маркировка",
-                "DeleteMaterial"
+                "Удалить"
             };
 
             List<List<string>> dataRows = new List<List<string>>();
@@ -125,7 +116,7 @@ namespace RevitLibraryBuilder.Services.Csv
                     row.Model,
                     row.Keynote,
                     row.Marking,
-                    row.DeleteMaterial ? "TRUE" : "FALSE"
+                    row.DeleteMaterial ? "1" : "0"
                 });
             }
 
@@ -203,6 +194,19 @@ namespace RevitLibraryBuilder.Services.Csv
             }
 
             return -1;
+        }
+
+        private static int FindRequiredHeaderIndex(CsvTable table, params string[] names)
+        {
+            int index = FindAnyHeaderIndex(table, names);
+
+            if (index >= 0)
+            {
+                return index;
+            }
+
+            string headerText = names != null ? string.Join(" / ", names) : string.Empty;
+            throw new InvalidOperationException("В таблице отсутствует обязательный столбец: " + headerText);
         }
 
         // Блок преобразования признака удаления материала в bool

@@ -137,19 +137,19 @@ namespace RevitLibraryBuilder.Services.Csv
             {
                 string header = headers[i] ?? string.Empty;
 
-                if (string.Equals(header, "Category", StringComparison.OrdinalIgnoreCase))
+                if (IsCategoryHeader(header))
                 {
                     groups.Add(ColumnGroup.Category);
                     continue;
                 }
 
-                if (header.EndsWith("_Old", StringComparison.OrdinalIgnoreCase))
+                if (IsOldValueHeader(header))
                 {
                     groups.Add(ColumnGroup.OldValues);
                     continue;
                 }
 
-                if (header.EndsWith("_New", StringComparison.OrdinalIgnoreCase))
+                if (IsNewValueHeader(header))
                 {
                     groups.Add(ColumnGroup.NewValues);
                     continue;
@@ -174,7 +174,7 @@ namespace RevitLibraryBuilder.Services.Csv
 
             for (int i = 0; i < headers.Count; i++)
             {
-                if (string.Equals(headers[i], "Category", StringComparison.OrdinalIgnoreCase))
+                if (IsCategoryHeader(headers[i]))
                 {
                     categoryIndex = i;
                     break;
@@ -202,6 +202,48 @@ namespace RevitLibraryBuilder.Services.Csv
             }
 
             return result;
+        }
+
+        private static bool IsCategoryHeader(string header)
+        {
+            return string.Equals(header, "Category", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(header, "Категория", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsOldValueHeader(string header)
+        {
+            if (string.IsNullOrWhiteSpace(header))
+            {
+                return false;
+            }
+
+            if (header.EndsWith("_Old", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            string normalized = header.Trim();
+
+            return normalized.StartsWith("Старое ", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.StartsWith("Старый ", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsNewValueHeader(string header)
+        {
+            if (string.IsNullOrWhiteSpace(header))
+            {
+                return false;
+            }
+
+            if (header.EndsWith("_New", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            string normalized = header.Trim();
+
+            return normalized.StartsWith("Новое ", StringComparison.OrdinalIgnoreCase) ||
+                   normalized.StartsWith("Новый ", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string BuildWorksheetXml(
