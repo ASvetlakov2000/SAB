@@ -66,7 +66,6 @@ namespace SAB.RoomGeometryTools.UI
 
         private void ViewModel_RequestClose(object sender, EventArgs e)
         {
-            DialogResult = true;
             Close();
         }
 
@@ -78,4 +77,3 @@ namespace SAB.RoomGeometryTools.UI
         }
     }
 }
-

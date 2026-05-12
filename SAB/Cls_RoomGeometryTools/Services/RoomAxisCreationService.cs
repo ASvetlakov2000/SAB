@@ -180,18 +180,8 @@ namespace SAB.RoomGeometryTools.Services
                 return baseResult;
             }
 
-            // Блок повторной проверки углов перед построением осей.
-            IList<RoomAngleIssue> angleIssues = _roomAngleCheckService.CheckRoom(room);
-            if (angleIssues.Count > 0)
-            {
-                RoomAngleIssue firstIssue = angleIssues[0];
-                baseResult.IsSuccess = false;
-                baseResult.Message = "Углы помещения не равны 90°. " +
-                                     "Угол: " + firstIssue.ActualAngleDegrees.ToString("0.######") +
-                                     ", Room: " + firstIssue.RoomNumber + " " + firstIssue.RoomName +
-                                     ", Id: " + firstIssue.RoomId.IntegerValue;
-                return baseResult;
-            }
+            // Проверка углов перед построением осей отключена по требованию.
+            // Оси строятся для валидной границы помещения даже при углах, отличных от 90°.
 
             XYZ centroid;
             string centroidError;
@@ -320,8 +310,10 @@ namespace SAB.RoomGeometryTools.Services
                 return;
             }
 
+            // Важно: Revit не поддерживает OfClass(typeof(DetailCurve)).
+            // Нужно собирать базовый CurveElement и далее фильтровать до DetailCurve.
             FilteredElementCollector collector = new FilteredElementCollector(document, activeView.Id);
-            collector.OfClass(typeof(DetailCurve));
+            collector.OfClass(typeof(CurveElement));
 
             List<ElementId> idsToDelete = new List<ElementId>();
 
@@ -391,4 +383,3 @@ namespace SAB.RoomGeometryTools.Services
         }
     }
 }
-

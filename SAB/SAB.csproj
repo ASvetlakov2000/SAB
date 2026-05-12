@@ -112,6 +112,7 @@
     <Compile Include="BimDashboard\UI\DataSourceDialogService.cs" />
     <Compile Include="BimDashboard\Utils\FileUtils.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
+    <Compile Include="Cls_InteriorElevations\Commands\CreateRoomPlanSchemesCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\MoveElevationViewportsToNewSheetCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationLineData.cs" />
@@ -124,6 +125,8 @@
     <Compile Include="Cls_InteriorElevations\Models\SheetLayoutSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ViewportPlacementResult.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ViewportTransferResult.cs" />
+    <Compile Include="Cls_InteriorElevations\Models\RoomPlanSchemeSettings.cs" />
+    <Compile Include="Cls_InteriorElevations\Models\RoomPlanSchemeCreationSummary.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationCropService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationMarkerService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationNamingService.cs" />
@@ -136,9 +139,12 @@
     <Compile Include="Cls_InteriorElevations\Services\Marks\SheetCornerMarkPlacementService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Reports\ElevationCreationReportService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomDetectionService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomPlanSelectionService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Selection\DetailLineSelectionService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Plans\RoomPlanSchemeCreationService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Settings\PlanCornerMarkAlignmentSettingsStorageService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Settings\ElevationSettingsStorageService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Settings\RoomPlanSchemeSettingsStorageService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Sheets\SheetCreationService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Sheets\ViewportTransferService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Sheets\ViewportPlacementService.cs" />
@@ -146,11 +152,15 @@
     <Compile Include="Cls_InteriorElevations\Utils\RevitNameUtils.cs" />
     <Compile Include="Cls_InteriorElevations\Utils\UnitConversionUtils.cs" />
     <Compile Include="Cls_InteriorElevations\ViewModels\ElevationSettingsViewModel.cs" />
+    <Compile Include="Cls_InteriorElevations\ViewModels\RoomPlanSchemeSettingsViewModel.cs" />
     <Compile Include="Cls_InteriorElevations\Views\PlanCornerMarkAlignmentWindow.cs">
       <DependentUpon>PlanCornerMarkAlignmentWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml.cs">
       <DependentUpon>ElevationSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_InteriorElevations\Views\RoomPlanSchemeSettingsWindow.xaml.cs">
+      <DependentUpon>RoomPlanSchemeSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportLoadableFamilyThumbnailsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Export\ExportMaterialNamingCommand.cs" />
@@ -244,6 +254,8 @@
     <Compile Include="Cls_RoomGeometryTools\Services\RevitStyleCollectorService.cs" />
     <Compile Include="Cls_RoomGeometryTools\Services\RoomReportService.cs" />
     <Compile Include="Cls_RoomGeometryTools\Services\RoomGeometryStartupAction.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomGeometryUiOperation.cs" />
+    <Compile Include="Cls_RoomGeometryTools\Services\RoomGeometryExternalEventHandler.cs" />
     <Compile Include="Cls_RoomGeometryTools\Services\RoomGeometryToolsOrchestratorService.cs" />
     <Compile Include="Cls_RoomGeometryTools\ViewModels\RoomGeometryToolsViewModel.cs" />
     <Compile Include="Cls_RoomGeometryTools\UI\RoomGeometryToolsWindow.xaml.cs">
@@ -318,6 +330,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_InteriorElevations\Views\RoomPlanSchemeSettingsWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_InteriorElevations\Views\PlanCornerMarkAlignmentWindow.xaml">

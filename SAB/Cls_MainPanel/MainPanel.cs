@@ -243,6 +243,14 @@ namespace SAB
 
             Ribbon.AddPushButtonSingle(
                 interiorElevationsPanel,
+                "SAB_CreateRoomPlanSchemes",
+                "План-схемы\nпомещений",
+                "SAB.InteriorElevations.Commands.CreateRoomPlanSchemesCommand",
+                "SAB.Resources.CreateInteriorElevationsCommand_32.png",
+                "SAB.Resources.CreateInteriorElevationsCommand_16.png");
+
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
                 "SAB_MoveInteriorElevationViewports",
                 "Перенос видов\nна след. лист",
                 "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",

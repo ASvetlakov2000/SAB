@@ -11,6 +11,11 @@ namespace SAB.RoomGeometryTools.Services
     /// </summary>
     public class RoomGeometryToolsOrchestratorService
     {
+        private static RoomGeometryToolsWindow _window;
+        private static RoomGeometryToolsViewModel _viewModel;
+        private static RoomGeometryExternalEventHandler _externalEventHandler;
+        private static ExternalEvent _externalEvent;
+
         public Result Run(ExternalCommandData commandData, ref string message, RoomGeometryStartupAction startupAction)
         {
             try
@@ -22,10 +27,31 @@ namespace SAB.RoomGeometryTools.Services
                     return Result.Failed;
                 }
 
+                // Если окно уже открыто, просто активируем его и при необходимости запускаем действие.
+                if (_window != null && _window.IsLoaded)
+                {
+                    if (_viewModel != null)
+                    {
+                        _viewModel.RequestStartupAction(startupAction);
+                    }
+
+                    _window.Show();
+                    _window.Activate();
+                    return Result.Succeeded;
+                }
+
                 UIDocument uiDocument = commandData.Application.ActiveUIDocument;
-                RoomGeometryToolsViewModel viewModel = new RoomGeometryToolsViewModel(uiDocument, startupAction);
-                RoomGeometryToolsWindow window = new RoomGeometryToolsWindow(viewModel);
-                window.ShowDialog();
+
+                // В modeless-режиме операции Revit API должны выполняться через ExternalEvent.
+                _externalEventHandler = new RoomGeometryExternalEventHandler();
+                _externalEvent = ExternalEvent.Create(_externalEventHandler);
+                _viewModel = new RoomGeometryToolsViewModel(uiDocument, startupAction, _externalEvent, _externalEventHandler);
+                _externalEventHandler.AttachViewModel(_viewModel);
+
+                _window = new RoomGeometryToolsWindow(_viewModel);
+                _window.Closed += Window_Closed;
+                _window.Show();
+                _window.Activate();
                 return Result.Succeeded;
             }
             catch (Exception exception)
@@ -35,6 +61,23 @@ namespace SAB.RoomGeometryTools.Services
                 return Result.Failed;
             }
         }
+
+        private static void Window_Closed(object sender, EventArgs e)
+        {
+            if (_window != null)
+            {
+                _window.Closed -= Window_Closed;
+            }
+
+            _window = null;
+            _viewModel = null;
+            _externalEventHandler = null;
+
+            if (_externalEvent != null)
+            {
+                _externalEvent.Dispose();
+                _externalEvent = null;
+            }
+        }
     }
 }
-

@@ -36,6 +36,8 @@ namespace SAB.RoomGeometryTools.ViewModels
         private readonly RoomReportService _roomReportService;
 
         private readonly RoomGeometryStartupAction _startupAction;
+        private readonly ExternalEvent _externalEvent;
+        private readonly RoomGeometryExternalEventHandler _externalEventHandler;
 
         private string _statusText;
         private string _areaDeviationThresholdPercentText;
@@ -45,11 +47,17 @@ namespace SAB.RoomGeometryTools.ViewModels
         private bool _skipRoomsWithGeometryErrors;
         private bool _startupActionExecuted;
 
-        public RoomGeometryToolsViewModel(UIDocument uiDocument, RoomGeometryStartupAction startupAction)
+        public RoomGeometryToolsViewModel(
+            UIDocument uiDocument,
+            RoomGeometryStartupAction startupAction,
+            ExternalEvent externalEvent,
+            RoomGeometryExternalEventHandler externalEventHandler)
         {
             _uiDocument = uiDocument;
             _document = uiDocument != null ? uiDocument.Document : null;
             _startupAction = startupAction;
+            _externalEvent = externalEvent;
+            _externalEventHandler = externalEventHandler;
 
             _roomCollectorService = new RoomCollectorService();
             _roomBoundaryService = new RoomBoundaryService();
@@ -84,12 +92,12 @@ namespace SAB.RoomGeometryTools.ViewModels
             AreaIssues = new ObservableCollection<RoomAreaChangeIssue>();
             AxisResults = new ObservableCollection<RoomAxisCreationResult>();
 
-            CheckAnglesCommand = new RelayCommand(_ => ExecuteCheckAngles());
-            CheckUnplacedRoomsCommand = new RelayCommand(_ => ExecuteCheckUnplacedRooms());
-            CheckAreaChangesCommand = new RelayCommand(_ => ExecuteCheckAreaChanges());
-            ShowProblematicAnglesCommand = new RelayCommand(_ => ExecuteShowProblematicAngles());
-            CreateAxesForSelectedRoomCommand = new RelayCommand(_ => ExecuteCreateAxesForSelectedRoom());
-            CreateAxesForActiveViewRoomsCommand = new RelayCommand(_ => ExecuteCreateAxesForActiveViewRooms());
+            CheckAnglesCommand = new RelayCommand(_ => QueueOperation(RoomGeometryUiOperation.CheckAngles));
+            CheckUnplacedRoomsCommand = new RelayCommand(_ => QueueOperation(RoomGeometryUiOperation.CheckUnplacedRooms));
+            CheckAreaChangesCommand = new RelayCommand(_ => QueueOperation(RoomGeometryUiOperation.CheckAreaChanges));
+            ShowProblematicAnglesCommand = new RelayCommand(_ => QueueOperation(RoomGeometryUiOperation.ShowProblematicAngles));
+            CreateAxesForSelectedRoomCommand = new RelayCommand(_ => QueueOperation(RoomGeometryUiOperation.CreateAxesForSelectedRoom));
+            CreateAxesForActiveViewRoomsCommand = new RelayCommand(_ => QueueOperation(RoomGeometryUiOperation.CreateAxesForActiveViewRooms));
             ExportCsvCommand = new RelayCommand(_ => ExecuteExportCsv());
             CloseCommand = new RelayCommand(_ => RequestClose?.Invoke(this, EventArgs.Empty));
 
@@ -200,26 +208,58 @@ namespace SAB.RoomGeometryTools.ViewModels
 
             _startupActionExecuted = true;
 
-            switch (_startupAction)
+            RequestStartupAction(_startupAction);
+        }
+
+        /// <summary>
+        /// Позволяет внешнему оркестратору инициировать действие,
+        /// например если окно уже открыто и запущена отдельная команда.
+        /// </summary>
+        public void RequestStartupAction(RoomGeometryStartupAction startupAction)
+        {
+            RoomGeometryUiOperation operation = MapStartupActionToUiOperation(startupAction);
+            if (operation != RoomGeometryUiOperation.None)
             {
-                case RoomGeometryStartupAction.CheckAngles:
+                QueueOperation(operation);
+            }
+        }
+
+        /// <summary>
+        /// Точка входа для ExternalEventHandler. Выполняется внутри API-контекста Revit.
+        /// </summary>
+        public void ExecuteOperationFromExternalEvent(RoomGeometryUiOperation operation)
+        {
+            switch (operation)
+            {
+                case RoomGeometryUiOperation.CheckAngles:
                     ExecuteCheckAngles();
                     break;
-                case RoomGeometryStartupAction.CheckUnplaced:
+                case RoomGeometryUiOperation.CheckUnplacedRooms:
                     ExecuteCheckUnplacedRooms();
                     break;
-                case RoomGeometryStartupAction.CheckAreaChanges:
+                case RoomGeometryUiOperation.CheckAreaChanges:
                     ExecuteCheckAreaChanges();
                     break;
-                case RoomGeometryStartupAction.CreateAxesForSelectedRoom:
+                case RoomGeometryUiOperation.ShowProblematicAngles:
+                    ExecuteShowProblematicAngles();
+                    break;
+                case RoomGeometryUiOperation.CreateAxesForSelectedRoom:
                     ExecuteCreateAxesForSelectedRoom();
                     break;
-                case RoomGeometryStartupAction.CreateAxesForActiveViewRooms:
+                case RoomGeometryUiOperation.CreateAxesForActiveViewRooms:
                     ExecuteCreateAxesForActiveViewRooms();
                     break;
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Установка статуса из ExternalEventHandler при верхнеуровневых исключениях.
+        /// </summary>
+        public void SetStatusFromExternalEvent(string text)
+        {
+            StatusText = text ?? string.Empty;
         }
 
         private void LoadStyles()
@@ -455,6 +495,57 @@ namespace SAB.RoomGeometryTools.ViewModels
             }
         }
 
+        /// <summary>
+        /// Блок маршрутизации команд UI в ExternalEvent для modeless-режима.
+        /// </summary>
+        private void QueueOperation(RoomGeometryUiOperation operation)
+        {
+            if (operation == RoomGeometryUiOperation.None)
+            {
+                return;
+            }
+
+            // Если ExternalEvent не передан, выполняем напрямую (fallback для безопасной совместимости).
+            if (_externalEvent == null || _externalEventHandler == null)
+            {
+                ExecuteOperationFromExternalEvent(operation);
+                return;
+            }
+
+            try
+            {
+                _externalEventHandler.Enqueue(operation);
+                ExternalEventRequest request = _externalEvent.Raise();
+                if (request != ExternalEventRequest.Accepted)
+                {
+                    StatusText = "Revit отклонил запрос на выполнение операции. Повторите попытку.";
+                }
+            }
+            catch (Exception exception)
+            {
+                StatusText = "Не удалось запустить операцию: " + exception.Message;
+            }
+        }
+
+        private static RoomGeometryUiOperation MapStartupActionToUiOperation(RoomGeometryStartupAction startupAction)
+        {
+            switch (startupAction)
+            {
+                case RoomGeometryStartupAction.CheckAngles:
+                    return RoomGeometryUiOperation.CheckAngles;
+                case RoomGeometryStartupAction.CheckUnplaced:
+                    return RoomGeometryUiOperation.CheckUnplacedRooms;
+                case RoomGeometryStartupAction.CheckAreaChanges:
+                    return RoomGeometryUiOperation.CheckAreaChanges;
+                case RoomGeometryStartupAction.CreateAxesForSelectedRoom:
+                    return RoomGeometryUiOperation.CreateAxesForSelectedRoom;
+                case RoomGeometryStartupAction.CreateAxesForActiveViewRooms:
+                    return RoomGeometryUiOperation.CreateAxesForActiveViewRooms;
+                default:
+                    return RoomGeometryUiOperation.None;
+            }
+        }
+
         private RoomGeometryToolsSettings BuildSettings()
         {
             RoomGeometryToolsSettings settings = new RoomGeometryToolsSettings();
@@ -542,4 +633,3 @@ namespace SAB.RoomGeometryTools.ViewModels
         }
     }
 }
-
