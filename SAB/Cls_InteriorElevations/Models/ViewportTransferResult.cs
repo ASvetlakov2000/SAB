@@ -10,6 +10,8 @@ namespace SAB.InteriorElevations.Models
 
         public int MovedViewportCount { get; set; }
 
+        public int CopiedViewportCount { get; set; }
+
         public int MovedSheetMarkCount { get; set; }
 
         public int FailedViewportCount { get; set; }

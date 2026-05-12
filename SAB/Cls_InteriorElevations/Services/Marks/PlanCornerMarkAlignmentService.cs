@@ -30,7 +30,7 @@ namespace SAB.InteriorElevations.Services.Marks
             List<DetailLineInfo> detailLineInfos = CollectDetailLineInfos(document, activePlanView, warnings);
             if (detailLineInfos.Count == 0)
             {
-                AddWarning(warnings, "ÐÐ° Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð¼ Ð¿Ð»Ð°Ð½Ðµ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾ Ð´ÐµÑ‚Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ñ… Ð»Ð¸Ð½Ð¸Ð¹ Ð´Ð»Ñ Ñ€Ð°ÑÑ‡ÐµÑ‚Ð° ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ Ð¼Ð°Ñ€Ð¾Ðº.");
+                AddWarning(warnings, "На активном плане не найдено линий детализации для расчета смещения марок.");
                 result.FailedCount = result.SelectedCount;
                 return result;
             }
@@ -52,7 +52,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (!IsPlanCornerFamily(markInstance))
                 {
                     result.FailedCount++;
-                    AddWarning(warnings, "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ " + markInstance.Id.IntegerValue + " Ð½Ðµ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÑÑ Ðº ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ñƒ '" + CornerMarkConstants.PlanFamilyName + "'.");
+                    AddWarning(warnings, "Элемент " + markInstance.Id.IntegerValue + " не относится к семейству '" + CornerMarkConstants.PlanFamilyName + "'.");
                     continue;
                 }
 
@@ -60,7 +60,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (locationPoint == null)
                 {
                     result.FailedCount++;
-                    AddWarning(warnings, "ÐœÐ°Ñ€ÐºÐ° " + markInstance.Id.IntegerValue + " Ð½Ðµ Ð¸Ð¼ÐµÐµÑ‚ Ñ‚Ð¾Ñ‡ÐºÐ¸ Ñ€Ð°Ð·Ð¼ÐµÑ‰ÐµÐ½Ð¸Ñ.");
+                    AddWarning(warnings, "Марка " + markInstance.Id.IntegerValue + " не имеет точки размещения.");
                     continue;
                 }
 
@@ -69,7 +69,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (!TryBuildCornerContext(originalPoint, selectionCenter, detailLineInfos, out cornerContext))
                 {
                     result.FailedCount++;
-                    AddWarning(warnings, "Ð”Ð»Ñ Ð¼Ð°Ñ€ÐºÐ¸ " + markInstance.Id.IntegerValue + " Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ ÑƒÐ³Ð¾Ð» Ð¿Ð¾ Ð´ÐµÑ‚Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ð¼ Ð»Ð¸Ð½Ð¸ÑÐ¼.");
+                    AddWarning(warnings, "Для марки " + markInstance.Id.IntegerValue + " не удалось определить угол по линиям детализации.");
                     continue;
                 }
 
@@ -117,7 +117,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 catch (Exception exception)
                 {
                     result.FailedCount++;
-                    AddWarning(warnings, "ÐžÑˆÐ¸Ð±ÐºÐ° Ð²Ñ‹Ñ€Ð°Ð²Ð½Ð¸Ð²Ð°Ð½Ð¸Ñ Ð¼Ð°Ñ€ÐºÐ¸ " + markInstance.Id.IntegerValue + ": " + exception.Message);
+                    AddWarning(warnings, "Ошибка выравнивания марки " + markInstance.Id.IntegerValue + ": " + exception.Message);
                 }
                 finally
                 {
@@ -145,7 +145,7 @@ namespace SAB.InteriorElevations.Services.Marks
 
                 if (!leaderApplied)
                 {
-                    AddWarning(warnings, "ÐœÐ°Ñ€ÐºÐ° " + pendingLeaderData.MarkInstance.Id.IntegerValue + " Ð¿ÐµÑ€ÐµÐ¼ÐµÑ‰ÐµÐ½Ð°, Ð½Ð¾ Ð²Ñ‹Ð½Ð¾ÑÐºÑƒ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ.");
+                    AddWarning(warnings, "Марка " + pendingLeaderData.MarkInstance.Id.IntegerValue + " перемещена, но выноску создать не удалось.");
                 }
             }
 
@@ -166,7 +166,7 @@ namespace SAB.InteriorElevations.Services.Marks
             AnnotationSymbol annotationSymbol = markInstance as AnnotationSymbol;
             if (annotationSymbol == null)
             {
-                AddWarning(warnings, "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ " + markInstance.Id.IntegerValue + " Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ AnnotationSymbol.");
+                AddWarning(warnings, "Элемент " + markInstance.Id.IntegerValue + " не является AnnotationSymbol.");
                 return false;
             }
 
@@ -184,7 +184,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 // ÐŸÐ¾ Ñ‚Ñ€ÐµÐ±Ð¾Ð²Ð°Ð½Ð¸ÑŽ: Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ð²Ñ‹Ð½Ð¾ÑÐºÑƒ Ñ‡ÐµÑ€ÐµÐ· Ð²Ñ‹Ð·Ð¾Ð² AnnotationSymbol.AddLeader().
                 if (!TryInvokeAddLeader(annotationSymbol))
                 {
-                    AddWarning(warnings, "Ð£ Ð¼Ð°Ñ€ÐºÐ¸ " + markInstance.Id.IntegerValue + " Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð¼ÐµÑ‚Ð¾Ð´ AddLeader().");
+                    AddWarning(warnings, "У марки " + markInstance.Id.IntegerValue + " не найден метод AddLeader().");
                     return false;
                 }
 
@@ -193,7 +193,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 IList<Leader> leadersAfter = GetLeaders(annotationSymbol);
                 if (leadersAfter == null || leadersAfter.Count == 0)
                 {
-                    AddWarning(warnings, "Ð£ Ð¼Ð°Ñ€ÐºÐ¸ " + markInstance.Id.IntegerValue + " Ð¿Ð¾ÑÐ»Ðµ AddLeader Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð° Ð²Ñ‹Ð½Ð¾ÑÐºÐ°.");
+                    AddWarning(warnings, "У марки " + markInstance.Id.IntegerValue + " после AddLeader не найдена выноска.");
                     return false;
                 }
 
@@ -209,7 +209,7 @@ namespace SAB.InteriorElevations.Services.Marks
 
                 if (leader == null)
                 {
-                    AddWarning(warnings, "Ð£ Ð¼Ð°Ñ€ÐºÐ¸ " + markInstance.Id.IntegerValue + " Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚ Leader.");
+                    AddWarning(warnings, "У марки " + markInstance.Id.IntegerValue + " не удалось получить объект Leader.");
                     return false;
                 }
 
@@ -221,7 +221,7 @@ namespace SAB.InteriorElevations.Services.Marks
             }
             catch (Exception exception)
             {
-                AddWarning(warnings, "ÐžÑˆÐ¸Ð±ÐºÐ° ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ Ð²Ñ‹Ð½Ð¾ÑÐºÐ¸ Ñƒ Ð¼Ð°Ñ€ÐºÐ¸ " + markInstance.Id.IntegerValue + ": " + exception.Message);
+                AddWarning(warnings, "Ошибка создания выноски у марки " + markInstance.Id.IntegerValue + ": " + exception.Message);
                 return false;
             }
             finally
@@ -337,7 +337,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 XYZ xyDirection = new XYZ(rawDirection.X, rawDirection.Y, 0.0);
                 if (xyDirection.GetLength() <= GeometryTolerance)
                 {
-                    AddWarning(warnings, "Ð›Ð¸Ð½Ð¸Ñ " + curveElement.Id.IntegerValue + " Ð¸Ð¼ÐµÐµÑ‚ Ð½ÐµÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½ÑƒÑŽ Ð´Ð»Ð¸Ð½Ñƒ Ð² Ð¿Ð»Ð¾ÑÐºÐ¾ÑÑ‚Ð¸ XY Ð¸ Ð±Ñ‹Ð»Ð° Ð¿Ñ€Ð¾Ð¿ÑƒÑ‰ÐµÐ½Ð°.");
+                    AddWarning(warnings, "Линия " + curveElement.Id.IntegerValue + " имеет некорректную длину в плоскости XY и была пропущена.");
                     continue;
                 }
 
@@ -345,7 +345,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 XYZ normal = xyDirection.CrossProduct(XYZ.BasisZ);
                 if (normal.GetLength() <= GeometryTolerance)
                 {
-                    AddWarning(warnings, "Ð”Ð»Ñ Ð»Ð¸Ð½Ð¸Ð¸ " + curveElement.Id.IntegerValue + " Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð²Ñ‹Ñ‡Ð¸ÑÐ»Ð¸Ñ‚ÑŒ Ð½Ð¾Ñ€Ð¼Ð°Ð»ÑŒ.");
+                    AddWarning(warnings, "Для линии " + curveElement.Id.IntegerValue + " не удалось вычислить нормаль.");
                     continue;
                 }
 

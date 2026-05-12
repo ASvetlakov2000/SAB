@@ -24,22 +24,17 @@ namespace SAB.InteriorElevations.Services.Marks
             FamilySymbol symbol = document.GetElement(planCornerMarkTypeId) as FamilySymbol;
             if (symbol == null)
             {
-                if (warnings != null)
-                {
-                    warnings.Add("Не найден тип семейства марки угла на плане.");
-                }
-
+                AddWarning(warnings, "Не найден тип семейства марки угла на плане.");
                 return 0;
             }
 
             if (!IsFamilyMatches(symbol, CornerMarkConstants.PlanFamilyName))
             {
-                if (warnings != null)
-                {
-                    warnings.Add(
-                        "Выбран неверный тип семейства для марок плана. Ожидается семейство '" +
-                        CornerMarkConstants.PlanFamilyName + "'.");
-                }
+                AddWarning(
+                    warnings,
+                    "Выбран неверный тип семейства для марок угла на плане. Ожидается семейство '" +
+                    CornerMarkConstants.PlanFamilyName + "'.");
+                return 0;
             }
 
             if (!symbol.IsActive)
@@ -128,11 +123,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 FamilyInstance markInstance = document.Create.NewFamilyInstance(placementPoint, symbol, planView);
                 if (markInstance == null)
                 {
-                    if (warnings != null)
-                    {
-                        warnings.Add("Не удалось создать марку угла на плане в точке " + FormatPoint(placementPoint) + ".");
-                    }
-
+                    AddWarning(warnings, "Не удалось создать марку угла на плане в точке " + FormatPoint(placementPoint) + ".");
                     return false;
                 }
 
@@ -142,13 +133,9 @@ namespace SAB.InteriorElevations.Services.Marks
             }
             catch (Exception exception)
             {
-                if (warnings != null)
-                {
-                    warnings.Add(
-                        "Ошибка размещения марки угла на плане (угол " + cornerNumber + "): " +
-                        exception.Message);
-                }
-
+                AddWarning(
+                    warnings,
+                    "Ошибка размещения марки угла на плане (угол " + cornerNumber + "): " + exception.Message);
                 return false;
             }
         }
@@ -174,21 +161,13 @@ namespace SAB.InteriorElevations.Services.Marks
             Parameter parameter = markInstance.LookupParameter(parameterName);
             if (parameter == null)
             {
-                if (warnings != null)
-                {
-                    warnings.Add("Параметр '" + parameterName + "' отсутствует у семейства марки угла.");
-                }
-
+                AddWarning(warnings, "Параметр '" + parameterName + "' отсутствует у семейства марки угла.");
                 return;
             }
 
             if (parameter.IsReadOnly)
             {
-                if (warnings != null)
-                {
-                    warnings.Add("Параметр '" + parameterName + "' доступен только для чтения.");
-                }
-
+                AddWarning(warnings, "Параметр '" + parameterName + "' доступен только для чтения.");
                 return;
             }
 
@@ -213,10 +192,7 @@ namespace SAB.InteriorElevations.Services.Marks
             }
             catch (Exception exception)
             {
-                if (warnings != null)
-                {
-                    warnings.Add("Не удалось заполнить параметр '" + parameterName + "': " + exception.Message);
-                }
+                AddWarning(warnings, "Не удалось заполнить параметр '" + parameterName + "': " + exception.Message);
             }
         }
 
@@ -228,6 +204,16 @@ namespace SAB.InteriorElevations.Services.Marks
             }
 
             return "(" + point.X.ToString("F3") + ", " + point.Y.ToString("F3") + ", " + point.Z.ToString("F3") + ")";
+        }
+
+        private void AddWarning(IList<string> warnings, string text)
+        {
+            if (warnings == null || string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+
+            warnings.Add(text);
         }
     }
 }

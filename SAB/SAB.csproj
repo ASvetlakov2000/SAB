@@ -112,7 +112,6 @@
     <Compile Include="BimDashboard\UI\DataSourceDialogService.cs" />
     <Compile Include="BimDashboard\Utils\FileUtils.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
-    <Compile Include="Cls_InteriorElevations\Commands\CreateRoomPlanSchemesCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\MoveElevationViewportsToNewSheetCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationLineData.cs" />
@@ -136,6 +135,7 @@
     <Compile Include="Cls_InteriorElevations\Services\Marks\CornerMarkConstants.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Marks\PlanCornerMarkAlignmentService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Marks\PlanCornerMarkPlacementService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Marks\RoomPlanRoomTagPlacementService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Marks\SheetCornerMarkPlacementService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Reports\ElevationCreationReportService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomDetectionService.cs" />

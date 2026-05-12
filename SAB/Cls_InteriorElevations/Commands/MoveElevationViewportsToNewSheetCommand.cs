@@ -143,6 +143,7 @@ namespace SAB.InteriorElevations.Commands
             reportBuilder.AppendLine("Выбрано viewport: " + result.SelectedViewportCount);
             reportBuilder.AppendLine("Выбрано марок: " + result.SelectedSheetMarkCount);
             reportBuilder.AppendLine("Перенесено viewport: " + result.MovedViewportCount);
+            reportBuilder.AppendLine("Скопировано viewport (план-схемы): " + result.CopiedViewportCount);
             reportBuilder.AppendLine("Перенесено марок: " + result.MovedSheetMarkCount);
             reportBuilder.AppendLine("Ошибок viewport: " + result.FailedViewportCount);
             reportBuilder.AppendLine("Ошибок марок: " + result.FailedSheetMarkCount);

@@ -9,7 +9,7 @@ namespace SAB.InteriorElevations.Services.Settings
 {
     public class ElevationSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 3;
+        private const int CurrentSchemaVersion = 4;
         private readonly string _settingsFilePath;
 
         public ElevationSettingsStorageService()
@@ -94,6 +94,16 @@ namespace SAB.InteriorElevations.Services.Settings
             settings.SheetLayoutSettings.StepXmm = persistedSettings.StepXmm;
             settings.SheetLayoutSettings.StepYmm = persistedSettings.StepYmm;
 
+            settings.RoomPlanNamePart1 = persistedSettings.RoomPlanNamePart1 ?? string.Empty;
+            settings.RoomPlanNamePart2 = persistedSettings.RoomPlanNamePart2 ?? string.Empty;
+            settings.RoomPlanNamePart3 = persistedSettings.RoomPlanNamePart3 ?? string.Empty;
+            settings.RoomPlanViewTemplateId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.RoomPlanViewTemplateIdValue);
+            settings.RoomPlanRoomTagTypeId = persistedSettings.RoomPlanRoomTagTypeIdValue > 0
+                ? RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.RoomPlanRoomTagTypeIdValue)
+                : ElementId.InvalidElementId;
+            settings.RoomPlanViewScale = persistedSettings.RoomPlanViewScale;
+            settings.RoomPlanCropOffsetMm = persistedSettings.RoomPlanCropOffsetMm;
+
             return settings;
         }
 
@@ -126,6 +136,14 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.StartYmm = sheetLayoutSettings.StartYmm;
             persistedSettings.StepXmm = sheetLayoutSettings.StepXmm;
             persistedSettings.StepYmm = sheetLayoutSettings.StepYmm;
+
+            persistedSettings.RoomPlanNamePart1 = settings.RoomPlanNamePart1 ?? string.Empty;
+            persistedSettings.RoomPlanNamePart2 = settings.RoomPlanNamePart2 ?? string.Empty;
+            persistedSettings.RoomPlanNamePart3 = settings.RoomPlanNamePart3 ?? string.Empty;
+            persistedSettings.RoomPlanViewTemplateIdValue = RevitElementIdUtils.GetElementIdValue(settings.RoomPlanViewTemplateId);
+            persistedSettings.RoomPlanRoomTagTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.RoomPlanRoomTagTypeId);
+            persistedSettings.RoomPlanViewScale = settings.RoomPlanViewScale;
+            persistedSettings.RoomPlanCropOffsetMm = settings.RoomPlanCropOffsetMm;
 
             return persistedSettings;
         }
@@ -173,6 +191,20 @@ namespace SAB.InteriorElevations.Services.Settings
             public double StepXmm { get; set; }
 
             public double StepYmm { get; set; }
+
+            public string RoomPlanNamePart1 { get; set; }
+
+            public string RoomPlanNamePart2 { get; set; }
+
+            public string RoomPlanNamePart3 { get; set; }
+
+            public long RoomPlanViewTemplateIdValue { get; set; }
+
+            public long RoomPlanRoomTagTypeIdValue { get; set; }
+
+            public int RoomPlanViewScale { get; set; }
+
+            public double RoomPlanCropOffsetMm { get; set; }
         }
     }
 }

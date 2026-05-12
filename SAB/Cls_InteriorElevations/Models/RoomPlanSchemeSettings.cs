@@ -15,7 +15,8 @@ namespace SAB.InteriorElevations.Models
 
         public ElementId ViewTemplateId { get; set; }
 
+        public int ViewScale { get; set; }
+
         public double CropOffsetMm { get; set; }
     }
 }
-

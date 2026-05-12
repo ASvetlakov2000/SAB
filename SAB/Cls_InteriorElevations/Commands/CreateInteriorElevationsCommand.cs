@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Services.Elevations;
 using SAB.InteriorElevations.Services.Geometry;
 using SAB.InteriorElevations.Services.Marks;
+using SAB.InteriorElevations.Services.Plans;
 using SAB.InteriorElevations.Services.Reports;
 using SAB.InteriorElevations.Services.Rooms;
 using SAB.InteriorElevations.Services.Selection;
@@ -167,6 +169,12 @@ namespace SAB.InteriorElevations.Commands
                     return Result.Cancelled;
                 }
 
+                Room roomForPlanScheme = document.GetElement(roomData.RoomElementId) as Room;
+                if (roomForPlanScheme == null)
+                {
+                    warnings.Add("Выбранное помещение не удалось получить из документа для построения план-схемы.");
+                }
+
                 ElevationNamingService namingService = new ElevationNamingService(document);
                 ElevationMarkerService markerService = new ElevationMarkerService();
                 ElevationCropService cropService = new ElevationCropService();
@@ -176,13 +184,17 @@ namespace SAB.InteriorElevations.Commands
                     cropService,
                     namingService);
 
+                RoomPlanSchemeCreationService roomPlanSchemeCreationService = new RoomPlanSchemeCreationService();
                 SheetCreationService sheetCreationService = new SheetCreationService();
                 ViewportPlacementService viewportPlacementService = new ViewportPlacementService();
                 PlanCornerMarkPlacementService planCornerMarkPlacementService = new PlanCornerMarkPlacementService();
+                RoomPlanRoomTagPlacementService roomPlanRoomTagPlacementService = new RoomPlanRoomTagPlacementService();
                 SheetCornerMarkPlacementService sheetCornerMarkPlacementService = new SheetCornerMarkPlacementService();
                 ElevationCreationReportService reportService = new ElevationCreationReportService();
 
                 ElevationViewCreationResult creationResult;
+                RoomPlanSchemeCreationSummary roomPlanSummary = null;
+                ViewPlan createdRoomPlanView = null;
                 ViewSheet createdSheet = null;
                 int placedViewportCount = 0;
                 int placedPlanMarksCount = 0;
@@ -194,7 +206,7 @@ namespace SAB.InteriorElevations.Commands
                 {
                     transactionGroup.Start();
 
-                    using (Transaction transaction = new Transaction(document, "Создать развертки стен"))
+                    using (Transaction transaction = new Transaction(document, "Создать развертки и план-схему"))
                     {
                         transaction.Start();
 
@@ -205,15 +217,83 @@ namespace SAB.InteriorElevations.Commands
                             settings,
                             warnings);
 
+                        if (creationResult.CreatedViews.Count > 0 && roomForPlanScheme != null)
+                        {
+                            RoomPlanSchemeSettings roomPlanSettings = BuildRoomPlanSchemeSettings(settings);
+                            IList<Room> singleRoomList = new List<Room> { roomForPlanScheme };
+
+                            roomPlanSummary = roomPlanSchemeCreationService.CreateRoomPlanSchemes(
+                                document,
+                                activePlanView,
+                                singleRoomList,
+                                roomPlanSettings,
+                                null);
+
+                            if (roomPlanSummary != null)
+                            {
+                                AppendWarnings(warnings, roomPlanSummary.Warnings);
+
+                                if (roomPlanSummary.CreatedViewIds.Count > 0)
+                                {
+                                    createdRoomPlanView = document.GetElement(roomPlanSummary.CreatedViewIds[0]) as ViewPlan;
+                                    if (createdRoomPlanView != null)
+                                    {
+                                        CopySelectedDetailLinesToPlanScheme(
+                                            document,
+                                            activePlanView,
+                                            createdRoomPlanView,
+                                            selectionResult.Lines,
+                                            warnings);
+                                    }
+                                }
+                            }
+                        }
+
                         if (creationResult.CreatedViews.Count > 0)
                         {
-                            placedPlanMarksCount = planCornerMarkPlacementService.PlacePlanCornerMarks(
+                            int placedPlanMarksOnSourcePlan = planCornerMarkPlacementService.PlacePlanCornerMarks(
                                 document,
                                 activePlanView,
                                 elevationLines,
                                 roomData,
                                 settings.PlanCornerMarkTypeId,
                                 warnings);
+
+                            int placedPlanMarksOnPlanScheme = 0;
+                            int placedRoomTagOnPlanScheme = 0;
+
+                            if (createdRoomPlanView != null && roomForPlanScheme != null)
+                            {
+                                placedPlanMarksOnPlanScheme = planCornerMarkPlacementService.PlacePlanCornerMarks(
+                                    document,
+                                    createdRoomPlanView,
+                                    elevationLines,
+                                    roomData,
+                                    settings.PlanCornerMarkTypeId,
+                                    warnings);
+
+                                placedRoomTagOnPlanScheme = roomPlanRoomTagPlacementService.PlaceRoomTag(
+                                    document,
+                                    createdRoomPlanView,
+                                    roomForPlanScheme,
+                                    settings.RoomPlanRoomTagTypeId,
+                                    warnings);
+                            }
+                            else if (roomForPlanScheme == null)
+                            {
+                                warnings.Add("Не удалось получить помещение. Марка помещения на план-схеме не размещена.");
+                            }
+                            else
+                            {
+                                warnings.Add("План-схема не создана. Марки углов и марка помещения на план-схеме не размещены.");
+                            }
+
+                            placedPlanMarksCount = placedPlanMarksOnSourcePlan + placedPlanMarksOnPlanScheme;
+
+                            if (placedRoomTagOnPlanScheme == 0 && settings.RoomPlanRoomTagTypeId != null && settings.RoomPlanRoomTagTypeId != ElementId.InvalidElementId)
+                            {
+                                warnings.Add("Марка помещения на план-схеме не была размещена.");
+                            }
                         }
 
                         if (settings.CreateSheet && creationResult.CreatedViews.Count > 0)
@@ -228,6 +308,17 @@ namespace SAB.InteriorElevations.Commands
                                     creationResult.CreatedViews,
                                     settings.SheetLayoutSettings,
                                     warnings);
+
+                                if (createdRoomPlanView != null)
+                                {
+                                    viewportPlacementService.TryPlaceAdditionalViewOnSheet(
+                                        document,
+                                        createdSheet,
+                                        createdRoomPlanView,
+                                        settings.SheetLayoutSettings,
+                                        placementResult,
+                                        warnings);
+                                }
 
                                 if (placementResult != null)
                                 {
@@ -253,6 +344,14 @@ namespace SAB.InteriorElevations.Commands
                     }
 
                     transactionGroup.Assimilate();
+                }
+
+                if (roomPlanSummary != null && roomPlanSummary.ManualBoundaryRequired)
+                {
+                    ToastNotifier.ShowWarning(
+                        "SAB Развертки",
+                        "Границу вида создать не удалось. На активном виде созданы вспомогательные линии для ручной правки.",
+                        15);
                 }
 
                 reportService.ShowFinalReport(
@@ -299,6 +398,20 @@ namespace SAB.InteriorElevations.Commands
             {
                 target.Add(source[i]);
             }
+        }
+
+        private RoomPlanSchemeSettings BuildRoomPlanSchemeSettings(ElevationSettings settings)
+        {
+            RoomPlanSchemeSettings roomPlanSettings = new RoomPlanSchemeSettings();
+            roomPlanSettings.NamePart1 = settings.RoomPlanNamePart1 ?? string.Empty;
+            roomPlanSettings.NamePart2 = settings.RoomPlanNamePart2 ?? string.Empty;
+            roomPlanSettings.NamePart3 = settings.RoomPlanNamePart3 ?? string.Empty;
+            roomPlanSettings.ViewTemplateId = settings.RoomPlanViewTemplateId != null
+                ? settings.RoomPlanViewTemplateId
+                : ElementId.InvalidElementId;
+            roomPlanSettings.ViewScale = settings.RoomPlanViewScale;
+            roomPlanSettings.CropOffsetMm = settings.RoomPlanCropOffsetMm;
+            return roomPlanSettings;
         }
 
         private bool ValidateSettings(Document document, ElevationSettings settings, out string validationMessage)
@@ -350,6 +463,24 @@ namespace SAB.InteriorElevations.Commands
             {
                 validationMessage = "Отступы обрезки должны быть неотрицательными.";
                 return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.RoomPlanNamePart1) &&
+                string.IsNullOrWhiteSpace(settings.RoomPlanNamePart2) &&
+                string.IsNullOrWhiteSpace(settings.RoomPlanNamePart3))
+            {
+                validationMessage = "Формула имени план-схемы не может быть пустой.";
+                return false;
+            }
+
+            if (settings.RoomPlanRoomTagTypeId != null && settings.RoomPlanRoomTagTypeId != ElementId.InvalidElementId)
+            {
+                FamilySymbol roomTagType = document.GetElement(settings.RoomPlanRoomTagTypeId) as FamilySymbol;
+                if (roomTagType == null || roomTagType.Category == null || roomTagType.Category.Id.IntegerValue != (int)BuiltInCategory.OST_RoomTags)
+                {
+                    validationMessage = "Тип марки помещения план-схемы должен относиться к категории 'Марки помещений'.";
+                    return false;
+                }
             }
 
             FamilySymbol planMarkType = document.GetElement(settings.PlanCornerMarkTypeId) as FamilySymbol;
@@ -453,6 +584,61 @@ namespace SAB.InteriorElevations.Commands
             }
 
             return false;
+        }
+
+        private void CopySelectedDetailLinesToPlanScheme(
+            Document document,
+            ViewPlan sourcePlanView,
+            ViewPlan targetPlanSchemeView,
+            IList<DetailLine> selectedDetailLines,
+            IList<string> warnings)
+        {
+            if (document == null || sourcePlanView == null || targetPlanSchemeView == null || selectedDetailLines == null || selectedDetailLines.Count == 0)
+            {
+                return;
+            }
+
+            List<ElementId> sourceLineIds = new List<ElementId>();
+            for (int index = 0; index < selectedDetailLines.Count; index++)
+            {
+                DetailLine detailLine = selectedDetailLines[index];
+                if (detailLine == null || detailLine.Id == null || detailLine.Id == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                if (!RevitElementIdUtils.AreEqual(detailLine.OwnerViewId, sourcePlanView.Id))
+                {
+                    continue;
+                }
+
+                sourceLineIds.Add(detailLine.Id);
+            }
+
+            if (sourceLineIds.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                CopyPasteOptions copyOptions = new CopyPasteOptions();
+                ICollection<ElementId> copiedIds = ElementTransformUtils.CopyElements(
+                    sourcePlanView,
+                    sourceLineIds,
+                    targetPlanSchemeView,
+                    Transform.Identity,
+                    copyOptions);
+
+                if (copiedIds == null || copiedIds.Count == 0)
+                {
+                    warnings.Add("Линии детализации не были скопированы на план-схему.");
+                }
+            }
+            catch (Exception copyException)
+            {
+                warnings.Add("Не удалось скопировать линии детализации на план-схему: " + copyException.Message);
+            }
         }
     }
 }

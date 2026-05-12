@@ -114,11 +114,13 @@ namespace SAB.InteriorElevations.Services.Plans
 
                 existingViewNames.Add(uniqueName);
 
-                if (sourcePlanView.Scale > 0)
+                // Блок установки масштаба план-схемы: приоритет у пользовательской настройки.
+                int planViewScale = settings.ViewScale > 0 ? settings.ViewScale : sourcePlanView.Scale;
+                if (planViewScale > 0)
                 {
                     try
                     {
-                        createdView.Scale = sourcePlanView.Scale;
+                        createdView.Scale = planViewScale;
                     }
                     catch
                     {
@@ -822,4 +824,3 @@ namespace SAB.InteriorElevations.Services.Plans
         }
     }
 }
-

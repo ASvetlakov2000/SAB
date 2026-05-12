@@ -70,7 +70,7 @@ namespace SAB.InteriorElevations.Services.Sheets
             TransferViewportInstances(document, sourceSheet, targetSheet, selectedViewports, result, warnings);
             TransferSheetMarkInstances(document, sourceSheet, targetSheet, selectedSheetMarks, result, warnings);
 
-            result.MovedCount = result.MovedViewportCount + result.MovedSheetMarkCount;
+            result.MovedCount = result.MovedViewportCount + result.CopiedViewportCount + result.MovedSheetMarkCount;
             result.FailedCount = result.FailedViewportCount + result.FailedSheetMarkCount;
             return result;
         }
@@ -116,6 +116,29 @@ namespace SAB.InteriorElevations.Services.Sheets
                 ElementId viewId = sourceViewport.ViewId;
                 ElementId viewportTypeId = sourceViewport.GetTypeId();
                 XYZ viewportCenter = sourceViewport.GetBoxCenter();
+                View sourceView = document.GetElement(viewId) as View;
+
+                if (IsFloorPlanView(sourceView))
+                {
+                    bool copiedSuccessfully = TryCopyFloorPlanViewport(
+                        document,
+                        targetSheet,
+                        sourceView,
+                        viewportTypeId,
+                        viewportCenter,
+                        warnings);
+
+                    if (copiedSuccessfully)
+                    {
+                        result.CopiedViewportCount++;
+                    }
+                    else
+                    {
+                        result.FailedViewportCount++;
+                    }
+
+                    continue;
+                }
 
                 try
                 {
@@ -147,6 +170,88 @@ namespace SAB.InteriorElevations.Services.Sheets
                     result.FailedViewportCount++;
                     AddWarning(warnings, "Ошибка переноса viewport: " + exception.Message);
                 }
+            }
+        }
+
+        private bool TryCopyFloorPlanViewport(
+            Document document,
+            ViewSheet targetSheet,
+            View sourceView,
+            ElementId viewportTypeId,
+            XYZ viewportCenter,
+            IList<string> warnings)
+        {
+            if (document == null || targetSheet == null || sourceView == null)
+            {
+                AddWarning(warnings, "Не удалось скопировать план-схему: недостаточно входных данных.");
+                return false;
+            }
+
+            ElementId duplicatedViewId = ElementId.InvalidElementId;
+            try
+            {
+                // Копируем план-схему с детализацией, чтобы вместе с видом переносились марки и аннотации.
+                duplicatedViewId = sourceView.Duplicate(ViewDuplicateOption.WithDetailing);
+                if (duplicatedViewId == ElementId.InvalidElementId)
+                {
+                    AddWarning(warnings, "Не удалось создать дубликат вида план-схемы.");
+                    return false;
+                }
+
+                if (!Viewport.CanAddViewToSheet(document, targetSheet.Id, duplicatedViewId))
+                {
+                    AddWarning(warnings, "Дубликат план-схемы нельзя разместить на новом листе.");
+                    TryDeleteElement(document, duplicatedViewId, warnings, "Не удалось удалить дубликат план-схемы после ошибки размещения.");
+                    return false;
+                }
+
+                Viewport copiedViewport = Viewport.Create(document, targetSheet.Id, duplicatedViewId, viewportCenter);
+                if (copiedViewport == null)
+                {
+                    AddWarning(warnings, "Не удалось создать viewport для дубликата план-схемы.");
+                    TryDeleteElement(document, duplicatedViewId, warnings, "Не удалось удалить дубликат план-схемы после ошибки создания viewport.");
+                    return false;
+                }
+
+                TryApplyViewportType(copiedViewport, viewportTypeId);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                AddWarning(warnings, "Ошибка копирования план-схемы: " + exception.Message);
+                if (duplicatedViewId != ElementId.InvalidElementId)
+                {
+                    TryDeleteElement(document, duplicatedViewId, warnings, "Не удалось удалить дубликат план-схемы после исключения.");
+                }
+
+                return false;
+            }
+        }
+
+        private bool IsFloorPlanView(View view)
+        {
+            if (view == null)
+            {
+                return false;
+            }
+
+            return view.ViewType == ViewType.FloorPlan;
+        }
+
+        private void TryDeleteElement(Document document, ElementId elementId, IList<string> warnings, string warningText)
+        {
+            if (document == null || elementId == null || elementId == ElementId.InvalidElementId)
+            {
+                return;
+            }
+
+            try
+            {
+                document.Delete(elementId);
+            }
+            catch
+            {
+                AddWarning(warnings, warningText);
             }
         }
 

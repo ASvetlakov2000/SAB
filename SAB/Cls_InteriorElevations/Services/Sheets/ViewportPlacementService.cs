@@ -159,6 +159,145 @@ namespace SAB.InteriorElevations.Services.Sheets
             return result;
         }
 
+        /// <summary>
+        /// Размещает дополнительный вид (например, план-схему) на том же листе ниже блока разверток.
+        /// </summary>
+        public bool TryPlaceAdditionalViewOnSheet(
+            Document document,
+            ViewSheet sheet,
+            View view,
+            SheetLayoutSettings layoutSettings,
+            ViewportPlacementResult placementResult,
+            IList<string> warnings)
+        {
+            if (document == null || sheet == null || view == null || layoutSettings == null)
+            {
+                return false;
+            }
+
+            if (!Viewport.CanAddViewToSheet(document, sheet.Id, view.Id))
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("План-схему нельзя разместить на листе.");
+                }
+
+                return false;
+            }
+
+            double startXFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartXmm);
+            double startYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartYmm);
+            double gapYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepYmm);
+
+            try
+            {
+                Viewport viewport = Viewport.Create(document, sheet.Id, view.Id, new XYZ(startXFeet, startYFeet, 0.0));
+                if (viewport == null)
+                {
+                    if (warnings != null)
+                    {
+                        warnings.Add("Не удалось создать viewport для план-схемы.");
+                    }
+
+                    return false;
+                }
+
+                Outline outline;
+                double width;
+                double height;
+                if (!TryGetViewportOutline(viewport, out outline, out width, out height))
+                {
+                    if (warnings != null)
+                    {
+                        warnings.Add("Не удалось определить габариты viewport план-схемы.");
+                    }
+
+                    return false;
+                }
+
+                // Блок расчета позиции: размещаем план-схему ниже всех уже размещенных видовых экранов.
+                double targetTopY = startYFeet;
+                if (placementResult != null && placementResult.PlacedViewports.Count > 0)
+                {
+                    double minY = double.MaxValue;
+                    for (int i = 0; i < placementResult.PlacedViewports.Count; i++)
+                    {
+                        PlacedViewportData placed = placementResult.PlacedViewports[i];
+                        if (placed == null || placed.ViewportId == null || placed.ViewportId == ElementId.InvalidElementId)
+                        {
+                            continue;
+                        }
+
+                        Viewport placedViewport = document.GetElement(placed.ViewportId) as Viewport;
+                        if (placedViewport == null)
+                        {
+                            continue;
+                        }
+
+                        Outline placedOutline = placedViewport.GetBoxOutline();
+                        if (placedOutline == null || placedOutline.MinimumPoint == null)
+                        {
+                            continue;
+                        }
+
+                        if (placedOutline.MinimumPoint.Y < minY)
+                        {
+                            minY = placedOutline.MinimumPoint.Y;
+                        }
+                    }
+
+                    if (minY < double.MaxValue)
+                    {
+                        targetTopY = minY - gapYFeet;
+                    }
+                }
+
+                double targetCenterX = startXFeet + width / 2.0;
+                double targetCenterY = targetTopY - height / 2.0;
+                XYZ currentCenter = viewport.GetBoxCenter();
+                XYZ targetCenter = new XYZ(targetCenterX, targetCenterY, currentCenter.Z);
+                XYZ moveVector = targetCenter - currentCenter;
+                if (moveVector.GetLength() > 1e-9)
+                {
+                    ElementTransformUtils.MoveElement(document, viewport.Id, moveVector);
+                }
+
+                if (placementResult != null)
+                {
+                    Outline finalOutline;
+                    double finalWidth;
+                    double finalHeight;
+                    if (TryGetViewportOutline(viewport, out finalOutline, out finalWidth, out finalHeight))
+                    {
+                        PlacedViewportData placedViewportData = new PlacedViewportData();
+                        placedViewportData.ViewportId = viewport.Id;
+                        placedViewportData.ViewId = view.Id;
+                        placedViewportData.Center = viewport.GetBoxCenter();
+
+                        XYZ topLeft;
+                        XYZ topRight;
+                        BuildTrueTopCorners(finalOutline, out topLeft, out topRight);
+                        placedViewportData.TopLeft = topLeft;
+                        placedViewportData.TopRight = topRight;
+                        placementResult.PlacedViewports.Add(placedViewportData);
+                    }
+
+                    placementResult.PlacedCount++;
+                }
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("Не удалось разместить план-схему на листе: " + exception.Message);
+                }
+
+                return false;
+            }
+        }
+
         private bool TryGetViewportOutline(Viewport viewport, out Outline outline, out double width, out double height)
         {
             outline = null;

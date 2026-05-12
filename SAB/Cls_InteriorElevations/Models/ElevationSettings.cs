@@ -33,5 +33,20 @@ namespace SAB.InteriorElevations.Models
         public int? SheetFormatAValue { get; set; }
 
         public SheetLayoutSettings SheetLayoutSettings { get; set; }
+
+        // Блок настроек создания план-схемы помещения после построения разверток.
+        public string RoomPlanNamePart1 { get; set; }
+
+        public string RoomPlanNamePart2 { get; set; }
+
+        public string RoomPlanNamePart3 { get; set; }
+
+        public ElementId RoomPlanViewTemplateId { get; set; }
+
+        public ElementId RoomPlanRoomTagTypeId { get; set; }
+
+        public int RoomPlanViewScale { get; set; }
+
+        public double RoomPlanCropOffsetMm { get; set; }
     }
 }

@@ -31,6 +31,8 @@ namespace SAB.InteriorElevations.ViewModels
         private RevitElementOption _selectedTitleBlockType;
         private RevitElementOption _selectedPlanCornerMarkType;
         private RevitElementOption _selectedSheetCornerMarkType;
+        private RevitElementOption _selectedRoomPlanViewTemplate;
+        private RevitElementOption _selectedRoomPlanRoomTagType;
         private bool _createSheet;
 
         public ElevationSettingsViewModel(Document document, ElevationSettings initialSettings = null)
@@ -42,8 +44,10 @@ namespace SAB.InteriorElevations.ViewModels
             TitleBlockTypes = new ObservableCollection<RevitElementOption>();
             PlanCornerMarkTypes = new ObservableCollection<RevitElementOption>();
             SheetCornerMarkTypes = new ObservableCollection<RevitElementOption>();
+            RoomPlanViewTemplates = new ObservableCollection<RevitElementOption>();
+            RoomPlanRoomTagTypes = new ObservableCollection<RevitElementOption>();
 
-            // Ð‘Ð»Ð¾Ðº Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð¼Ð¾Ð¶ÐµÑ‚ Ð¼ÐµÐ½ÑÑ‚ÑŒ Ð² Ð¾ÐºÐ½Ðµ.
+            // Блок значений по умолчанию, которые пользователь может менять в окне.
             ViewScaleText = "50";
             TopOffsetMmText = "3000";
             BottomOffsetMmText = "0";
@@ -59,15 +63,24 @@ namespace SAB.InteriorElevations.ViewModels
             StepYmmText = "140";
             SheetFormatAText = "3";
 
+            // Блок настроек план-схемы, интегрированный в окно разверток.
+            RoomPlanNamePart1Text = "План-схема разверток пом. ";
+            RoomPlanNamePart2Text = "{Номер помещения}";
+            RoomPlanNamePart3Text = string.Empty;
+            RoomPlanViewScaleText = "20";
+            RoomPlanCropOffsetMmText = "0";
+
             LoadElevationViewFamilyTypes();
             LoadViewTemplates();
             LoadTitleBlockTypes();
             LoadCornerMarkTypes(PlanCornerMarkTypes, CornerMarkConstants.PlanFamilyName);
             LoadCornerMarkTypes(SheetCornerMarkTypes, CornerMarkConstants.SheetFamilyName);
+            LoadRoomPlanViewTemplates();
+            LoadRoomPlanRoomTagTypes();
 
             _createSheet = TitleBlockTypes.Count > 0;
 
-            // Ð‘Ð»Ð¾Ðº Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ñ… ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð½Ñ‹Ñ… Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹ Ð¸Ð· Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰ÐµÐ¹ ÑÐµÑÑÐ¸Ð¸.
+            // Блок восстановления последних сохраненных значений из предыдущей сессии.
             ApplyInitialSettings(initialSettings);
         }
 
@@ -82,6 +95,10 @@ namespace SAB.InteriorElevations.ViewModels
         public ObservableCollection<RevitElementOption> PlanCornerMarkTypes { get; private set; }
 
         public ObservableCollection<RevitElementOption> SheetCornerMarkTypes { get; private set; }
+
+        public ObservableCollection<RevitElementOption> RoomPlanViewTemplates { get; private set; }
+
+        public ObservableCollection<RevitElementOption> RoomPlanRoomTagTypes { get; private set; }
 
         public RevitElementOption SelectedElevationViewFamilyType
         {
@@ -133,6 +150,26 @@ namespace SAB.InteriorElevations.ViewModels
             }
         }
 
+        public RevitElementOption SelectedRoomPlanViewTemplate
+        {
+            get { return _selectedRoomPlanViewTemplate; }
+            set
+            {
+                _selectedRoomPlanViewTemplate = value;
+                OnPropertyChanged("SelectedRoomPlanViewTemplate");
+            }
+        }
+
+        public RevitElementOption SelectedRoomPlanRoomTagType
+        {
+            get { return _selectedRoomPlanRoomTagType; }
+            set
+            {
+                _selectedRoomPlanRoomTagType = value;
+                OnPropertyChanged("SelectedRoomPlanRoomTagType");
+            }
+        }
+
         public string ViewScaleText { get; set; }
 
         public string TopOffsetMmText { get; set; }
@@ -168,6 +205,16 @@ namespace SAB.InteriorElevations.ViewModels
         public string StepYmmText { get; set; }
 
         public string SheetFormatAText { get; set; }
+
+        public string RoomPlanNamePart1Text { get; set; }
+
+        public string RoomPlanNamePart2Text { get; set; }
+
+        public string RoomPlanNamePart3Text { get; set; }
+
+        public string RoomPlanViewScaleText { get; set; }
+
+        public string RoomPlanCropOffsetMmText { get; set; }
 
         public bool TryBuildSettings(out ElevationSettings settings, out string validationMessage)
         {
@@ -213,6 +260,19 @@ namespace SAB.InteriorElevations.ViewModels
             elevationSettings.SheetLayoutSettings.StepXmm = ParseDouble(StepXmmText);
             elevationSettings.SheetLayoutSettings.StepYmm = ParseDouble(StepYmmText);
 
+            // Блок параметров план-схемы помещения.
+            elevationSettings.RoomPlanNamePart1 = RoomPlanNamePart1Text ?? string.Empty;
+            elevationSettings.RoomPlanNamePart2 = RoomPlanNamePart2Text ?? string.Empty;
+            elevationSettings.RoomPlanNamePart3 = RoomPlanNamePart3Text ?? string.Empty;
+            elevationSettings.RoomPlanViewTemplateId = SelectedRoomPlanViewTemplate != null
+                ? SelectedRoomPlanViewTemplate.Id
+                : ElementId.InvalidElementId;
+            elevationSettings.RoomPlanRoomTagTypeId = SelectedRoomPlanRoomTagType != null
+                ? SelectedRoomPlanRoomTagType.Id
+                : ElementId.InvalidElementId;
+            elevationSettings.RoomPlanViewScale = ParseInt(RoomPlanViewScaleText);
+            elevationSettings.RoomPlanCropOffsetMm = ParseDouble(RoomPlanCropOffsetMmText);
+
             settings = elevationSettings;
             return true;
         }
@@ -221,42 +281,42 @@ namespace SAB.InteriorElevations.ViewModels
         {
             if (SelectedElevationViewFamilyType == null)
             {
-                return "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ Ð²Ð¸Ð´Ð° Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚ÐºÐ¸.";
+                return "Не выбран тип вида развертки.";
             }
 
             if (SelectedPlanCornerMarkType == null)
             {
-                return "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð° Ð¼Ð°Ñ€ÐºÐ¸ ÑƒÐ³Ð»Ð° Ð½Ð° Ð¿Ð»Ð°Ð½Ðµ.";
+                return "Не выбран тип семейства марки угла на плане.";
             }
 
             int viewScale;
             if (!TryParseInt(ViewScaleText, out viewScale) || viewScale <= 0)
             {
-                return "ÐœÐ°ÑÑˆÑ‚Ð°Ð± Ð²Ð¸Ð´Ð° Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ†ÐµÐ»Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼.";
+                return "Масштаб вида должен быть положительным целым числом.";
             }
 
             double top;
             if (!TryParseDouble(TopOffsetMmText, out top) || top < 0)
             {
-                return "Ð’ÐµÑ€Ñ…Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                return "Верхний отступ должен быть неотрицательным числом (мм).";
             }
 
             double bottom;
             if (!TryParseDouble(BottomOffsetMmText, out bottom) || bottom < 0)
             {
-                return "ÐÐ¸Ð¶Ð½Ð¸Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                return "Нижний отступ должен быть неотрицательным числом (мм).";
             }
 
             double left;
             if (!TryParseDouble(LeftOffsetMmText, out left) || left < 0)
             {
-                return "Ð›ÐµÐ²Ñ‹Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                return "Левый отступ должен быть неотрицательным числом (мм).";
             }
 
             double right;
             if (!TryParseDouble(RightOffsetMmText, out right) || right < 0)
             {
-                return "ÐŸÑ€Ð°Ð²Ñ‹Ð¹ Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                return "Правый отступ должен быть неотрицательным числом (мм).";
             }
 
             double depth;
@@ -268,50 +328,70 @@ namespace SAB.InteriorElevations.ViewModels
             double markerOffset;
             if (!TryParseDouble(MarkerOffsetMmText, out markerOffset) || markerOffset < 0)
             {
-                return "ÐžÑ‚ÑÑ‚ÑƒÐ¿ Ð²Ð¸Ð´Ð° Ð¾Ñ‚ Ð»Ð¸Ð½Ð¸Ð¸ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð½ÐµÐ¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                return "Отступ вида от линии должен быть неотрицательным числом (мм).";
+            }
+
+            if (string.IsNullOrWhiteSpace(RoomPlanNamePart1Text) &&
+                string.IsNullOrWhiteSpace(RoomPlanNamePart2Text) &&
+                string.IsNullOrWhiteSpace(RoomPlanNamePart3Text))
+            {
+                return "Формула имени план-схемы не может быть пустой.";
+            }
+
+            double roomPlanCropOffset;
+            if (!TryParseDouble(RoomPlanCropOffsetMmText, out roomPlanCropOffset))
+            {
+                return "Отступ границы обрезки план-схемы должен быть числом (мм).";
+            }
+
+            int roomPlanViewScale;
+            if (!TryParseInt(RoomPlanViewScaleText, out roomPlanViewScale) || roomPlanViewScale <= 0)
+            {
+                return "Масштаб вида план-схемы должен быть положительным целым числом.";
             }
 
             if (CreateSheet)
             {
                 if (SelectedTitleBlockType == null)
                 {
-                    return "Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð»Ð¸ÑÑ‚Ð°, Ð½Ð¾ Ð½Ðµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ð½Ð°Ð´Ð¿Ð¸ÑÐ¸.";
+                    return "Включено создание листа, но не выбран тип основной надписи.";
                 }
 
                 if (SelectedSheetCornerMarkType == null)
                 {
-                    return "Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð»Ð¸ÑÑ‚Ð°, Ð½Ð¾ Ð½Ðµ Ð²Ñ‹Ð±Ñ€Ð°Ð½ Ñ‚Ð¸Ð¿ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð° Ð¼Ð°Ñ€ÐºÐ¸ ÑƒÐ³Ð»Ð° Ð½Ð° Ð»Ð¸ÑÑ‚Ðµ.";
+                    return "Включено создание листа, но не выбран тип семейства марки угла на листе.";
                 }
 
                 int columns;
                 if (!TryParseInt(ColumnsCountText, out columns) || columns <= 0)
                 {
-                    return "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐºÐ¾Ð»Ð¾Ð½Ð¾Ðº Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ†ÐµÐ»Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼.";
+                    return "Количество колонок должно быть положительным целым числом.";
                 }
 
                 double startX;
                 if (!TryParseDouble(StartXmmText, out startX))
                 {
-                    return "ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ð°Ñ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ð° X Ð½Ð° Ð»Ð¸ÑÑ‚Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                    return "Начальная координата X на листе должна быть числом (мм).";
                 }
 
                 double startY;
                 if (!TryParseDouble(StartYmmText, out startY))
                 {
-                    return "ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ð°Ñ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ð° Y Ð½Ð° Ð»Ð¸ÑÑ‚Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                    return "Начальная координата Y на листе должна быть числом (мм).";
                 }
 
                 double stepX;
                 if (!TryParseDouble(StepXmmText, out stepX) || stepX <= 0)
                 {
-                    return "Ð¨Ð°Ð³ Ð¿Ð¾ X Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                    return "Шаг по X должен быть положительным числом (мм).";
                 }
 
                 double stepY;
                 if (!TryParseDouble(StepYmmText, out stepY) || stepY <= 0)
                 {
-                    return "Ð¨Ð°Ð³ Ð¿Ð¾ Y Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¼ Ñ‡Ð¸ÑÐ»Ð¾Ð¼ (Ð¼Ð¼).";
+                    return "Шаг по Y должен быть положительным числом (мм).";
                 }
+
                 if (!string.IsNullOrWhiteSpace(SheetFormatAText))
                 {
                     int sheetFormatAValue;
@@ -394,7 +474,7 @@ namespace SAB.InteriorElevations.ViewModels
                 options.Add(option);
             }
 
-            // Ð•ÑÐ»Ð¸ ÑˆÐ°Ð±Ð»Ð¾Ð½Ð¾Ð² Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚Ð¾Ðº Ð½ÐµÑ‚, Ð´Ð°ÐµÐ¼ Ð²Ñ‹Ð±Ñ€Ð°Ñ‚ÑŒ Ð»ÑŽÐ±Ð¾Ð¹ ÑˆÐ°Ð±Ð»Ð¾Ð½ Ð²Ð¸Ð´Ð°.
+            // Если шаблонов разверток нет, даем выбрать любой шаблон вида.
             if (options.Count == 0)
             {
                 FilteredElementCollector fallbackCollector = new FilteredElementCollector(_document).OfClass(typeof(View));
@@ -424,6 +504,95 @@ namespace SAB.InteriorElevations.ViewModels
             }
 
             SelectedViewTemplate = ViewTemplates[0];
+        }
+
+        private void LoadRoomPlanViewTemplates()
+        {
+            RevitElementOption emptyOption = new RevitElementOption
+            {
+                Id = ElementId.InvalidElementId,
+                DisplayName = "<Не выбран>"
+            };
+            RoomPlanViewTemplates.Add(emptyOption);
+
+            List<RevitElementOption> options = new List<RevitElementOption>();
+            FilteredElementCollector collector = new FilteredElementCollector(_document).OfClass(typeof(View));
+            foreach (Element element in collector)
+            {
+                View view = element as View;
+                if (view == null || !view.IsTemplate)
+                {
+                    continue;
+                }
+
+                if (view.ViewType != ViewType.FloorPlan && view.ViewType != ViewType.CeilingPlan)
+                {
+                    continue;
+                }
+
+                RevitElementOption option = new RevitElementOption
+                {
+                    Id = view.Id,
+                    DisplayName = view.Name
+                };
+                options.Add(option);
+            }
+
+            options.Sort(delegate(RevitElementOption left, RevitElementOption right)
+            {
+                return string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
+            });
+
+            for (int index = 0; index < options.Count; index++)
+            {
+                RoomPlanViewTemplates.Add(options[index]);
+            }
+
+            SelectedRoomPlanViewTemplate = RoomPlanViewTemplates.Count > 0 ? RoomPlanViewTemplates[0] : null;
+        }
+
+        private void LoadRoomPlanRoomTagTypes()
+        {
+            RevitElementOption emptyOption = new RevitElementOption
+            {
+                Id = ElementId.InvalidElementId,
+                DisplayName = "<Не выбран>"
+            };
+            RoomPlanRoomTagTypes.Add(emptyOption);
+
+            List<RevitElementOption> options = new List<RevitElementOption>();
+            FilteredElementCollector collector = new FilteredElementCollector(_document)
+                .OfClass(typeof(FamilySymbol))
+                .OfCategory(BuiltInCategory.OST_RoomTags);
+
+            foreach (Element element in collector)
+            {
+                FamilySymbol familySymbol = element as FamilySymbol;
+                if (familySymbol == null)
+                {
+                    continue;
+                }
+
+                string familyName = familySymbol.Family != null ? familySymbol.Family.Name : familySymbol.FamilyName;
+                RevitElementOption option = new RevitElementOption
+                {
+                    Id = familySymbol.Id,
+                    DisplayName = familyName + " : " + familySymbol.Name
+                };
+                options.Add(option);
+            }
+
+            options.Sort(delegate(RevitElementOption left, RevitElementOption right)
+            {
+                return string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
+            });
+
+            for (int index = 0; index < options.Count; index++)
+            {
+                RoomPlanRoomTagTypes.Add(options[index]);
+            }
+
+            SelectedRoomPlanRoomTagType = RoomPlanRoomTagTypes.Count > 0 ? RoomPlanRoomTagTypes[0] : null;
         }
 
         private void LoadTitleBlockTypes()
@@ -545,14 +714,14 @@ namespace SAB.InteriorElevations.ViewModels
                 return;
             }
 
-            // Ð’Ð¾ÑÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ñ‚Ð¸Ð¿ Ð²Ð¸Ð´Ð° Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚ÐºÐ¸ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ñ‚Ð¸Ð¿ Ð´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½ Ð² Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ðµ.
+            // Восстанавливаем тип вида развертки только если тип доступен в текущем документе.
             RevitElementOption elevationTypeOption = FindOptionById(ElevationViewFamilyTypes, initialSettings.ElevationViewFamilyTypeId);
             if (elevationTypeOption != null)
             {
                 SelectedElevationViewFamilyType = elevationTypeOption;
             }
 
-            // Ð•ÑÐ»Ð¸ Ñ€Ð°Ð½ÐµÐµ ÑˆÐ°Ð±Ð»Ð¾Ð½ Ð½Ðµ Ð²Ñ‹Ð±Ð¸Ñ€Ð°Ð»Ð¸, Ð¾ÑÑ‚Ð°Ð²Ð»ÑÐµÐ¼ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ "<ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½>".
+            // Если ранее шаблон не выбирали, оставляем вариант "<Не выбран>".
             if (initialSettings.ViewTemplateId == null || RevitElementIdUtils.AreEqual(initialSettings.ViewTemplateId, ElementId.InvalidElementId))
             {
                 if (ViewTemplates.Count > 0)
@@ -609,7 +778,7 @@ namespace SAB.InteriorElevations.ViewModels
                 SheetFormatAText = initialSettings.SheetFormatAValue.Value.ToString(CultureInfo.CurrentCulture);
             }
 
-            // Ð’ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð»Ð¸ÑÑ‚Ð° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐµÑÐ»Ð¸ Ð² Ð¿Ñ€Ð¾ÐµÐºÑ‚Ðµ ÐµÑÑ‚ÑŒ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ‹Ðµ Ñ‚Ð¸Ð¿Ñ‹ Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ð½Ð°Ð´Ð¿Ð¸ÑÐ¸.
+            // Включаем создание листа только если в проекте есть доступные типы основной надписи.
             CreateSheet = initialSettings.CreateSheet && TitleBlockTypes.Count > 0;
             RevitElementOption titleBlockOption = FindOptionById(TitleBlockTypes, initialSettings.TitleBlockTypeId);
             if (titleBlockOption != null)
@@ -630,27 +799,61 @@ namespace SAB.InteriorElevations.ViewModels
             }
 
             SheetLayoutSettings savedLayout = initialSettings.SheetLayoutSettings;
-            if (savedLayout == null)
+            if (savedLayout != null)
             {
-                return;
+                if (savedLayout.ColumnsCount > 0)
+                {
+                    ColumnsCountText = savedLayout.ColumnsCount.ToString(CultureInfo.CurrentCulture);
+                }
+
+                StartXmmText = FormatDouble(savedLayout.StartXmm);
+                StartYmmText = FormatDouble(savedLayout.StartYmm);
+
+                if (savedLayout.StepXmm > 0)
+                {
+                    StepXmmText = FormatDouble(savedLayout.StepXmm);
+                }
+
+                if (savedLayout.StepYmm > 0)
+                {
+                    StepYmmText = FormatDouble(savedLayout.StepYmm);
+                }
             }
 
-            if (savedLayout.ColumnsCount > 0)
+            // Блок восстановления настроек план-схемы.
+            if (!string.IsNullOrWhiteSpace(initialSettings.RoomPlanNamePart1))
             {
-                ColumnsCountText = savedLayout.ColumnsCount.ToString(CultureInfo.CurrentCulture);
+                RoomPlanNamePart1Text = initialSettings.RoomPlanNamePart1;
             }
 
-            StartXmmText = FormatDouble(savedLayout.StartXmm);
-            StartYmmText = FormatDouble(savedLayout.StartYmm);
-
-            if (savedLayout.StepXmm > 0)
+            if (!string.IsNullOrWhiteSpace(initialSettings.RoomPlanNamePart2))
             {
-                StepXmmText = FormatDouble(savedLayout.StepXmm);
+                RoomPlanNamePart2Text = initialSettings.RoomPlanNamePart2;
             }
 
-            if (savedLayout.StepYmm > 0)
+            RoomPlanNamePart3Text = initialSettings.RoomPlanNamePart3 ?? string.Empty;
+            if (initialSettings.RoomPlanViewScale > 0)
             {
-                StepYmmText = FormatDouble(savedLayout.StepYmm);
+                RoomPlanViewScaleText = initialSettings.RoomPlanViewScale.ToString(CultureInfo.CurrentCulture);
+            }
+            RoomPlanCropOffsetMmText = FormatDouble(initialSettings.RoomPlanCropOffsetMm);
+
+            if (initialSettings.RoomPlanViewTemplateId != null && !RevitElementIdUtils.AreEqual(initialSettings.RoomPlanViewTemplateId, ElementId.InvalidElementId))
+            {
+                RevitElementOption roomPlanTemplateOption = FindOptionById(RoomPlanViewTemplates, initialSettings.RoomPlanViewTemplateId);
+                if (roomPlanTemplateOption != null)
+                {
+                    SelectedRoomPlanViewTemplate = roomPlanTemplateOption;
+                }
+            }
+
+            if (initialSettings.RoomPlanRoomTagTypeId != null && !RevitElementIdUtils.AreEqual(initialSettings.RoomPlanRoomTagTypeId, ElementId.InvalidElementId))
+            {
+                RevitElementOption roomTagOption = FindOptionById(RoomPlanRoomTagTypes, initialSettings.RoomPlanRoomTagTypeId);
+                if (roomTagOption != null)
+                {
+                    SelectedRoomPlanRoomTagType = roomTagOption;
+                }
             }
         }
 
@@ -716,4 +919,3 @@ namespace SAB.InteriorElevations.ViewModels
         }
     }
 }
-

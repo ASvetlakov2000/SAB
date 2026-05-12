@@ -1,9 +1,9 @@
 ﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SAB Развертки стен"
-        Height="1026"
+        Height="1152"
         Width="820"
-        MinHeight="983"
+        MinHeight="820"
         MinWidth="760"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResizeWithGrip"
@@ -23,14 +23,14 @@
             <Setter Property="BorderBrush" Value="{StaticResource SectionBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="14" />
-            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Padding" Value="11.2" />
+            <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
 
         <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="19" />
+            <Setter Property="FontSize" Value="17.1" />
             <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="Foreground" Value="#111111" />
         </Style>
 
@@ -39,7 +39,7 @@
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Margin" Value="0,0,0,6.4" />
         </Style>
 
         <Style x:Key="SettingTitleBorderStyle" TargetType="Border">
@@ -47,11 +47,11 @@
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
             <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="CornerRadius" Value="8,8,0,0" />
-            <Setter Property="Padding" Value="10,7" />
+            <Setter Property="Padding" Value="8,5.6" />
         </Style>
 
         <Style x:Key="SettingTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="12.6" />
             <Setter Property="Foreground" Value="#202020" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
@@ -61,8 +61,8 @@
             <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="8,4" />
-            <Setter Property="Margin" Value="8" />
+            <Setter Property="Padding" Value="6.4,3.2" />
+            <Setter Property="Margin" Value="6.4" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource FieldHoverBackgroundBrush}" />
@@ -78,7 +78,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="12.6" />
             <Setter Property="Foreground" Value="#202020" />
         </Style>
 
@@ -87,7 +87,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="12.6" />
             <Setter Property="Foreground" Value="#202020" />
         </Style>
 
@@ -96,9 +96,9 @@
             <Setter Property="BorderBrush" Value="#000000" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Foreground" Value="#101010" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="12.6" />
             <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Padding" Value="14,7" />
+            <Setter Property="Padding" Value="11.2,5.6" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -177,15 +177,16 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="16">
-                <TextBlock Text="Настройки создания разверток" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,10" />
+            <StackPanel Margin="13">
+                <TextBlock Text="Настройки создания разверток" Style="{StaticResource SectionTitleTextStyle}" Margin="0,0,0,8" />
 
                 <Border Style="{StaticResource SectionBorderStyle}">
                     <StackPanel>
-                        <TextBlock Text="Параметры вида" Style="{StaticResource SectionTitleTextStyle}" />
+                        <TextBlock Text="Параметры вида развертки" Style="{StaticResource SectionTitleTextStyle}" />
 
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
@@ -218,7 +219,7 @@
                                 </Border>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                            <StackPanel Grid.Column="1" Margin="6,0,6,0">
                                 <Border Style="{StaticResource SettingCardBorderStyle}">
                                     <StackPanel>
                                         <Border Style="{StaticResource SettingTitleBorderStyle}">
@@ -247,13 +248,29 @@
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
+
+                            <StackPanel Grid.Column="2" Margin="6,0,0,0">
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Тип марки помещения план схемы" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <ComboBox Style="{StaticResource FlatComboBoxStyle}"
+                                                      ItemsSource="{Binding RoomPlanRoomTagTypes}"
+                                                      SelectedItem="{Binding SelectedRoomPlanRoomTagType}"
+                                                      DisplayMemberPath="DisplayName" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </Border>
 
                 <Border Style="{StaticResource SectionBorderStyle}">
                     <StackPanel>
-                        <TextBlock Text="Параметры обрезки" Style="{StaticResource SectionTitleTextStyle}" />
+                        <TextBlock Text="Параметры обрезки вида развертки" Style="{StaticResource SectionTitleTextStyle}" />
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -312,6 +329,97 @@
 
                 <Border Style="{StaticResource SectionBorderStyle}">
                     <StackPanel>
+                        <TextBlock Text="Параметры план-схемы помещения" Style="{StaticResource SectionTitleTextStyle}" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Имя вида План-Схемы, часть 1" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <TextBox Style="{StaticResource FlatTextBoxStyle}"
+                                                     Text="{Binding RoomPlanNamePart1Text, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Имя вида План-Схемы, часть 2" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <TextBox Style="{StaticResource FlatTextBoxStyle}"
+                                                     Text="{Binding RoomPlanNamePart2Text, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Имя вида План-Схемы, часть 3" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <TextBox Style="{StaticResource FlatTextBoxStyle}"
+                                                     Text="{Binding RoomPlanNamePart3Text, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Шаблон вида план схемы" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <ComboBox Style="{StaticResource FlatComboBoxStyle}"
+                                                      ItemsSource="{Binding RoomPlanViewTemplates}"
+                                                      SelectedItem="{Binding SelectedRoomPlanViewTemplate}"
+                                                      DisplayMemberPath="DisplayName" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Масштаб вида план схемы" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <TextBox Style="{StaticResource FlatTextBoxStyle}"
+                                                     Text="{Binding RoomPlanViewScaleText, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource SettingCardBorderStyle}">
+                                    <StackPanel>
+                                        <Border Style="{StaticResource SettingTitleBorderStyle}">
+                                            <TextBlock Text="Отступ границы план схемы (мм)" Style="{StaticResource SettingTitleTextStyle}" />
+                                        </Border>
+                                        <Border Style="{StaticResource SettingInputHostStyle}">
+                                            <TextBox Style="{StaticResource FlatTextBoxStyle}"
+                                                     Text="{Binding RoomPlanCropOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SectionBorderStyle}">
+                    <StackPanel>
                         <TextBlock Text="Параметры листа" Style="{StaticResource SectionTitleTextStyle}" />
 
                         <Grid>
@@ -326,7 +434,7 @@
                                     <StackPanel>
                                         <Border Style="{StaticResource SettingTitleBorderStyle}"><TextBlock Text="Создание листа" Style="{StaticResource SettingTitleTextStyle}" /></Border>
                                         <Border Style="{StaticResource SettingInputHostStyle}">
-                                            <CheckBox Content="Создать лист" IsChecked="{Binding CreateSheet}" FontSize="14" />
+                                            <CheckBox Content="Создать лист" IsChecked="{Binding CreateSheet}" FontSize="12.6" />
                                         </Border>
                                     </StackPanel>
                                 </Border>
@@ -405,18 +513,18 @@
             </StackPanel>
         </ScrollViewer>
 
-        <DockPanel Grid.Row="1" Margin="16,8,16,16" LastChildFill="False">
+        <DockPanel Grid.Row="1" Margin="13,6.4,13,13" LastChildFill="False">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
                 <Button x:Name="CancelButton"
                         Style="{StaticResource GrayActionButtonStyle}"
                         Width="170"
-                        Height="38"
+                        Height="32"
                         Margin="0,0,8,0"
                         Content="Отмена" />
                 <Button x:Name="OkButton"
                         Style="{StaticResource GrayActionButtonStyle}"
                         Width="220"
-                        Height="38"
+                        Height="32"
                         Content="Создать развертки" />
             </StackPanel>
         </DockPanel>
