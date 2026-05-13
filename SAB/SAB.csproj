@@ -293,10 +293,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Helpers\Notifications\ToastNotifications\Пример вызова_ToastNotifier.txt" />
-    <Content Include="Resources\FlipElevation180ByLineCommand_16.png" />
-    <Content Include="Resources\FlipElevation180ByLineCommand_32.png" />
-    <Content Include="Resources\OpenNamingStandardsHtmlCommand_16.png" />
-    <Content Include="Resources\OpenNamingStandardsHtmlCommand_32.png" />
+    <EmbeddedResource Include="Resources\FlipElevation180ByLineCommand_16.png" />
+    <EmbeddedResource Include="Resources\FlipElevation180ByLineCommand_32.png" />
+    <EmbeddedResource Include="Resources\OpenNamingStandardsHtmlCommand_16.png" />
+    <EmbeddedResource Include="Resources\OpenNamingStandardsHtmlCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_16.png" />
     <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_16.png" />
