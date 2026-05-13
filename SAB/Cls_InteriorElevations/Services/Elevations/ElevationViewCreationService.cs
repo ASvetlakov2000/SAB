@@ -83,14 +83,6 @@ namespace SAB.InteriorElevations.Services.Elevations
                     string uniqueViewName = _namingService.GenerateUniqueElevationViewName(lineData.RoomData, startPointNumber, endPointNumber);
                     createdView.Name = uniqueViewName;
 
-                    // Масштаб назначаем до шаблона, чтобы шаблон мог переопределить параметр при необходимости.
-                    if (settings.ViewScale > 0)
-                    {
-                        createdView.Scale = settings.ViewScale;
-                    }
-
-                    bool cropApplied = _cropService.TryApplyCrop(createdView, lineData, settings, warnings);
-
                     bool templateApplied = false;
                     if (settings.ViewTemplateId != null && settings.ViewTemplateId != ElementId.InvalidElementId)
                     {
@@ -109,6 +101,12 @@ namespace SAB.InteriorElevations.Services.Elevations
                             }
                         }
                     }
+
+                    // Блок применения масштаба:
+                    // если масштаб контролируется текущим шаблоном вида, значение из окна не применяем.
+                    TryApplyScaleRespectTemplate(document, createdView, settings.ViewScale, warnings);
+
+                    bool cropApplied = _cropService.TryApplyCrop(createdView, lineData, settings, warnings);
 
                     // После применения шаблона повторно включаем отображение границы обрезки.
                     try
@@ -148,6 +146,81 @@ namespace SAB.InteriorElevations.Services.Elevations
             }
 
             return result;
+        }
+
+        private void TryApplyScaleRespectTemplate(
+            Document document,
+            View view,
+            int requestedScale,
+            IList<string> warnings)
+        {
+            if (document == null || view == null || requestedScale <= 0)
+            {
+                return;
+            }
+
+            if (IsScaleControlledByTemplate(document, view))
+            {
+                if (warnings != null)
+                {
+                    warnings.Add(
+                        "Для вида \"" + view.Name + "\" масштаб задается шаблоном вида. " +
+                        "Масштаб из окна настроек не применен.");
+                }
+
+                return;
+            }
+
+            try
+            {
+                view.Scale = requestedScale;
+            }
+            catch (Exception scaleException)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add(
+                        "Не удалось установить масштаб для вида \"" + view.Name + "\": " +
+                        scaleException.Message);
+                }
+            }
+        }
+
+        private bool IsScaleControlledByTemplate(Document document, View view)
+        {
+            if (document == null || view == null)
+            {
+                return false;
+            }
+
+            ElementId templateId = view.ViewTemplateId;
+            if (templateId == null || templateId == ElementId.InvalidElementId)
+            {
+                return false;
+            }
+
+            View templateView = document.GetElement(templateId) as View;
+            if (templateView == null || !templateView.IsTemplate)
+            {
+                return false;
+            }
+
+            ICollection<ElementId> nonControlled = templateView.GetNonControlledTemplateParameterIds();
+            if (nonControlled == null)
+            {
+                return true;
+            }
+
+            ElementId scaleParameterId = new ElementId((int)BuiltInParameter.VIEW_SCALE);
+            ElementId scaleMetricParameterId = new ElementId((int)BuiltInParameter.VIEW_SCALE_PULLDOWN_METRIC);
+            ElementId scaleImperialParameterId = new ElementId((int)BuiltInParameter.VIEW_SCALE_PULLDOWN_IMPERIAL);
+
+            bool scaleIsNonControlled =
+                nonControlled.Contains(scaleParameterId) ||
+                nonControlled.Contains(scaleMetricParameterId) ||
+                nonControlled.Contains(scaleImperialParameterId);
+
+            return !scaleIsNonControlled;
         }
     }
 }

@@ -113,7 +113,9 @@
     <Compile Include="BimDashboard\Utils\FileUtils.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
+    <Compile Include="Cls_InteriorElevations\Commands\FlipElevation180ByLineCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\MoveElevationViewportsToNewSheetCommand.cs" />
+    <Compile Include="Cls_InteriorElevations\Models\ElevationFlipResult.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationLineData.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationViewData.cs" />
@@ -127,6 +129,7 @@
     <Compile Include="Cls_InteriorElevations\Models\RoomPlanSchemeSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Models\RoomPlanSchemeCreationSummary.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationCropService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationFlipService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationMarkerService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationNamingService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationViewCreationService.cs" />

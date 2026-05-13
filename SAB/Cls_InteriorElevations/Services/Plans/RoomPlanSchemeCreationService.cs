@@ -114,20 +114,8 @@ namespace SAB.InteriorElevations.Services.Plans
 
                 existingViewNames.Add(uniqueName);
 
-                // Блок установки масштаба план-схемы: приоритет у пользовательской настройки.
-                int planViewScale = settings.ViewScale > 0 ? settings.ViewScale : sourcePlanView.Scale;
-                if (planViewScale > 0)
-                {
-                    try
-                    {
-                        createdView.Scale = planViewScale;
-                    }
-                    catch
-                    {
-                        // Если параметр масштаба недоступен, продолжаем работу.
-                    }
-                }
-
+                // Сначала применяем шаблон (если выбран), чтобы корректно определить,
+                // контролируется ли параметр масштаба шаблоном вида.
                 if (settings.ViewTemplateId != null && settings.ViewTemplateId != ElementId.InvalidElementId)
                 {
                     try
@@ -139,6 +127,13 @@ namespace SAB.InteriorElevations.Services.Plans
                         summary.Warnings.Add(BuildRoomPrefix(room) + "Не удалось применить шаблон: " + templateException.Message);
                     }
                 }
+
+                // Блок установки масштаба план-схемы.
+                // Правило:
+                // 1) если масштаб контролируется шаблоном (выбранным или дефолтным у типа вида), значение из окна не применяем;
+                // 2) если шаблона нет или он не контролирует масштаб, применяем значение из окна (или fallback к масштабу активного плана).
+                int planViewScale = settings.ViewScale > 0 ? settings.ViewScale : sourcePlanView.Scale;
+                TryApplyScaleRespectTemplate(document, createdView, planViewScale, BuildRoomPrefix(room), summary.Warnings);
 
                 CurveLoop cropSourceLoop = useManualBoundary ? manualBoundaryLoop : sourceRoomLoop;
                 if (!TryApplyRoomCrop(
@@ -804,6 +799,87 @@ namespace SAB.InteriorElevations.Services.Plans
             }
 
             return created;
+        }
+
+        private static void TryApplyScaleRespectTemplate(
+            Document document,
+            View view,
+            int requestedScale,
+            string roomPrefix,
+            IList<string> warnings)
+        {
+            if (document == null || view == null || requestedScale <= 0)
+            {
+                return;
+            }
+
+            if (IsScaleControlledByTemplate(document, view))
+            {
+                if (warnings != null)
+                {
+                    warnings.Add(
+                        roomPrefix +
+                        "Масштаб вида задается шаблоном. Значение из окна настроек не применено.");
+                }
+
+                return;
+            }
+
+            try
+            {
+                view.Scale = requestedScale;
+            }
+            catch (Exception scaleException)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add(
+                        roomPrefix +
+                        "Не удалось установить масштаб вида: " + scaleException.Message);
+                }
+            }
+        }
+
+        private static bool IsScaleControlledByTemplate(Document document, View view)
+        {
+            if (document == null || view == null)
+            {
+                return false;
+            }
+
+            // Считываем фактически назначенный шаблон на виде.
+            // Это покрывает оба сценария:
+            // - шаблон выбран пользователем в окне;
+            // - шаблон пришел автоматически через тип вида.
+            ElementId templateId = view.ViewTemplateId;
+            if (templateId == null || templateId == ElementId.InvalidElementId)
+            {
+                return false;
+            }
+
+            View templateView = document.GetElement(templateId) as View;
+            if (templateView == null || !templateView.IsTemplate)
+            {
+                return false;
+            }
+
+            ICollection<ElementId> nonControlledParameters = templateView.GetNonControlledTemplateParameterIds();
+            if (nonControlledParameters == null)
+            {
+                // Если API не вернул список, безопасно считаем параметр контролируемым шаблоном.
+                return true;
+            }
+
+            ElementId viewScaleId = new ElementId((int)BuiltInParameter.VIEW_SCALE);
+            ElementId viewScaleMetricId = new ElementId((int)BuiltInParameter.VIEW_SCALE_PULLDOWN_METRIC);
+            ElementId viewScaleImperialId = new ElementId((int)BuiltInParameter.VIEW_SCALE_PULLDOWN_IMPERIAL);
+
+            bool scaleIsNotControlled =
+                nonControlledParameters.Contains(viewScaleId) ||
+                nonControlledParameters.Contains(viewScaleMetricId) ||
+                nonControlledParameters.Contains(viewScaleImperialId);
+
+            return !scaleIsNotControlled;
         }
 
         private static void TryDeleteView(Document document, ElementId viewId)

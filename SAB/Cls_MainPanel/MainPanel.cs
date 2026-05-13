@@ -257,6 +257,14 @@ namespace SAB
                 "SAB.Resources.AlignPlanCornerMarksCommand_32.png",
                 "SAB.Resources.AlignPlanCornerMarksCommand_16.png");
 
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
+                "SAB_FlipElevation180ByLine",
+                "Разворот\nразвертки 180",
+                "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",
+                "SAB.Resources.CreateInteriorElevationsCommand_32.png",
+                "SAB.Resources.CreateInteriorElevationsCommand_16.png");
+
             // Блок кнопок для проверки геометрии помещений.
             Ribbon.AddPushButtonSingle(
                 roomsPanel,
