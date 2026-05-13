@@ -78,7 +78,9 @@ namespace SAB.InteriorElevations.Services.Elevations
 
                     // Блок именования: последовательность 1-2, 2-3, 3-4 и т.д.
                     int startPointNumber = lineData.Index;
-                    int endPointNumber = lineData.Index + 1;
+                    int endPointNumber = lineData.EndIndex > 0
+                        ? lineData.EndIndex
+                        : lineData.Index + 1;
 
                     string uniqueViewName = _namingService.GenerateUniqueElevationViewName(lineData.RoomData, startPointNumber, endPointNumber);
                     createdView.Name = uniqueViewName;

@@ -263,6 +263,26 @@ namespace SAB.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        public static byte[] FlipElevation180ByLineCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("FlipElevation180ByLineCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] FlipElevation180ByLineCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("FlipElevation180ByLineCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         public static byte[] GenerateDashboardCommand_16 {
             get {
                 object obj = ResourceManager.GetObject("GenerateDashboardCommand_16", resourceCulture);
@@ -416,6 +436,26 @@ namespace SAB.Properties {
         public static byte[] MoveElevationViewportsToNewSheetCommand_32 {
             get {
                 object obj = ResourceManager.GetObject("MoveElevationViewportsToNewSheetCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] OpenNamingStandardsHtmlCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("OpenNamingStandardsHtmlCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] OpenNamingStandardsHtmlCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("OpenNamingStandardsHtmlCommand_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -24,6 +24,13 @@ namespace SAB.InteriorElevations.Commands
     [Transaction(TransactionMode.Manual)]
     public class CreateInteriorElevationsCommand : IExternalCommand
     {
+        private enum LineGroupSelectionMode
+        {
+            Cancelled = 0,
+            SingleGroup = 1,
+            MultipleGroups = 2
+        }
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
@@ -68,18 +75,29 @@ namespace SAB.InteriorElevations.Commands
 
                 List<string> warnings = new List<string>();
 
-                ToastNotifier.ShowInfo("SAB Развертки", "Выберите линии, вдоль которых будут созданы развертки.");
-
                 DetailLineSelectionService selectionService = new DetailLineSelectionService();
-                DetailLineSelectionResult selectionResult = selectionService.PickDetailLines(uiDocument, activeView);
-                AppendWarnings(warnings, selectionResult.Warnings);
-
-                if (selectionResult.IsCancelled)
+                LineGroupSelectionMode lineGroupSelectionMode = SelectLineGroupSelectionMode();
+                if (lineGroupSelectionMode == LineGroupSelectionMode.Cancelled)
                 {
                     return Result.Cancelled;
                 }
 
-                if (selectionResult.Lines.Count == 0)
+                List<List<DetailLine>> lineGroups;
+                bool linesPicked = TryCollectLineGroups(
+                    uiDocument,
+                    activeView,
+                    selectionService,
+                    lineGroupSelectionMode,
+                    warnings,
+                    out lineGroups);
+
+                if (!linesPicked)
+                {
+                    return Result.Cancelled;
+                }
+
+                List<DetailLine> selectedLines = FlattenLineGroups(lineGroups);
+                if (selectedLines.Count == 0)
                 {
                     ToastNotifier.ShowWarning(
                         "SAB Развертки",
@@ -154,7 +172,11 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 ElevationGeometryService elevationGeometryService = new ElevationGeometryService();
-                List<ElevationLineData> elevationLines = elevationGeometryService.BuildElevationLineData(selectionResult.Lines, warnings);
+                List<ElevationLineData> elevationLines = BuildElevationLinesWithGlobalCornerIndexing(
+                    lineGroups,
+                    elevationGeometryService,
+                    warnings);
+
                 if (elevationLines.Count == 0)
                 {
                     ToastNotifier.ShowWarning("SAB Развертки", "Выбранные линии не содержат корректной линейной геометрии.");
@@ -242,7 +264,7 @@ namespace SAB.InteriorElevations.Commands
                                             document,
                                             activePlanView,
                                             createdRoomPlanView,
-                                            selectionResult.Lines,
+                                            selectedLines,
                                             warnings);
                                     }
                                 }
@@ -355,7 +377,7 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 reportService.ShowFinalReport(
-                    selectionResult.Lines.Count,
+                    selectedLines.Count,
                     creationResult,
                     createdSheet,
                     placedViewportCount,
@@ -387,7 +409,7 @@ namespace SAB.InteriorElevations.Commands
             return view.ViewType == ViewType.FloorPlan || view.ViewType == ViewType.CeilingPlan;
         }
 
-        private void AppendWarnings(List<string> target, IList<string> source)
+        private void AppendWarnings(IList<string> target, IList<string> source)
         {
             if (target == null || source == null)
             {
@@ -412,6 +434,275 @@ namespace SAB.InteriorElevations.Commands
             roomPlanSettings.ViewScale = settings.RoomPlanViewScale;
             roomPlanSettings.CropOffsetMm = settings.RoomPlanCropOffsetMm;
             return roomPlanSettings;
+        }
+
+        private LineGroupSelectionMode SelectLineGroupSelectionMode()
+        {
+            LineGroupSelectionWindow modeWindow = new LineGroupSelectionWindow();
+            bool? dialogResult = modeWindow.ShowDialog();
+            if (!dialogResult.HasValue || !dialogResult.Value)
+            {
+                return LineGroupSelectionMode.Cancelled;
+            }
+
+            if (modeWindow.IsMultipleGroups)
+            {
+                return LineGroupSelectionMode.MultipleGroups;
+            }
+
+            return LineGroupSelectionMode.SingleGroup;
+        }
+
+        private bool TryCollectLineGroups(
+            UIDocument uiDocument,
+            View activeView,
+            DetailLineSelectionService selectionService,
+            LineGroupSelectionMode mode,
+            IList<string> warnings,
+            out List<List<DetailLine>> lineGroups)
+        {
+            lineGroups = new List<List<DetailLine>>();
+
+            if (uiDocument == null || activeView == null || selectionService == null)
+            {
+                return false;
+            }
+
+            HashSet<int> usedLineIds = new HashSet<int>();
+
+            if (mode == LineGroupSelectionMode.SingleGroup)
+            {
+                ToastNotifier.ShowInfo("SAB Развертки", "Выберите линии одной группы и нажмите «Готово».");
+                DetailLineSelectionResult singleGroupResult = selectionService.PickDetailLines(
+                    uiDocument,
+                    activeView,
+                    "Выберите линии одной группы и нажмите «Готово»");
+
+                AppendWarnings(warnings, singleGroupResult.Warnings);
+                if (singleGroupResult.IsCancelled)
+                {
+                    return false;
+                }
+
+                List<DetailLine> uniqueLines = FilterUniqueGroupLines(singleGroupResult.Lines, usedLineIds, warnings, 1);
+                if (uniqueLines.Count > 0)
+                {
+                    lineGroups.Add(uniqueLines);
+                }
+
+                return lineGroups.Count > 0;
+            }
+
+            int groupNumber = 1;
+            while (true)
+            {
+                ToastNotifier.ShowInfo(
+                    "SAB Развертки",
+                    "Выберите линии группы №" + groupNumber + " и нажмите «Готово».",
+                    8);
+
+                DetailLineSelectionResult groupResult = selectionService.PickDetailLines(
+                    uiDocument,
+                    activeView,
+                    "Выберите линии группы №" + groupNumber + " и нажмите «Готово»");
+
+                AppendWarnings(warnings, groupResult.Warnings);
+
+                if (groupResult.IsCancelled)
+                {
+                    if (lineGroups.Count == 0)
+                    {
+                        return false;
+                    }
+
+                    TaskDialogResult finishAfterCancel = TaskDialog.Show(
+                        "SAB Развертки",
+                        "Выбор группы отменен. Завершить выбор групп и продолжить?",
+                        TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No);
+
+                    if (finishAfterCancel == TaskDialogResult.Yes)
+                    {
+                        break;
+                    }
+
+                    continue;
+                }
+
+                List<DetailLine> uniqueGroupLines = FilterUniqueGroupLines(groupResult.Lines, usedLineIds, warnings, groupNumber);
+                if (uniqueGroupLines.Count == 0)
+                {
+                    if (lineGroups.Count == 0)
+                    {
+                        ToastNotifier.ShowWarning("SAB Развертки", "В группе №" + groupNumber + " нет корректных уникальных линий.");
+                    }
+
+                    continue;
+                }
+
+                lineGroups.Add(uniqueGroupLines);
+
+                TaskDialogResult nextAction = AskGroupSelectionNextAction(groupNumber);
+                if (nextAction == TaskDialogResult.CommandLink1)
+                {
+                    groupNumber++;
+                    continue;
+                }
+
+                if (nextAction == TaskDialogResult.CommandLink2)
+                {
+                    break;
+                }
+
+                return false;
+            }
+
+            return lineGroups.Count > 0;
+        }
+
+        private TaskDialogResult AskGroupSelectionNextAction(int currentGroupNumber)
+        {
+            LineGroupNextActionWindow actionWindow = new LineGroupNextActionWindow(currentGroupNumber);
+            bool? dialogResult = actionWindow.ShowDialog();
+            if (!dialogResult.HasValue || !dialogResult.Value)
+            {
+                return TaskDialogResult.Cancel;
+            }
+
+            return actionWindow.IsNextGroupAction
+                ? TaskDialogResult.CommandLink1
+                : TaskDialogResult.CommandLink2;
+        }
+
+        private List<DetailLine> FilterUniqueGroupLines(
+            IList<DetailLine> sourceLines,
+            HashSet<int> usedLineIds,
+            IList<string> warnings,
+            int groupNumber)
+        {
+            List<DetailLine> result = new List<DetailLine>();
+            if (sourceLines == null || sourceLines.Count == 0)
+            {
+                return result;
+            }
+
+            if (usedLineIds == null)
+            {
+                usedLineIds = new HashSet<int>();
+            }
+
+            for (int index = 0; index < sourceLines.Count; index++)
+            {
+                DetailLine line = sourceLines[index];
+                if (line == null || line.Id == null || line.Id == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                int lineIdValue = line.Id.IntegerValue;
+                if (usedLineIds.Contains(lineIdValue))
+                {
+                    if (warnings != null)
+                    {
+                        warnings.Add(
+                            "Линия " + lineIdValue +
+                            " уже была выбрана в предыдущей группе и пропущена в группе №" + groupNumber + ".");
+                    }
+
+                    continue;
+                }
+
+                usedLineIds.Add(lineIdValue);
+                result.Add(line);
+            }
+
+            return result;
+        }
+
+        private List<DetailLine> FlattenLineGroups(IList<List<DetailLine>> lineGroups)
+        {
+            List<DetailLine> flattenedLines = new List<DetailLine>();
+            if (lineGroups == null || lineGroups.Count == 0)
+            {
+                return flattenedLines;
+            }
+
+            for (int groupIndex = 0; groupIndex < lineGroups.Count; groupIndex++)
+            {
+                List<DetailLine> group = lineGroups[groupIndex];
+                if (group == null || group.Count == 0)
+                {
+                    continue;
+                }
+
+                for (int lineIndex = 0; lineIndex < group.Count; lineIndex++)
+                {
+                    DetailLine line = group[lineIndex];
+                    if (line == null)
+                    {
+                        continue;
+                    }
+
+                    flattenedLines.Add(line);
+                }
+            }
+
+            return flattenedLines;
+        }
+
+        private List<ElevationLineData> BuildElevationLinesWithGlobalCornerIndexing(
+            IList<List<DetailLine>> lineGroups,
+            ElevationGeometryService elevationGeometryService,
+            IList<string> warnings)
+        {
+            List<ElevationLineData> result = new List<ElevationLineData>();
+            if (lineGroups == null || lineGroups.Count == 0 || elevationGeometryService == null)
+            {
+                return result;
+            }
+
+            // Сквозная нумерация углов:
+            // каждая группа образует замкнутый контур, где последняя линия замыкается в первый угол своей группы.
+            // Между группами разрыва нумерации нет.
+            int nextGroupStartCornerNumber = 1;
+
+            for (int groupIndex = 0; groupIndex < lineGroups.Count; groupIndex++)
+            {
+                List<DetailLine> groupLines = lineGroups[groupIndex];
+                List<ElevationLineData> groupLineData = elevationGeometryService.BuildElevationLineData(groupLines, warnings);
+                if (groupLineData == null || groupLineData.Count == 0)
+                {
+                    if (warnings != null)
+                    {
+                        warnings.Add("Группа линий №" + (groupIndex + 1) + " не содержит валидной линейной геометрии.");
+                    }
+
+                    continue;
+                }
+
+                int groupStartCorner = nextGroupStartCornerNumber;
+
+                for (int lineIndex = 0; lineIndex < groupLineData.Count; lineIndex++)
+                {
+                    ElevationLineData lineData = groupLineData[lineIndex];
+                    if (lineData == null)
+                    {
+                        continue;
+                    }
+
+                    int startCornerNumber = groupStartCorner + lineIndex;
+                    int endCornerNumber = (lineIndex == groupLineData.Count - 1)
+                        ? groupStartCorner
+                        : groupStartCorner + lineIndex + 1;
+
+                    lineData.Index = startCornerNumber;
+                    lineData.EndIndex = endCornerNumber;
+                    result.Add(lineData);
+                }
+
+                nextGroupStartCornerNumber += groupLineData.Count;
+            }
+
+            return result;
         }
 
         private bool ValidateSettings(Document document, ElevationSettings settings, out string validationMessage)

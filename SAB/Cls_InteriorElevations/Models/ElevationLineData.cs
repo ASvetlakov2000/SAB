@@ -24,6 +24,8 @@ namespace SAB.InteriorElevations.Models
 
         public int Index { get; set; }
 
+        public int EndIndex { get; set; }
+
         public RoomData RoomData { get; set; }
     }
 }

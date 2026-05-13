@@ -57,7 +57,9 @@ namespace SAB.InteriorElevations.Services.Marks
                 }
 
                 int startCornerNumber = lineData.Index;
-                int endCornerNumber = lineData.Index + 1;
+                int endCornerNumber = lineData.EndIndex > 0
+                    ? lineData.EndIndex
+                    : lineData.Index + 1;
 
                 if (!placedCornerNumbers.Contains(startCornerNumber) &&
                     !IsPointOccupied(occupiedCornerPoints, lineData.StartPoint, pointToleranceFeet))

@@ -62,6 +62,7 @@ namespace SAB.InteriorElevations.Services.Geometry
                 lineData.LineDirection = lineDirection;
                 lineData.LineLength = sourceLine.Length;
                 lineData.Index = currentIndex;
+                lineData.EndIndex = currentIndex + 1;
 
                 lineDataList.Add(lineData);
                 currentIndex++;

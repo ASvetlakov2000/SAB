@@ -159,6 +159,12 @@
     <Compile Include="Cls_InteriorElevations\Views\PlanCornerMarkAlignmentWindow.cs">
       <DependentUpon>PlanCornerMarkAlignmentWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Cls_InteriorElevations\Views\LineGroupSelectionWindow.xaml.cs">
+      <DependentUpon>LineGroupSelectionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_InteriorElevations\Views\LineGroupNextActionWindow.xaml.cs">
+      <DependentUpon>LineGroupNextActionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml.cs">
       <DependentUpon>ElevationSettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -287,6 +293,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Helpers\Notifications\ToastNotifications\Пример вызова_ToastNotifier.txt" />
+    <Content Include="Resources\FlipElevation180ByLineCommand_16.png" />
+    <Content Include="Resources\FlipElevation180ByLineCommand_32.png" />
+    <Content Include="Resources\OpenNamingStandardsHtmlCommand_16.png" />
+    <Content Include="Resources\OpenNamingStandardsHtmlCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_16.png" />
     <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_16.png" />
@@ -339,6 +349,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_InteriorElevations\Views\PlanCornerMarkAlignmentWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_InteriorElevations\Views\LineGroupSelectionWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_InteriorElevations\Views\LineGroupNextActionWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_RoomGeometryTools\UI\RoomGeometryToolsWindow.xaml">

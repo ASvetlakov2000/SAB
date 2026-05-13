@@ -45,17 +45,6 @@ namespace SAB.InteriorElevations.Services.Reports
             {
                 reportBuilder.AppendLine();
                 reportBuilder.AppendLine("Предупреждения: " + warnings.Count);
-
-                int maxWarningsToShow = Math.Min(5, warnings.Count);
-                for (int i = 0; i < maxWarningsToShow; i++)
-                {
-                    reportBuilder.AppendLine((i + 1) + ". " + warnings[i]);
-                }
-
-                if (warnings.Count > maxWarningsToShow)
-                {
-                    reportBuilder.AppendLine("... и еще " + (warnings.Count - maxWarningsToShow) + " предупреждений.");
-                }
             }
 
             if (createdCount > 0)

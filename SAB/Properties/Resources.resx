@@ -178,6 +178,12 @@
   <data name="ExportTypesSingleFileCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportTypesSingleFileCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="FlipElevation180ByLineCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FlipElevation180ByLineCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="FlipElevation180ByLineCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FlipElevation180ByLineCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="GenerateDashboardCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GenerateDashboardCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -225,6 +231,12 @@
   </data>
   <data name="MoveElevationViewportsToNewSheetCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MoveElevationViewportsToNewSheetCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="OpenNamingStandardsHtmlCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OpenNamingStandardsHtmlCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="OpenNamingStandardsHtmlCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OpenNamingStandardsHtmlCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PlaceFillPatternsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PlaceFillPatternsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

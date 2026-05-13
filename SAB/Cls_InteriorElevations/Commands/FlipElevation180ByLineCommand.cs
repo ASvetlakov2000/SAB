@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -109,12 +108,16 @@ namespace SAB.InteriorElevations.Commands
 
                 if (!flipResult.IsSuccess)
                 {
-                    string failText = BuildReportText(flipResult, warnings);
+                    string failText = !string.IsNullOrWhiteSpace(flipResult.Message)
+                        ? flipResult.Message
+                        : "Не удалось выполнить разворот фасада.";
                     ToastNotifier.ShowWarning("SAB Развертки", failText, 12);
                     return Result.Cancelled;
                 }
 
-                string successText = BuildReportText(flipResult, warnings);
+                string successText = !string.IsNullOrWhiteSpace(flipResult.Message)
+                    ? flipResult.Message
+                    : "Фасад успешно зеркалирован.";
                 ToastNotifier.ShowSuccess("SAB Развертки", successText, 12);
                 return Result.Succeeded;
             }
@@ -128,48 +131,6 @@ namespace SAB.InteriorElevations.Commands
                 ToastNotifier.ShowError("SAB Развертки", "Ошибка разворота фасада: " + exception.Message);
                 return Result.Failed;
             }
-        }
-
-        private string BuildReportText(ElevationFlipResult result, IList<string> warnings)
-        {
-            StringBuilder report = new StringBuilder();
-            report.AppendLine("Отчет по развороту фасада");
-            report.AppendLine();
-
-            if (result.SourceViewId != null && result.SourceViewId != ElementId.InvalidElementId)
-            {
-                report.AppendLine("Исходный вид Id: " + RevitElementIdUtils.GetElementIdValue(result.SourceViewId));
-            }
-
-            if (result.ResultViewId != null && result.ResultViewId != ElementId.InvalidElementId)
-            {
-                report.AppendLine("Результирующий вид Id: " + RevitElementIdUtils.GetElementIdValue(result.ResultViewId));
-            }
-
-            if (!string.IsNullOrWhiteSpace(result.ResultViewName))
-            {
-                report.AppendLine("Имя результирующего вида: " + result.ResultViewName);
-            }
-
-            report.AppendLine("Угол разворота (град): " + result.RotationAngleDegrees.ToString("F2"));
-            report.AppendLine("Исходный вид на листе: " + (result.IsSourcePlacedOnSheet ? "Да" : "Нет"));
-
-            if (result.IsSourcePlacedOnSheet)
-            {
-                report.AppendLine("Лист: " + result.SheetNumber + " | " + result.SheetName);
-            }
-
-            report.AppendLine();
-            report.AppendLine(result.Message ?? string.Empty);
-
-            if (warnings != null && warnings.Count > 0)
-            {
-                report.AppendLine();
-                report.AppendLine("Предупреждения: " + warnings.Count);
-                report.AppendLine("Подробности сохранены во внутреннем журнале выполнения команды.");
-            }
-
-            return report.ToString();
         }
     }
 }

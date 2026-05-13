@@ -26,6 +26,11 @@ namespace SAB.InteriorElevations.Services.Selection
     {
         public DetailLineSelectionResult PickDetailLines(UIDocument uiDocument, View activeView)
         {
+            return PickDetailLines(uiDocument, activeView, "Выберите линии, вдоль которых будут созданы развертки");
+        }
+
+        public DetailLineSelectionResult PickDetailLines(UIDocument uiDocument, View activeView, string statusPrompt)
+        {
             DetailLineSelectionResult result = new DetailLineSelectionResult();
 
             if (uiDocument == null || activeView == null)
@@ -40,7 +45,9 @@ namespace SAB.InteriorElevations.Services.Selection
                 pickedReferences = uiDocument.Selection.PickObjects(
                     ObjectType.Element,
                     new DetailLineSelectionFilter(activeView.Id),
-                    "Выберите линии, вдоль которых будут созданы развертки");
+                    string.IsNullOrWhiteSpace(statusPrompt)
+                        ? "Выберите линии, вдоль которых будут созданы развертки"
+                        : statusPrompt);
             }
             catch (Autodesk.Revit.Exceptions.OperationCanceledException)
             {

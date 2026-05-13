@@ -229,8 +229,8 @@ namespace SAB
                 "SAB_OpenNamingStandardsHtml",
                 "Стандарты \nНаименования",
                 "RevitLibraryBuilder.Commands.Regulations.OpenNamingStandardsHtmlCommand",
-                "SAB.Resources.GenerateDashboardCommand_32.png",
-                "SAB.Resources.GenerateDashboardCommand_16.png");
+                "SAB.Resources.OpenNamingStandardsHtmlCommand_32.png",
+                "SAB.Resources.OpenNamingStandardsHtmlCommand_16.png");
 
             // Блок кнопок для плагина внутренних разверток.
             Ribbon.AddPushButtonSingle(
@@ -262,8 +262,8 @@ namespace SAB
                 "SAB_FlipElevation180ByLine",
                 "Разворот\nразвертки 180",
                 "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",
-                "SAB.Resources.CreateInteriorElevationsCommand_32.png",
-                "SAB.Resources.CreateInteriorElevationsCommand_16.png");
+                "SAB.Resources.FlipElevation180ByLineCommand_32.png",
+                "SAB.Resources.FlipElevation180ByLineCommand_16.png");
 
             // Блок кнопок для проверки геометрии помещений.
             Ribbon.AddPushButtonSingle(

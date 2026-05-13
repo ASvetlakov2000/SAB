@@ -1,0 +1,162 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Развертки стен"
+        Height="240"
+        Width="680"
+        MinHeight="246"
+        MinWidth="640"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F2F2F2">
+    <Window.Resources>
+        <SolidColorBrush x:Key="SectionBackgroundBrush" Color="#FCFCFC" />
+        <SolidColorBrush x:Key="SectionBorderBrush" Color="#000000" />
+        <SolidColorBrush x:Key="FieldBorderBrush" Color="#000000" />
+        <SolidColorBrush x:Key="ActionButtonBrush" Color="#E1E1E1" />
+
+        <Style x:Key="SectionBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SectionBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource SectionBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Foreground" Value="#111111" />
+        </Style>
+
+        <Style x:Key="GrayActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource ActionButtonBrush}" />
+            <Setter Property="BorderBrush" Value="#000000" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="#101010" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <Grid>
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Margin="2" />
+                                <Border x:Name="ButtonDarkOverlay"
+                                        Background="#000000"
+                                        Opacity="0"
+                                        CornerRadius="6"
+                                        IsHitTestVisible="False" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonDarkOverlay"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.08"
+                                                         Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonDarkOverlay"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0"
+                                                         Duration="0:0:0.12" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonDarkOverlay"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.16"
+                                                         Duration="0:0:0.06" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="PreviewMouseLeftButtonUp">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonDarkOverlay"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0.08"
+                                                         Duration="0:0:0.08" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="HeaderTextBlock"
+                   Grid.Row="0"
+                   Text="Группа №1 добавлена."
+                   Style="{StaticResource SectionTitleTextStyle}" />
+
+        <Border Grid.Row="1" Style="{StaticResource SectionBorderStyle}">
+            <StackPanel>
+                <TextBlock Text="Выберите дальнейшее действие:"
+                           FontSize="13"
+                           Margin="0,0,0,10"
+                           Foreground="#202020" />
+
+                <Grid Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="NextGroupButton"
+                            Grid.Column="0"
+                            Style="{StaticResource GrayActionButtonStyle}"
+                            Height="42"
+                            Margin="0,0,0,0"
+                            Content="Выбрать следующую группу линий" />
+
+                    <Button x:Name="FinishButton"
+                            Grid.Column="2"
+                            Style="{StaticResource GrayActionButtonStyle}"
+                            Height="42"
+                            Margin="0,0,0,0"
+                            Content="Завершить выбор групп" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <DockPanel Grid.Row="2" Margin="0,4,0,0" LastChildFill="False">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                <Button x:Name="CancelButton"
+                        Style="{StaticResource GrayActionButtonStyle}"
+                        Width="170"
+                        Height="32"
+                        Content="Отмена" />
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
