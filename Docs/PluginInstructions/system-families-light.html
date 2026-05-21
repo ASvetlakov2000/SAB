@@ -43,6 +43,19 @@
 
     <section class="section">
       <h3 class="section-title">1) Экспорт таблиц системных типов</h3>
+      <div class="command-panel">
+        <div class="command-panel-header">Команда</div>
+        <hr class="command-panel-divider" />
+        <div class="command-panel-subheader">Экспорт системных</div>
+        <hr class="command-panel-divider" />
+        <div class="command-panel-steps">
+          <ol class="steps-separated">
+            <li>Выберите рабочую папку.</li>
+            <li>Проверьте создание папки <span class="kbd">ctg_system families</span>.</li>
+            <li>Проверьте CSV по категориям и общий CSV.</li>
+          </ol>
+        </div>
+      </div>
       <p class="command-description">
         <b>Описание команды:</b> команда <b>Экспорт системных</b> выгружает только системные типы (Стены, Перекрытия, Потолки, Крыши) в CSV по категориям и общий CSV.
       </p>
@@ -82,7 +95,7 @@
       <div class="placeholder-media">[Скриншот] CSV системных семейств.</div>
     </section>
 
-    <section class="section">
+    <section id="png-pirogi" class="section">
       <h3 class="section-title">2) Экспорт PNG для системных типов</h3>
       <p class="command-description">
         <b>Описание команды:</b> команда <b>Экспорт PNG пирогов</b> экспортирует изображения системных типов с подготовленного вида Легенда в папку <span class="kbd">PNG_Pirogi</span>.
@@ -108,7 +121,7 @@
       <div class="placeholder-media">[Видео] Подготовка легенды и экспорт PNG пирогов.</div>
     </section>
 
-    <section class="section">
+    <section id="load-pirogi" class="section">
       <h3 class="section-title">3) Загрузка PNG в параметр типа</h3>
       <p class="command-description">
         <b>Описание команды:</b> команда <b>Загрузить PNG пироги</b> сопоставляет имя файла PNG с именем типоразмера и записывает изображение в параметр типа <span class="kbd">Type Image</span>.

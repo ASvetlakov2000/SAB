@@ -36,8 +36,8 @@ namespace SAB
                 "SAB_OpenPluginInstructionsHtml",
                 "Инструкции",
                 "RevitLibraryBuilder.Commands.Regulations.OpenPluginInstructionsHtmlCommand",
-                "SAB.Resources.OpenNamingStandardsHtmlCommand_32.png",
-                "SAB.Resources.OpenNamingStandardsHtmlCommand_16.png");
+                "SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png",
+                "SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png");
 
 
             // Блок кнопок экспорта

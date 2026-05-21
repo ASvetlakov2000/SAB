@@ -43,13 +43,18 @@
       <p>Все кнопки находятся на панели <b>Библиотека</b>.</p>
     </section>
 
-    <section class="section">
+    <section id="export-lines" class="section">
       <h3 class="section-title">1) Экспорт CSV</h3>
       <p class="command-description">
         <b>Описание команды:</b> команды <b>Экспорт линий</b> и <b>Экспорт штриховок</b> формируют исходные таблицы для размещения и предпросмотра в viewer.
       </p>
       <div class="grid-2">
         <article class="card">
+          <div class="command-panel">
+            <div class="command-panel-header">Команда</div>
+            <hr class="command-panel-divider" />
+            <div class="command-panel-subheader">Экспорт линий</div>
+          </div>
           <h4>Линии</h4>
           <p>Команда: <b>Экспорт линий</b></p>
           <ul>
@@ -57,7 +62,12 @@
             <li>Колонки: Наименование, Миниатюра, Категория, Вес линии, Цвет, Образец.</li>
           </ul>
         </article>
-        <article class="card">
+        <article id="export-fills" class="card">
+          <div class="command-panel">
+            <div class="command-panel-header">Команда</div>
+            <hr class="command-panel-divider" />
+            <div class="command-panel-subheader">Экспорт штриховок</div>
+          </div>
           <h4>Штриховки</h4>
           <p>Команда: <b>Экспорт штриховок</b></p>
           <ul>
@@ -75,7 +85,7 @@
         <b>Описание команды:</b> команды <b>Размещение линий</b> и <b>Размещение штриховок</b> создают элементы на активном виде строго по строкам выбранного CSV.
       </p>
       <div class="grid-2">
-        <article class="card">
+        <article id="place-lines" class="card">
           <h4>Команда «Размещение линий»</h4>
           <ol>
             <li>Откройте вид для размещения.</li>
@@ -83,7 +93,7 @@
             <li>Проверьте, что размещены все строки таблицы.</li>
           </ol>
         </article>
-        <article class="card">
+        <article id="place-fills" class="card">
           <h4>Команда «Размещение штриховок»</h4>
           <ol>
             <li>Откройте вид для размещения.</li>
@@ -96,23 +106,68 @@
     </section>
 
     <section class="section">
-      <h3 class="section-title">3) Экспорт PNG превью</h3>
+      <h3 class="section-title">3) Дополнительные команды блока «Размещение»</h3>
+      <p class="command-description">
+        <b>Описание команд:</b> кнопки <b>Размещение по точке</b>, <b>Размещение по границе</b>, <b>Размещение по линии</b> и <b>Расставить комп. легенды</b> относятся к блоку «Размещение» на панели Библиотека.
+      </p>
+      <div class="grid-2">
+        <article id="place-point" class="card">
+          <h4>Размещение по точке</h4>
+          <ol class="steps-separated">
+            <li>Откройте целевой вид для размещения.</li>
+            <li>Выберите CSV с нужной категорией.</li>
+            <li>Укажите точки вставки по сценарию команды.</li>
+          </ol>
+        </article>
+        <article id="place-boundary" class="card">
+          <h4>Размещение по границе</h4>
+          <ol class="steps-separated">
+            <li>Откройте вид с целевыми границами.</li>
+            <li>Выберите CSV.</li>
+            <li>Запустите размещение вдоль выбранной границы.</li>
+          </ol>
+        </article>
+        <article id="place-line" class="card">
+          <h4>Размещение по линии</h4>
+          <ol class="steps-separated">
+            <li>Откройте вид с линиями привязки.</li>
+            <li>Выберите CSV.</li>
+            <li>Запустите размещение вдоль линии.</li>
+          </ol>
+        </article>
+        <article id="place-legend-components" class="card">
+          <h4>Расставить комп. легенды</h4>
+          <ol class="steps-separated">
+            <li>Откройте активный вид Легенда.</li>
+            <li>Запустите команду для расстановки компонентов по категориям.</li>
+            <li>После расстановки используйте экспорт PNG для нужного сценария.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">4) Экспорт PNG превью</h3>
       <p class="command-description">
         <b>Описание команды:</b> команды <b>Экспорт PNG линий</b> и <b>Экспорт PNG штриховок</b> последовательно экспортируют изображения для каждого размещенного элемента.
       </p>
       <div class="grid-2">
-        <article class="card">
+        <article id="png-lines" class="card">
           <h4>Экспорт PNG линий</h4>
           <ul>
             <li>Команда: <b>Экспорт PNG линий</b>.</li>
+            <li>Сначала обязательно выполните <b>Размещение линий</b>.</li>
+            <li>После этого на том же виде, где размещены линии, запустите <b>Экспорт PNG линий</b>.</li>
             <li>Источник: активный чертежный вид с размещенными линиями.</li>
             <li>Папка результата: <span class="kbd">ctg_lines-patterns\PNG_Lines</span>.</li>
           </ul>
         </article>
-        <article class="card">
+        <article id="png-fills" class="card">
           <h4>Экспорт PNG штриховок</h4>
           <ul>
             <li>Команда: <b>Экспорт PNG штриховок</b>.</li>
+            <li>Сначала обязательно выполните <b>Размещение штриховок</b>.</li>
+            <li>После этого на том же виде, где размещены штриховки, запустите <b>Экспорт PNG штриховок</b>.</li>
             <li>Источник: вид «Библиотека_Штриховки».</li>
             <li>Папка результата: <span class="kbd">ctg_lines-patterns\PNG_Fills</span>.</li>
           </ul>
@@ -122,8 +177,20 @@
       <div class="placeholder-media">[Видео] Размещение + PNG экспорт для линий и штриховок.</div>
     </section>
 
+    <section id="delete-elements" class="section">
+      <h3 class="section-title">5) Удаление элементов</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Удаление элементов</b> удаляет выбранные типы и семейства по сценарию модуля очистки библиотеки.
+      </p>
+      <ol class="steps-separated">
+        <li>Выберите элементы/типы для удаления по рабочему сценарию.</li>
+        <li>Запустите <b>Удаление элементов</b>.</li>
+        <li>Проверьте отчет/уведомление о результате удаления.</li>
+      </ol>
+    </section>
+
     <section class="section">
-      <h3 class="section-title">4) Просмотр в HTML</h3>
+      <h3 class="section-title">6) Просмотр в HTML</h3>
       <p class="command-description">
         <b>Описание команды:</b> команда <b>HTML просмотр</b> открывает профильные таблицы «Линии» и «Штриховки» с миниатюрами и параметрами оформления.
       </p>
