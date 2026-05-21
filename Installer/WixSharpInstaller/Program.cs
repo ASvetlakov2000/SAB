@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using WixSharp;
 using IOFile = System.IO.File;
 using WxsFile = WixSharp.File;
@@ -13,6 +15,7 @@ namespace WixSharpInstaller
         // Блок констант для предсказуемых идентификаторов обновления MSI.
         private const string UpgradeCode2023 = "F9D69961-6B30-4C1E-A469-0CC9C31EFD8E";
         private const string UpgradeCode2024 = "D7A573D9-4A9A-42A1-8D0D-F552AEEA6B87";
+        private const string ProductGuidNamespace = "2A0D2F97-7FEE-4D7D-A8A1-39D26A4B9781";
 
         private static int Main(string[] args)
         {
@@ -24,6 +27,7 @@ namespace WixSharpInstaller
 
                 string binFolder = GetOption(options, "--bin", Path.GetFullPath(Path.Combine(repositoryRoot, "SAB", "bin", "Debug")));
                 string outputFolder = GetOption(options, "--out", Path.GetFullPath(Path.Combine(repositoryRoot, "Installer", "output")));
+                string explicitVersion = GetOptionRaw(options, "--version", string.Empty);
 
                 if (!Directory.Exists(binFolder))
                 {
@@ -51,7 +55,7 @@ namespace WixSharpInstaller
 
                 Directory.CreateDirectory(outputFolder);
 
-                Version installerVersion = ResolveInstallerVersion(assemblyPath);
+                Version installerVersion = ResolveInstallerVersion(assemblyPath, explicitVersion);
 
                 BuildInstallerForYear(
                     year: "2023",
@@ -100,7 +104,8 @@ namespace WixSharpInstaller
                 new Dir(@"%AppDataFolder%\Autodesk\Revit\Addins\" + year, addinFile),
                 pluginFilesDirectory);
 
-            project.GUID = BuildProductGuid(year);
+            // ProductCode должен меняться между версиями, чтобы MajorUpgrade корректно обновлял установленный пакет.
+            project.GUID = BuildProductGuid(year, version);
             project.UpgradeCode = upgradeCode;
             project.Version = version;
             project.Scope = InstallScope.perUser;
@@ -110,6 +115,7 @@ namespace WixSharpInstaller
             project.ControlPanelInfo.Manufacturer = "SAB";
             project.MajorUpgrade = new MajorUpgrade
             {
+                AllowSameVersionUpgrades = true,
                 DowngradeErrorMessage = "A newer version of SAB is already installed."
             };
 
@@ -126,23 +132,36 @@ namespace WixSharpInstaller
             }
         }
 
-        private static Guid BuildProductGuid(string year)
+        private static Guid BuildProductGuid(string year, Version version)
         {
-            if (year == "2023")
+            if (string.IsNullOrWhiteSpace(year))
             {
-                return new Guid("C6D697EC-297E-481E-BEFC-7B4D9432131A");
+                throw new InvalidOperationException("Installer year is empty.");
             }
 
-            if (year == "2024")
+            if (version == null)
             {
-                return new Guid("2F26B9D4-70A0-41A4-95A3-0BBAC35A16C8");
+                throw new InvalidOperationException("Installer version is null.");
             }
 
-            throw new InvalidOperationException("Unsupported installer year: " + year);
+            string key = "SAB|" + year + "|" + version.Major + "." + version.Minor + "." + version.Build;
+            return BuildDeterministicGuid(ProductGuidNamespace, key);
         }
 
-        private static Version ResolveInstallerVersion(string assemblyPath)
+        private static Version ResolveInstallerVersion(string assemblyPath, string explicitVersion)
         {
+            if (!string.IsNullOrWhiteSpace(explicitVersion))
+            {
+                Version parsedExplicitVersion;
+                if (!Version.TryParse(explicitVersion, out parsedExplicitVersion))
+                {
+                    throw new InvalidOperationException("Invalid --version value: " + explicitVersion + ". Expected format: Major.Minor.Build");
+                }
+
+                int explicitBuild = parsedExplicitVersion.Build >= 0 ? parsedExplicitVersion.Build : 0;
+                return new Version(parsedExplicitVersion.Major, parsedExplicitVersion.Minor, explicitBuild);
+            }
+
             FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assemblyPath);
             string rawVersion = versionInfo.FileVersion;
 
@@ -206,6 +225,67 @@ namespace WixSharpInstaller
             }
 
             return defaultValue;
+        }
+
+        private static string GetOptionRaw(Dictionary<string, string> options, string key, string defaultValue)
+        {
+            string value;
+            if (options != null && options.TryGetValue(key, out value))
+            {
+                return value ?? string.Empty;
+            }
+
+            return defaultValue;
+        }
+
+        // Блок построения детерминированного GUID (RFC 4122, version 5) по namespace+name.
+        private static Guid BuildDeterministicGuid(string namespaceGuidText, string name)
+        {
+            Guid namespaceGuid = new Guid(namespaceGuidText);
+            byte[] namespaceBytes = namespaceGuid.ToByteArray();
+            SwapGuidByteOrder(namespaceBytes);
+
+            byte[] nameBytes = Encoding.UTF8.GetBytes(name ?? string.Empty);
+            byte[] hash;
+
+            using (SHA1 sha1 = SHA1.Create())
+            {
+                byte[] data = new byte[namespaceBytes.Length + nameBytes.Length];
+                Buffer.BlockCopy(namespaceBytes, 0, data, 0, namespaceBytes.Length);
+                Buffer.BlockCopy(nameBytes, 0, data, namespaceBytes.Length, nameBytes.Length);
+                hash = sha1.ComputeHash(data);
+            }
+
+            byte[] guidBytes = new byte[16];
+            Buffer.BlockCopy(hash, 0, guidBytes, 0, 16);
+
+            // Version 5
+            guidBytes[6] = (byte)((guidBytes[6] & 0x0F) | 0x50);
+            // RFC 4122 variant
+            guidBytes[8] = (byte)((guidBytes[8] & 0x3F) | 0x80);
+
+            SwapGuidByteOrder(guidBytes);
+            return new Guid(guidBytes);
+        }
+
+        private static void SwapGuidByteOrder(byte[] guidBytes)
+        {
+            if (guidBytes == null || guidBytes.Length != 16)
+            {
+                return;
+            }
+
+            Swap(guidBytes, 0, 3);
+            Swap(guidBytes, 1, 2);
+            Swap(guidBytes, 4, 5);
+            Swap(guidBytes, 6, 7);
+        }
+
+        private static void Swap(byte[] array, int left, int right)
+        {
+            byte temp = array[left];
+            array[left] = array[right];
+            array[right] = temp;
         }
     }
 }

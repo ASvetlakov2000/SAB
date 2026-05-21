@@ -661,8 +661,9 @@ namespace SAB.InteriorElevations.Commands
             }
 
             // Сквозная нумерация углов:
-            // каждая группа образует замкнутый контур, где последняя линия замыкается в первый угол своей группы.
-            // Между группами разрыва нумерации нет.
+            // 1) для замкнутой группы последняя линия замыкается в первый угол группы;
+            // 2) для незамкнутой группы последняя линия идет в новый угол;
+            // 3) следующая группа начинается с корректного номера после предыдущей группы.
             int nextGroupStartCornerNumber = 1;
 
             for (int groupIndex = 0; groupIndex < lineGroups.Count; groupIndex++)
@@ -680,6 +681,7 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 int groupStartCorner = nextGroupStartCornerNumber;
+                bool isClosedGroup = IsClosedLineGroup(groupLineData);
 
                 for (int lineIndex = 0; lineIndex < groupLineData.Count; lineIndex++)
                 {
@@ -691,7 +693,7 @@ namespace SAB.InteriorElevations.Commands
 
                     int startCornerNumber = groupStartCorner + lineIndex;
                     int endCornerNumber = (lineIndex == groupLineData.Count - 1)
-                        ? groupStartCorner
+                        ? (isClosedGroup ? groupStartCorner : groupStartCorner + groupLineData.Count)
                         : groupStartCorner + lineIndex + 1;
 
                     lineData.Index = startCornerNumber;
@@ -699,10 +701,84 @@ namespace SAB.InteriorElevations.Commands
                     result.Add(lineData);
                 }
 
-                nextGroupStartCornerNumber += groupLineData.Count;
+                nextGroupStartCornerNumber += isClosedGroup
+                    ? groupLineData.Count
+                    : groupLineData.Count + 1;
             }
 
             return result;
+        }
+
+        private bool IsClosedLineGroup(IList<ElevationLineData> groupLineData)
+        {
+            if (groupLineData == null || groupLineData.Count < 2)
+            {
+                return false;
+            }
+
+            double pointTolerance = UnitConversionUtils.MillimetersToFeet(1.0);
+            List<LineGroupNode> nodes = new List<LineGroupNode>();
+
+            for (int index = 0; index < groupLineData.Count; index++)
+            {
+                ElevationLineData lineData = groupLineData[index];
+                if (lineData == null || lineData.StartPoint == null || lineData.EndPoint == null)
+                {
+                    return false;
+                }
+
+                int startNodeIndex = GetOrCreateGroupNode(nodes, lineData.StartPoint, pointTolerance);
+                int endNodeIndex = GetOrCreateGroupNode(nodes, lineData.EndPoint, pointTolerance);
+
+                if (startNodeIndex == endNodeIndex)
+                {
+                    // Нулевая или вырожденная связь не может считаться корректным замкнутым контуром.
+                    return false;
+                }
+
+                nodes[startNodeIndex].Degree++;
+                nodes[endNodeIndex].Degree++;
+            }
+
+            if (nodes.Count < 3)
+            {
+                return false;
+            }
+
+            for (int nodeIndex = 0; nodeIndex < nodes.Count; nodeIndex++)
+            {
+                if (nodes[nodeIndex].Degree != 2)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private int GetOrCreateGroupNode(IList<LineGroupNode> nodes, XYZ point, double tolerance)
+        {
+            for (int index = 0; index < nodes.Count; index++)
+            {
+                LineGroupNode node = nodes[index];
+                if (node != null && node.Point != null && node.Point.DistanceTo(point) <= tolerance)
+                {
+                    return index;
+                }
+            }
+
+            LineGroupNode createdNode = new LineGroupNode();
+            createdNode.Point = point;
+            createdNode.Degree = 0;
+            nodes.Add(createdNode);
+            return nodes.Count - 1;
+        }
+
+        private class LineGroupNode
+        {
+            public XYZ Point { get; set; }
+
+            public int Degree { get; set; }
         }
 
         private bool ValidateSettings(Document document, ElevationSettings settings, out string validationMessage)

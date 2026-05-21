@@ -1,6 +1,7 @@
 param(
     [string]$BinFolder = "..\SAB\bin\Debug",
-    [string]$OutputFolder = ".\output"
+    [string]$OutputFolder = ".\output",
+    [string]$InstallerVersion = ""
 )
 
 Set-StrictMode -Version Latest
@@ -77,7 +78,8 @@ Ensure-WixUiExtension -WixExePath $wixExePath
 dotnet run --project $installerProjectPath -- `
     --root "$repositoryRoot" `
     --bin "$binRootPath" `
-    --out "$outputRootPath"
+    --out "$outputRootPath" `
+    --version "$InstallerVersion"
 
 if ($LASTEXITCODE -ne 0) {
     throw "WixSharp installer build failed."
