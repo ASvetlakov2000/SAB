@@ -50,11 +50,6 @@
       </p>
       <div class="grid-2">
         <article class="card">
-          <div class="command-panel">
-            <div class="command-panel-header">Команда</div>
-            <hr class="command-panel-divider" />
-            <div class="command-panel-subheader">Экспорт линий</div>
-          </div>
           <h4>Линии</h4>
           <p>Команда: <b>Экспорт линий</b></p>
           <ul>
@@ -63,11 +58,6 @@
           </ul>
         </article>
         <article id="export-fills" class="card">
-          <div class="command-panel">
-            <div class="command-panel-header">Команда</div>
-            <hr class="command-panel-divider" />
-            <div class="command-panel-subheader">Экспорт штриховок</div>
-          </div>
           <h4>Штриховки</h4>
           <p>Команда: <b>Экспорт штриховок</b></p>
           <ul>
@@ -76,8 +66,7 @@
           </ul>
         </article>
       </div>
-      <div class="placeholder-media">[Скриншот] CSV линий и CSV штриховок.</div>
-    </section>
+</section>
 
     <section class="section">
       <h3 class="section-title">2) Размещение элементов по CSV</h3>
@@ -113,7 +102,7 @@
       <div class="grid-2">
         <article id="place-point" class="card">
           <h4>Размещение по точке</h4>
-          <ol class="steps-separated">
+          <ol>
             <li>Откройте целевой вид для размещения.</li>
             <li>Выберите CSV с нужной категорией.</li>
             <li>Укажите точки вставки по сценарию команды.</li>
@@ -121,7 +110,7 @@
         </article>
         <article id="place-boundary" class="card">
           <h4>Размещение по границе</h4>
-          <ol class="steps-separated">
+          <ol>
             <li>Откройте вид с целевыми границами.</li>
             <li>Выберите CSV.</li>
             <li>Запустите размещение вдоль выбранной границы.</li>
@@ -129,7 +118,7 @@
         </article>
         <article id="place-line" class="card">
           <h4>Размещение по линии</h4>
-          <ol class="steps-separated">
+          <ol>
             <li>Откройте вид с линиями привязки.</li>
             <li>Выберите CSV.</li>
             <li>Запустите размещение вдоль линии.</li>
@@ -137,7 +126,7 @@
         </article>
         <article id="place-legend-components" class="card">
           <h4>Расставить комп. легенды</h4>
-          <ol class="steps-separated">
+          <ol>
             <li>Откройте активный вид Легенда.</li>
             <li>Запустите команду для расстановки компонентов по категориям.</li>
             <li>После расстановки используйте экспорт PNG для нужного сценария.</li>
@@ -174,15 +163,14 @@
         </article>
       </div>
       <div class="warn">Если часть PNG не создалась, проверьте активный вид, размещение элементов и проблемные имена файлов.</div>
-      <div class="placeholder-media">[Видео] Размещение + PNG экспорт для линий и штриховок.</div>
-    </section>
+</section>
 
     <section id="delete-elements" class="section">
       <h3 class="section-title">5) Удаление элементов</h3>
       <p class="command-description">
         <b>Описание команды:</b> команда <b>Удаление элементов</b> удаляет выбранные типы и семейства по сценарию модуля очистки библиотеки.
       </p>
-      <ol class="steps-separated">
+      <ol>
         <li>Выберите элементы/типы для удаления по рабочему сценарию.</li>
         <li>Запустите <b>Удаление элементов</b>.</li>
         <li>Проверьте отчет/уведомление о результате удаления.</li>
@@ -199,14 +187,14 @@
         <li>Профиль определяется по имени CSV: «Линии» или «Штриховки».</li>
         <li>В режиме линий миниатюра выводится рядом с наименованием и цветом.</li>
       </ul>
-      <div class="placeholder-media">[Скриншот] Viewer для профиля «Линии» и «Штриховки».</div>
-    </section>
+</section>
 
     <footer class="footer">
       Рекомендуемый порядок: Экспорт CSV → Размещение → Экспорт PNG → HTML просмотр.
     </footer>
   </main>
-  <script src="assets/media-source.js"></script>
 </body>
 </html>
+
+
 

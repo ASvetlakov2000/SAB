@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using WixSharp;
 using IOFile = System.IO.File;
 using WxsFile = WixSharp.File;
@@ -12,10 +10,9 @@ namespace WixSharpInstaller
 {
     internal static class Program
     {
-        // Блок констант для предсказуемых идентификаторов обновления MSI.
+        // Блок констант для стабильных UpgradeCode.
         private const string UpgradeCode2023 = "F9D69961-6B30-4C1E-A469-0CC9C31EFD8E";
         private const string UpgradeCode2024 = "D7A573D9-4A9A-42A1-8D0D-F552AEEA6B87";
-        private const string ProductGuidNamespace = "2A0D2F97-7FEE-4D7D-A8A1-39D26A4B9781";
 
         private static int Main(string[] args)
         {
@@ -129,8 +126,9 @@ namespace WixSharpInstaller
                 new Dir(@"%AppDataFolder%\Autodesk\Revit\Addins\" + year, addinFile),
                 pluginFilesDirectory);
 
-            // ProductCode должен меняться между версиями, чтобы MajorUpgrade корректно обновлял установленный пакет.
-            project.GUID = BuildProductGuid(year, version);
+            // ProductCode должен быть новым на каждый MSI-билд.
+            // Это гарантирует корректный сценарий обновления установленного плагина через MajorUpgrade.
+            project.GUID = Guid.NewGuid();
             project.UpgradeCode = upgradeCode;
             project.Version = version;
             project.Scope = InstallScope.perUser;
@@ -188,22 +186,6 @@ namespace WixSharpInstaller
             }
 
             return new Dir(targetDirectoryName, childEntities.ToArray());
-        }
-
-        private static Guid BuildProductGuid(string year, Version version)
-        {
-            if (string.IsNullOrWhiteSpace(year))
-            {
-                throw new InvalidOperationException("Installer year is empty.");
-            }
-
-            if (version == null)
-            {
-                throw new InvalidOperationException("Installer version is null.");
-            }
-
-            string key = "SAB|" + year + "|" + version.Major + "." + version.Minor + "." + version.Build;
-            return BuildDeterministicGuid(ProductGuidNamespace, key);
         }
 
         private static Version ResolveInstallerVersion(string assemblyPath, string explicitVersion)
@@ -296,54 +278,5 @@ namespace WixSharpInstaller
             return defaultValue;
         }
 
-        // Блок построения детерминированного GUID (RFC 4122, version 5) по namespace+name.
-        private static Guid BuildDeterministicGuid(string namespaceGuidText, string name)
-        {
-            Guid namespaceGuid = new Guid(namespaceGuidText);
-            byte[] namespaceBytes = namespaceGuid.ToByteArray();
-            SwapGuidByteOrder(namespaceBytes);
-
-            byte[] nameBytes = Encoding.UTF8.GetBytes(name ?? string.Empty);
-            byte[] hash;
-
-            using (SHA1 sha1 = SHA1.Create())
-            {
-                byte[] data = new byte[namespaceBytes.Length + nameBytes.Length];
-                Buffer.BlockCopy(namespaceBytes, 0, data, 0, namespaceBytes.Length);
-                Buffer.BlockCopy(nameBytes, 0, data, namespaceBytes.Length, nameBytes.Length);
-                hash = sha1.ComputeHash(data);
-            }
-
-            byte[] guidBytes = new byte[16];
-            Buffer.BlockCopy(hash, 0, guidBytes, 0, 16);
-
-            // Version 5
-            guidBytes[6] = (byte)((guidBytes[6] & 0x0F) | 0x50);
-            // RFC 4122 variant
-            guidBytes[8] = (byte)((guidBytes[8] & 0x3F) | 0x80);
-
-            SwapGuidByteOrder(guidBytes);
-            return new Guid(guidBytes);
-        }
-
-        private static void SwapGuidByteOrder(byte[] guidBytes)
-        {
-            if (guidBytes == null || guidBytes.Length != 16)
-            {
-                return;
-            }
-
-            Swap(guidBytes, 0, 3);
-            Swap(guidBytes, 1, 2);
-            Swap(guidBytes, 4, 5);
-            Swap(guidBytes, 6, 7);
-        }
-
-        private static void Swap(byte[] array, int left, int right)
-        {
-            byte temp = array[left];
-            array[left] = array[right];
-            array[right] = temp;
-        }
     }
 }

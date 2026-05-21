@@ -24,11 +24,12 @@ namespace SAB
                 // Вкладка уже существует.
             }
 
+            RibbonPanel infoPanel = application.CreateRibbonPanel(RibbonTabName, InfoPanelName);
             RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
             RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
             RibbonPanel roomsPanel = application.CreateRibbonPanel(RibbonTabName, RoomsPanelName);
-            RibbonPanel infoPanel = application.CreateRibbonPanel(RibbonTabName, InfoPanelName);
+
 
             // Блок кнопок с инструкциями.
             Ribbon.AddPushButtonSingle(
