@@ -1,0 +1,153 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAB — Инструкции по плагинам Revit</title>
+  <link rel="stylesheet" href="assets/style-light.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SAB</div>
+        <div>
+          <h1>SAB · Инструкции по плагинам Revit</h1>
+          <p>Навигация и регламент по разделам и кнопкам ленты SAB в Revit.</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a class="active" href="index-light.html">Главная</a>
+        <a href="system-families-light.html">Экспорт системных</a>
+        <a href="loadable-families-light.html">Экспорт загружаемых</a>
+        <a href="dimension-lines-light.html">Экспорт линий и штриховок</a>
+        <a href="revit-model-names-light.html">Переименовать типы</a>
+        <a href="materials-light.html">Переименовать материалы</a>
+        <a href="text-notes-light.html">Развертки</a>
+        <a href="#rooms-panel">Проверка геометрии помещений</a>
+        <a href="#regulations-panel">Стандарты Наименования</a>
+        <a href="#viewer-panel">HTML просмотр</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>Как читать этот комплект инструкций</h2>
+      <p>
+        Каждая вкладка соответствует конкретной кнопке (или группе кнопок) из ленты Revit.
+        Здесь нет смешения сценариев между разными модулями.
+      </p>
+      <div class="badges">
+        <span class="badge">Версия: Revit 2023/2024</span>
+        <span class="badge">Источник: команды из MainPanel</span>
+        <span class="badge">Форматы: CSV / XLSX / PNG / HTML</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">1) Соответствие вкладок и кнопок в Revit</h3>
+      <table class="command-table">
+        <thead>
+          <tr>
+            <th>Панель SAB</th>
+            <th>Группа</th>
+            <th>Кнопки в Revit</th>
+            <th>Где инструкция</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Библиотека</td>
+            <td>Экспорт</td>
+            <td>Экспорт системных</td>
+            <td><a href="system-families-light.html">Экспорт системных</a></td>
+          </tr>
+          <tr>
+            <td>Библиотека</td>
+            <td>Экспорт</td>
+            <td>Экспорт загружаемых</td>
+            <td><a href="loadable-families-light.html">Экспорт загружаемых</a></td>
+          </tr>
+          <tr>
+            <td>Библиотека</td>
+            <td>Экспорт / Размещение</td>
+            <td>Экспорт линий, Экспорт штриховок, Размещение линий, Размещение штриховок, Экспорт PNG линий, Экспорт PNG штриховок</td>
+            <td><a href="dimension-lines-light.html">Экспорт линий и штриховок</a></td>
+          </tr>
+          <tr>
+            <td>Библиотека</td>
+            <td>Экспорт / Переименование</td>
+            <td>Экспорт имен типов, Переименовать типы</td>
+            <td><a href="revit-model-names-light.html">Переименовать типы</a></td>
+          </tr>
+          <tr>
+            <td>Библиотека</td>
+            <td>Экспорт / Переименование</td>
+            <td>Экспорт имен MTL, Переименовать материалы</td>
+            <td><a href="materials-light.html">Переименовать материалы</a></td>
+          </tr>
+          <tr>
+            <td>Развертки</td>
+            <td>Команды панели</td>
+            <td>Создать развертки по линии, Разворот развертки 180, Перенос видов на след. лист, Выровнять марки углов</td>
+            <td><a href="text-notes-light.html">Развертки</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="viewer-panel" class="section">
+      <h3 class="section-title">2) Кнопка «HTML просмотр»</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Где находится</h4>
+          <p>Панель <b>Библиотека</b> → кнопка <b>HTML просмотр</b>.</p>
+          <ul>
+            <li>Источник данных: только CSV.</li>
+            <li>Профиль определяется по имени файла.</li>
+            <li>Поддерживаемые профили: Системные семейства, Загружаемые семейства, Линии, Штриховки.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h4>Перед запуском</h4>
+          <ul>
+            <li>Проверьте, что CSV выгружен нужной кнопкой.</li>
+            <li>Проверьте, что имя CSV соответствует профилю.</li>
+            <li>При необходимости заранее выгрузите PNG для миниатюр.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="placeholder-media">[Скриншот] Окно «Источник данных dashboard».</div>
+    </section>
+
+    <section id="regulations-panel" class="section">
+      <h3 class="section-title">3) Кнопка «Стандарты Наименования»</h3>
+      <p>
+        Панель <b>Регламент</b> → кнопка <b>Стандарты Наименования</b> открывает HTML-документ с регламентом.
+      </p>
+      <div class="note">
+        Используйте этот раздел как вход в нормативный документ, а рабочие сценарии обработки данных берите из вкладок этой инструкции.
+      </div>
+      <div class="placeholder-media">[Скриншот] Открытый документ стандарта наименований.</div>
+    </section>
+
+    <section id="rooms-panel" class="section">
+      <h3 class="section-title">4) Кнопка «Проверка геометрии помещений»</h3>
+      <p>
+        Панель <b>Помещения</b> → кнопка <b>Проверка геометрии помещений</b> открывает отдельное окно Room Geometry Tools.
+      </p>
+      <ul>
+        <li>Проверка углов помещений.</li>
+        <li>Проверка неразмещенных помещений.</li>
+        <li>Проверка изменения площади.</li>
+        <li>Построение осей помещений.</li>
+      </ul>
+      <div class="placeholder-media">[Скриншот] Окно Room Geometry Tools.</div>
+    </section>
+
+    <footer class="footer">
+      Если названия кнопок в Revit изменятся, сначала обновляйте эту главную страницу, затем профильные вкладки.
+    </footer>
+  </main>
+  <script src="assets/media-source.js"></script>
+</body>
+</html>

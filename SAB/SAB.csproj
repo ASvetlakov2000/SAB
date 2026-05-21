@@ -191,6 +191,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceFillPatternsCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\PlaceLineStylesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Regulations\OpenNamingStandardsHtmlCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\Regulations\OpenPluginInstructionsHtmlCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\PlaceLegendComponentsByCategoriesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Views\CreateFloorPlanFromPlacementCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Helpers\PlacementMath.cs" />
@@ -293,6 +294,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Helpers\Notifications\ToastNotifications\Пример вызова_ToastNotifier.txt" />
+    <EmbeddedResource Include="Resources\OpenPluginInstructionsHtmlCommand_16.png" />
+    <EmbeddedResource Include="Resources\OpenPluginInstructionsHtmlCommand_32.png" />
     <EmbeddedResource Include="Resources\FlipElevation180ByLineCommand_16.png" />
     <EmbeddedResource Include="Resources\FlipElevation180ByLineCommand_32.png" />
     <EmbeddedResource Include="Resources\OpenNamingStandardsHtmlCommand_16.png" />

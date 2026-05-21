@@ -60,6 +60,7 @@ namespace WixSharpInstaller
                 BuildInstallerForYear(
                     year: "2023",
                     addinPath: addin2023Path,
+                    repositoryRoot: repositoryRoot,
                     binFolder: binFolder,
                     outputFolder: outputFolder,
                     upgradeCode: new Guid(UpgradeCode2023),
@@ -68,6 +69,7 @@ namespace WixSharpInstaller
                 BuildInstallerForYear(
                     year: "2024",
                     addinPath: addin2024Path,
+                    repositoryRoot: repositoryRoot,
                     binFolder: binFolder,
                     outputFolder: outputFolder,
                     upgradeCode: new Guid(UpgradeCode2024),
@@ -89,13 +91,36 @@ namespace WixSharpInstaller
         private static void BuildInstallerForYear(
             string year,
             string addinPath,
+            string repositoryRoot,
             string binFolder,
             string outputFolder,
             Guid upgradeCode,
             Version version)
         {
+            List<WixEntity> pluginFiles = new List<WixEntity>();
+
+            // Блок добавления файлов плагина из папки bin.
+            pluginFiles.Add(new Files(Path.Combine(binFolder, "*.*")));
+
+            // Блок добавления HTML-инструкций в инсталлятор.
+            // Инструкции размещаются рядом с DLL: ...\SAB\Docs\PluginInstructions\...
+            Dir pluginInstructionsContentDirectory = BuildDocumentationDirectory(
+                Path.Combine(repositoryRoot, "Docs", "PluginInstructions"),
+                "PluginInstructions");
+
+            Dir pluginInstructionsDirectory = null;
+            if (pluginInstructionsContentDirectory != null)
+            {
+                pluginInstructionsDirectory = new Dir("Docs", pluginInstructionsContentDirectory);
+            }
+
+            if (pluginInstructionsDirectory != null)
+            {
+                pluginFiles.Add(pluginInstructionsDirectory);
+            }
+
             Dir pluginFilesDirectory = new Dir(@"%AppDataFolder%\Autodesk\Revit\Addins\" + year + @"\SAB",
-                new Files(Path.Combine(binFolder, "*.*")));
+                pluginFiles.ToArray());
 
             WxsFile addinFile = new WxsFile(addinPath);
 
@@ -130,6 +155,39 @@ namespace WixSharpInstaller
             {
                 throw new InvalidOperationException("MSI was not generated: " + expectedMsiPath);
             }
+        }
+
+        // Блок рекурсивной сборки директории документации для включения в MSI.
+        private static Dir BuildDocumentationDirectory(string sourceDirectoryPath, string targetDirectoryName)
+        {
+            if (string.IsNullOrWhiteSpace(sourceDirectoryPath) || !Directory.Exists(sourceDirectoryPath))
+            {
+                return null;
+            }
+
+            List<WixEntity> childEntities = new List<WixEntity>();
+
+            // Добавляем файлы текущего уровня.
+            string[] files = Directory.GetFiles(sourceDirectoryPath);
+            foreach (string filePath in files)
+            {
+                childEntities.Add(new WxsFile(filePath));
+            }
+
+            // Рекурсивно добавляем подпапки.
+            string[] directories = Directory.GetDirectories(sourceDirectoryPath);
+            foreach (string directoryPath in directories)
+            {
+                string directoryName = Path.GetFileName(directoryPath);
+                Dir childDirectory = BuildDocumentationDirectory(directoryPath, directoryName);
+
+                if (childDirectory != null)
+                {
+                    childEntities.Add(childDirectory);
+                }
+            }
+
+            return new Dir(targetDirectoryName, childEntities.ToArray());
         }
 
         private static Guid BuildProductGuid(string year, Version version)

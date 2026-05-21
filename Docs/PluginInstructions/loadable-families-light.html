@@ -1,0 +1,113 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAB — Экспорт загружаемых</title>
+  <link rel="stylesheet" href="assets/style-light.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SAB</div>
+        <div>
+          <h1>Экспорт загружаемых</h1>
+          <p>Панель «Библиотека»: экспорт CSV и PNG миниатюр загружаемых семейств.</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="index-light.html">Главная</a>
+        <a href="system-families-light.html">Экспорт системных</a>
+        <a class="active" href="loadable-families-light.html">Экспорт загружаемых</a>
+        <a href="dimension-lines-light.html">Экспорт линий и штриховок</a>
+        <a href="revit-model-names-light.html">Переименовать типы</a>
+        <a href="materials-light.html">Переименовать материалы</a>
+        <a href="text-notes-light.html">Развертки</a>
+        <a href="index-light.html#rooms-panel">Проверка геометрии помещений</a>
+        <a href="index-light.html#regulations-panel">Стандарты Наименования</a>
+        <a href="index-light.html#viewer-panel">HTML просмотр</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>Кнопки Revit для этого раздела</h2>
+      <div class="badges">
+        <span class="badge">Экспорт загружаемых</span>
+        <span class="badge">Экспорт PNG семейств</span>
+        <span class="badge">HTML просмотр</span>
+      </div>
+      <p>Все кнопки находятся на панели <b>Библиотека</b>.</p>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">1) Экспорт CSV загружаемых</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Команда</h4>
+          <p><b>Экспорт загружаемых</b></p>
+          <ol>
+            <li>Выберите рабочую папку.</li>
+            <li>Проверьте создание папки <span class="kbd">ctg_loadable families</span>.</li>
+            <li>Проверьте CSV по категориям и общий CSV.</li>
+          </ol>
+        </article>
+        <article class="card">
+          <h4>Формат CSV</h4>
+          <table class="command-table">
+            <thead><tr><th>Колонка</th><th>Назначение</th></tr></thead>
+            <tbody>
+              <tr><td>Категория</td><td>Категория семейства</td></tr>
+              <tr><td>Миниатюра</td><td>Путь к PNG</td></tr>
+              <tr><td>Семейство</td><td>Имя семейства</td></tr>
+              <tr><td>Типоразмер</td><td>Имя типа</td></tr>
+              <tr><td>Включить</td><td>Служебный флаг</td></tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+      <div class="placeholder-media">[Скриншот] CSV загружаемых семейств.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">2) Экспорт PNG миниатюр</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Команда</h4>
+          <p><b>Экспорт PNG семейств</b></p>
+          <ol>
+            <li>Выберите папку.</li>
+            <li>Проверьте подпапку <span class="kbd">PNG_Family</span>.</li>
+            <li>Проверьте имена PNG (они должны совпадать с именами типов).</li>
+          </ol>
+        </article>
+        <article class="card">
+          <h4>Подхват миниатюр в CSV</h4>
+          <ul>
+            <li>Первичный ключ: <b>Типоразмер</b>.</li>
+            <li>Fallback: <b>Семейство_Типоразмер</b>.</li>
+            <li>Если PNG добавлены позже — повторите экспорт CSV.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="placeholder-media">[Видео] Экспорт PNG_Family и повторный экспорт CSV.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">3) Открытие в HTML просмотре</h3>
+      <ul>
+        <li>Команда: <b>HTML просмотр</b> (панель Библиотека).</li>
+        <li>Профиль выбирается автоматически по имени CSV.</li>
+        <li>Для этого раздела в имени файла должна быть фраза <b>«Загружаемые семейства»</b>.</li>
+      </ul>
+      <div class="note">В viewer колонка «Включить» скрыта, но в CSV сохраняется для служебной логики.</div>
+      <div class="placeholder-media">[Скриншот] Профиль «Загружаемые семейства» в viewer.</div>
+    </section>
+
+    <footer class="footer">
+      Рекомендуемый порядок: Экспорт PNG семейств → Экспорт загружаемых → HTML просмотр.
+    </footer>
+  </main>
+  <script src="assets/media-source.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAB — Экспорт линий и штриховок</title>
+  <link rel="stylesheet" href="assets/style-light.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SAB</div>
+        <div>
+          <h1>Экспорт линий и штриховок</h1>
+          <p>Панель «Библиотека»: CSV, размещение и PNG-превью для линий и штриховок.</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="index-light.html">Главная</a>
+        <a href="system-families-light.html">Экспорт системных</a>
+        <a href="loadable-families-light.html">Экспорт загружаемых</a>
+        <a class="active" href="dimension-lines-light.html">Экспорт линий и штриховок</a>
+        <a href="revit-model-names-light.html">Переименовать типы</a>
+        <a href="materials-light.html">Переименовать материалы</a>
+        <a href="text-notes-light.html">Развертки</a>
+        <a href="index-light.html#rooms-panel">Проверка геометрии помещений</a>
+        <a href="index-light.html#regulations-panel">Стандарты Наименования</a>
+        <a href="index-light.html#viewer-panel">HTML просмотр</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>Кнопки Revit для этого раздела</h2>
+      <div class="badges">
+        <span class="badge">Экспорт линий</span>
+        <span class="badge">Экспорт штриховок</span>
+        <span class="badge">Размещение линий</span>
+        <span class="badge">Размещение штриховок</span>
+        <span class="badge">Экспорт PNG линий</span>
+        <span class="badge">Экспорт PNG штриховок</span>
+      </div>
+      <p>Все кнопки находятся на панели <b>Библиотека</b>.</p>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">1) Экспорт CSV</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Линии</h4>
+          <p>Команда: <b>Экспорт линий</b></p>
+          <ul>
+            <li>Файл сохраняется в <span class="kbd">ctg_lines-patterns</span>.</li>
+            <li>Колонки: Наименование, Миниатюра, Категория, Вес линии, Цвет, Образец.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h4>Штриховки</h4>
+          <p>Команда: <b>Экспорт штриховок</b></p>
+          <ul>
+            <li>Файл сохраняется в <span class="kbd">ctg_lines-patterns</span>.</li>
+            <li>Колонки: Наименование, Миниатюра, Штриховка переднего плана, Штриховка заднего плана, Маскирование, Тип штриховки.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="placeholder-media">[Скриншот] CSV линий и CSV штриховок.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">2) Размещение элементов по CSV</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Команда «Размещение линий»</h4>
+          <ol>
+            <li>Откройте вид для размещения.</li>
+            <li>Выберите CSV линий.</li>
+            <li>Проверьте, что размещены все строки таблицы.</li>
+          </ol>
+        </article>
+        <article class="card">
+          <h4>Команда «Размещение штриховок»</h4>
+          <ol>
+            <li>Откройте вид для размещения.</li>
+            <li>Выберите CSV штриховок.</li>
+            <li>Проверьте итоговый набор размещенных штриховок.</li>
+          </ol>
+        </article>
+      </div>
+      <div class="note">Сценарий PNG-превью запускайте только после корректного размещения.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">3) Экспорт PNG превью</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Экспорт PNG линий</h4>
+          <ul>
+            <li>Команда: <b>Экспорт PNG линий</b>.</li>
+            <li>Источник: активный чертежный вид с размещенными линиями.</li>
+            <li>Папка результата: <span class="kbd">ctg_lines-patterns\PNG_Lines</span>.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h4>Экспорт PNG штриховок</h4>
+          <ul>
+            <li>Команда: <b>Экспорт PNG штриховок</b>.</li>
+            <li>Источник: вид «Библиотека_Штриховки».</li>
+            <li>Папка результата: <span class="kbd">ctg_lines-patterns\PNG_Fills</span>.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="warn">Если часть PNG не создалась, проверьте активный вид, размещение элементов и проблемные имена файлов.</div>
+      <div class="placeholder-media">[Видео] Размещение + PNG экспорт для линий и штриховок.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">4) Просмотр в HTML</h3>
+      <ul>
+        <li>Команда: <b>HTML просмотр</b>.</li>
+        <li>Профиль определяется по имени CSV: «Линии» или «Штриховки».</li>
+        <li>В режиме линий миниатюра выводится рядом с наименованием и цветом.</li>
+      </ul>
+      <div class="placeholder-media">[Скриншот] Viewer для профиля «Линии» и «Штриховки».</div>
+    </section>
+
+    <footer class="footer">
+      Рекомендуемый порядок: Экспорт CSV → Размещение → Экспорт PNG → HTML просмотр.
+    </footer>
+  </main>
+  <script src="assets/media-source.js"></script>
+</body>
+</html>

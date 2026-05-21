@@ -463,6 +463,26 @@ namespace SAB.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        public static byte[] OpenPluginInstructionsHtmlCommand_16 {
+            get {
+                object obj = ResourceManager.GetObject("OpenPluginInstructionsHtmlCommand_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] OpenPluginInstructionsHtmlCommand_32 {
+            get {
+                object obj = ResourceManager.GetObject("OpenPluginInstructionsHtmlCommand_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         public static byte[] PlaceFillPatternsCommand_16 {
             get {
                 object obj = ResourceManager.GetObject("PlaceFillPatternsCommand_16", resourceCulture);

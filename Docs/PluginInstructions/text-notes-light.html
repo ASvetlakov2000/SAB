@@ -1,0 +1,106 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAB — Развертки</title>
+  <link rel="stylesheet" href="assets/style-light.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">SAB</div>
+        <div>
+          <h1>Развертки</h1>
+          <p>Панель «Развертки»: создание, коррекция и перенос видов разверток.</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="index-light.html">Главная</a>
+        <a href="system-families-light.html">Экспорт системных</a>
+        <a href="loadable-families-light.html">Экспорт загружаемых</a>
+        <a href="dimension-lines-light.html">Экспорт линий и штриховок</a>
+        <a href="revit-model-names-light.html">Переименовать типы</a>
+        <a href="materials-light.html">Переименовать материалы</a>
+        <a class="active" href="text-notes-light.html">Развертки</a>
+        <a href="index-light.html#rooms-panel">Проверка геометрии помещений</a>
+        <a href="index-light.html#regulations-panel">Стандарты Наименования</a>
+        <a href="index-light.html#viewer-panel">HTML просмотр</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>Кнопки Revit для этого раздела</h2>
+      <div class="badges">
+        <span class="badge">Создать развертки по линии</span>
+        <span class="badge">Разворот развертки 180</span>
+        <span class="badge">Перенос видов на след. лист</span>
+        <span class="badge">Выровнять марки углов</span>
+      </div>
+      <p>Все кнопки находятся в панели <b>Развертки</b>.</p>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">1) Создать развертки по линии</h3>
+      <div class="grid-2">
+        <article class="card">
+          <h4>Режим 1: По одной группе линий</h4>
+          <ol>
+            <li>Выберите режим «По одной группе линий».</li>
+            <li>Выберите линии группы.</li>
+            <li>Выберите помещение.</li>
+            <li>Проверьте настройки и нажмите «Создать развертки».</li>
+          </ol>
+        </article>
+        <article class="card">
+          <h4>Режим 2: По нескольким группам линий</h4>
+          <ol>
+            <li>Выберите режим «По нескольким группам линий».</li>
+            <li>После каждой группы нажимайте «Выбрать следующую группу линий».</li>
+            <li>После завершения нажмите «Завершить выбор групп».</li>
+            <li>Выберите помещение и запустите построение.</li>
+          </ol>
+          <div class="note">Нумерация углов и видов идет сквозная по всем группам текущего помещения.</div>
+        </article>
+      </div>
+      <div class="placeholder-media">[Скриншот] Окно создания разверток с параметрами.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">2) Разворот развертки 180</h3>
+      <ul>
+        <li>Выберите фасад на плане этажа.</li>
+        <li>Выберите линию, по которой создавался фасад.</li>
+        <li>Команда создает корректный повернутый вариант и сохраняет настройки вида.</li>
+        <li>При размещении на листе вид сохраняет позицию в рабочем сценарии команды.</li>
+      </ul>
+      <div class="placeholder-media">[Видео] Исправление неверного направления развертки.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">3) Перенос видов на след. лист</h3>
+      <ul>
+        <li>Команда переносит вьюпорты разверток на новый лист.</li>
+        <li>Для план-схемы используется копирование с детализацией.</li>
+        <li>Проверяйте итоговую компоновку листа после переноса.</li>
+      </ul>
+      <div class="placeholder-media">[Скриншот] Лист до и после переноса видов.</div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">4) Выровнять марки углов</h3>
+      <ul>
+        <li>Команда выравнивает марки углов на плане.</li>
+        <li>Используется как финальный этап после создания/переноса разверток.</li>
+      </ul>
+      <div class="placeholder-media">[Скриншот] Выравнивание марок углов до/после.</div>
+    </section>
+
+    <footer class="footer">
+      Для панели «Помещения» используйте отдельный раздел на главной странице: «Проверка геометрии помещений».
+    </footer>
+  </main>
+  <script src="assets/media-source.js"></script>
+</body>
+</html>

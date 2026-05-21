@@ -10,6 +10,7 @@ namespace SAB
         private const string RegulationsPanelName = "Регламент";
         private const string InteriorElevationsPanelName = "Развертки";
         private const string RoomsPanelName = "Помещения";
+        private const string InfoPanelName = "Инфо";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -27,6 +28,17 @@ namespace SAB
             RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
             RibbonPanel roomsPanel = application.CreateRibbonPanel(RibbonTabName, RoomsPanelName);
+            RibbonPanel infoPanel = application.CreateRibbonPanel(RibbonTabName, InfoPanelName);
+
+            // Блок кнопок с инструкциями.
+            Ribbon.AddPushButtonSingle(
+                infoPanel,
+                "SAB_OpenPluginInstructionsHtml",
+                "Инструкции",
+                "RevitLibraryBuilder.Commands.Regulations.OpenPluginInstructionsHtmlCommand",
+                "SAB.Resources.OpenNamingStandardsHtmlCommand_32.png",
+                "SAB.Resources.OpenNamingStandardsHtmlCommand_16.png");
+
 
             // Блок кнопок экспорта
             SplitButton exportSplit = libraryPanel.AddItem(
@@ -231,6 +243,8 @@ namespace SAB
                 "RevitLibraryBuilder.Commands.Regulations.OpenNamingStandardsHtmlCommand",
                 "SAB.Resources.OpenNamingStandardsHtmlCommand_32.png",
                 "SAB.Resources.OpenNamingStandardsHtmlCommand_16.png");
+
+
 
             // Блок кнопок для плагина внутренних разверток.
             Ribbon.AddPushButtonSingle(

@@ -238,6 +238,12 @@
   <data name="OpenNamingStandardsHtmlCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OpenNamingStandardsHtmlCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="OpenPluginInstructionsHtmlCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OpenPluginInstructionsHtmlCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="OpenPluginInstructionsHtmlCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OpenPluginInstructionsHtmlCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="PlaceFillPatternsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PlaceFillPatternsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
