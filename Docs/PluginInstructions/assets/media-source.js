@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   var STORAGE_KEY = "sab.pluginDocs.mediaRoot";
   var HISTORY_KEY = "sab.pluginDocs.mediaRootHistory";
   var DEFAULT_ROOT = "Z:\\IN\\Инструкции";
@@ -134,6 +134,17 @@
     return "file:///" + encodeURI(value.replace(/\\/g, "/"));
   }
 
+  function toMsExplorerUri(pathValue) {
+    var fileUri = toFileUri(pathValue);
+
+    if (!fileUri) {
+      return "";
+    }
+
+    // Пробуем открыть путь непосредственно в проводнике Windows.
+    return "ms-explorer:" + fileUri;
+  }
+
   function validatePath(pathValue) {
     var value = normalizePath(pathValue);
 
@@ -142,7 +153,7 @@
     }
 
     if (/^file:\/\//i.test(value) || /^[a-zA-Z]:[\\/]/.test(value) || /^\\\\/.test(value)) {
-      return { isValid: true, message: "Путь принят. Если файлы не открываются, укажите другой источник." };
+      return { isValid: true, message: "Путь принят. Если проводник не открылся автоматически, используйте ссылку file://." };
     }
 
     return { isValid: false, message: "Некорректный формат пути. Используйте путь вида Z:\\IN\\Инструкции или file:///..." };
@@ -168,17 +179,19 @@
       '    <div class="media-source-actions">' +
       '      <button id="mediaSourceApplyButton" type="button" class="media-source-button">Применить путь</button>' +
       '      <button id="mediaSourceResetButton" type="button" class="media-source-button secondary">Сбросить на Z:\\IN\\Инструкции</button>' +
-      '      <a id="mediaSourceOpenFolderLink" class="media-source-link" target="_blank" rel="noopener">Открыть папку источника</a>' +
-      '    </div>' +
+      '      <button id="mediaSourceOpenExplorerButton" type="button" class="media-source-button secondary">Открыть в проводнике</button>' +
+      '      <a id="mediaSourceOpenFolderLink" class="media-source-link" target="_blank" rel="noopener">Открыть как file://</a>' +
+      "    </div>" +
       '    <div id="mediaSourceStatus" class="media-source-status"></div>' +
-      '  </div>' +
-      '</div>';
+      "  </div>" +
+      "</div>";
 
     hero.parentNode.insertBefore(panel, hero.nextSibling);
 
     var input = panel.querySelector("#mediaSourcePathInput");
     var applyButton = panel.querySelector("#mediaSourceApplyButton");
     var resetButton = panel.querySelector("#mediaSourceResetButton");
+    var openExplorerButton = panel.querySelector("#mediaSourceOpenExplorerButton");
     var status = panel.querySelector("#mediaSourceStatus");
     var openLink = panel.querySelector("#mediaSourceOpenFolderLink");
     var historyList = panel.querySelector("#mediaSourcePathHistory");
@@ -240,6 +253,29 @@
       applyPath(DEFAULT_ROOT, true);
     });
 
+    openExplorerButton.addEventListener("click", function () {
+      var normalized = normalizePath(input.value);
+
+      if (!normalized) {
+        status.textContent = "Сначала укажите путь к папке источников.";
+        status.classList.add("error");
+        return;
+      }
+
+      var explorerUri = toMsExplorerUri(normalized);
+      var fileUri = toFileUri(normalized);
+      openLink.setAttribute("href", fileUri);
+
+      try {
+        window.location.href = explorerUri;
+        status.textContent = "Отправлен запрос на открытие проводника. Если не сработало — используйте ссылку \"Открыть как file://\".";
+        status.classList.remove("error");
+      } catch (error) {
+        status.textContent = "Не удалось открыть проводник автоматически. Используйте ссылку \"Открыть как file://\".";
+        status.classList.add("error");
+      }
+    });
+
     input.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
         applyPath(input.value, true);
@@ -284,7 +320,7 @@
       link.target = "_blank";
       link.rel = "noopener";
       link.className = "media-source-inline-link";
-      link.textContent = "Открыть папку";
+      link.textContent = "Открыть как file://";
       hint.appendChild(link);
 
       var fileRelativePath = placeholder.getAttribute("data-media-file");

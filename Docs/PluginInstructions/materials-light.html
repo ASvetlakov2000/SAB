@@ -24,9 +24,9 @@
         <a href="revit-model-names-light.html">Переименовать типы</a>
         <a class="active" href="materials-light.html">Переименовать материалы</a>
         <a href="text-notes-light.html">Развертки</a>
-        <a href="index-light.html#rooms-panel">Проверка геометрии помещений</a>
-        <a href="index-light.html#regulations-panel">Стандарты Наименования</a>
-        <a href="index-light.html#viewer-panel">HTML просмотр</a>
+        <a href="room-geometry-light.html">Проверка геометрии помещений</a>
+        <a href="naming-standards-light.html">Стандарты Наименования</a>
+        <a href="html-viewer-light.html">HTML просмотр</a>
       </nav>
     </header>
 
@@ -42,6 +42,9 @@
 
     <section class="section">
       <h3 class="section-title">1) Экспорт имен MTL</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Экспорт имен MTL</b> выгружает материалы в XLSX для пакетного обновления имен и параметров материалов.
+      </p>
       <div class="grid-2">
         <article class="card">
           <h4>Команда</h4>
@@ -67,6 +70,9 @@
 
     <section class="section">
       <h3 class="section-title">2) Импорт: команда «Переименовать материалы»</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Переименовать материалы</b> применяет изменения имен и параметров материалов, а при флаге удаления удаляет целевые материалы.
+      </p>
       <div class="grid-2">
         <article class="card">
           <h4>Действия</h4>
@@ -90,6 +96,9 @@
 
     <section class="section">
       <h3 class="section-title">3) Ошибки и отчеты</h3>
+      <p class="command-description">
+        <b>Описание результата:</b> если часть строк не удалось обработать, команда продолжает работу и формирует отчет только по проблемным записям.
+      </p>
       <ul>
         <li>Если строка не может быть обработана, процесс продолжается по следующим строкам.</li>
         <li>Отчет ошибок сохраняется рядом с импортируемым файлом.</li>
@@ -106,3 +115,4 @@
   <script src="assets/media-source.js"></script>
 </body>
 </html>
+

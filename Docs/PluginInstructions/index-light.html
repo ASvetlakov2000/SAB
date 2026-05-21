@@ -24,9 +24,9 @@
         <a href="revit-model-names-light.html">Переименовать типы</a>
         <a href="materials-light.html">Переименовать материалы</a>
         <a href="text-notes-light.html">Развертки</a>
-        <a href="#rooms-panel">Проверка геометрии помещений</a>
-        <a href="#regulations-panel">Стандарты Наименования</a>
-        <a href="#viewer-panel">HTML просмотр</a>
+        <a href="room-geometry-light.html">Проверка геометрии помещений</a>
+        <a href="naming-standards-light.html">Стандарты Наименования</a>
+        <a href="html-viewer-light.html">HTML просмотр</a>
       </nav>
     </header>
 
@@ -95,53 +95,40 @@
       </table>
     </section>
 
-    <section id="viewer-panel" class="section">
-      <h3 class="section-title">2) Кнопка «HTML просмотр»</h3>
+    <section class="section">
+      <h3 class="section-title">2) Дополнительные вкладки</h3>
       <div class="grid-2">
         <article class="card">
-          <h4>Где находится</h4>
-          <p>Панель <b>Библиотека</b> → кнопка <b>HTML просмотр</b>.</p>
+          <h4><a href="html-viewer-light.html">HTML просмотр</a></h4>
+          <p class="command-description"><b>Описание:</b> открывает CSV в профильном HTML viewer (системные, загружаемые, линии, штриховки).</p>
           <ul>
             <li>Источник данных: только CSV.</li>
             <li>Профиль определяется по имени файла.</li>
-            <li>Поддерживаемые профили: Системные семейства, Загружаемые семейства, Линии, Штриховки.</li>
+            <li>Отдельная инструкция: вкладка «HTML просмотр».</li>
           </ul>
         </article>
         <article class="card">
-          <h4>Перед запуском</h4>
+          <h4><a href="naming-standards-light.html">Стандарты Наименования</a></h4>
+          <p class="command-description"><b>Описание:</b> открывает нормативный HTML-документ по правилам именования.</p>
           <ul>
-            <li>Проверьте, что CSV выгружен нужной кнопкой.</li>
-            <li>Проверьте, что имя CSV соответствует профилю.</li>
-            <li>При необходимости заранее выгрузите PNG для миниатюр.</li>
+            <li>Используется как справочник перед переименованием.</li>
+            <li>Не изменяет данные модели напрямую.</li>
+            <li>Отдельная инструкция: вкладка «Стандарты Наименования».</li>
           </ul>
         </article>
       </div>
-      <div class="placeholder-media">[Скриншот] Окно «Источник данных dashboard».</div>
     </section>
 
-    <section id="regulations-panel" class="section">
-      <h3 class="section-title">3) Кнопка «Стандарты Наименования»</h3>
-      <p>
-        Панель <b>Регламент</b> → кнопка <b>Стандарты Наименования</b> открывает HTML-документ с регламентом.
-      </p>
-      <div class="note">
-        Используйте этот раздел как вход в нормативный документ, а рабочие сценарии обработки данных берите из вкладок этой инструкции.
-      </div>
-      <div class="placeholder-media">[Скриншот] Открытый документ стандарта наименований.</div>
-    </section>
-
-    <section id="rooms-panel" class="section">
-      <h3 class="section-title">4) Кнопка «Проверка геометрии помещений»</h3>
-      <p>
-        Панель <b>Помещения</b> → кнопка <b>Проверка геометрии помещений</b> открывает отдельное окно Room Geometry Tools.
+    <section class="section">
+      <h3 class="section-title">3) Проверка геометрии помещений</h3>
+      <p class="command-description">
+        <b>Описание:</b> вкладка «Проверка геометрии помещений» содержит отдельную инструкцию по запуску Room Geometry Tools и сценариям проверки/построения осей.
       </p>
       <ul>
-        <li>Проверка углов помещений.</li>
-        <li>Проверка неразмещенных помещений.</li>
-        <li>Проверка изменения площади.</li>
-        <li>Построение осей помещений.</li>
+        <li>Открыть инструкцию: <a href="room-geometry-light.html">Проверка геометрии помещений</a>.</li>
+        <li>Панель в Revit: <b>Помещения</b>.</li>
+        <li>Команда: <b>Проверка геометрии помещений</b>.</li>
       </ul>
-      <div class="placeholder-media">[Скриншот] Окно Room Geometry Tools.</div>
     </section>
 
     <footer class="footer">
@@ -151,3 +138,4 @@
   <script src="assets/media-source.js"></script>
 </body>
 </html>
+

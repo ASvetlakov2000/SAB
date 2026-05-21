@@ -24,9 +24,9 @@
         <a href="revit-model-names-light.html">Переименовать типы</a>
         <a href="materials-light.html">Переименовать материалы</a>
         <a href="text-notes-light.html">Развертки</a>
-        <a href="index-light.html#rooms-panel">Проверка геометрии помещений</a>
-        <a href="index-light.html#regulations-panel">Стандарты Наименования</a>
-        <a href="index-light.html#viewer-panel">HTML просмотр</a>
+        <a href="room-geometry-light.html">Проверка геометрии помещений</a>
+        <a href="naming-standards-light.html">Стандарты Наименования</a>
+        <a href="html-viewer-light.html">HTML просмотр</a>
       </nav>
     </header>
 
@@ -42,11 +42,15 @@
 
     <section class="section">
       <h3 class="section-title">1) Экспорт CSV загружаемых</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Экспорт загружаемых</b> формирует таблицы только для загружаемых семейств и подготавливает данные для HTML-просмотра и последующей расстановки.
+      </p>
       <div class="grid-2">
         <article class="card">
           <h4>Команда</h4>
           <p><b>Экспорт загружаемых</b></p>
-          <ol>
+          <hr class="block-divider" />
+          <ol class="steps-separated">
             <li>Выберите рабочую папку.</li>
             <li>Проверьте создание папки <span class="kbd">ctg_loadable families</span>.</li>
             <li>Проверьте CSV по категориям и общий CSV.</li>
@@ -71,11 +75,16 @@
 
     <section class="section">
       <h3 class="section-title">2) Экспорт PNG миниатюр</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Экспорт PNG семейств</b> сохраняет миниатюры типоразмеров в PNG, чтобы viewer подхватывал изображения напрямую из папки.
+      </p>
       <div class="grid-2">
         <article class="card">
           <h4>Команда</h4>
+          <hr class="block-divider" />
           <p><b>Экспорт PNG семейств</b></p>
-          <ol>
+          <hr class="block-divider" />
+          <ol class="steps-separated">
             <li>Выберите папку.</li>
             <li>Проверьте подпапку <span class="kbd">PNG_Family</span>.</li>
             <li>Проверьте имена PNG (они должны совпадать с именами типов).</li>
@@ -95,6 +104,9 @@
 
     <section class="section">
       <h3 class="section-title">3) Открытие в HTML просмотре</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>HTML просмотр</b> открывает отдельный профиль для загружаемых семейств и выводит таблицу с миниатюрами, семействами и типоразмерами.
+      </p>
       <ul>
         <li>Команда: <b>HTML просмотр</b> (панель Библиотека).</li>
         <li>Профиль выбирается автоматически по имени CSV.</li>
@@ -111,3 +123,4 @@
   <script src="assets/media-source.js"></script>
 </body>
 </html>
+

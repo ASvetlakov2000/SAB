@@ -24,9 +24,9 @@
         <a href="revit-model-names-light.html">Переименовать типы</a>
         <a href="materials-light.html">Переименовать материалы</a>
         <a href="text-notes-light.html">Развертки</a>
-        <a href="index-light.html#rooms-panel">Проверка геометрии помещений</a>
-        <a href="index-light.html#regulations-panel">Стандарты Наименования</a>
-        <a href="index-light.html#viewer-panel">HTML просмотр</a>
+        <a href="room-geometry-light.html">Проверка геометрии помещений</a>
+        <a href="naming-standards-light.html">Стандарты Наименования</a>
+        <a href="html-viewer-light.html">HTML просмотр</a>
       </nav>
     </header>
 
@@ -43,6 +43,9 @@
 
     <section class="section">
       <h3 class="section-title">1) Экспорт таблиц системных типов</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Экспорт системных</b> выгружает только системные типы (Стены, Перекрытия, Потолки, Крыши) в CSV по категориям и общий CSV.
+      </p>
       <div class="grid-2">
         <article class="card">
           <h4>Команда</h4>
@@ -81,6 +84,9 @@
 
     <section class="section">
       <h3 class="section-title">2) Экспорт PNG для системных типов</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Экспорт PNG пирогов</b> экспортирует изображения системных типов с подготовленного вида Легенда в папку <span class="kbd">PNG_Pirogi</span>.
+      </p>
       <div class="grid-2">
         <article class="card">
           <h4>Подготовка</h4>
@@ -104,6 +110,9 @@
 
     <section class="section">
       <h3 class="section-title">3) Загрузка PNG в параметр типа</h3>
+      <p class="command-description">
+        <b>Описание команды:</b> команда <b>Загрузить PNG пироги</b> сопоставляет имя файла PNG с именем типоразмера и записывает изображение в параметр типа <span class="kbd">Type Image</span>.
+      </p>
       <p>Команда: <b>Загрузить PNG пироги</b>.</p>
       <ul>
         <li>Выберите папку с PNG.</li>
@@ -121,3 +130,4 @@
   <script src="assets/media-source.js"></script>
 </body>
 </html>
+
