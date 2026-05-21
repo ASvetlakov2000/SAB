@@ -7,7 +7,7 @@ using System.Linq;
 namespace RevitLibraryBuilder.Services.Regulations
 {
     /// <summary>
-    /// Universal service for launching regulation HTML files.
+    /// Универсальный сервис запуска HTML-инструкций.
     /// </summary>
     public class HtmlRegulationLauncherService
     {
@@ -37,7 +37,7 @@ namespace RevitLibraryBuilder.Services.Regulations
 
             try
             {
-                // Блок отвечает за запуск HTML в браузере по умолчанию Windows.
+                // Запуск HTML-файла через приложение по умолчанию в ОС.
                 ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
                     FileName = startFilePath,
@@ -103,8 +103,8 @@ namespace RevitLibraryBuilder.Services.Regulations
                 return false;
             }
 
-            // Блок отвечает за выбор стартовой страницы.
-            // Приоритет: "index.html" -> любой файл с "index" в имени.
+            // Выбор стартовой страницы.
+            // Приоритет: index.html -> любой файл, содержащий маркер safeContains.
             for (int index = 0; index < filePaths.Count; index++)
             {
                 string fileName = Path.GetFileName(filePaths[index]);

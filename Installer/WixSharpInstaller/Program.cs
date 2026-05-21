@@ -101,8 +101,10 @@ namespace WixSharpInstaller
 
             // Блок добавления HTML-инструкций в инсталлятор.
             // Инструкции размещаются рядом с DLL: ...\SAB\Docs\PluginInstructions\...
+            // Важно: если исходная папка не найдена, сборку прерываем с ошибкой.
+            string instructionsSourcePath = ResolvePluginInstructionsSourcePath(repositoryRoot);
             Dir pluginInstructionsContentDirectory = BuildDocumentationDirectory(
-                Path.Combine(repositoryRoot, "Docs", "PluginInstructions"),
+                instructionsSourcePath,
                 "PluginInstructions");
 
             Dir pluginInstructionsDirectory = null;
@@ -111,10 +113,14 @@ namespace WixSharpInstaller
                 pluginInstructionsDirectory = new Dir("Docs", pluginInstructionsContentDirectory);
             }
 
-            if (pluginInstructionsDirectory != null)
+            if (pluginInstructionsDirectory == null)
             {
-                pluginFiles.Add(pluginInstructionsDirectory);
+                throw new DirectoryNotFoundException(
+                    "Plugin instructions directory was not found or is empty. " +
+                    "Expected Docs\\PluginInstructions near repository root.");
             }
+
+            pluginFiles.Add(pluginInstructionsDirectory);
 
             Dir pluginFilesDirectory = new Dir(@"%AppDataFolder%\Autodesk\Revit\Addins\" + year + @"\SAB",
                 pluginFiles.ToArray());
@@ -153,6 +159,27 @@ namespace WixSharpInstaller
             {
                 throw new InvalidOperationException("MSI was not generated: " + expectedMsiPath);
             }
+        }
+
+        // Блок выбора фактической папки Docs\PluginInstructions.
+        // Поддерживаем два варианта корня репозитория, чтобы сборка работала стабильно в разных окружениях.
+        private static string ResolvePluginInstructionsSourcePath(string repositoryRoot)
+        {
+            List<string> candidates = new List<string>();
+            candidates.Add(Path.Combine(repositoryRoot, "Docs", "PluginInstructions"));
+            candidates.Add(Path.Combine(repositoryRoot, "SAB", "Docs", "PluginInstructions"));
+
+            foreach (string candidate in candidates)
+            {
+                if (Directory.Exists(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            throw new DirectoryNotFoundException(
+                "Plugin instructions source directory was not found.\nChecked:\n - " +
+                string.Join("\n - ", candidates));
         }
 
         // Блок рекурсивной сборки директории документации для включения в MSI.
