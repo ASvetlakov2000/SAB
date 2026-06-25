@@ -293,7 +293,7 @@ namespace SAB
                 "SAB.Resources.GenerateDashboardCommand_16.png");
 
 
-            // Блок кнопок для структуры проекта.
+            /// Блок кнопок для структуры проекта.
             Ribbon.AddPushButtonSingle(
             structurePanel,
                 "SAB_CreateViewsAndSheets",
