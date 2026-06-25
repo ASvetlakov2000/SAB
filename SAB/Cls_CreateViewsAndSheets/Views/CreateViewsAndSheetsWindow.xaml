@@ -1,0 +1,527 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Создание видов и листов"
+        Height="760"
+        Width="1280"
+        MinHeight="640"
+        MinWidth="1100"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,18,20,12">
+            <TextBlock Text="Создание видов и листов"
+                       Style="{StaticResource SabWindowTitleTextStyle}" />
+            <TextBlock Text="Выберите эталонный вид и заполните строки для массового создания дублей, листов и размещения Viewport."
+                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                       Margin="0,6,0,0" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="20,0,20,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" MinWidth="290" MaxWidth="420" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" MinWidth="680" />
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer Grid.Column="0"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <Border Style="{StaticResource SabPanelBorderStyle}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                    <TextBlock Text="▣" Style="{StaticResource SabPanelIconTextStyle}" />
+                                </Border>
+                                <TextBlock Text="Эталон" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                            </StackPanel>
+
+                            <TextBlock Text="Вид-образец" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <ComboBox ItemsSource="{Binding SourceViews}"
+                                      SelectedItem="{Binding SelectedSourceView}"
+                                      DisplayMemberPath="Name"
+                                      ToolTip="{Binding SelectedSourceView.Name}"
+                                      Style="{StaticResource SabComboBoxStyle}"
+                                      Margin="0,0,0,12" />
+
+                            <TextBlock Text="Лист-образец" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <ComboBox ItemsSource="{Binding SourceSheets}"
+                                      SelectedItem="{Binding SelectedSourceSheet}"
+                                      DisplayMemberPath="Name"
+                                      ToolTip="{Binding SelectedSourceSheet.Name}"
+                                      Style="{StaticResource SabComboBoxStyle}"
+                                      Margin="0,0,0,12" />
+
+                            <TextBlock Text="Тип видового экрана" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <ComboBox ItemsSource="{Binding ViewportTypes}"
+                                      SelectedItem="{Binding SelectedViewportType}"
+                                      DisplayMemberPath="Name"
+                                      ToolTip="{Binding SelectedViewportType.Name}"
+                                      Style="{StaticResource SabComboBoxStyle}"
+                                      Margin="0,0,0,12" />
+
+                            <TextBlock Text="Основная надпись" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <ComboBox ItemsSource="{Binding TitleBlockTypes}"
+                                      SelectedItem="{Binding SelectedTitleBlockType}"
+                                      DisplayMemberPath="Name"
+                                      ToolTip="{Binding SelectedTitleBlockType.Name}"
+                                      Style="{StaticResource SabComboBoxStyle}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource SabPanelBorderStyle}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                    <TextBlock Text="▥" Style="{StaticResource SabPanelIconTextStyle}" />
+                                </Border>
+                                <TextBlock Text="Настройки размещения" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                            </StackPanel>
+
+                            <TextBlock Text="Размещение вида" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,10">
+                                <RadioButton Content="Ручной ввод"
+                                             GroupName="ViewCenterPlacementMode"
+                                             IsChecked="{Binding IsViewCenterManualMode, Mode=TwoWay}"
+                                             Style="{StaticResource SabRadioButtonStyle}" />
+                                <RadioButton Content="Указать точку"
+                                             GroupName="ViewCenterPlacementMode"
+                                             IsChecked="{Binding IsViewCenterPointMode, Mode=TwoWay}"
+                                             Style="{StaticResource SabRadioButtonStyle}" />
+                            </StackPanel>
+
+                            <Grid Margin="0,0,0,14">
+                                <Grid.Style>
+                                    <Style TargetType="{x:Type Grid}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsViewCenterManualMode}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="X центра вида" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Grid.Row="1" Grid.Column="0"
+                                         Text="{Binding ViewCenterXText, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}" />
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Y центра вида" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Grid.Row="1" Grid.Column="2"
+                                         Text="{Binding ViewCenterYText, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}" />
+                            </Grid>
+
+                            <StackPanel Margin="0,0,0,14">
+                                <StackPanel.Style>
+                                    <Style TargetType="{x:Type StackPanel}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsViewCenterPointMode}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+
+                                <TextBlock Text="{Binding ViewCenterPointSummary}"
+                                           Style="{StaticResource SabFieldHintTextStyle}"
+                                           Margin="0,0,0,8" />
+                                <Button Content="Указать точку размещения вида"
+                                        Command="{Binding PickViewCenterPointCommand}"
+                                        Style="{StaticResource SabOutlineButtonStyle}" />
+                            </StackPanel>
+
+                            <TextBlock Text="Размещение заголовка" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,10">
+                                <RadioButton Content="Ручной ввод"
+                                             GroupName="ViewTitlePlacementMode"
+                                             IsChecked="{Binding IsViewTitleManualMode, Mode=TwoWay}"
+                                             Style="{StaticResource SabRadioButtonStyle}" />
+                                <RadioButton Content="Указать точку"
+                                             GroupName="ViewTitlePlacementMode"
+                                             IsChecked="{Binding IsViewTitlePointMode, Mode=TwoWay}"
+                                             Style="{StaticResource SabRadioButtonStyle}" />
+                            </StackPanel>
+
+                            <Grid Margin="0,0,0,14">
+                                <Grid.Style>
+                                    <Style TargetType="{x:Type Grid}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsViewTitleManualMode}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="X заголовка" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Grid.Row="1" Grid.Column="0"
+                                         Text="{Binding ViewTitleXText, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}" />
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Y заголовка" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Grid.Row="1" Grid.Column="2"
+                                         Text="{Binding ViewTitleYText, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}" />
+                            </Grid>
+
+                            <StackPanel Margin="0,0,0,14">
+                                <StackPanel.Style>
+                                    <Style TargetType="{x:Type StackPanel}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsViewTitlePointMode}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+
+                                <TextBlock Text="{Binding ViewTitlePointSummary}"
+                                           Style="{StaticResource SabFieldHintTextStyle}"
+                                           Margin="0,0,0,8" />
+                                <Button Content="Указать точку размещения заголовка"
+                                        Command="{Binding PickViewTitlePointCommand}"
+                                        Style="{StaticResource SabOutlineButtonStyle}" />
+                            </StackPanel>
+
+                            <CheckBox Content="Сохранить настройки"
+                                      IsChecked="{Binding SaveSettings}"
+                                      Style="{StaticResource SabCheckBoxStyle}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Column="2" Style="{StaticResource SabPanelBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="128" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                            <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
+                        </Border>
+                        <TextBlock Text="Создаваемые виды и листы" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                    </StackPanel>
+
+                    <Border Grid.Row="1"
+                            Style="{StaticResource SabDataGridContainerBorderStyle}"
+                            Margin="0,0,0,10">
+                        <DataGrid x:Name="CreationRowsDataGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SabDataGridStyle}"
+                                  BorderThickness="0"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                            <DataGrid.Columns>
+                            <DataGridTemplateColumn Header=""
+                                                    Width="34"
+                                                    MinWidth="34"
+                                                    MaxWidth="34"
+                                                    CanUserResize="False"
+                                                    IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SabDataGridDragHandleBorderStyle}">
+                                            <TextBlock Style="{StaticResource SabDataGridDragHandleTextStyle}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="№"
+                                                Binding="{Binding RowNumber}"
+                                                IsReadOnly="True"
+                                                Width="50"
+                                                MinWidth="44"
+                                                ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}"
+                                                EditingElementStyle="{StaticResource SabDataGridTextBoxEditingStyle}" />
+
+                            <DataGridTemplateColumn Header="Имя вида" Width="1.25*" MinWidth="140">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
+                                            <Grid>
+                                                <TextBlock Text="{Binding ViewName}"
+                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
+                                                <TextBlock Text="Введите имя вида">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ViewName}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBox Text="{Binding ViewName, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabDataGridTextBoxEditingStyle}" />
+                                            <TextBlock Text="Введите имя вида"
+                                                       Margin="10,0,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewName}" Value="">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Масштаб" Width="110" MinWidth="96">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.ScaleOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                  Text="{Binding ViewScaleText, UpdateSourceTrigger=PropertyChanged}"
+                                                  IsEditable="True"
+                                                  IsEnabled="{Binding IsScaleEnabled}"
+                                                  Style="{StaticResource SabDataGridComboBoxStyle}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Шаблон вида" Width="1.55*" MinWidth="170">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.ViewTemplates, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                  SelectedItem="{Binding SelectedViewTemplate, UpdateSourceTrigger=PropertyChanged}"
+                                                  DisplayMemberPath="Name"
+                                                  ToolTip="{Binding SelectedViewTemplate.Name}"
+                                                  Style="{StaticResource SabDataGridComboBoxStyle}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="№ листа" Width="120" MinWidth="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
+                                            <Grid>
+                                                <TextBlock Text="{Binding SheetNumber}"
+                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
+                                                <TextBlock Text="Введите №">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding SheetNumber}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBox Text="{Binding SheetNumber, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabDataGridTextBoxEditingStyle}" />
+                                            <TextBlock Text="Введите №"
+                                                       Margin="10,0,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SheetNumber}" Value="">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Имя листа" Width="*" MinWidth="150">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
+                                            <Grid>
+                                                <TextBlock Text="{Binding SheetName}"
+                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
+                                                <TextBlock Text="Введите имя листа">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding SheetName}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <TextBox Text="{Binding SheetName, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabDataGridTextBoxEditingStyle}" />
+                                            <TextBlock Text="Введите имя листа"
+                                                       Margin="10,0,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SheetName}" Value="">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Действия"
+                                                    Width="84"
+                                                    MinWidth="84"
+                                                    MaxWidth="84"
+                                                    CanUserResize="False">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="+"
+                                                    ToolTip="Добавить строку ниже"
+                                                    Command="{Binding DataContext.InsertRowAfterCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource SabRowAddButtonStyle}" />
+                                            <Button Content="×"
+                                                    ToolTip="Удалить строку"
+                                                    Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource SabRowDeleteButtonStyle}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <Border Grid.Row="2" Style="{StaticResource SabValidationPanelStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="!"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource SabBrush.Error}"
+                                       Margin="0,0,10,0"
+                                       VerticalAlignment="Top" />
+
+                            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding ValidationSummary}"
+                                           Foreground="{StaticResource SabBrush.Text}"
+                                           FontSize="13"
+                                           TextWrapping="Wrap" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusText}"
+                           Style="{StaticResource SabStatusTextStyle}" />
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Отмена"
+                            Width="120"
+                            Command="{Binding CancelCommand}"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button Content="Создать"
+                            Width="130"
+                            Command="{Binding CreateCommand}"
+                            IsEnabled="{Binding CanCreate}"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -258,6 +258,14 @@ namespace SAB
 
             Ribbon.AddPushButtonSingle(
                 interiorElevationsPanel,
+                "SAB_CreateViewsAndSheets",
+                "Создать виды\nи листы",
+                "SAB.CreateViewsAndSheets.Commands.CreateViewsAndSheetsCommand",
+                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png",
+                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png");
+
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
                 "SAB_FlipElevation180ByLine",
                 "Разворот\nразвертки 180",
                 "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",

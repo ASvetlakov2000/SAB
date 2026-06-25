@@ -1,0 +1,564 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="SabBrush.WindowBackground" Color="#F7F8FA" />
+    <SolidColorBrush x:Key="SabBrush.PanelBackground" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="SabBrush.TableHeaderBackground" Color="#F5F7FA" />
+    <SolidColorBrush x:Key="SabBrush.Border" Color="#D8DEE8" />
+    <SolidColorBrush x:Key="SabBrush.BorderWeak" Color="#E6EAF0" />
+    <SolidColorBrush x:Key="SabBrush.Text" Color="#1F2937" />
+    <SolidColorBrush x:Key="SabBrush.TextSecondary" Color="#667085" />
+    <SolidColorBrush x:Key="SabBrush.Accent" Color="#0F6CBD" />
+    <SolidColorBrush x:Key="SabBrush.AccentHover" Color="#0B5EA8" />
+    <SolidColorBrush x:Key="SabBrush.AccentLight" Color="#EAF3FF" />
+    <SolidColorBrush x:Key="SabBrush.Error" Color="#D92D20" />
+    <SolidColorBrush x:Key="SabBrush.Warning" Color="#B54708" />
+    <SolidColorBrush x:Key="SabBrush.Success" Color="#039855" />
+    <SolidColorBrush x:Key="SabBrush.DisabledBackground" Color="#F2F4F7" />
+    <SolidColorBrush x:Key="SabBrush.DisabledText" Color="#98A2B3" />
+
+    <Style x:Key="SabWindowTitleTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="SabWindowSubtitleTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.TextSecondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="SabPanelBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="14" />
+    </Style>
+
+    <Style x:Key="SabPanelHeaderTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SabPanelIconBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="0,0,8,0" />
+    </Style>
+
+    <Style x:Key="SabPanelIconTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SabFieldLabelTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="Margin" Value="0,0,0,5" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="SabFieldHintTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.TextSecondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="SabPlaceholderTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <Style x:Key="SabTextBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5"
+                            SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="{TemplateBinding Padding}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <ControlTemplate x:Key="SabComboBoxToggleButtonTemplate" TargetType="{x:Type ToggleButton}">
+        <Border x:Name="Root"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="1"
+                        Background="{StaticResource SabBrush.TableHeaderBackground}"
+                        BorderBrush="{StaticResource SabBrush.BorderWeak}"
+                        BorderThickness="1,0,0,0"
+                        CornerRadius="0,5,5,0">
+                    <Path x:Name="Arrow"
+                          Width="8"
+                          Height="5"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Fill="{StaticResource SabBrush.TextSecondary}"
+                          Data="M 0 0 L 4 5 L 8 0 Z" />
+                </Border>
+            </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                <Setter TargetName="Arrow" Property="Fill" Value="{StaticResource SabBrush.Accent}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                <Setter TargetName="Arrow" Property="Fill" Value="{StaticResource SabBrush.Accent}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                <Setter TargetName="Arrow" Property="Fill" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="SabComboBoxTextBoxTemplate" TargetType="{x:Type TextBox}">
+        <Border Background="Transparent">
+            <ScrollViewer x:Name="PART_ContentHost"
+                          Focusable="False"
+                          VerticalAlignment="Center" />
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="SabComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
+        <Setter Property="MinHeight" Value="30" />
+        <Setter Property="Padding" Value="8,5" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Style.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabComboBoxStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource SabComboBoxItemStyle}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid>
+                        <ToggleButton x:Name="DropDownToggle"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      ClickMode="Press"
+                                      Focusable="False"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Template="{StaticResource SabComboBoxToggleButtonTemplate}" />
+
+                        <ContentPresenter x:Name="ContentSite"
+                                          Margin="9,0,34,0"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          IsHitTestVisible="False" />
+
+                        <TextBox x:Name="PART_EditableTextBox"
+                                 Margin="9,0,34,0"
+                                 VerticalAlignment="Center"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="{TemplateBinding Foreground}"
+                                 FontSize="{TemplateBinding FontSize}"
+                                 Focusable="True"
+                                 IsReadOnly="{TemplateBinding IsReadOnly}"
+                                 Template="{StaticResource SabComboBoxTextBoxTemplate}"
+                                 Visibility="Hidden" />
+
+                        <Popup x:Name="PART_Popup"
+                               AllowsTransparency="True"
+                               Focusable="False"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               Placement="Bottom"
+                               PopupAnimation="Fade">
+                            <Grid MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border Background="{StaticResource SabBrush.PanelBackground}"
+                                        BorderBrush="{StaticResource SabBrush.Border}"
+                                        BorderThickness="1"
+                                        CornerRadius="5">
+                                    <ScrollViewer Margin="0"
+                                                  SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEditable" Value="True">
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden" />
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="DropDownToggle" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter TargetName="PART_Popup" Property="MinHeight" Value="34" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+                            <Setter TargetName="DropDownToggle" Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabDataGridComboBoxStyle" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource SabComboBoxStyle}">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="8,4" />
+    </Style>
+
+    <Style x:Key="SabRadioButtonStyle" TargetType="{x:Type RadioButton}">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,16,0" />
+    </Style>
+
+    <Style x:Key="SabCheckBoxStyle" TargetType="{x:Type CheckBox}">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SabButtonBaseStyle" TargetType="{x:Type Button}">
+        <Setter Property="MinWidth" Value="104" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Cursor" Value="Arrow" />
+                <Setter Property="Opacity" Value="0.58" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabPrimaryButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabButtonBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.Accent}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="White" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentHover}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.AccentHover}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabOutlineButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabButtonBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabNeutralButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabButtonBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.TableHeaderBackground}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabRowIconButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabNeutralButtonStyle}">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="MinWidth" Value="30" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+
+    <Style x:Key="SabRowAddButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabPrimaryButtonStyle}">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="MinWidth" Value="30" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SabRowDeleteButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabOutlineButtonStyle}">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="MinWidth" Value="30" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="SabDataGridContainerBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <Style x:Key="SabDataGridStyle" TargetType="{x:Type DataGrid}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="RowHeaderWidth" Value="0" />
+        <Setter Property="AutoGenerateColumns" Value="False" />
+        <Setter Property="CanUserAddRows" Value="False" />
+        <Setter Property="CanUserDeleteRows" Value="False" />
+        <Setter Property="CanUserResizeRows" Value="False" />
+        <Setter Property="HeadersVisibility" Value="Column" />
+        <Setter Property="GridLinesVisibility" Value="All" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource SabBrush.BorderWeak}" />
+        <Setter Property="VerticalGridLinesBrush" Value="{StaticResource SabBrush.BorderWeak}" />
+        <Setter Property="RowHeight" Value="40" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="ColumnHeaderStyle" Value="{DynamicResource SabDataGridColumnHeaderStyle}" />
+        <Setter Property="CellStyle" Value="{DynamicResource SabDataGridCellStyle}" />
+        <Setter Property="RowStyle" Value="{DynamicResource SabDataGridRowStyle}" />
+    </Style>
+
+    <Style x:Key="SabDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.TableHeaderBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="0,0,1,1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="Height" Value="38" />
+    </Style>
+
+    <Style x:Key="SabDataGridCellStyle" TargetType="{x:Type DataGridCell}">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.BorderWeak}" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabDataGridRowStyle" TargetType="{x:Type DataGridRow}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="ToolTip" Value="{Binding RowError}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabDataGridTextBlockStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+    </Style>
+
+    <Style x:Key="SabDataGridDisplayFieldBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="8,4" />
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.BorderWeak}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <Style x:Key="SabDataGridCenteredTextBlockStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabDataGridTextBlockStyle}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SabDataGridDragHandleBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="SizeAll" />
+        <Setter Property="ToolTip" Value="Зажмите и перетащите строку" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Tag" Value="RowDragHandle" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabDataGridDragHandleTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Text" Value="⋮" />
+        <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.TextSecondary}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SabDataGridTextBoxEditingStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SabTextBoxStyle}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Margin" Value="8,4" />
+    </Style>
+
+    <Style x:Key="SabValidationPanelStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="12" />
+    </Style>
+
+    <Style x:Key="SabStatusTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+</ResourceDictionary>

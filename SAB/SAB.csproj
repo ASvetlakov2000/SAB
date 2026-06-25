@@ -111,6 +111,29 @@
     </Compile>
     <Compile Include="BimDashboard\UI\DataSourceDialogService.cs" />
     <Compile Include="BimDashboard\Utils\FileUtils.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Commands\CreateViewsAndSheetsCommand.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\CreatedViewSheetInfo.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsResult.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsSettings.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsWindowLayoutSettings.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\PlacementSettings.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\RevitElementItem.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetBounds.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationItem.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsOperationService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsWindowLayoutService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\RevitDataService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\SettingsService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\SheetBoundsService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\SheetCreationService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\ValidationService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\ViewDuplicationService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\ViewportPlacementService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\ViewModels\CreateViewsAndSheetsViewModel.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\ViewModels\SheetCreationRowViewModel.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml.cs">
+      <DependentUpon>CreateViewsAndSheetsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\FlipElevation180ByLineCommand.cs" />
@@ -343,6 +366,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BimDashboard\Templates\dashboard_template.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UI\Styles\SABWindowStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml">
