@@ -115,9 +115,12 @@
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreatedViewSheetInfo.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsResult.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsSettings.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsStructureMode.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsWindowLayoutSettings.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\FloorSourceMapping.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\PlacementSettings.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\RevitElementItem.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetDetailCopySettings.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetBounds.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationItem.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsOperationService.cs" />
@@ -126,10 +129,12 @@
     <Compile Include="Cls_CreateViewsAndSheets\Services\SettingsService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\SheetBoundsService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\SheetCreationService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\SheetDetailCopyService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\ValidationService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\ViewDuplicationService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\ViewportPlacementService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\ViewModels\CreateViewsAndSheetsViewModel.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\ViewModels\FloorSourceMappingRowViewModel.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\ViewModels\SheetCreationRowViewModel.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml.cs">
       <DependentUpon>CreateViewsAndSheetsWindow.xaml</DependentUpon>

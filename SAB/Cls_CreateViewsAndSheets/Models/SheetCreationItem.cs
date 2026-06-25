@@ -7,6 +7,8 @@ namespace SAB.CreateViewsAndSheets.Models
         public SheetCreationItem()
         {
             RowNumber = 0;
+            FloorId = ElementId.InvalidElementId;
+            FloorName = string.Empty;
             ViewName = string.Empty;
             ViewTemplateId = ElementId.InvalidElementId;
             ViewScale = 0;
@@ -15,6 +17,10 @@ namespace SAB.CreateViewsAndSheets.Models
         }
 
         public int RowNumber { get; set; }
+
+        public ElementId FloorId { get; set; }
+
+        public string FloorName { get; set; }
 
         public string ViewName { get; set; }
 

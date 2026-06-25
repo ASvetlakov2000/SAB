@@ -6,6 +6,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
     public class SheetCreationRowViewModel : INotifyPropertyChanged
     {
         private int _rowNumber;
+        private string _floorName;
         private string _viewName;
         private string _viewScaleText;
         private RevitElementItem _selectedViewTemplate;
@@ -16,6 +17,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public SheetCreationRowViewModel()
         {
+            _floorName = string.Empty;
             _viewName = string.Empty;
             _viewScaleText = "50";
             _sheetNumber = string.Empty;
@@ -38,6 +40,22 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
                 _rowNumber = value;
                 OnPropertyChanged("RowNumber");
+            }
+        }
+
+        public string FloorName
+        {
+            get { return _floorName; }
+            set
+            {
+                string newValue = value ?? string.Empty;
+                if (_floorName == newValue)
+                {
+                    return;
+                }
+
+                _floorName = newValue;
+                OnPropertyChanged("FloorName");
             }
         }
 

@@ -22,6 +22,8 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private DataGrid _rowsDataGrid;
         private readonly List<DataGridColumn> _observedWidthColumns;
+        private ToggleButton _settingsDrawerToggle;
+        private FrameworkElement _settingsDrawerPanel;
         private Point _dragStartPoint;
         private SheetCreationRowViewModel _draggedRow;
         private DataGridColumn _resizedColumn;
@@ -41,6 +43,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
             _viewModel.RequestClose += ViewModel_RequestClose;
             _viewModel.RequestPointSelection += ViewModel_RequestPointSelection;
+            _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             Loaded += CreateViewsAndSheetsWindow_Loaded;
             Closing += CreateViewsAndSheetsWindow_Closing;
             Closed += CreateViewsAndSheetsWindow_Closed;
@@ -88,6 +91,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void CreateViewsAndSheetsWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            AttachSettingsDrawerHandlers();
             AttachRowsDataGridHandlers();
             RestoreWindowLayout();
         }
@@ -110,6 +114,20 @@ namespace SAB.CreateViewsAndSheets.Views
             Close();
         }
 
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e == null)
+            {
+                return;
+            }
+
+            if (string.Equals(e.PropertyName, "IsSingleStoryStructure", StringComparison.Ordinal) ||
+                string.Equals(e.PropertyName, "IsMultiStoryStructure", StringComparison.Ordinal))
+            {
+                UpdateFloorColumnVisibility();
+            }
+        }
+
         private void CreateViewsAndSheetsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             SaveWindowLayout();
@@ -118,11 +136,61 @@ namespace SAB.CreateViewsAndSheets.Views
         private void CreateViewsAndSheetsWindow_Closed(object sender, EventArgs e)
         {
             DetachRowsDataGridHandlers();
+            DetachSettingsDrawerHandlers();
             _viewModel.RequestClose -= ViewModel_RequestClose;
             _viewModel.RequestPointSelection -= ViewModel_RequestPointSelection;
+            _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
             Loaded -= CreateViewsAndSheetsWindow_Loaded;
             Closing -= CreateViewsAndSheetsWindow_Closing;
             Closed -= CreateViewsAndSheetsWindow_Closed;
+        }
+
+        private void AttachSettingsDrawerHandlers()
+        {
+            _settingsDrawerToggle = FindVisualChildByName<ToggleButton>(this, "SettingsDrawerToggle");
+            _settingsDrawerPanel = FindVisualChildByName<FrameworkElement>(this, "SettingsDrawerPanel");
+
+            if (_settingsDrawerToggle == null)
+            {
+                return;
+            }
+
+            _settingsDrawerToggle.Checked += SettingsDrawerToggle_CheckedChanged;
+            _settingsDrawerToggle.Unchecked += SettingsDrawerToggle_CheckedChanged;
+            ApplySettingsDrawerState(_settingsDrawerToggle.IsChecked != false);
+        }
+
+        private void DetachSettingsDrawerHandlers()
+        {
+            if (_settingsDrawerToggle == null)
+            {
+                return;
+            }
+
+            _settingsDrawerToggle.Checked -= SettingsDrawerToggle_CheckedChanged;
+            _settingsDrawerToggle.Unchecked -= SettingsDrawerToggle_CheckedChanged;
+            _settingsDrawerToggle = null;
+            _settingsDrawerPanel = null;
+        }
+
+        private void SettingsDrawerToggle_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            ApplySettingsDrawerState(_settingsDrawerToggle == null || _settingsDrawerToggle.IsChecked != false);
+        }
+
+        private void ApplySettingsDrawerState(bool isOpen)
+        {
+            if (_settingsDrawerPanel != null)
+            {
+                _settingsDrawerPanel.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (_settingsDrawerToggle != null)
+            {
+                _settingsDrawerToggle.ToolTip = isOpen ? "Скрыть настройки" : "Показать настройки";
+            }
+
+            ScheduleNormalizeRowsDataGridColumnWidths();
         }
 
         private void AttachRowsDataGridHandlers()
@@ -146,6 +214,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.DragOver += RowsDataGrid_DragOver;
             _rowsDataGrid.Drop += RowsDataGrid_Drop;
             AttachRowsDataGridColumnWidthObservers();
+            UpdateFloorColumnVisibility();
             _gridHandlersAttached = true;
         }
 
@@ -506,6 +575,47 @@ namespace SAB.CreateViewsAndSheets.Views
             return _rowsDataGrid.Columns.IndexOf(column) == _rowsDataGrid.Columns.Count - 1;
         }
 
+        private void UpdateFloorColumnVisibility()
+        {
+            if (_rowsDataGrid == null || _viewModel == null)
+            {
+                return;
+            }
+
+            DataGridColumn floorColumn = GetFloorColumn();
+            if (floorColumn == null)
+            {
+                return;
+            }
+
+            Visibility targetVisibility = _viewModel.IsMultiStoryStructure ? Visibility.Visible : Visibility.Collapsed;
+            if (floorColumn.Visibility != targetVisibility)
+            {
+                floorColumn.Visibility = targetVisibility;
+            }
+
+            ScheduleNormalizeRowsDataGridColumnWidths();
+        }
+
+        private DataGridColumn GetFloorColumn()
+        {
+            if (_rowsDataGrid == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
+            {
+                DataGridColumn column = _rowsDataGrid.Columns[i];
+                if (column != null && string.Equals(column.SortMemberPath, "FloorName", StringComparison.Ordinal))
+                {
+                    return column;
+                }
+            }
+
+            return null;
+        }
+
         private void ScheduleNormalizeRowsDataGridColumnWidths()
         {
             if (_rowsDataGrid == null)
@@ -659,6 +769,7 @@ namespace SAB.CreateViewsAndSheets.Views
             CreateViewsAndSheetsWindowLayoutSettings settings = _layoutService.Load();
             if (settings == null)
             {
+                ApplySettingsDrawerState(_settingsDrawerToggle == null || _settingsDrawerToggle.IsChecked != false);
                 _layoutRestored = true;
                 ScheduleNormalizeRowsDataGridColumnWidths();
                 return;
@@ -672,6 +783,12 @@ namespace SAB.CreateViewsAndSheets.Views
             if (settings.WindowHeight >= MinHeight)
             {
                 Height = settings.WindowHeight;
+            }
+
+            if (_settingsDrawerToggle != null)
+            {
+                _settingsDrawerToggle.IsChecked = settings.IsSettingsPanelOpen;
+                ApplySettingsDrawerState(settings.IsSettingsPanelOpen);
             }
 
             if (_rowsDataGrid != null && settings.ColumnWidths != null)
@@ -697,6 +814,7 @@ namespace SAB.CreateViewsAndSheets.Views
             CreateViewsAndSheetsWindowLayoutSettings settings = new CreateViewsAndSheetsWindowLayoutSettings();
             settings.WindowWidth = ActualWidth > 0 ? ActualWidth : Width;
             settings.WindowHeight = ActualHeight > 0 ? ActualHeight : Height;
+            settings.IsSettingsPanelOpen = _settingsDrawerToggle == null || _settingsDrawerToggle.IsChecked != false;
 
             if (_rowsDataGrid != null)
             {

@@ -57,12 +57,22 @@ namespace SAB.CreateViewsAndSheets.Services
                 return result;
             }
 
-            View sourceView = ValidateSourceView(document, settings.SourceViewId, result);
-            ValidateSourceSheet(document, settings.SourceSheetId, result);
+            View sourceView = null;
+            Dictionary<string, View> sourceViewsByFloorName = null;
+            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
+            {
+                sourceView = ValidateSourceView(document, settings.SourceViewId, result);
+                ValidateSourceSheet(document, settings.SourceSheetId, result);
+            }
+            else
+            {
+                sourceViewsByFloorName = ValidateFloorMappings(document, settings, result);
+            }
+
             ValidateViewportType(document, settings.ViewportTypeId, result);
             ValidateTitleBlockType(document, settings.TitleBlockTypeId, result);
             ValidatePlacement(settings, result);
-            ValidateRows(document, sourceView, items, result);
+            ValidateRows(document, settings, sourceView, sourceViewsByFloorName, items, result);
 
             return result;
         }
@@ -116,6 +126,57 @@ namespace SAB.CreateViewsAndSheets.Services
             {
                 result.Errors.Add("Лист-образец не найден в документе.");
             }
+        }
+
+        private Dictionary<string, View> ValidateFloorMappings(
+            Document document,
+            CreateViewsAndSheetsSettings settings,
+            CreateViewsAndSheetsValidationResult result)
+        {
+            Dictionary<string, View> sourceViewsByFloorName = new Dictionary<string, View>(StringComparer.OrdinalIgnoreCase);
+            if (settings.FloorMappings == null || settings.FloorMappings.Count == 0)
+            {
+                result.Errors.Add("Для многоэтажной структуры не заполнено сопоставление этажей.");
+                return sourceViewsByFloorName;
+            }
+
+            for (int i = 0; i < settings.FloorMappings.Count; i++)
+            {
+                FloorSourceMapping mapping = settings.FloorMappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string floorName = (mapping.FloorName ?? string.Empty).Trim();
+                string rowPrefix = "Сопоставление этажа " + (i + 1) + ": ";
+
+                if (string.IsNullOrWhiteSpace(floorName))
+                {
+                    result.Errors.Add(rowPrefix + "не заполнено поле Этаж.");
+                    continue;
+                }
+
+                if (sourceViewsByFloorName.ContainsKey(floorName))
+                {
+                    result.Errors.Add(rowPrefix + "этаж повторяется.");
+                    continue;
+                }
+
+                View sourceView = ValidateSourceView(document, mapping.SourceViewId, result);
+                ValidateSourceSheet(document, mapping.SourceSheetId, result);
+                if (sourceView != null)
+                {
+                    sourceViewsByFloorName[floorName] = sourceView;
+                }
+            }
+
+            if (sourceViewsByFloorName.Count == 0)
+            {
+                result.Errors.Add("Для многоэтажной структуры нет ни одного полностью проверенного сопоставления этажа.");
+            }
+
+            return sourceViewsByFloorName;
         }
 
         private void ValidateViewportType(Document document, ElementId viewportTypeId, CreateViewsAndSheetsValidationResult result)
@@ -196,7 +257,9 @@ namespace SAB.CreateViewsAndSheets.Services
 
         private void ValidateRows(
             Document document,
+            CreateViewsAndSheetsSettings settings,
             View sourceView,
+            Dictionary<string, View> sourceViewsByFloorName,
             IList<SheetCreationItem> items,
             CreateViewsAndSheetsValidationResult result)
         {
@@ -224,6 +287,20 @@ namespace SAB.CreateViewsAndSheets.Services
                 string viewName = (item.ViewName ?? string.Empty).Trim();
                 string sheetNumber = (item.SheetNumber ?? string.Empty).Trim();
                 string sheetName = (item.SheetName ?? string.Empty).Trim();
+                View templateSourceView = sourceView;
+
+                if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiStory)
+                {
+                    string floorName = (item.FloorName ?? string.Empty).Trim();
+                    if (string.IsNullOrWhiteSpace(floorName))
+                    {
+                        result.Errors.Add(rowPrefix + "не заполнен этаж.");
+                    }
+                    else if (sourceViewsByFloorName == null || !sourceViewsByFloorName.TryGetValue(floorName, out templateSourceView))
+                    {
+                        result.Errors.Add(rowPrefix + "для этажа \"" + floorName + "\" нет корректного сопоставления.");
+                    }
+                }
 
                 if (string.IsNullOrWhiteSpace(viewName))
                 {
@@ -271,7 +348,7 @@ namespace SAB.CreateViewsAndSheets.Services
                     }
                 }
 
-                ValidateTemplate(document, sourceView, item, rowPrefix, result);
+                ValidateTemplate(document, templateSourceView, item, rowPrefix, result);
             }
         }
 

@@ -33,6 +33,7 @@ namespace SAB.CreateViewsAndSheets.Services
     {
         private readonly ViewDuplicationService _viewDuplicationService;
         private readonly SheetCreationService _sheetCreationService;
+        private readonly SheetDetailCopyService _sheetDetailCopyService;
         private readonly SheetBoundsService _sheetBoundsService;
         private readonly ViewportPlacementService _viewportPlacementService;
 
@@ -40,6 +41,7 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             _viewDuplicationService = new ViewDuplicationService();
             _sheetCreationService = new SheetCreationService();
+            _sheetDetailCopyService = new SheetDetailCopyService();
             _sheetBoundsService = new SheetBoundsService();
             _viewportPlacementService = new ViewportPlacementService();
         }
@@ -64,8 +66,10 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Нет строк для создания видов и листов.");
             }
 
-            View sourceView = document.GetElement(settings.SourceViewId) as View;
-            if (sourceView == null)
+            View sourceView = settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory
+                ? document.GetElement(settings.SourceViewId) as View
+                : null;
+            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory && sourceView == null)
             {
                 throw new InvalidOperationException("Вид-образец не найден в документе.");
             }
@@ -83,7 +87,8 @@ namespace SAB.CreateViewsAndSheets.Services
                     for (int i = 0; i < items.Count; i++)
                     {
                         SheetCreationItem item = items[i];
-                        ProcessSingleRow(document, sourceView, settings, item, result);
+                        RowSourceSelection rowSource = ResolveRowSource(document, settings, item, sourceView);
+                        ProcessSingleRow(document, rowSource.SourceView, rowSource.SourceSheetId, settings, item, result);
                     }
 
                     transactionGroup.Assimilate();
@@ -103,9 +108,78 @@ namespace SAB.CreateViewsAndSheets.Services
             return result;
         }
 
+        private RowSourceSelection ResolveRowSource(
+            Document document,
+            CreateViewsAndSheetsSettings settings,
+            SheetCreationItem item,
+            View singleStorySourceView)
+        {
+            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
+            {
+                if (singleStorySourceView == null)
+                {
+                    throw new InvalidOperationException("Вид-образец не найден в документе.");
+                }
+
+                return new RowSourceSelection(singleStorySourceView, settings.SourceSheetId);
+            }
+
+            FloorSourceMapping mapping = FindFloorMapping(settings.FloorMappings, item != null ? item.FloorName : string.Empty);
+            if (mapping == null)
+            {
+                throw new InvalidOperationException("Для этажа \"" + (item != null ? item.FloorName : string.Empty) + "\" не найдено сопоставление вида-образца и листа-образца.");
+            }
+
+            View sourceView = document.GetElement(mapping.SourceViewId) as View;
+            if (sourceView == null)
+            {
+                throw new InvalidOperationException("Для этажа \"" + mapping.FloorName + "\" вид-образец не найден в документе.");
+            }
+
+            ViewSheet sourceSheet = document.GetElement(mapping.SourceSheetId) as ViewSheet;
+            if (sourceSheet == null)
+            {
+                throw new InvalidOperationException("Для этажа \"" + mapping.FloorName + "\" лист-образец не найден в документе.");
+            }
+
+            return new RowSourceSelection(sourceView, mapping.SourceSheetId);
+        }
+
+        private FloorSourceMapping FindFloorMapping(IList<FloorSourceMapping> mappings, string floorName)
+        {
+            if (mappings == null)
+            {
+                return null;
+            }
+
+            string cleanFloorName = (floorName ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(cleanFloorName))
+            {
+                return null;
+            }
+
+            for (int i = 0; i < mappings.Count; i++)
+            {
+                FloorSourceMapping mapping = mappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string mappingFloorName = (mapping.FloorName ?? string.Empty).Trim();
+                if (string.Equals(mappingFloorName, cleanFloorName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return mapping;
+                }
+            }
+
+            return null;
+        }
+
         private void ProcessSingleRow(
             Document document,
             View sourceView,
+            ElementId sourceSheetId,
             CreateViewsAndSheetsSettings settings,
             SheetCreationItem item,
             CreateViewsAndSheetsResult result)
@@ -126,9 +200,18 @@ namespace SAB.CreateViewsAndSheets.Services
                 ViewSheet createdSheet = _sheetCreationService.CreateSheet(
                     document,
                     settings.TitleBlockTypeId,
-                    settings.SourceSheetId,
+                    sourceSheetId,
                     item.SheetNumber,
                     item.SheetName,
+                    result.Warnings);
+
+                document.Regenerate();
+
+                _sheetDetailCopyService.CopyFromSourceSheet(
+                    document,
+                    sourceSheetId,
+                    createdSheet,
+                    settings.DetailCopy,
                     result.Warnings);
 
                 document.Regenerate();
@@ -199,6 +282,8 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Нет строк для создания видов и листов.");
             }
 
+            ValidateSourceMappingsBeforeTransaction(settings, items);
+
             for (int i = 0; i < items.Count; i++)
             {
                 SheetCreationItem item = items[i];
@@ -225,6 +310,75 @@ namespace SAB.CreateViewsAndSheets.Services
                 if (item.ViewScale <= 0)
                 {
                     throw new InvalidOperationException("Строка " + item.RowNumber + ": масштаб должен быть больше нуля.");
+                }
+            }
+        }
+
+        private void ValidateSourceMappingsBeforeTransaction(CreateViewsAndSheetsSettings settings, IList<SheetCreationItem> items)
+        {
+            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
+            {
+                if (settings.SourceViewId == null || settings.SourceViewId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Не выбран вид-образец.");
+                }
+
+                if (settings.SourceSheetId == null || settings.SourceSheetId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Не выбран лист-образец.");
+                }
+
+                return;
+            }
+
+            if (settings.FloorMappings == null || settings.FloorMappings.Count == 0)
+            {
+                throw new InvalidOperationException("Для многоэтажной структуры не заполнено сопоставление этажей.");
+            }
+
+            HashSet<string> mappingFloorNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < settings.FloorMappings.Count; i++)
+            {
+                FloorSourceMapping mapping = settings.FloorMappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string floorName = (mapping.FloorName ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(floorName))
+                {
+                    throw new InvalidOperationException("В сопоставлении этажей есть строка без названия этажа.");
+                }
+
+                if (!mappingFloorNames.Add(floorName))
+                {
+                    throw new InvalidOperationException("Этаж \"" + floorName + "\" повторяется в сопоставлении этажей.");
+                }
+
+                if (mapping.SourceViewId == null || mapping.SourceViewId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Для этажа \"" + floorName + "\" не выбран вид-образец.");
+                }
+
+                if (mapping.SourceSheetId == null || mapping.SourceSheetId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Для этажа \"" + floorName + "\" не выбран лист-образец.");
+                }
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                SheetCreationItem item = items[i];
+                string floorName = item != null ? (item.FloorName ?? string.Empty).Trim() : string.Empty;
+                if (string.IsNullOrWhiteSpace(floorName))
+                {
+                    throw new InvalidOperationException("Строка " + (item != null ? item.RowNumber : i + 1) + ": не заполнен этаж.");
+                }
+
+                if (!mappingFloorNames.Contains(floorName))
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": для этажа \"" + floorName + "\" нет сопоставления.");
                 }
             }
         }
@@ -269,6 +423,19 @@ namespace SAB.CreateViewsAndSheets.Services
             {
                 throw new InvalidOperationException("Длина линии заголовка должна быть больше нуля.");
             }
+        }
+
+        private class RowSourceSelection
+        {
+            public RowSourceSelection(View sourceView, ElementId sourceSheetId)
+            {
+                SourceView = sourceView;
+                SourceSheetId = sourceSheetId;
+            }
+
+            public View SourceView { get; private set; }
+
+            public ElementId SourceSheetId { get; private set; }
         }
 
         private bool IsFinite(double value)

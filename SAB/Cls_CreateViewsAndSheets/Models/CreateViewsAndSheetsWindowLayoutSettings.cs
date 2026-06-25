@@ -13,6 +13,8 @@ namespace SAB.CreateViewsAndSheets.Models
 
         public double WindowHeight { get; set; }
 
+        public bool IsSettingsPanelOpen { get; set; } = true;
+
         public Dictionary<string, double> ColumnWidths { get; set; }
     }
 }

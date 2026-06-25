@@ -350,13 +350,13 @@ namespace SAB.CreateViewsAndSheets.Commands
         {
             if (document == null ||
                 viewModel == null ||
-                viewModel.SelectedSourceSheet == null ||
-                viewModel.SelectedSourceSheet.Id == null)
+                viewModel.GetPointSelectionSourceSheet() == null ||
+                viewModel.GetPointSelectionSourceSheet().Id == null)
             {
                 return null;
             }
 
-            return document.GetElement(viewModel.SelectedSourceSheet.Id) as ViewSheet;
+            return document.GetElement(viewModel.GetPointSelectionSourceSheet().Id) as ViewSheet;
         }
 
         private SheetBounds GetSelectedSourceSheetBounds(CreateViewsAndSheetsViewModel viewModel)
@@ -366,17 +366,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                 return null;
             }
 
-            if (viewModel.SelectedSourceSheet != null && viewModel.SelectedSourceSheet.SheetBounds != null)
-            {
-                return viewModel.SelectedSourceSheet.SheetBounds;
-            }
-
-            if (viewModel.SelectedTitleBlockType != null && viewModel.SelectedTitleBlockType.SheetBounds != null)
-            {
-                return viewModel.SelectedTitleBlockType.SheetBounds;
-            }
-
-            return null;
+            return viewModel.GetPointSelectionSourceSheetBounds();
         }
 
         private void ActivateRevitView(UIDocument uiDocument, View view)

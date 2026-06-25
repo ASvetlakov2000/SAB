@@ -1,4 +1,5 @@
 using Autodesk.Revit.DB;
+using System.Collections.Generic;
 
 namespace SAB.CreateViewsAndSheets.Models
 {
@@ -11,7 +12,12 @@ namespace SAB.CreateViewsAndSheets.Models
             ViewportTypeId = ElementId.InvalidElementId;
             TitleBlockTypeId = ElementId.InvalidElementId;
             Placement = new PlacementSettings();
+            DetailCopy = new SheetDetailCopySettings();
+            StructureMode = CreateViewsAndSheetsStructureMode.SingleStory;
+            FloorMappings = new List<FloorSourceMapping>();
         }
+
+        public CreateViewsAndSheetsStructureMode StructureMode { get; set; }
 
         public ElementId SourceViewId { get; set; }
 
@@ -24,5 +30,9 @@ namespace SAB.CreateViewsAndSheets.Models
         public SheetBounds SheetBounds { get; set; }
 
         public PlacementSettings Placement { get; set; }
+
+        public SheetDetailCopySettings DetailCopy { get; set; }
+
+        public List<FloorSourceMapping> FloorMappings { get; set; }
     }
 }

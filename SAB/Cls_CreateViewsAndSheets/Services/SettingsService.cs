@@ -79,10 +79,15 @@ namespace SAB.CreateViewsAndSheets.Services
         private CreateViewsAndSheetsSettings ConvertToSettings(Document document, PersistedSettings persisted, IList<string> warnings)
         {
             CreateViewsAndSheetsSettings settings = new CreateViewsAndSheetsSettings();
+            settings.StructureMode = persisted.StructureModeValue == (int)CreateViewsAndSheetsStructureMode.MultiStory
+                ? CreateViewsAndSheetsStructureMode.MultiStory
+                : CreateViewsAndSheetsStructureMode.SingleStory;
             settings.SourceViewId = RestoreElementId(document, persisted.SourceViewIdValue, "эталонный вид", warnings);
             settings.SourceSheetId = RestoreElementId(document, persisted.SourceSheetIdValue, "эталонный лист", warnings);
             settings.ViewportTypeId = RestoreElementId(document, persisted.ViewportTypeIdValue, "тип Viewport", warnings);
             settings.TitleBlockTypeId = RestoreElementId(document, persisted.TitleBlockTypeIdValue, "тип основной надписи", warnings);
+
+            settings.FloorMappings = RestoreFloorMappings(document, persisted.FloorMappings, warnings);
 
             settings.Placement = new PlacementSettings();
             settings.Placement.CoordinateUnits = string.IsNullOrWhiteSpace(persisted.CoordinateUnits)
@@ -96,6 +101,16 @@ namespace SAB.CreateViewsAndSheets.Services
             settings.Placement.UsePointSelectionForViewCenter = persisted.UsePointSelectionForViewCenter;
             settings.Placement.UsePointSelectionForViewTitle = persisted.UsePointSelectionForViewTitle;
             settings.Placement.SaveSettings = persisted.SaveSettings;
+            settings.DetailCopy = new SheetDetailCopySettings();
+            settings.DetailCopy.CopySheetWithDetailing = persisted.CopySheetWithDetailing;
+            settings.DetailCopy.CopySchedules = GetNullableBoolValue(persisted.CopySchedules, true);
+            settings.DetailCopy.CopyLegends = GetNullableBoolValue(persisted.CopyLegends, true);
+            settings.DetailCopy.CopyDraftingViews = GetNullableBoolValue(persisted.CopyDraftingViews, true);
+            settings.DetailCopy.CopyDetailLines = GetNullableBoolValue(persisted.CopyDetailLines, true);
+            settings.DetailCopy.CopyFilledRegions = GetNullableBoolValue(persisted.CopyFilledRegions, true);
+            settings.DetailCopy.CopyTextNotes = GetNullableBoolValue(persisted.CopyTextNotes, true);
+            settings.DetailCopy.CopyGenericAnnotations = GetNullableBoolValue(persisted.CopyGenericAnnotations, true);
+            settings.DetailCopy.CopyImages = GetNullableBoolValue(persisted.CopyImages, true);
 
             return settings;
         }
@@ -103,9 +118,11 @@ namespace SAB.CreateViewsAndSheets.Services
         private PersistedSettings ConvertFromSettings(CreateViewsAndSheetsSettings settings)
         {
             PlacementSettings placement = settings.Placement ?? new PlacementSettings();
+            SheetDetailCopySettings detailCopy = settings.DetailCopy ?? new SheetDetailCopySettings();
 
             PersistedSettings persisted = new PersistedSettings();
             persisted.SchemaVersion = CurrentSchemaVersion;
+            persisted.StructureModeValue = (int)settings.StructureMode;
             persisted.SourceViewIdValue = RevitElementIdUtils.GetElementIdValue(settings.SourceViewId);
             persisted.SourceSheetIdValue = RevitElementIdUtils.GetElementIdValue(settings.SourceSheetId);
             persisted.ViewportTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.ViewportTypeId);
@@ -119,7 +136,78 @@ namespace SAB.CreateViewsAndSheets.Services
             persisted.UsePointSelectionForViewCenter = placement.UsePointSelectionForViewCenter;
             persisted.UsePointSelectionForViewTitle = placement.UsePointSelectionForViewTitle;
             persisted.SaveSettings = placement.SaveSettings;
+            persisted.CopySheetWithDetailing = detailCopy.CopySheetWithDetailing;
+            persisted.CopySchedules = detailCopy.CopySchedules;
+            persisted.CopyLegends = detailCopy.CopyLegends;
+            persisted.CopyDraftingViews = detailCopy.CopyDraftingViews;
+            persisted.CopyDetailLines = detailCopy.CopyDetailLines;
+            persisted.CopyFilledRegions = detailCopy.CopyFilledRegions;
+            persisted.CopyTextNotes = detailCopy.CopyTextNotes;
+            persisted.CopyGenericAnnotations = detailCopy.CopyGenericAnnotations;
+            persisted.CopyImages = detailCopy.CopyImages;
+            persisted.FloorMappings = ConvertFloorMappings(settings.FloorMappings);
             return persisted;
+        }
+
+        private List<FloorSourceMapping> RestoreFloorMappings(
+            Document document,
+            IList<PersistedFloorMapping> persistedMappings,
+            IList<string> warnings)
+        {
+            List<FloorSourceMapping> result = new List<FloorSourceMapping>();
+            if (persistedMappings == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < persistedMappings.Count; i++)
+            {
+                PersistedFloorMapping persistedMapping = persistedMappings[i];
+                if (persistedMapping == null)
+                {
+                    continue;
+                }
+
+                FloorSourceMapping mapping = new FloorSourceMapping();
+                mapping.FloorName = persistedMapping.FloorName ?? string.Empty;
+                mapping.FloorId = ElementId.InvalidElementId;
+                mapping.SourceViewId = RestoreElementId(document, persistedMapping.SourceViewIdValue, "вид-образец этажа " + mapping.FloorName, warnings);
+                mapping.SourceSheetId = RestoreElementId(document, persistedMapping.SourceSheetIdValue, "лист-образец этажа " + mapping.FloorName, warnings);
+                result.Add(mapping);
+            }
+
+            return result;
+        }
+
+        private List<PersistedFloorMapping> ConvertFloorMappings(IList<FloorSourceMapping> mappings)
+        {
+            List<PersistedFloorMapping> result = new List<PersistedFloorMapping>();
+            if (mappings == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < mappings.Count; i++)
+            {
+                FloorSourceMapping mapping = mappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                PersistedFloorMapping persistedMapping = new PersistedFloorMapping();
+                persistedMapping.FloorName = mapping.FloorName ?? string.Empty;
+                persistedMapping.SourceViewIdValue = RevitElementIdUtils.GetElementIdValue(mapping.SourceViewId);
+                persistedMapping.SourceSheetIdValue = RevitElementIdUtils.GetElementIdValue(mapping.SourceSheetId);
+                result.Add(persistedMapping);
+            }
+
+            return result;
+        }
+
+        private bool GetNullableBoolValue(bool? value, bool defaultValue)
+        {
+            return value.HasValue ? value.Value : defaultValue;
         }
 
         private ElementId RestoreElementId(Document document, long value, string elementDescription, IList<string> warnings)
@@ -154,6 +242,8 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             public int SchemaVersion { get; set; }
 
+            public int StructureModeValue { get; set; }
+
             public long SourceViewIdValue { get; set; }
 
             public long SourceSheetIdValue { get; set; }
@@ -179,6 +269,35 @@ namespace SAB.CreateViewsAndSheets.Services
             public bool UsePointSelectionForViewTitle { get; set; }
 
             public bool SaveSettings { get; set; }
+
+            public bool CopySheetWithDetailing { get; set; }
+
+            public bool? CopySchedules { get; set; }
+
+            public bool? CopyLegends { get; set; }
+
+            public bool? CopyDraftingViews { get; set; }
+
+            public bool? CopyDetailLines { get; set; }
+
+            public bool? CopyFilledRegions { get; set; }
+
+            public bool? CopyTextNotes { get; set; }
+
+            public bool? CopyGenericAnnotations { get; set; }
+
+            public bool? CopyImages { get; set; }
+
+            public List<PersistedFloorMapping> FloorMappings { get; set; }
+        }
+
+        private class PersistedFloorMapping
+        {
+            public string FloorName { get; set; }
+
+            public long SourceViewIdValue { get; set; }
+
+            public long SourceSheetIdValue { get; set; }
         }
     }
 }
