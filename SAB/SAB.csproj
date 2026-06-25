@@ -371,6 +371,8 @@
     <Content Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\CreateViewsAndSheets_16.png" />
+    <EmbeddedResource Include="Resources\CreateViewsAndSheets_32.png" />
     <Content Include="UI\Styles\SABWindowStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

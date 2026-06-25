@@ -11,6 +11,7 @@ namespace SAB
         private const string InteriorElevationsPanelName = "Развертки";
         private const string RoomsPanelName = "Помещения";
         private const string InfoPanelName = "Инфо";
+        private const string StructurePanelName = "Листы";
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -29,6 +30,7 @@ namespace SAB
             RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
             RibbonPanel roomsPanel = application.CreateRibbonPanel(RibbonTabName, RoomsPanelName);
+            RibbonPanel structurePanel = application.CreateRibbonPanel(RibbonTabName, StructurePanelName);
 
 
             // Блок кнопок с инструкциями.
@@ -258,14 +260,6 @@ namespace SAB
 
             Ribbon.AddPushButtonSingle(
                 interiorElevationsPanel,
-                "SAB_CreateViewsAndSheets",
-                "Создать виды\nи листы",
-                "SAB.CreateViewsAndSheets.Commands.CreateViewsAndSheetsCommand",
-                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png",
-                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png");
-
-            Ribbon.AddPushButtonSingle(
-                interiorElevationsPanel,
                 "SAB_FlipElevation180ByLine",
                 "Разворот\nразвертки 180",
                 "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",
@@ -297,6 +291,16 @@ namespace SAB
                 "SAB.RoomGeometryTools.Commands.OpenRoomGeometryToolsCommand",
                 "SAB.Resources.GenerateDashboardCommand_32.png",
                 "SAB.Resources.GenerateDashboardCommand_16.png");
+
+
+            // Блок кнопок для структуры проекта.
+            Ribbon.AddPushButtonSingle(
+            structurePanel,
+                "SAB_CreateViewsAndSheets",
+                "Создать виды\nи листы",
+                "SAB.CreateViewsAndSheets.Commands.CreateViewsAndSheetsCommand",
+                "SAB.Resources.CreateViewsAndSheets_32.png",
+                "SAB.Resources.CreateViewsAndSheets_16.png");
 
             return Result.Succeeded;
         }

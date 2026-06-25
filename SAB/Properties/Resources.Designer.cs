@@ -103,6 +103,26 @@ namespace SAB.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
+        public static byte[] CreateViewsAndSheets_16 {
+            get {
+                object obj = ResourceManager.GetObject("CreateViewsAndSheets_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] CreateViewsAndSheets_32 {
+            get {
+                object obj = ResourceManager.GetObject("CreateViewsAndSheets_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
         public static byte[] DeleteSelectedTypesAndFamiliesCommand_16 {
             get {
                 object obj = ResourceManager.GetObject("DeleteSelectedTypesAndFamiliesCommand_16", resourceCulture);
