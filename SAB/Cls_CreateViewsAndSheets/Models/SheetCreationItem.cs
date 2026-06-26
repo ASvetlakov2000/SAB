@@ -14,6 +14,8 @@ namespace SAB.CreateViewsAndSheets.Models
             ViewScale = 0;
             SheetNumber = string.Empty;
             SheetName = string.Empty;
+            SheetBrowserParameterValue = string.Empty;
+            SheetBrowserParameterValues = new System.Collections.Generic.List<SheetBrowserParameterValueItem>();
         }
 
         public int RowNumber { get; set; }
@@ -31,5 +33,25 @@ namespace SAB.CreateViewsAndSheets.Models
         public string SheetNumber { get; set; }
 
         public string SheetName { get; set; }
+
+        public string SheetBrowserParameterValue { get; set; }
+
+        public System.Collections.Generic.List<SheetBrowserParameterValueItem> SheetBrowserParameterValues { get; set; }
+    }
+
+    public class SheetBrowserParameterValueItem
+    {
+        public SheetBrowserParameterValueItem()
+        {
+            ParameterId = ElementId.InvalidElementId;
+            ParameterName = string.Empty;
+            Value = string.Empty;
+        }
+
+        public ElementId ParameterId { get; set; }
+
+        public string ParameterName { get; set; }
+
+        public string Value { get; set; }
     }
 }

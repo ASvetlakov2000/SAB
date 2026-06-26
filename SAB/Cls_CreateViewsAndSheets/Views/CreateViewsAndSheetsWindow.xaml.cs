@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -22,6 +23,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private DataGrid _rowsDataGrid;
         private readonly List<DataGridColumn> _observedWidthColumns;
+        private readonly List<DataGridColumn> _sheetBrowserParameterColumns;
         private ToggleButton _settingsDrawerToggle;
         private FrameworkElement _settingsDrawerPanel;
         private Point _dragStartPoint;
@@ -37,6 +39,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             _layoutService = new CreateViewsAndSheetsWindowLayoutService();
             _observedWidthColumns = new List<DataGridColumn>();
+            _sheetBrowserParameterColumns = new List<DataGridColumn>();
 
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
@@ -213,6 +216,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.SizeChanged += RowsDataGrid_SizeChanged;
             _rowsDataGrid.DragOver += RowsDataGrid_DragOver;
             _rowsDataGrid.Drop += RowsDataGrid_Drop;
+            RebuildSheetBrowserParameterColumns();
             AttachRowsDataGridColumnWidthObservers();
             UpdateFloorColumnVisibility();
             _gridHandlersAttached = true;
@@ -455,35 +459,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private bool TryBeginEditOnSingleClick(DataGridCell cell)
         {
-            if (_rowsDataGrid == null || cell == null || cell.Column == null || cell.Column.IsReadOnly)
-            {
-                return false;
-            }
-
-            if (IsLastGridColumn(cell.Column))
-            {
-                return false;
-            }
-
-            DataGridRow row = FindParent<DataGridRow>(cell);
-            if (row == null || !(row.Item is SheetCreationRowViewModel))
-            {
-                return false;
-            }
-
-            _rowsDataGrid.SelectedItem = row.Item;
-            _rowsDataGrid.CurrentCell = new DataGridCellInfo(row.Item, cell.Column);
-            cell.Focus();
-
-            bool editStarted = _rowsDataGrid.BeginEdit();
-            if (editStarted)
-            {
-                _rowsDataGrid.Dispatcher.BeginInvoke(
-                    new Action(() => FocusCellEditor(cell)),
-                    DispatcherPriority.Input);
-            }
-
-            return editStarted;
+            return false;
         }
 
         private void FocusCellEditor(DataGridCell cell)
@@ -497,7 +473,11 @@ namespace SAB.CreateViewsAndSheets.Views
             if (textBox != null)
             {
                 textBox.Focus();
-                textBox.SelectAll();
+                textBox.Select(0, textBox.Text != null ? textBox.Text.Length : 0);
+                textBox.ScrollToHome();
+                textBox.Dispatcher.BeginInvoke(
+                    new Action(textBox.ScrollToHome),
+                    DispatcherPriority.Background);
                 return;
             }
 
@@ -616,6 +596,108 @@ namespace SAB.CreateViewsAndSheets.Views
             return null;
         }
 
+        private void RebuildSheetBrowserParameterColumns()
+        {
+            if (_rowsDataGrid == null || _viewModel == null)
+            {
+                return;
+            }
+
+            RemoveSheetBrowserParameterColumns();
+
+            int insertIndex = GetActionsColumnIndex();
+            for (int i = 0; i < _viewModel.SheetBrowserParameterLevels.Count; i++)
+            {
+                SheetBrowserParameterLevelViewModel level = _viewModel.SheetBrowserParameterLevels[i];
+                if (level == null)
+                {
+                    continue;
+                }
+
+                DataGridTemplateColumn column = CreateSheetBrowserParameterColumn(i, level);
+                _rowsDataGrid.Columns.Insert(insertIndex, column);
+                _sheetBrowserParameterColumns.Add(column);
+                insertIndex++;
+            }
+        }
+
+        private void RemoveSheetBrowserParameterColumns()
+        {
+            if (_rowsDataGrid == null || _sheetBrowserParameterColumns.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _sheetBrowserParameterColumns.Count; i++)
+            {
+                DataGridColumn column = _sheetBrowserParameterColumns[i];
+                if (column != null && _rowsDataGrid.Columns.Contains(column))
+                {
+                    _rowsDataGrid.Columns.Remove(column);
+                }
+            }
+
+            _sheetBrowserParameterColumns.Clear();
+        }
+
+        private int GetActionsColumnIndex()
+        {
+            if (_rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
+            {
+                return 0;
+            }
+
+            for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
+            {
+                DataGridColumn column = _rowsDataGrid.Columns[i];
+                string header = column != null && column.Header != null ? column.Header.ToString() : string.Empty;
+                if (string.Equals(header, "Действия", StringComparison.OrdinalIgnoreCase))
+                {
+                    return i;
+                }
+            }
+
+            return _rowsDataGrid.Columns.Count;
+        }
+
+        private DataGridTemplateColumn CreateSheetBrowserParameterColumn(int parameterIndex, SheetBrowserParameterLevelViewModel level)
+        {
+            DataGridTemplateColumn column = new DataGridTemplateColumn();
+            column.Header = level.ParameterName;
+            column.SortMemberPath = "SheetBrowserParameterValues[" + parameterIndex + "].Value";
+            column.Width = new DataGridLength(170.0, DataGridLengthUnitType.Pixel);
+            column.MinWidth = 130.0;
+            column.CellTemplate = CreateSheetBrowserParameterCellTemplate(parameterIndex);
+            return column;
+        }
+
+        private DataTemplate CreateSheetBrowserParameterCellTemplate(int parameterIndex)
+        {
+            FrameworkElementFactory comboBoxFactory = new FrameworkElementFactory(typeof(ComboBox));
+
+            Binding itemsBinding = new Binding("DataContext.SheetBrowserParameterLevels[" + parameterIndex + "].Values");
+            itemsBinding.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(DataGrid), 1);
+            comboBoxFactory.SetBinding(ItemsControl.ItemsSourceProperty, itemsBinding);
+
+            Binding textBinding = new Binding("SheetBrowserParameterValues[" + parameterIndex + "].Value");
+            textBinding.Mode = BindingMode.TwoWay;
+            textBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            comboBoxFactory.SetBinding(ComboBox.TextProperty, textBinding);
+
+            comboBoxFactory.SetValue(ComboBox.IsEditableProperty, true);
+            comboBoxFactory.SetValue(ComboBox.IsTextSearchEnabledProperty, false);
+
+            Style comboBoxStyle = TryFindResource("SabDataGridComboBoxStyle") as Style;
+            if (comboBoxStyle != null)
+            {
+                comboBoxFactory.SetValue(FrameworkElement.StyleProperty, comboBoxStyle);
+            }
+
+            DataTemplate template = new DataTemplate();
+            template.VisualTree = comboBoxFactory;
+            return template;
+        }
+
         private void ScheduleNormalizeRowsDataGridColumnWidths()
         {
             if (_rowsDataGrid == null)
@@ -697,6 +779,15 @@ namespace SAB.CreateViewsAndSheets.Views
             if (_rowsDataGrid == null || _rowsDataGrid.Columns.Count < 2)
             {
                 return null;
+            }
+
+            for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
+            {
+                DataGridColumn column = _rowsDataGrid.Columns[i];
+                if (column != null && string.Equals(column.SortMemberPath, "SheetName", StringComparison.Ordinal))
+                {
+                    return column;
+                }
             }
 
             return _rowsDataGrid.Columns[_rowsDataGrid.Columns.Count - 2];

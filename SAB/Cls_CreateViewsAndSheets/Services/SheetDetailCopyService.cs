@@ -7,6 +7,13 @@ namespace SAB.CreateViewsAndSheets.Services
 {
     public class SheetDetailCopyService
     {
+        private readonly SheetBoundsService _sheetBoundsService;
+
+        public SheetDetailCopyService()
+        {
+            _sheetBoundsService = new SheetBoundsService();
+        }
+
         public void CopyFromSourceSheet(
             Document document,
             ElementId sourceSheetId,
@@ -31,9 +38,11 @@ namespace SAB.CreateViewsAndSheets.Services
                 return;
             }
 
-            CopySheetOwnedElements(document, sourceSheet, targetSheet, settings, warnings);
-            CopySchedules(document, sourceSheet, targetSheet, settings, warnings);
-            CopyPlacedLegendAndDraftingViews(document, sourceSheet, targetSheet, settings, warnings);
+            XYZ sheetTranslation = CalculateSheetCopyTranslation(document, sourceSheet, targetSheet);
+
+            CopySheetOwnedElements(document, sourceSheet, targetSheet, settings, warnings, sheetTranslation);
+            CopySchedules(document, sourceSheet, targetSheet, settings, warnings, sheetTranslation);
+            CopyPlacedLegendAndDraftingViews(document, sourceSheet, targetSheet, settings, warnings, sheetTranslation);
         }
 
         private void CopySheetOwnedElements(
@@ -41,7 +50,8 @@ namespace SAB.CreateViewsAndSheets.Services
             ViewSheet sourceSheet,
             ViewSheet targetSheet,
             SheetDetailCopySettings settings,
-            IList<string> warnings)
+            IList<string> warnings,
+            XYZ sheetTranslation)
         {
             List<ElementId> elementIds = new List<ElementId>();
 
@@ -78,7 +88,8 @@ namespace SAB.CreateViewsAndSheets.Services
             try
             {
                 CopyPasteOptions copyOptions = CreateCopyPasteOptions();
-                ElementTransformUtils.CopyElements(sourceSheet, elementIds, targetSheet, Transform.Identity, copyOptions);
+                Transform transform = Transform.CreateTranslation(sheetTranslation ?? new XYZ(0.0, 0.0, 0.0));
+                ElementTransformUtils.CopyElements(sourceSheet, elementIds, targetSheet, transform, copyOptions);
             }
             catch (Exception exception)
             {
@@ -91,7 +102,8 @@ namespace SAB.CreateViewsAndSheets.Services
             ViewSheet sourceSheet,
             ViewSheet targetSheet,
             SheetDetailCopySettings settings,
-            IList<string> warnings)
+            IList<string> warnings,
+            XYZ sheetTranslation)
         {
             if (!settings.CopySchedules)
             {
@@ -111,7 +123,14 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 try
                 {
-                    ScheduleSheetInstance.Create(document, targetSheet.Id, sourceSchedule.ScheduleId, sourceSchedule.Point);
+                    XYZ targetPoint = TranslateSheetPoint(sourceSchedule.Point, sheetTranslation);
+                    if (targetPoint == null)
+                    {
+                        AddWarning(warnings, "Не удалось определить точку размещения ведомости с листа-образца.");
+                        continue;
+                    }
+
+                    ScheduleSheetInstance.Create(document, targetSheet.Id, sourceSchedule.ScheduleId, targetPoint);
                 }
                 catch (Exception exception)
                 {
@@ -125,7 +144,8 @@ namespace SAB.CreateViewsAndSheets.Services
             ViewSheet sourceSheet,
             ViewSheet targetSheet,
             SheetDetailCopySettings settings,
-            IList<string> warnings)
+            IList<string> warnings,
+            XYZ sheetTranslation)
         {
             if (!settings.CopyLegends && !settings.CopyDraftingViews)
             {
@@ -151,11 +171,11 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 if (sourceView.ViewType == ViewType.Legend && settings.CopyLegends)
                 {
-                    CopyLegendViewport(document, sourceViewport, sourceView, targetSheet, warnings);
+                    CopyLegendViewport(document, sourceViewport, sourceView, targetSheet, warnings, sheetTranslation);
                 }
                 else if (sourceView.ViewType == ViewType.DraftingView && settings.CopyDraftingViews)
                 {
-                    CopyDraftingViewport(document, sourceViewport, sourceView, targetSheet, warnings);
+                    CopyDraftingViewport(document, sourceViewport, sourceView, targetSheet, warnings, sheetTranslation);
                 }
             }
         }
@@ -165,7 +185,8 @@ namespace SAB.CreateViewsAndSheets.Services
             Viewport sourceViewport,
             View legendView,
             ViewSheet targetSheet,
-            IList<string> warnings)
+            IList<string> warnings,
+            XYZ sheetTranslation)
         {
             try
             {
@@ -175,7 +196,14 @@ namespace SAB.CreateViewsAndSheets.Services
                     return;
                 }
 
-                Viewport targetViewport = Viewport.Create(document, targetSheet.Id, legendView.Id, sourceViewport.GetBoxCenter());
+                XYZ targetPoint = TranslateSheetPoint(sourceViewport.GetBoxCenter(), sheetTranslation);
+                if (targetPoint == null)
+                {
+                    AddWarning(warnings, "Не удалось определить точку размещения легенды \"" + legendView.Name + "\".");
+                    return;
+                }
+
+                Viewport targetViewport = Viewport.Create(document, targetSheet.Id, legendView.Id, targetPoint);
                 TryCopyViewportType(sourceViewport, targetViewport);
             }
             catch (Exception exception)
@@ -189,7 +217,8 @@ namespace SAB.CreateViewsAndSheets.Services
             Viewport sourceViewport,
             View draftingView,
             ViewSheet targetSheet,
-            IList<string> warnings)
+            IList<string> warnings,
+            XYZ sheetTranslation)
         {
             try
             {
@@ -209,13 +238,52 @@ namespace SAB.CreateViewsAndSheets.Services
                     return;
                 }
 
-                Viewport targetViewport = Viewport.Create(document, targetSheet.Id, duplicatedDraftingView.Id, sourceViewport.GetBoxCenter());
+                XYZ targetPoint = TranslateSheetPoint(sourceViewport.GetBoxCenter(), sheetTranslation);
+                if (targetPoint == null)
+                {
+                    AddWarning(warnings, "Не удалось определить точку размещения чертежного вида \"" + draftingView.Name + "\".");
+                    return;
+                }
+
+                Viewport targetViewport = Viewport.Create(document, targetSheet.Id, duplicatedDraftingView.Id, targetPoint);
                 TryCopyViewportType(sourceViewport, targetViewport);
             }
             catch (Exception exception)
             {
                 AddWarning(warnings, "Не удалось скопировать чертежный вид \"" + draftingView.Name + "\": " + exception.Message);
             }
+        }
+
+        private XYZ CalculateSheetCopyTranslation(Document document, ViewSheet sourceSheet, ViewSheet targetSheet)
+        {
+            SheetBounds sourceBounds;
+            SheetBounds targetBounds;
+            if (!_sheetBoundsService.TryGetSheetBounds(document, sourceSheet, out sourceBounds) ||
+                !_sheetBoundsService.TryGetSheetBounds(document, targetSheet, out targetBounds) ||
+                sourceBounds == null ||
+                targetBounds == null)
+            {
+                return new XYZ(0.0, 0.0, 0.0);
+            }
+
+            return new XYZ(
+                targetBounds.MinXFeet - sourceBounds.MinXFeet,
+                targetBounds.MinYFeet - sourceBounds.MinYFeet,
+                0.0);
+        }
+
+        private XYZ TranslateSheetPoint(XYZ sourcePoint, XYZ sheetTranslation)
+        {
+            if (sourcePoint == null)
+            {
+                return null;
+            }
+
+            XYZ translation = sheetTranslation ?? new XYZ(0.0, 0.0, 0.0);
+            return new XYZ(
+                sourcePoint.X + translation.X,
+                sourcePoint.Y + translation.Y,
+                sourcePoint.Z + translation.Z);
         }
 
         private void AddElementsByCategory(

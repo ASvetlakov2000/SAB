@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Autodesk.Revit.DB;
 using Newtonsoft.Json;
 using SAB.CreateViewsAndSheets.Models;
@@ -86,6 +87,7 @@ namespace SAB.CreateViewsAndSheets.Services
             settings.SourceSheetId = RestoreElementId(document, persisted.SourceSheetIdValue, "эталонный лист", warnings);
             settings.ViewportTypeId = RestoreElementId(document, persisted.ViewportTypeIdValue, "тип Viewport", warnings);
             settings.TitleBlockTypeId = RestoreElementId(document, persisted.TitleBlockTypeIdValue, "тип основной надписи", warnings);
+            settings.SheetBrowserParameterId = RestoreParameterId(persisted.SheetBrowserParameterIdValue);
 
             settings.FloorMappings = RestoreFloorMappings(document, persisted.FloorMappings, warnings);
 
@@ -127,6 +129,7 @@ namespace SAB.CreateViewsAndSheets.Services
             persisted.SourceSheetIdValue = RevitElementIdUtils.GetElementIdValue(settings.SourceSheetId);
             persisted.ViewportTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.ViewportTypeId);
             persisted.TitleBlockTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.TitleBlockTypeId);
+            persisted.SheetBrowserParameterIdValue = RevitElementIdUtils.GetElementIdValue(settings.SheetBrowserParameterId);
             persisted.CoordinateUnits = placement.CoordinateUnits;
             persisted.ViewCenterXmm = placement.ViewCenterXmm;
             persisted.ViewCenterYmm = placement.ViewCenterYmm;
@@ -228,6 +231,34 @@ namespace SAB.CreateViewsAndSheets.Services
             return ElementId.InvalidElementId;
         }
 
+        private ElementId RestoreParameterId(long? value)
+        {
+            if (!value.HasValue || value.Value == -1)
+            {
+                return ElementId.InvalidElementId;
+            }
+
+            // ID параметров браузера могут быть отрицательными BuiltInParameter, поэтому нельзя использовать восстановление обычного ElementId.
+            ConstructorInfo longConstructor = typeof(ElementId).GetConstructor(new[] { typeof(long) });
+            if (longConstructor != null)
+            {
+                return (ElementId)longConstructor.Invoke(new object[] { value.Value });
+            }
+
+            if (value.Value < int.MinValue || value.Value > int.MaxValue)
+            {
+                return ElementId.InvalidElementId;
+            }
+
+            ConstructorInfo intConstructor = typeof(ElementId).GetConstructor(new[] { typeof(int) });
+            if (intConstructor != null)
+            {
+                return (ElementId)intConstructor.Invoke(new object[] { Convert.ToInt32(value.Value) });
+            }
+
+            return ElementId.InvalidElementId;
+        }
+
         private void AddWarning(IList<string> warnings, string text)
         {
             if (warnings == null || string.IsNullOrWhiteSpace(text))
@@ -251,6 +282,8 @@ namespace SAB.CreateViewsAndSheets.Services
             public long ViewportTypeIdValue { get; set; }
 
             public long TitleBlockTypeIdValue { get; set; }
+
+            public long? SheetBrowserParameterIdValue { get; set; }
 
             public string CoordinateUnits { get; set; }
 

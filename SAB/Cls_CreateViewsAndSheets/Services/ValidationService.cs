@@ -71,6 +71,7 @@ namespace SAB.CreateViewsAndSheets.Services
 
             ValidateViewportType(document, settings.ViewportTypeId, result);
             ValidateTitleBlockType(document, settings.TitleBlockTypeId, result);
+            ValidateSheetBrowserParameters(document, settings.SheetBrowserParameterIds, result);
             ValidatePlacement(settings, result);
             ValidateRows(document, settings, sourceView, sourceViewsByFloorName, items, result);
 
@@ -221,6 +222,83 @@ namespace SAB.CreateViewsAndSheets.Services
             {
                 result.Errors.Add("Выбранный тип основной надписи относится к неверной категории.");
             }
+        }
+
+        private void ValidateSheetBrowserParameters(Document document, IList<ElementId> parameterIds, CreateViewsAndSheetsValidationResult result)
+        {
+            if (parameterIds == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < parameterIds.Count; i++)
+            {
+                ValidateSheetBrowserParameter(document, parameterIds[i], result);
+            }
+        }
+
+        private void ValidateSheetBrowserParameter(Document document, ElementId parameterId, CreateViewsAndSheetsValidationResult result)
+        {
+            if (parameterId == null || parameterId == ElementId.InvalidElementId)
+            {
+                return;
+            }
+
+            Parameter parameter = FindFirstSheetParameterById(document, parameterId);
+            if (parameter == null)
+            {
+                result.Warnings.Add("Один из параметров группировки/сортировки листов не найден на листах документа и не будет заполнен.");
+                return;
+            }
+
+            if (parameter.IsReadOnly)
+            {
+                result.Warnings.Add("Параметр листа '" + GetParameterName(parameter) + "' доступен только для чтения и не будет заполнен.");
+                return;
+            }
+
+            if (parameter.StorageType == StorageType.ElementId || parameter.StorageType == StorageType.None)
+            {
+                result.Warnings.Add("Параметр листа '" + GetParameterName(parameter) + "' имеет неподдерживаемый тип данных и не будет заполнен.");
+            }
+        }
+
+        private Parameter FindFirstSheetParameterById(Document document, ElementId parameterId)
+        {
+            if (document == null || parameterId == null)
+            {
+                return null;
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(ViewSheet));
+            foreach (Element element in collector)
+            {
+                ViewSheet sheet = element as ViewSheet;
+                if (sheet == null || sheet.IsTemplate || sheet.Parameters == null)
+                {
+                    continue;
+                }
+
+                foreach (Parameter parameter in sheet.Parameters)
+                {
+                    if (parameter != null && parameter.Id != null && RevitElementIdUtils.AreEqual(parameter.Id, parameterId))
+                    {
+                        return parameter;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private string GetParameterName(Parameter parameter)
+        {
+            if (parameter == null || parameter.Definition == null)
+            {
+                return string.Empty;
+            }
+
+            return parameter.Definition.Name ?? string.Empty;
         }
 
         private void ValidatePlacement(CreateViewsAndSheetsSettings settings, CreateViewsAndSheetsValidationResult result)

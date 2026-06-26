@@ -436,6 +436,54 @@
         <Setter Property="Margin" Value="0,0,16,0" />
     </Style>
 
+    <Style x:Key="SabStructureModeRadioButtonStyle" TargetType="{x:Type RadioButton}">
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.Accent}" />
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+                            <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="SabCheckBoxStyle" TargetType="{x:Type CheckBox}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
@@ -659,7 +707,7 @@
 
     <Style x:Key="SabDataGridTextBlockStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Padding" Value="4,0" />
         <Setter Property="TextWrapping" Value="NoWrap" />
     </Style>
 
@@ -709,8 +757,20 @@
     <Style x:Key="SabDataGridTextBoxEditingStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SabTextBoxStyle}">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Height" Value="30" />
-        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Padding" Value="4,0" />
         <Setter Property="Margin" Value="10,5" />
+        <Setter Property="TextAlignment" Value="Left" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+
+    <Style x:Key="SabDataGridInlineTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SabTextBoxStyle}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="Margin" Value="10,5" />
+        <Setter Property="TextAlignment" Value="Left" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style x:Key="SabValidationPanelStyle" TargetType="{x:Type Border}">

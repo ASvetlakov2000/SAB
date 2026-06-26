@@ -7,6 +7,7 @@ using System.Windows.Interop;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Helpers.Notifications.ToastNotifications;
 using SAB.CreateViewsAndSheets.Models;
 using SAB.CreateViewsAndSheets.Services;
 using SAB.CreateViewsAndSheets.ViewModels;
@@ -55,6 +56,8 @@ namespace SAB.CreateViewsAndSheets.Commands
                 List<RevitElementItem> sourceSheets = dataService.GetSheets(document);
                 List<RevitElementItem> viewportTypes = dataService.GetViewportTypes(document);
                 List<RevitElementItem> titleBlockTypes = dataService.GetTitleBlockTypes(document);
+                List<RevitElementItem> sheetBrowserParameters = dataService.GetSheetBrowserParameters(document);
+                Dictionary<long, List<string>> sheetBrowserParameterValuesById = dataService.GetSheetBrowserParameterValues(document, sheetBrowserParameters);
                 List<RevitElementItem> viewTemplates = dataService.GetViewTemplates(document);
 
                 string startupValidationMessage;
@@ -72,6 +75,8 @@ namespace SAB.CreateViewsAndSheets.Commands
                     sourceSheets,
                     viewportTypes,
                     titleBlockTypes,
+                    sheetBrowserParameters,
+                    sheetBrowserParameterValuesById,
                     viewTemplates,
                     dataService.CollectExistingViewNames(document),
                     dataService.CollectExistingSheetNumbers(document),
@@ -216,7 +221,7 @@ namespace SAB.CreateViewsAndSheets.Commands
         private void ShowFinalReport(CreateViewsAndSheetsResult result)
         {
             int createdSheetsCount = result != null ? result.CreatedSheetsCount : 0;
-            TaskDialog.Show(CommandTitle, "Создано листов: " + createdSheetsCount);
+            ToastNotifier.ShowSuccess(CommandTitle, "Создано листов: " + createdSheetsCount, 10);
         }
 
         private void PrepareWindowForRevit(CreateViewsAndSheetsWindow window)

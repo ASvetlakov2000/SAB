@@ -17,6 +17,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private const double DefaultTitleLineLengthMm = 80.0;
 
         private readonly List<RevitElementItem> _allViewTemplates;
+        private readonly Dictionary<long, List<string>> _sheetBrowserParameterValuesById;
         private readonly HashSet<string> _existingViewNames;
         private readonly HashSet<string> _existingSheetNumbers;
 
@@ -25,6 +26,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private RevitElementItem _selectedSourceSheet;
         private RevitElementItem _selectedViewportType;
         private RevitElementItem _selectedTitleBlockType;
+        private RevitElementItem _selectedSheetBrowserParameter;
 
         private string _viewCenterXText;
         private string _viewCenterYText;
@@ -54,6 +56,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             IList<RevitElementItem> sourceSheets,
             IList<RevitElementItem> viewportTypes,
             IList<RevitElementItem> titleBlockTypes,
+            IList<RevitElementItem> sheetBrowserParameters,
+            Dictionary<long, List<string>> sheetBrowserParameterValuesById,
             IList<RevitElementItem> viewTemplates,
             HashSet<string> existingViewNames,
             HashSet<string> existingSheetNumbers,
@@ -63,6 +67,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             SourceSheets = new ObservableCollection<RevitElementItem>();
             ViewportTypes = new ObservableCollection<RevitElementItem>();
             TitleBlockTypes = new ObservableCollection<RevitElementItem>();
+            SheetBrowserParameters = new ObservableCollection<RevitElementItem>();
+            SheetBrowserParameterValues = new ObservableCollection<string>();
+            SheetBrowserParameterLevels = new ObservableCollection<SheetBrowserParameterLevelViewModel>();
             FloorMappings = new ObservableCollection<FloorSourceMappingRowViewModel>();
             FloorNames = new ObservableCollection<string>();
             ViewTemplates = new ObservableCollection<RevitElementItem>();
@@ -70,6 +77,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ScaleOptions = new ObservableCollection<string>();
 
             _allViewTemplates = new List<RevitElementItem>();
+            _sheetBrowserParameterValuesById = new Dictionary<long, List<string>>();
             _existingViewNames = existingViewNames ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             _existingSheetNumbers = existingSheetNumbers ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -77,6 +85,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             FillCollection(SourceSheets, sourceSheets);
             FillCollection(ViewportTypes, viewportTypes);
             FillCollection(TitleBlockTypes, titleBlockTypes);
+            FillCollection(SheetBrowserParameters, sheetBrowserParameters);
+            FillParameterValuesMap(_sheetBrowserParameterValuesById, sheetBrowserParameterValuesById);
+            InitializeSheetBrowserParameterLevels(sheetBrowserParameters);
             FillList(_allViewTemplates, viewTemplates);
 
             ScaleOptions.Add("20");
@@ -151,6 +162,12 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public ObservableCollection<RevitElementItem> ViewportTypes { get; private set; }
 
         public ObservableCollection<RevitElementItem> TitleBlockTypes { get; private set; }
+
+        public ObservableCollection<RevitElementItem> SheetBrowserParameters { get; private set; }
+
+        public ObservableCollection<string> SheetBrowserParameterValues { get; private set; }
+
+        public ObservableCollection<SheetBrowserParameterLevelViewModel> SheetBrowserParameterLevels { get; private set; }
 
         public ObservableCollection<FloorSourceMappingRowViewModel> FloorMappings { get; private set; }
 
@@ -322,6 +339,29 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 _selectedTitleBlockType = value;
                 OnPropertyChanged("SelectedTitleBlockType");
                 RefreshValidation();
+            }
+        }
+
+        public RevitElementItem SelectedSheetBrowserParameter
+        {
+            get { return _selectedSheetBrowserParameter; }
+            set
+            {
+                _selectedSheetBrowserParameter = value;
+                RefreshSheetBrowserParameterValues();
+                OnPropertyChanged("SelectedSheetBrowserParameter");
+                OnPropertyChanged("IsSheetBrowserParameterSelected");
+                RefreshValidation();
+            }
+        }
+
+        public bool IsSheetBrowserParameterSelected
+        {
+            get
+            {
+                return SelectedSheetBrowserParameter != null &&
+                       SelectedSheetBrowserParameter.Id != null &&
+                       SelectedSheetBrowserParameter.Id != ElementId.InvalidElementId;
             }
         }
 
@@ -595,6 +635,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.SourceSheetId = SelectedSourceSheet != null ? SelectedSourceSheet.Id : ElementId.InvalidElementId;
             settings.ViewportTypeId = SelectedViewportType != null ? SelectedViewportType.Id : ElementId.InvalidElementId;
             settings.TitleBlockTypeId = SelectedTitleBlockType != null ? SelectedTitleBlockType.Id : ElementId.InvalidElementId;
+            settings.SheetBrowserParameterId = SheetBrowserParameterLevels.Count > 0 ? SheetBrowserParameterLevels[0].ParameterId : ElementId.InvalidElementId;
+            settings.SheetBrowserParameterIds = BuildSheetBrowserParameterIds();
             settings.SheetBounds = ResolveCurrentSheetBounds();
             settings.FloorMappings = BuildFloorMappings();
             settings.Placement = new PlacementSettings();
@@ -760,6 +802,11 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             {
                 ApplyTitleBlockFromSourceSheet();
             }
+
+            SelectedSheetBrowserParameter = FindById(
+                                                SheetBrowserParameters,
+                                                initialSettings != null ? initialSettings.SheetBrowserParameterId : ElementId.InvalidElementId)
+                                            ?? (SheetBrowserParameters.Count > 0 ? SheetBrowserParameters[0] : null);
 
             if (Rows.Count > 0)
             {
@@ -1003,7 +1050,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         private void AddRowAtEnd()
         {
-            AddRowInternal(null);
+            SheetCreationRowViewModel sourceRow = Rows != null && Rows.Count > 0 ? Rows[Rows.Count - 1] : null;
+            AddRowInternal(sourceRow);
             RefreshValidation();
         }
 
@@ -1023,6 +1071,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             SheetCreationRowViewModel newRow = CreateRow();
+            CopyRowValues(currentRow, newRow);
             Rows.Insert(index + 1, newRow);
             RenumberRows();
             RefreshValidation();
@@ -1083,9 +1132,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             SheetCreationRowViewModel row = CreateRow();
             if (sourceRow != null)
             {
-                row.FloorName = sourceRow.FloorName;
-                row.ViewScaleText = sourceRow.ViewScaleText;
-                row.SelectedViewTemplate = sourceRow.SelectedViewTemplate;
+                CopyRowValues(sourceRow, row);
             }
             else
             {
@@ -1097,9 +1144,27 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             RenumberRows();
         }
 
+        private void CopyRowValues(SheetCreationRowViewModel sourceRow, SheetCreationRowViewModel targetRow)
+        {
+            if (sourceRow == null || targetRow == null)
+            {
+                return;
+            }
+
+            targetRow.FloorName = sourceRow.FloorName;
+            targetRow.ViewName = sourceRow.ViewName;
+            targetRow.ViewScaleText = sourceRow.ViewScaleText;
+            targetRow.SelectedViewTemplate = sourceRow.SelectedViewTemplate;
+            targetRow.SheetNumber = sourceRow.SheetNumber;
+            targetRow.SheetName = sourceRow.SheetName;
+            targetRow.SheetBrowserParameterValue = sourceRow.SheetBrowserParameterValue;
+            CopySheetBrowserParameterValues(sourceRow, targetRow);
+        }
+
         private SheetCreationRowViewModel CreateRow()
         {
             SheetCreationRowViewModel row = new SheetCreationRowViewModel();
+            row.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
             AssignDefaultTemplate(row);
             row.PropertyChanged += Row_PropertyChanged;
             return row;
@@ -1660,6 +1725,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 item.ViewTemplateId = row.SelectedViewTemplate != null ? row.SelectedViewTemplate.Id : ElementId.InvalidElementId;
                 item.SheetNumber = (row.SheetNumber ?? string.Empty).Trim();
                 item.SheetName = (row.SheetName ?? string.Empty).Trim();
+                item.SheetBrowserParameterValue = (row.SheetBrowserParameterValue ?? string.Empty).Trim();
+                item.SheetBrowserParameterValues = BuildSheetBrowserParameterValues(row);
                 result.Add(item);
             }
 
@@ -1761,6 +1828,149 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        private void FillParameterValuesMap(
+            Dictionary<long, List<string>> target,
+            Dictionary<long, List<string>> source)
+        {
+            if (target == null || source == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<long, List<string>> pair in source)
+            {
+                List<string> values = new List<string>();
+                if (pair.Value != null)
+                {
+                    for (int i = 0; i < pair.Value.Count; i++)
+                    {
+                        values.Add(pair.Value[i]);
+                    }
+                }
+
+                target[pair.Key] = values;
+            }
+        }
+
+        private void InitializeSheetBrowserParameterLevels(IList<RevitElementItem> sheetBrowserParameters)
+        {
+            SheetBrowserParameterLevels.Clear();
+            SheetBrowserParameterValues.Clear();
+
+            if (sheetBrowserParameters == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < sheetBrowserParameters.Count; i++)
+            {
+                RevitElementItem parameterItem = sheetBrowserParameters[i];
+                if (parameterItem == null || parameterItem.Id == null || parameterItem.Id == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                long key = RevitElementIdUtils.GetElementIdValue(parameterItem.Id);
+                List<string> values;
+                if (!_sheetBrowserParameterValuesById.TryGetValue(key, out values))
+                {
+                    values = new List<string>();
+                }
+
+                SheetBrowserParameterLevelViewModel level = new SheetBrowserParameterLevelViewModel(i + 1, parameterItem, values);
+                SheetBrowserParameterLevels.Add(level);
+            }
+        }
+
+        private List<ElementId> BuildSheetBrowserParameterIds()
+        {
+            List<ElementId> result = new List<ElementId>();
+            for (int i = 0; i < SheetBrowserParameterLevels.Count; i++)
+            {
+                SheetBrowserParameterLevelViewModel level = SheetBrowserParameterLevels[i];
+                if (level == null || level.ParameterId == null || level.ParameterId == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                result.Add(level.ParameterId);
+            }
+
+            return result;
+        }
+
+        private void CopySheetBrowserParameterValues(SheetCreationRowViewModel sourceRow, SheetCreationRowViewModel targetRow)
+        {
+            if (sourceRow == null || targetRow == null)
+            {
+                return;
+            }
+
+            targetRow.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+            for (int i = 0; i < sourceRow.SheetBrowserParameterValues.Count && i < targetRow.SheetBrowserParameterValues.Count; i++)
+            {
+                SheetBrowserParameterValueViewModel sourceValue = sourceRow.SheetBrowserParameterValues[i];
+                SheetBrowserParameterValueViewModel targetValue = targetRow.SheetBrowserParameterValues[i];
+                if (sourceValue != null && targetValue != null)
+                {
+                    targetValue.Value = sourceValue.Value;
+                }
+            }
+        }
+
+        private List<SheetBrowserParameterValueItem> BuildSheetBrowserParameterValues(SheetCreationRowViewModel row)
+        {
+            List<SheetBrowserParameterValueItem> result = new List<SheetBrowserParameterValueItem>();
+            if (row == null)
+            {
+                return result;
+            }
+
+            row.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+            for (int i = 0; i < row.SheetBrowserParameterValues.Count; i++)
+            {
+                SheetBrowserParameterValueViewModel rowValue = row.SheetBrowserParameterValues[i];
+                if (rowValue == null || rowValue.ParameterId == null || rowValue.ParameterId == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                SheetBrowserParameterValueItem item = new SheetBrowserParameterValueItem();
+                item.ParameterId = rowValue.ParameterId;
+                item.ParameterName = rowValue.ParameterName;
+                item.Value = (rowValue.Value ?? string.Empty).Trim();
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        private void RefreshSheetBrowserParameterValues()
+        {
+            if (SheetBrowserParameterValues == null)
+            {
+                return;
+            }
+
+            SheetBrowserParameterValues.Clear();
+            if (!IsSheetBrowserParameterSelected)
+            {
+                return;
+            }
+
+            long key = RevitElementIdUtils.GetElementIdValue(SelectedSheetBrowserParameter.Id);
+            List<string> values;
+            if (!_sheetBrowserParameterValuesById.TryGetValue(key, out values) || values == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                SheetBrowserParameterValues.Add(values[i]);
+            }
+        }
+
         private void FillList(List<RevitElementItem> target, IList<RevitElementItem> source)
         {
             if (target == null || source == null)
@@ -1848,5 +2058,37 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public PlacementPointTarget Target { get; private set; }
 
         public string Prompt { get; private set; }
+    }
+
+    public class SheetBrowserParameterLevelViewModel
+    {
+        public SheetBrowserParameterLevelViewModel(int levelNumber, RevitElementItem parameterItem, IList<string> values)
+        {
+            LevelNumber = levelNumber;
+            ParameterId = parameterItem != null ? parameterItem.Id : ElementId.InvalidElementId;
+            ParameterName = parameterItem != null ? parameterItem.Name : string.Empty;
+            Values = new ObservableCollection<string>();
+
+            if (values != null)
+            {
+                for (int i = 0; i < values.Count; i++)
+                {
+                    Values.Add(values[i]);
+                }
+            }
+        }
+
+        public int LevelNumber { get; private set; }
+
+        public ElementId ParameterId { get; private set; }
+
+        public string ParameterName { get; private set; }
+
+        public string LevelTitle
+        {
+            get { return "Уровень " + LevelNumber; }
+        }
+
+        public ObservableCollection<string> Values { get; private set; }
     }
 }

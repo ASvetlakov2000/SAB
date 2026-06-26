@@ -190,6 +190,80 @@ namespace SAB.CreateViewsAndSheets.Services
             return result;
         }
 
+        public List<RevitElementItem> GetSheetBrowserParameters(Document document)
+        {
+            List<RevitElementItem> result = new List<RevitElementItem>();
+
+            if (document == null)
+            {
+                return result;
+            }
+
+            List<ElementId> browserParameterIds = CollectSheetBrowserOrganizationParameterIds(document, CollectProjectSheets(document));
+            HashSet<long> addedParameterIds = new HashSet<long>();
+
+            for (int i = 0; i < browserParameterIds.Count; i++)
+            {
+                ElementId parameterId = browserParameterIds[i];
+                if (IsIgnoredSheetBrowserParameter(document, parameterId))
+                {
+                    continue;
+                }
+
+                long key = RevitElementIdUtils.GetElementIdValue(parameterId);
+                if (!addedParameterIds.Add(key))
+                {
+                    continue;
+                }
+
+                result.Add(BuildSheetBrowserParameterItem(document, parameterId));
+            }
+
+            return result;
+        }
+
+        private bool IsIgnoredSheetBrowserParameter(Document document, ElementId parameterId)
+        {
+            if (parameterId == null || parameterId == ElementId.InvalidElementId)
+            {
+                return true;
+            }
+
+            string parameterName = ResolveBrowserParameterName(document, parameterId);
+            return string.Equals(parameterName, "Номер листа", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(parameterName, "Sheet Number", StringComparison.OrdinalIgnoreCase) ||
+                   string.Equals(parameterName, "SheetNumber", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public Dictionary<long, List<string>> GetSheetBrowserParameterValues(Document document, IList<RevitElementItem> sheetBrowserParameters)
+        {
+            Dictionary<long, List<string>> result = new Dictionary<long, List<string>>();
+            if (document == null || sheetBrowserParameters == null || sheetBrowserParameters.Count == 0)
+            {
+                return result;
+            }
+
+            List<ViewSheet> sheets = CollectProjectSheets(document);
+            for (int i = 0; i < sheetBrowserParameters.Count; i++)
+            {
+                RevitElementItem parameterItem = sheetBrowserParameters[i];
+                if (parameterItem == null || parameterItem.Id == null || parameterItem.Id == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                long key = RevitElementIdUtils.GetElementIdValue(parameterItem.Id);
+                if (result.ContainsKey(key))
+                {
+                    continue;
+                }
+
+                result.Add(key, CollectSheetParameterValues(sheets, parameterItem.Id));
+            }
+
+            return result;
+        }
+
         public HashSet<string> CollectExistingViewNames(Document document)
         {
             HashSet<string> names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -270,6 +344,289 @@ namespace SAB.CreateViewsAndSheets.Services
             }
 
             return result;
+        }
+
+        private List<ViewSheet> CollectProjectSheets(Document document)
+        {
+            List<ViewSheet> result = new List<ViewSheet>();
+            if (document == null)
+            {
+                return result;
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(ViewSheet));
+            foreach (Element element in collector)
+            {
+                ViewSheet sheet = element as ViewSheet;
+                if (sheet == null || sheet.IsTemplate)
+                {
+                    continue;
+                }
+
+                result.Add(sheet);
+            }
+
+            return result;
+        }
+
+        private List<ElementId> CollectSheetBrowserOrganizationParameterIds(Document document, IList<ViewSheet> sheets)
+        {
+            List<ElementId> result = new List<ElementId>();
+            HashSet<long> addedIds = new HashSet<long>();
+            if (document == null)
+            {
+                return result;
+            }
+
+            BrowserOrganization browserOrganization = null;
+            try
+            {
+                browserOrganization = BrowserOrganization.GetCurrentBrowserOrganizationForSheets(document);
+            }
+            catch
+            {
+                return result;
+            }
+
+            if (browserOrganization == null)
+            {
+                return result;
+            }
+
+            // Группировка браузера доступна через FolderItemInfo только для листов, которые проходят фильтры текущей организации.
+            if (sheets != null)
+            {
+                for (int i = 0; i < sheets.Count; i++)
+                {
+                    ViewSheet sheet = sheets[i];
+                    if (sheet == null)
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        IList<FolderItemInfo> folderItems = browserOrganization.GetFolderItems(sheet.Id);
+                        if (folderItems == null)
+                        {
+                            continue;
+                        }
+
+                        for (int j = 0; j < folderItems.Count; j++)
+                        {
+                            FolderItemInfo folderItem = folderItems[j];
+                            if (folderItem != null)
+                            {
+                                AddParameterId(result, addedIds, folderItem.ElementId);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Лист может не проходить фильтры организации браузера. Пробуем следующий лист.
+                    }
+                }
+            }
+
+            try
+            {
+                AddParameterId(result, addedIds, browserOrganization.SortingParameterId);
+            }
+            catch
+            {
+                // В старых/новых версиях Revit сортировка может быть недоступна через это свойство.
+            }
+
+            return result;
+        }
+
+        private void AddParameterId(IList<ElementId> target, HashSet<long> addedIds, ElementId parameterId)
+        {
+            if (target == null || addedIds == null || parameterId == null)
+            {
+                return;
+            }
+
+            long key = RevitElementIdUtils.GetElementIdValue(parameterId);
+            if (key == -1 || !addedIds.Add(key))
+            {
+                return;
+            }
+
+            target.Add(parameterId);
+        }
+
+        private RevitElementItem BuildSheetBrowserParameterItem(Document document, ElementId parameterId)
+        {
+            RevitElementItem item = new RevitElementItem();
+            item.Id = parameterId != null ? parameterId : ElementId.InvalidElementId;
+            item.Name = ResolveBrowserParameterName(document, parameterId);
+            return item;
+        }
+
+        private string ResolveBrowserParameterName(Document document, ElementId parameterId)
+        {
+            if (parameterId == null || parameterId == ElementId.InvalidElementId)
+            {
+                return string.Empty;
+            }
+
+            Element parameterElement = null;
+            try
+            {
+                parameterElement = document != null ? document.GetElement(parameterId) : null;
+            }
+            catch
+            {
+                parameterElement = null;
+            }
+
+            if (parameterElement != null && !string.IsNullOrWhiteSpace(parameterElement.Name))
+            {
+                return parameterElement.Name;
+            }
+
+            long parameterIdValue = RevitElementIdUtils.GetElementIdValue(parameterId);
+            if (parameterIdValue >= int.MinValue && parameterIdValue <= int.MaxValue)
+            {
+                string builtInParameterName = TryGetBuiltInParameterName((int)parameterIdValue);
+                if (!string.IsNullOrWhiteSpace(builtInParameterName))
+                {
+                    return builtInParameterName;
+                }
+            }
+
+            return "Параметр " + parameterIdValue;
+        }
+
+        private string TryGetBuiltInParameterName(int parameterIdValue)
+        {
+            try
+            {
+                BuiltInParameter builtInParameter = (BuiltInParameter)parameterIdValue;
+                return LabelUtils.GetLabelFor(builtInParameter);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private List<string> CollectSheetParameterValues(IList<ViewSheet> sheets, ElementId parameterId)
+        {
+            List<string> result = new List<string>();
+            HashSet<string> addedValues = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (sheets == null || parameterId == null || parameterId == ElementId.InvalidElementId)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < sheets.Count; i++)
+            {
+                ViewSheet sheet = sheets[i];
+                Parameter parameter = FindSheetParameterById(sheet, parameterId);
+                string valueText = GetParameterValueText(parameter);
+                if (string.IsNullOrWhiteSpace(valueText))
+                {
+                    continue;
+                }
+
+                if (addedValues.Add(valueText))
+                {
+                    result.Add(valueText);
+                }
+            }
+
+            result.Sort(StringComparer.OrdinalIgnoreCase);
+            return result;
+        }
+
+        private Parameter FindSheetParameterById(IList<ViewSheet> sheets, ElementId parameterId)
+        {
+            if (sheets == null || parameterId == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < sheets.Count; i++)
+            {
+                ViewSheet sheet = sheets[i];
+                if (sheet == null || sheet.Parameters == null)
+                {
+                    continue;
+                }
+
+                foreach (Parameter parameter in sheet.Parameters)
+                {
+                    if (parameter != null && RevitElementIdUtils.AreEqual(parameter.Id, parameterId))
+                    {
+                        return parameter;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private Parameter FindSheetParameterById(ViewSheet sheet, ElementId parameterId)
+        {
+            if (sheet == null || sheet.Parameters == null || parameterId == null)
+            {
+                return null;
+            }
+
+            foreach (Parameter parameter in sheet.Parameters)
+            {
+                if (parameter != null && RevitElementIdUtils.AreEqual(parameter.Id, parameterId))
+                {
+                    return parameter;
+                }
+            }
+
+            return null;
+        }
+
+        private string GetParameterValueText(Parameter parameter)
+        {
+            if (parameter == null || !parameter.HasValue)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                if (parameter.StorageType == StorageType.String)
+                {
+                    return (parameter.AsString() ?? string.Empty).Trim();
+                }
+
+                string valueText = parameter.AsValueString();
+                if (!string.IsNullOrWhiteSpace(valueText))
+                {
+                    return valueText.Trim();
+                }
+
+                if (parameter.StorageType == StorageType.Integer)
+                {
+                    return parameter.AsInteger().ToString();
+                }
+
+                if (parameter.StorageType == StorageType.Double)
+                {
+                    return parameter.AsDouble().ToString("0.###", System.Globalization.CultureInfo.CurrentCulture);
+                }
+
+                if (parameter.StorageType == StorageType.ElementId)
+                {
+                    return RevitElementIdUtils.GetElementIdValue(parameter.AsElementId()).ToString();
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
+
+            return string.Empty;
         }
 
         private bool IsSupportedSourceView(View view)

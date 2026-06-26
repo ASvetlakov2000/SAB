@@ -201,6 +201,7 @@ namespace SAB.CreateViewsAndSheets.Services
                     document,
                     settings.TitleBlockTypeId,
                     sourceSheetId,
+                    item.SheetBrowserParameterValues,
                     item.SheetNumber,
                     item.SheetName,
                     result.Warnings);

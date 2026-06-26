@@ -26,7 +26,7 @@
 
         <Grid Grid.Row="0" Margin="20,18,20,14">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="48" />
+                <ColumnDefinition Width="36" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" MinWidth="680" />
             </Grid.ColumnDefinitions>
@@ -53,7 +53,7 @@
                           Grid.Column="1"
                           Width="320"
                           Margin="0,0,20,0"
-                          VerticalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Hidden"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <Expander Style="{StaticResource SabPanelExpanderStyle}"
@@ -72,12 +72,39 @@
                             <RadioButton Content="Одноэтажная структура"
                                          GroupName="StructureMode"
                                          IsChecked="{Binding IsSingleStoryStructure, Mode=TwoWay}"
-                                         Style="{StaticResource SabRadioButtonStyle}"
-                                         Margin="0,0,0,8" />
-                            <RadioButton Content="Многоэтажная структура"
-                                         GroupName="StructureMode"
-                                         IsChecked="{Binding IsMultiStoryStructure, Mode=TwoWay}"
-                                         Style="{StaticResource SabRadioButtonStyle}" />
+                                         Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                             <RadioButton Content="Многоэтажная структура"
+                                          GroupName="StructureMode"
+                                          IsChecked="{Binding IsMultiStoryStructure, Mode=TwoWay}"
+                                          Style="{StaticResource SabStructureModeRadioButtonStyle}"
+                                          Margin="0" />
+
+                            <TextBlock Text="Группирование и сортировка листов"
+                                       Style="{StaticResource SabFieldLabelTextStyle}"
+                                       Margin="0,12,0,4" />
+                            <ItemsControl ItemsSource="{Binding SheetBrowserParameterLevels}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SabSettingRowBorderStyle}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="78" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding LevelTitle}"
+                                                           Style="{StaticResource SabFieldHintTextStyle}"
+                                                           VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding ParameterName}"
+                                                           Style="{StaticResource SabFieldLabelTextStyle}"
+                                                           TextWrapping="Wrap"
+                                                           VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </Expander>
 
@@ -498,36 +525,17 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Имя вида" Width="1.25*" MinWidth="140">
+                            <DataGridTemplateColumn Header="Имя вида"
+                                                    SortMemberPath="ViewName"
+                                                    Width="1.25*"
+                                                    MinWidth="140">
                                 <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
-                                            <Grid>
-                                                <TextBlock Text="{Binding ViewName}"
-                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
-                                                <TextBlock Text="Введите имя вида">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
-                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding ViewName}" Value="">
-                                                                    <Setter Property="Visibility" Value="Visible" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                                <DataGridTemplateColumn.CellEditingTemplate>
                                     <DataTemplate>
                                         <Grid>
                                             <TextBox Text="{Binding ViewName, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource SabDataGridTextBoxEditingStyle}" />
+                                                     Style="{StaticResource SabDataGridInlineTextBoxStyle}" />
                                             <TextBlock Text="Введите имя вида"
-                                                       Margin="10,0,0,0">
+                                                       Margin="4,0,0,0">
                                                 <TextBlock.Style>
                                                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
                                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -541,10 +549,13 @@
                                             </TextBlock>
                                         </Grid>
                                     </DataTemplate>
-                                </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Масштаб" Width="110" MinWidth="96">
+                            <DataGridTemplateColumn Header="Масштаб"
+                                                    SortMemberPath="ViewScaleText"
+                                                    Width="110"
+                                                    MinWidth="96">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding DataContext.ScaleOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -556,7 +567,10 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Шаблон вида" Width="1.55*" MinWidth="170">
+                            <DataGridTemplateColumn Header="Шаблон вида"
+                                                    SortMemberPath="SelectedViewTemplate.Name"
+                                                    Width="1.55*"
+                                                    MinWidth="170">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding DataContext.ViewTemplates, RelativeSource={RelativeSource AncestorType=DataGrid}}"
@@ -568,36 +582,17 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="№ листа" Width="120" MinWidth="100">
+                            <DataGridTemplateColumn Header="№ листа"
+                                                    SortMemberPath="SheetNumber"
+                                                    Width="120"
+                                                    MinWidth="100">
                                 <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
-                                            <Grid>
-                                                <TextBlock Text="{Binding SheetNumber}"
-                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
-                                                <TextBlock Text="Введите №">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
-                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding SheetNumber}" Value="">
-                                                                    <Setter Property="Visibility" Value="Visible" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                                <DataGridTemplateColumn.CellEditingTemplate>
                                     <DataTemplate>
                                         <Grid>
                                             <TextBox Text="{Binding SheetNumber, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource SabDataGridTextBoxEditingStyle}" />
+                                                     Style="{StaticResource SabDataGridInlineTextBoxStyle}" />
                                             <TextBlock Text="Введите №"
-                                                       Margin="10,0,0,0">
+                                                       Margin="4,0,0,0">
                                                 <TextBlock.Style>
                                                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
                                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -611,39 +606,20 @@
                                             </TextBlock>
                                         </Grid>
                                     </DataTemplate>
-                                </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Имя листа" Width="*" MinWidth="150">
+                            <DataGridTemplateColumn Header="Имя листа"
+                                                    SortMemberPath="SheetName"
+                                                    Width="*"
+                                                    MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
-                                            <Grid>
-                                                <TextBlock Text="{Binding SheetName}"
-                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
-                                                <TextBlock Text="Введите имя листа">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
-                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding SheetName}" Value="">
-                                                                    <Setter Property="Visibility" Value="Visible" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                                <DataGridTemplateColumn.CellEditingTemplate>
                                     <DataTemplate>
                                         <Grid>
                                             <TextBox Text="{Binding SheetName, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource SabDataGridTextBoxEditingStyle}" />
+                                                     Style="{StaticResource SabDataGridInlineTextBoxStyle}" />
                                             <TextBlock Text="Введите имя листа"
-                                                       Margin="10,0,0,0">
+                                                       Margin="4,0,0,0">
                                                 <TextBlock.Style>
                                                     <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource SabPlaceholderTextStyle}">
                                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -657,7 +633,7 @@
                                             </TextBlock>
                                         </Grid>
                                     </DataTemplate>
-                                </DataGridTemplateColumn.CellEditingTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <DataGridTemplateColumn Header="Действия"
