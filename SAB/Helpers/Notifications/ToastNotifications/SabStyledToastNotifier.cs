@@ -12,7 +12,7 @@ namespace Helpers.Notifications.ToastNotifications
 {
     public static class SabStyledToastNotifier
     {
-        // Блок настройки времени показа уведомления (секунды)
+        // Ð‘Ð»Ð¾Ðº Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð¿Ð¾ÐºÐ°Ð·Ð° ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ (ÑÐµÐºÑƒÐ½Ð´Ñ‹)
         private const int DefaultDurationSeconds = 10;
 
         private static readonly object SyncRoot = new object();
@@ -78,7 +78,7 @@ namespace Helpers.Notifications.ToastNotifications
             }
             catch
             {
-                // Уведомление не должно ломать команду Revit.
+                // Ð£Ð²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ðµ Ð½Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð»Ð¾Ð¼Ð°Ñ‚ÑŒ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñƒ Revit.
             }
         }
 
@@ -229,8 +229,8 @@ namespace Helpers.Notifications.ToastNotifications
             TextBlock icon = new TextBlock
             {
                 Text = GetIcon(type),
-                FontFamily = new FontFamily("Segoe UI Symbol"),
-                FontSize = 14,
+                FontFamily = new FontFamily("Segoe UI Emoji"),
+                FontSize = 16,
                 FontWeight = FontWeights.SemiBold,
                 Foreground = new SolidColorBrush(GetAccentColor(type)),
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -310,7 +310,7 @@ namespace Helpers.Notifications.ToastNotifications
                 }
                 catch
                 {
-                    // Невалидный путь не должен ломать уведомления.
+                    // ÐÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ð¿ÑƒÑ‚ÑŒ Ð½Ðµ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð»Ð¾Ð¼Ð°Ñ‚ÑŒ ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ.
                 }
             };
 
@@ -321,7 +321,7 @@ namespace Helpers.Notifications.ToastNotifications
         {
             Button closeButton = new Button
             {
-                Content = "×",
+                Content = "Ã—",
                 Width = 28,
                 Height = 28,
                 Background = Brushes.Transparent,
@@ -408,15 +408,15 @@ namespace Helpers.Notifications.ToastNotifications
             switch (type)
             {
                 case ToastType.Info:
-                    return "i";
+                    return "ℹ️";
                 case ToastType.Success:
-                    return "✓";
+                    return "✅";
                 case ToastType.Warning:
-                    return "!";
+                    return "⚠️";
                 case ToastType.Error:
-                    return "×";
+                    return "❌";
                 default:
-                    return "?";
+                    return "❔";
             }
         }
     }

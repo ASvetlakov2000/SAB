@@ -5,7 +5,7 @@
         Width="1040"
         MinHeight="620"
         MinWidth="940"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         ResizeMode="CanResizeWithGrip"
         FontFamily="Segoe UI"
         FontSize="13"

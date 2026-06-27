@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Markup;
 using SAB.RoomGeometryTools.ViewModels;
+using SAB.UI;
 
 namespace SAB.RoomGeometryTools.UI
 {
@@ -36,7 +37,10 @@ namespace SAB.RoomGeometryTools.UI
 
             using (FileStream stream = File.OpenRead(xamlPath))
             {
-                Window loadedWindow = XamlReader.Load(stream) as Window;
+                ParserContext parserContext = new ParserContext();
+                parserContext.BaseUri = new Uri(xamlPath, UriKind.Absolute);
+
+                Window loadedWindow = XamlReader.Load(stream, parserContext) as Window;
                 if (loadedWindow == null)
                 {
                     throw new InvalidOperationException("Не удалось загрузить RoomGeometryToolsWindow.xaml.");
@@ -56,6 +60,8 @@ namespace SAB.RoomGeometryTools.UI
                 FontWeight = loadedWindow.FontWeight;
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
+
+                WindowSizeSettingsService.Apply(this, "RoomGeometryTools.MainWindow");
             }
         }
 

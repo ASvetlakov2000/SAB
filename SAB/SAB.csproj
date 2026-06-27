@@ -318,6 +318,12 @@
     <Compile Include="Cls_RoomGeometryTools\Utils\PolygonUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\WindowSizeSettingsService.cs" />
     <Compile Include="Helpers\ForRevit\AllCategoriesByPlacement.cs" />
     <Compile Include="Helpers\ForRevit\AllUsedCategoryList.cs" />
     <Compile Include="Helpers\Notifications\ToastNotifications\SabStyledToastNotifier.cs" />
@@ -326,11 +332,6 @@
     <Compile Include="Helpers\Service\FileOpenSave.cs" />
     <Compile Include="Cls_MainPanel\MainPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

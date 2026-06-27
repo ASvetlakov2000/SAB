@@ -31,6 +31,21 @@ namespace SAB.InteriorElevations.Commands
             MultipleGroups = 2
         }
 
+        private class ElevationSelectionPackage
+        {
+            public ElevationSelectionPackage()
+            {
+                LineGroups = new List<List<DetailLine>>();
+                SelectedLines = new List<DetailLine>();
+            }
+
+            public List<List<DetailLine>> LineGroups { get; set; }
+
+            public List<DetailLine> SelectedLines { get; set; }
+
+            public RoomData RoomData { get; set; }
+        }
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
@@ -75,59 +90,6 @@ namespace SAB.InteriorElevations.Commands
 
                 List<string> warnings = new List<string>();
 
-                DetailLineSelectionService selectionService = new DetailLineSelectionService();
-                LineGroupSelectionMode lineGroupSelectionMode = SelectLineGroupSelectionMode();
-                if (lineGroupSelectionMode == LineGroupSelectionMode.Cancelled)
-                {
-                    return Result.Cancelled;
-                }
-
-                List<List<DetailLine>> lineGroups;
-                bool linesPicked = TryCollectLineGroups(
-                    uiDocument,
-                    activeView,
-                    selectionService,
-                    lineGroupSelectionMode,
-                    warnings,
-                    out lineGroups);
-
-                if (!linesPicked)
-                {
-                    return Result.Cancelled;
-                }
-
-                List<DetailLine> selectedLines = FlattenLineGroups(lineGroups);
-                if (selectedLines.Count == 0)
-                {
-                    ToastNotifier.ShowWarning(
-                        "SAB Развертки",
-                        "Не выбраны корректные линии детализации. Выберите линии и запустите команду снова.");
-                    return Result.Cancelled;
-                }
-
-                ToastNotifier.ShowInfo("SAB Развертки", "Выберите помещение, для которого будут созданы развертки.");
-
-                RoomDetectionService roomDetectionService = new RoomDetectionService();
-                RoomData roomData;
-                string roomSelectionError;
-                if (!roomDetectionService.TryPickRoomData(uiDocument, out roomData, out roomSelectionError))
-                {
-                    if (!string.IsNullOrWhiteSpace(roomSelectionError))
-                    {
-                        ToastNotifier.ShowWarning("SAB Развертки", roomSelectionError);
-                    }
-
-                    return Result.Cancelled;
-                }
-
-                if (!RevitElementIdUtils.AreEqual(roomData.LevelId, activePlanLevelId))
-                {
-                    ToastNotifier.ShowWarning(
-                        "SAB Развертки",
-                        "Выбранное помещение находится на другом уровне. Выберите помещение на уровне активного плана.");
-                    return Result.Cancelled;
-                }
-
                 ElevationSettingsStorageService settingsStorageService = new ElevationSettingsStorageService();
                 ElevationSettings savedSettings = null;
                 try
@@ -140,27 +102,88 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document, savedSettings);
-                ElevationSettingsWindow settingsWindow = new ElevationSettingsWindow(settingsViewModel);
+                bool useMultipleLineGroups = false;
+                string selectionStatusText = "Линии и помещение не выбраны.";
+                ElevationSelectionPackage selectionPackage = null;
+                ElevationSettings settings = null;
 
-                bool? dialogResult = settingsWindow.ShowDialog();
-                if (!dialogResult.HasValue || !dialogResult.Value)
+                while (true)
                 {
-                    return Result.Cancelled;
+                    ElevationSettingsWindow settingsWindow = new ElevationSettingsWindow(
+                        settingsViewModel,
+                        useMultipleLineGroups,
+                        selectionStatusText);
+
+                    bool? dialogResult = settingsWindow.ShowDialog();
+                    if (!dialogResult.HasValue || !dialogResult.Value)
+                    {
+                        return Result.Cancelled;
+                    }
+
+                    useMultipleLineGroups = settingsWindow.IsMultipleGroupsMode;
+
+                    if (settingsWindow.RequestedAction == ElevationSettingsWindowAction.PickSelection)
+                    {
+                        LineGroupSelectionMode lineGroupSelectionMode = useMultipleLineGroups
+                            ? LineGroupSelectionMode.MultipleGroups
+                            : LineGroupSelectionMode.SingleGroup;
+
+                        ElevationSelectionPackage pickedSelectionPackage;
+                        List<string> selectionWarnings = new List<string>();
+                        bool selectionPicked = TryPickLineGroupsAndRoom(
+                            uiDocument,
+                            activeView,
+                            activePlanLevelId,
+                            lineGroupSelectionMode,
+                            selectionWarnings,
+                            out pickedSelectionPackage);
+
+                        AppendWarnings(warnings, selectionWarnings);
+
+                        if (selectionPicked)
+                        {
+                            selectionPackage = pickedSelectionPackage;
+                            selectionStatusText = BuildSelectionStatusText(selectionPackage, lineGroupSelectionMode);
+                            ToastNotifier.ShowInfo("SAB Развертки", "Линии и помещение выбраны. Проверьте настройки и нажмите Создать развертки.");
+                        }
+                        else
+                        {
+                            selectionStatusText = "Линии и помещение не выбраны. Нажмите Выбрать линии.";
+                        }
+
+                        continue;
+                    }
+
+                    settings = settingsWindow.SelectedSettings;
+                    if (settings == null)
+                    {
+                        ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло значения параметров.");
+                        continue;
+                    }
+
+                    if (selectionPackage == null ||
+                        selectionPackage.SelectedLines == null ||
+                        selectionPackage.SelectedLines.Count == 0 ||
+                        selectionPackage.RoomData == null)
+                    {
+                        ToastNotifier.ShowWarning("SAB Развертки", "Сначала нажмите 'Выбрать линии' и укажите линии детализации и помещение.");
+                        selectionStatusText = "Линии и помещение не выбраны. Нажмите Выбрать линии.";
+                        continue;
+                    }
+
+                    string settingsValidationMessage;
+                    if (!ValidateSettings(document, settings, out settingsValidationMessage))
+                    {
+                        ToastNotifier.ShowWarning("SAB Развертки", settingsValidationMessage);
+                        continue;
+                    }
+
+                    break;
                 }
 
-                ElevationSettings settings = settingsWindow.SelectedSettings;
-                if (settings == null)
-                {
-                    ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло значения параметров.");
-                    return Result.Cancelled;
-                }
-
-                string settingsValidationMessage;
-                if (!ValidateSettings(document, settings, out settingsValidationMessage))
-                {
-                    ToastNotifier.ShowWarning("SAB Развертки", settingsValidationMessage);
-                    return Result.Cancelled;
-                }
+                List<List<DetailLine>> lineGroups = selectionPackage.LineGroups;
+                List<DetailLine> selectedLines = selectionPackage.SelectedLines;
+                RoomData roomData = selectionPackage.RoomData;
 
                 try
                 {
@@ -436,21 +459,90 @@ namespace SAB.InteriorElevations.Commands
             return roomPlanSettings;
         }
 
-        private LineGroupSelectionMode SelectLineGroupSelectionMode()
+        private bool TryPickLineGroupsAndRoom(
+            UIDocument uiDocument,
+            View activeView,
+            ElementId activePlanLevelId,
+            LineGroupSelectionMode lineGroupSelectionMode,
+            IList<string> warnings,
+            out ElevationSelectionPackage selectionPackage)
         {
-            LineGroupSelectionWindow modeWindow = new LineGroupSelectionWindow();
-            bool? dialogResult = modeWindow.ShowDialog();
-            if (!dialogResult.HasValue || !dialogResult.Value)
+            selectionPackage = null;
+
+            DetailLineSelectionService selectionService = new DetailLineSelectionService();
+            List<List<DetailLine>> lineGroups;
+            bool linesPicked = TryCollectLineGroups(
+                uiDocument,
+                activeView,
+                selectionService,
+                lineGroupSelectionMode,
+                warnings,
+                out lineGroups);
+
+            if (!linesPicked)
             {
-                return LineGroupSelectionMode.Cancelled;
+                return false;
             }
 
-            if (modeWindow.IsMultipleGroups)
+            List<DetailLine> selectedLines = FlattenLineGroups(lineGroups);
+            if (selectedLines.Count == 0)
             {
-                return LineGroupSelectionMode.MultipleGroups;
+                ToastNotifier.ShowWarning(
+                    "SAB Развертки",
+                    "Не выбраны корректные линии детализации. Нажмите 'Выбрать линии' и повторите выбор.");
+                return false;
             }
 
-            return LineGroupSelectionMode.SingleGroup;
+            ToastNotifier.ShowInfo("SAB Развертки", "Выберите помещение, для которого будут созданы развертки.");
+
+            RoomDetectionService roomDetectionService = new RoomDetectionService();
+            RoomData roomData;
+            string roomSelectionError;
+            if (!roomDetectionService.TryPickRoomData(uiDocument, out roomData, out roomSelectionError))
+            {
+                if (!string.IsNullOrWhiteSpace(roomSelectionError))
+                {
+                    ToastNotifier.ShowWarning("SAB Развертки", roomSelectionError);
+                }
+
+                return false;
+            }
+
+            if (!RevitElementIdUtils.AreEqual(roomData.LevelId, activePlanLevelId))
+            {
+                ToastNotifier.ShowWarning(
+                    "SAB Развертки",
+                    "Выбранное помещение находится на другом уровне. Выберите помещение на уровне активного плана.");
+                return false;
+            }
+
+            selectionPackage = new ElevationSelectionPackage();
+            selectionPackage.LineGroups = lineGroups;
+            selectionPackage.SelectedLines = selectedLines;
+            selectionPackage.RoomData = roomData;
+            return true;
+        }
+
+        private string BuildSelectionStatusText(
+            ElevationSelectionPackage selectionPackage,
+            LineGroupSelectionMode lineGroupSelectionMode)
+        {
+            if (selectionPackage == null || selectionPackage.RoomData == null)
+            {
+                return "Линии и помещение не выбраны.";
+            }
+
+            int groupCount = selectionPackage.LineGroups != null ? selectionPackage.LineGroups.Count : 0;
+            int lineCount = selectionPackage.SelectedLines != null ? selectionPackage.SelectedLines.Count : 0;
+            string modeText = lineGroupSelectionMode == LineGroupSelectionMode.MultipleGroups
+                ? "несколько групп"
+                : "одна группа";
+
+            return "Выбрано: " + lineCount +
+                   " линий, " + groupCount +
+                   " групп (" + modeText +
+                   "). Помещение: " + selectionPackage.RoomData.RoomNumber +
+                   " " + selectionPackage.RoomData.RoomName + ".";
         }
 
         private bool TryCollectLineGroups(

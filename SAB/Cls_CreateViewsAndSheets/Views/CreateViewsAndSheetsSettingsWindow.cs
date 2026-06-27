@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Markup;
 using SAB.CreateViewsAndSheets.ViewModels;
+using SAB.UI;
 
 namespace SAB.CreateViewsAndSheets.Views
 {
@@ -83,6 +84,8 @@ namespace SAB.CreateViewsAndSheets.Views
                 FontWeight = loadedWindow.FontWeight;
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
+
+                WindowSizeSettingsService.Apply(this, "CreateViewsAndSheets.SettingsWindow");
             }
         }
     }

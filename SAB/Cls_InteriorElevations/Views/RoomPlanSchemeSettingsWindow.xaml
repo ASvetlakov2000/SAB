@@ -3,267 +3,148 @@
         Title="SAB План-схемы разверток помещений"
         Height="560"
         Width="820"
-        MinHeight="560"
+        MinHeight="540"
         MinWidth="760"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResizeWithGrip"
-        Background="#F2F2F2">
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
     <Window.Resources>
-        <SolidColorBrush x:Key="SectionBackgroundBrush" Color="#FCFCFC" />
-        <SolidColorBrush x:Key="SectionBorderBrush" Color="#000000" />
-        <SolidColorBrush x:Key="FieldBorderBrush" Color="#000000" />
-        <SolidColorBrush x:Key="FieldTitleBackgroundBrush" Color="#EBEBEB" />
-        <SolidColorBrush x:Key="FieldInputBackgroundBrush" Color="#FFFFFF" />
-        <SolidColorBrush x:Key="FieldHoverBackgroundBrush" Color="#E1E1E1" />
-        <SolidColorBrush x:Key="ActionButtonBrush" Color="#E1E1E1" />
-
-        <Style x:Key="SectionBorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource SectionBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource SectionBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Padding" Value="14" />
-            <Setter Property="Margin" Value="0,0,0,10" />
-        </Style>
-
-        <Style x:Key="SectionTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="19" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="Margin" Value="0,0,0,10" />
-            <Setter Property="Foreground" Value="#111111" />
-        </Style>
-
-        <Style x:Key="SettingCardBorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Margin" Value="0,0,0,8" />
-        </Style>
-
-        <Style x:Key="SettingTitleBorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource FieldTitleBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
-            <Setter Property="BorderThickness" Value="0,0,0,1" />
-            <Setter Property="CornerRadius" Value="8,8,0,0" />
-            <Setter Property="Padding" Value="10,7" />
-        </Style>
-
-        <Style x:Key="SettingTitleTextStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="#202020" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-
-        <Style x:Key="SettingInputHostStyle" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource FieldInputBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource FieldBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="8,4" />
-            <Setter Property="Margin" Value="8" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource FieldHoverBackgroundBrush}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="FlatTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="#202020" />
-        </Style>
-
-        <Style x:Key="FlatComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="#202020" />
-        </Style>
-
-        <Style x:Key="GrayActionButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource ActionButtonBrush}" />
-            <Setter Property="BorderBrush" Value="#000000" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Foreground" Value="#101010" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Padding" Value="14,7" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6">
-                            <Grid>
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  Margin="2" />
-                                <Border x:Name="ButtonDarkOverlay"
-                                        Background="#000000"
-                                        Opacity="0"
-                                        CornerRadius="6"
-                                        IsHitTestVisible="False" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="MouseEnter">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ButtonDarkOverlay"
-                                                         Storyboard.TargetProperty="Opacity"
-                                                         To="0.08"
-                                                         Duration="0:0:0.12" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="MouseLeave">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ButtonDarkOverlay"
-                                                         Storyboard.TargetProperty="Opacity"
-                                                         To="0"
-                                                         Duration="0:0:0.12" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Margin="16">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   Text="Настройки создания план-схем разверток помещений"
-                   Style="{StaticResource SectionTitleTextStyle}" />
+        <Border Grid.Row="0"
+                Style="{StaticResource SabPanelBorderStyle}"
+                Margin="20,18,20,14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-        <Border Grid.Row="1" Style="{StaticResource SectionBorderStyle}">
-            <StackPanel>
-                <TextBlock Text="Формула имени вида" Style="{StaticResource SectionTitleTextStyle}" />
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                    <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                        <TextBlock Text="▤" Style="{StaticResource SabPanelIconTextStyle}" />
+                    </Border>
+                    <TextBlock Text="Настройки план-схемы помещения" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                </StackPanel>
 
-                <Border Style="{StaticResource SettingCardBorderStyle}">
-                    <StackPanel>
-                        <Border Style="{StaticResource SettingTitleBorderStyle}">
-                            <TextBlock Text="Часть 1 (текст-префикс)" Style="{StaticResource SettingTitleTextStyle}" />
-                        </Border>
-                        <Border Style="{StaticResource SettingInputHostStyle}">
-                            <TextBox Style="{StaticResource FlatTextBoxStyle}" Text="{Binding NamePart1Text, UpdateSourceTrigger=PropertyChanged}" />
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,0,14,0">
+                        <Expander Style="{StaticResource SabPanelExpanderStyle}"
+                                  IsExpanded="True"
+                                  Margin="0,0,0,10">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                        <TextBlock Text="☰" Style="{StaticResource SabPanelIconTextStyle}" />
+                                    </Border>
+                                    <TextBlock Text="Формула имени вида" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                </StackPanel>
+                            </Expander.Header>
+
+                            <StackPanel>
+                                <TextBlock Text="Часть 1 (текст-префикс)" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Text="{Binding NamePart1Text, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}"
+                                         Margin="0,0,0,12" />
+
+                                <TextBlock Text="Часть 2 (Номер помещения или токен {Номер помещения})" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Text="{Binding NamePart2Text, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}"
+                                         Margin="0,0,0,12" />
+
+                                <TextBlock Text="Часть 3 (Имя помещения или токен {Имя помещения})" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBox Text="{Binding NamePart3Text, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource SabTextBoxStyle}" />
+                            </StackPanel>
+                        </Expander>
+
+                        <Expander Style="{StaticResource SabPanelExpanderStyle}"
+                                  IsExpanded="True"
+                                  Margin="0,0,0,10">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                        <TextBlock Text="□" Style="{StaticResource SabPanelIconTextStyle}" />
+                                    </Border>
+                                    <TextBlock Text="Параметры вида" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                </StackPanel>
+                            </Expander.Header>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Шаблон вида" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <ComboBox ItemsSource="{Binding ViewTemplates}"
+                                              SelectedItem="{Binding SelectedViewTemplate}"
+                                              DisplayMemberPath="DisplayName"
+                                              ToolTip="{Binding SelectedViewTemplate.DisplayName}"
+                                              Style="{StaticResource SabComboBoxStyle}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Отступ границы обрезки от контура помещения, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <TextBox Text="{Binding CropOffsetMmText, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource SabTextBoxStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </Expander>
+
+                        <Border Style="{StaticResource SabValidationPanelStyle}">
+                            <TextBlock Text="Команда работает в режиме выбора помещения. После нажатия ОК выберите одно помещение в модели."
+                                       Style="{StaticResource SabFieldHintTextStyle}" />
                         </Border>
                     </StackPanel>
-                </Border>
-
-                <Border Style="{StaticResource SettingCardBorderStyle}">
-                    <StackPanel>
-                        <Border Style="{StaticResource SettingTitleBorderStyle}">
-                            <TextBlock Text="Часть 2 (Номер помещения или токен {Номер помещения})" Style="{StaticResource SettingTitleTextStyle}" />
-                        </Border>
-                        <Border Style="{StaticResource SettingInputHostStyle}">
-                            <TextBox Style="{StaticResource FlatTextBoxStyle}" Text="{Binding NamePart2Text, UpdateSourceTrigger=PropertyChanged}" />
-                        </Border>
-                    </StackPanel>
-                </Border>
-
-                <Border Style="{StaticResource SettingCardBorderStyle}">
-                    <StackPanel>
-                        <Border Style="{StaticResource SettingTitleBorderStyle}">
-                            <TextBlock Text="Часть 3 (Имя помещения или токен {Имя помещения})" Style="{StaticResource SettingTitleTextStyle}" />
-                        </Border>
-                        <Border Style="{StaticResource SettingInputHostStyle}">
-                            <TextBox Style="{StaticResource FlatTextBoxStyle}" Text="{Binding NamePart3Text, UpdateSourceTrigger=PropertyChanged}" />
-                        </Border>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+                </ScrollViewer>
+            </Grid>
         </Border>
 
-        <Border Grid.Row="2" Style="{StaticResource SectionBorderStyle}">
-            <StackPanel>
-                <TextBlock Text="Параметры вида" Style="{StaticResource SectionTitleTextStyle}" />
-
-                <Border Style="{StaticResource SettingCardBorderStyle}">
-                    <StackPanel>
-                        <Border Style="{StaticResource SettingTitleBorderStyle}">
-                            <TextBlock Text="Шаблон вида" Style="{StaticResource SettingTitleTextStyle}" />
-                        </Border>
-                        <Border Style="{StaticResource SettingInputHostStyle}">
-                            <ComboBox Style="{StaticResource FlatComboBoxStyle}"
-                                      ItemsSource="{Binding ViewTemplates}"
-                                      SelectedItem="{Binding SelectedViewTemplate}"
-                                      DisplayMemberPath="DisplayName" />
-                        </Border>
-                    </StackPanel>
-                </Border>
-
-                <Border Style="{StaticResource SettingCardBorderStyle}">
-                    <StackPanel>
-                        <Border Style="{StaticResource SettingTitleBorderStyle}">
-                            <TextBlock Text="Отступ границы обрезки от контура помещения, мм" Style="{StaticResource SettingTitleTextStyle}" />
-                        </Border>
-                        <Border Style="{StaticResource SettingInputHostStyle}">
-                            <TextBox Style="{StaticResource FlatTextBoxStyle}" Text="{Binding CropOffsetMmText, UpdateSourceTrigger=PropertyChanged}" />
-                        </Border>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </Border>
-
-        <TextBlock Grid.Row="3"
-                   Margin="2,0,2,0"
-                   FontSize="13"
-                   Foreground="#202020"
-                   TextWrapping="Wrap"
-                   VerticalAlignment="Top"
-                   Text="Команда работает в режиме выбора помещения. После нажатия ОК выберите одно помещение в модели." />
-
-        <Border Grid.Row="4" Background="#F2F2F2" Padding="0,12,0,0">
+        <Border Grid.Row="1"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="8" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0"
-                           VerticalAlignment="Center"
-                           FontSize="13"
-                           Foreground="#202020"
-                           Text="Проверьте параметры и нажмите ОК." />
+                           Text="Проверьте параметры и нажмите ОК."
+                           Style="{StaticResource SabStatusTextStyle}" />
 
-                <Button x:Name="OkButton"
-                        Grid.Column="1"
-                        Width="130"
-                        Height="36"
-                        Content="ОК"
-                        Style="{StaticResource GrayActionButtonStyle}" />
-
-                <Button x:Name="CancelButton"
-                        Grid.Column="3"
-                        Width="130"
-                        Height="36"
-                        Content="Отмена"
-                        Style="{StaticResource GrayActionButtonStyle}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="CancelButton"
+                            Content="Отмена"
+                            Width="120"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="OkButton"
+                            Content="ОК"
+                            Width="120"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
 </Window>
-

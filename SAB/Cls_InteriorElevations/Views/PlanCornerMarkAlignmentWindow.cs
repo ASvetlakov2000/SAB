@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
+using SAB.UI;
 
 namespace SAB.InteriorElevations.Views
 {
@@ -40,7 +41,10 @@ namespace SAB.InteriorElevations.Views
 
             using (FileStream stream = File.OpenRead(xamlPath))
             {
-                Window loadedWindow = XamlReader.Load(stream) as Window;
+                ParserContext parserContext = new ParserContext();
+                parserContext.BaseUri = new Uri(xamlPath, UriKind.Absolute);
+
+                Window loadedWindow = XamlReader.Load(stream, parserContext) as Window;
                 if (loadedWindow == null)
                 {
                     throw new InvalidOperationException("Не удалось загрузить PlanCornerMarkAlignmentWindow.xaml.");
@@ -64,6 +68,8 @@ namespace SAB.InteriorElevations.Views
                 FontWeight = loadedWindow.FontWeight;
                 Content = loadedWindow.Content;
                 Resources = loadedWindow.Resources;
+
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.PlanCornerMarkAlignmentWindow");
             }
         }
 

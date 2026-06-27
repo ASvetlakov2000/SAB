@@ -11,6 +11,12 @@
 
 `SAB/UI/Styles/SABWindowStyles.xaml`
 
+Актуальная реализация референса:
+
+`SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml`
+
+Окна `InteriorElevations`, включая основное окно настроек разверток, должны переиспользовать эту же визуальную систему: общий фон окна, белые рабочие панели, `SabPanelBorderStyle`, `SabPanelExpanderStyle`, `SabTextBoxStyle`, `SabComboBoxStyle`, `SabCheckBoxStyle`, `SabPrimaryButtonStyle` и `SabNeutralButtonStyle`.
+
 ## 1. Общий характер интерфейса
 
 Интерфейс SAB должен выглядеть как спокойное рабочее окно Revit-плагина, а не как веб-страница или промо-экран.

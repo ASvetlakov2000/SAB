@@ -254,15 +254,15 @@ namespace Helpers.Notifications.ToastNotifications
             switch (toastType)
             {
                 case ToastType.Info:
-                    return "\u2139";
+                    return "ℹ️";
                 case ToastType.Success:
-                    return "\u2713";
+                    return "✅";
                 case ToastType.Warning:
-                    return "!";
+                    return "⚠️";
                 case ToastType.Error:
-                    return "\u00D7";
+                    return "❌";
                 default:
-                    return string.Empty;
+                    return "❔";
             }
         }
     }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using SAB.UI;
 
 namespace SAB.InteriorElevations.Views
 {
@@ -34,7 +35,10 @@ namespace SAB.InteriorElevations.Views
 
             using (FileStream stream = File.OpenRead(xamlPath))
             {
-                Window loadedWindow = XamlReader.Load(stream) as Window;
+                ParserContext parserContext = new ParserContext();
+                parserContext.BaseUri = new Uri(xamlPath, UriKind.Absolute);
+
+                Window loadedWindow = XamlReader.Load(stream, parserContext) as Window;
                 if (loadedWindow == null)
                 {
                     throw new InvalidOperationException("Не удалось распарсить LineGroupNextActionWindow.xaml.");
@@ -59,6 +63,8 @@ namespace SAB.InteriorElevations.Views
                 FontWeight = loadedWindow.FontWeight;
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
+
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.LineGroupNextActionWindow.Compact");
             }
         }
 

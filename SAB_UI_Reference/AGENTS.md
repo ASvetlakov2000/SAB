@@ -10,6 +10,12 @@
 
 `docs/ui/references/CreateViewsAndSheets_reference.png`
 
+Актуальная реализация референса в проекте:
+
+`SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml`
+
+Окна плагина `InteriorElevations` должны использовать тот же словарь стилей и композицию рабочих панелей, что и окно `CreateViewsAndSheets`.
+
 Перед изменением или созданием WPF-окна необходимо:
 
 1. Найти существующие `ResourceDictionary`, стили и окна SAB.

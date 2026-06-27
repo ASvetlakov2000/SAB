@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using SAB.UI;
 
 namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
 {
@@ -33,7 +34,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
             MinWidth = 380;
             MinHeight = 170;
             ResizeMode = ResizeMode.NoResize;
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             ShowInTaskbar = false;
 
             Grid rootGrid = new Grid
@@ -87,6 +88,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
             rootGrid.Children.Add(buttonPanel);
 
             Content = rootGrid;
+            WindowSizeSettingsService.Apply(this, "RevitLibraryBuilder.ConfirmViewCreationDialog");
         }
 
         private void YesButton_Click(object sender, RoutedEventArgs e)

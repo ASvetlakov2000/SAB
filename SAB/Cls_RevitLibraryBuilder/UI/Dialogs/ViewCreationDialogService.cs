@@ -12,7 +12,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI.Dialogs
             ConfirmViewCreationDialog dialog = new ConfirmViewCreationDialog(categoryName)
             {
                 ShowInTaskbar = false,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
 
             IntPtr ownerHandle = IntPtr.Zero;

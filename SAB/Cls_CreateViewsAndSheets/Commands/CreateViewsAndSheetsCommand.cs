@@ -232,7 +232,7 @@ namespace SAB.CreateViewsAndSheets.Commands
             }
 
             window.ShowInTaskbar = false;
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             window.SourceInitialized += CreateViewsAndSheetsWindow_SourceInitialized;
 
             IntPtr ownerHandle = IntPtr.Zero;

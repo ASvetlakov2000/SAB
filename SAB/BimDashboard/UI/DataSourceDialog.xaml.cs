@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using SAB.BimDashboard.Models;
+using SAB.UI;
 using Forms = System.Windows.Forms;
 
 namespace SAB.BimDashboard.UI
@@ -156,6 +157,7 @@ namespace SAB.BimDashboard.UI
             rootGrid.Children.Add(actionsPanel);
 
             Content = rootGrid;
+            WindowSizeSettingsService.Apply(this, "BimDashboard.DataSourceDialog");
         }
 
         private static Border CreateCardBorder()

@@ -15,6 +15,10 @@
     <SolidColorBrush x:Key="SabBrush.Success" Color="#039855" />
     <SolidColorBrush x:Key="SabBrush.DisabledBackground" Color="#F2F4F7" />
     <SolidColorBrush x:Key="SabBrush.DisabledText" Color="#98A2B3" />
+    <SolidColorBrush x:Key="SabBrush.ScrollBarTrack" Color="Transparent" />
+    <SolidColorBrush x:Key="SabBrush.ScrollBarThumb" Color="#C9CDD3" />
+    <SolidColorBrush x:Key="SabBrush.ScrollBarThumbHover" Color="#9EA4AD" />
+    <SolidColorBrush x:Key="SabBrush.ScrollBarThumbPressed" Color="#858B94" />
     <RotateTransform x:Key="SabRotateLeftTransform" Angle="-90" />
 
     <Style x:Key="SabWindowTitleTextStyle" TargetType="{x:Type TextBlock}">
@@ -787,4 +791,127 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
+
+    <Style x:Key="SabScrollBarRepeatButtonStyle" TargetType="{x:Type RepeatButton}">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border Background="Transparent" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SabVerticalScrollBarThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border x:Name="ThumbBorder"
+                            Background="{StaticResource SabBrush.ScrollBarThumb}"
+                            CornerRadius="3"
+                            Width="6"
+                            HorizontalAlignment="Center"
+                            Margin="0,5" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ThumbBorder" Property="Background" Value="{StaticResource SabBrush.ScrollBarThumbHover}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="ThumbBorder" Property="Background" Value="{StaticResource SabBrush.ScrollBarThumbPressed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SabHorizontalScrollBarThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="MinWidth" Value="36" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border x:Name="ThumbBorder"
+                            Background="{StaticResource SabBrush.ScrollBarThumb}"
+                            CornerRadius="3"
+                            Height="6"
+                            VerticalAlignment="Center"
+                            Margin="5,0" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ThumbBorder" Property="Background" Value="{StaticResource SabBrush.ScrollBarThumbHover}" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="ThumbBorder" Property="Background" Value="{StaticResource SabBrush.ScrollBarThumbPressed}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SabScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.ScrollBarTrack}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="12" />
+        <Setter Property="MinWidth" Value="12" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Track x:Name="PART_Track"
+                               IsDirectionReversed="True"
+                               Focusable="False">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                              Style="{StaticResource SabScrollBarRepeatButtonStyle}" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource SabVerticalScrollBarThumbStyle}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                              Style="{StaticResource SabScrollBarRepeatButtonStyle}" />
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Width" Value="Auto" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Height" Value="12" />
+                <Setter Property="MinHeight" Value="12" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ScrollBar}">
+                            <Grid Background="{TemplateBinding Background}">
+                                <Track x:Name="PART_Track"
+                                       Focusable="False">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                                                      Style="{StaticResource SabScrollBarRepeatButtonStyle}" />
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb Style="{StaticResource SabHorizontalScrollBarThumbStyle}" />
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                                                      Style="{StaticResource SabScrollBarRepeatButtonStyle}" />
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource SabScrollBarStyle}" />
 </ResourceDictionary>

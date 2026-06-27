@@ -9,6 +9,11 @@
         ResizeMode="CanResizeWithGrip"
         Background="#F2F2F2">
     <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
         <SolidColorBrush x:Key="SectionBackgroundBrush" Color="#FCFCFC" />
         <SolidColorBrush x:Key="SectionBorderBrush" Color="#000000" />
         <SolidColorBrush x:Key="FieldBorderBrush" Color="#000000" />
@@ -103,6 +108,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="6,4" />
         </Style>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
@@ -318,4 +324,3 @@
         </DockPanel>
     </Grid>
 </Window>
-
