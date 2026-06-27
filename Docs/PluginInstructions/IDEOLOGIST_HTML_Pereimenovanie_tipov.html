@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - Переименование типов</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по странице">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">Переименование типов</a>
+    <div class="localnav__links">
+      <a href="#export">Экспорт имен типов</a>
+      <a href="#edit-xlsx">Правка XLSX перед импортом</a>
+      <a href="#import-types">Импорт: команда «Переименовать типы»</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Библиотека</p>
+      <h1>Переименование типов</h1>
+      <p class="hero__copy">Инструкция по экспорту имен типоразмеров в XLSX, безопасной правке таблицы и импорту изменений обратно в Revit.</p>
+      <div class="hero__links">
+        <a href="#export">Экспорт имен типов</a>
+        <a href="#edit-xlsx">Правка XLSX перед импортом</a>
+        <a href="#import-types">Импорт: команда «Переименовать типы»</a>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="export">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Экспорт имен типов</h2>
+      <p class="section__lead">Команда формирует XLSX-наборы для системных, загружаемых и прочих категорий, чтобы переименование выполнялось по отдельным группам.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Откройте модель Revit.</span></li>
+              <li><span class="step-text">На ленте SAB откройте <b>Библиотека</b>.</span></li>
+              <li><span class="step-text">Нажмите <span class="cmd">Экспорт имен типов</span>.</span></li>
+              <li><span class="step-text">Выберите рабочую папку.</span></li>
+              <li><span class="step-text">Откройте папку <span class="kbd">name</span> и проверьте XLSX-файлы.</span></li>
+            </ol>
+            <div class="content-grid">
+              <article class="content-card"><h3>Системные семейства</h3><p>Содержат столбец <span class="kbd">Структура</span> для справочной проверки слоев.</p></article>
+              <article class="content-card"><h3>Загружаемые семейства</h3><p>Используются для переименования семейств и типоразмеров.</p></article>
+              <article class="content-card"><h3>Прочее</h3><p>Отдельная группа для категорий, которые не попали в первые два набора.</p></article>
+            </div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="edit-xlsx">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Правка XLSX перед импортом</h2>
+      <p class="section__lead">Редактируйте только целевые значения и флаги удаления. Названия столбцов и общий формат файла менять нельзя.</p>
+      <div class="content-stack">
+
+            
+            <div class="command-table-wrap">
+              <table class="command-table">
+                <thead><tr><th>Колонка</th><th>Что заполнять</th></tr></thead>
+                <tbody>
+                  <tr><td>Категория</td><td>Не менять. Это категория типа.</td></tr>
+                  <tr><td>Старое семейство</td><td>Не менять без необходимости. Это исходное имя семейства.</td></tr>
+                  <tr><td>Новое семейство</td><td>Новое имя семейства, если его нужно изменить.</td></tr>
+                  <tr><td>Старый типоразмер</td><td>Не менять. Это исходное имя типа.</td></tr>
+                  <tr><td>Новый типоразмер</td><td>Новое имя типа.</td></tr>
+                  <tr><td>Структура</td><td>Справочная информация для системных типов.</td></tr>
+                  <tr><td>Удалить</td><td><span class="kbd">1</span> - удалить тип, <span class="kbd">0</span> - оставить.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout warning"><strong>Правило безопасности:</strong> не совмещайте массовое переименование и массовое удаление в первом проходе, если таблица еще не проверена.</div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="import-types">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 03</p>
+      <h2>Импорт: команда «Переименовать типы»</h2>
+      <p class="section__lead">Команда применяет изменения построчно. Проблемные строки попадают в отдельный отчет, а обработка остальных строк продолжается.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Нажмите <span class="cmd">Переименовать типы</span>.</span></li>
+              <li><span class="step-text">Выберите подготовленный XLSX-файл.</span></li>
+              <li><span class="step-text">Дождитесь итогового уведомления.</span></li>
+              <li><span class="step-text">Проверьте несколько измененных типов в диспетчере проекта.</span></li>
+              <li><span class="step-text">Если создан отчет <span class="kbd">Проблемные наименования.csv</span>, откройте его и исправьте строки.</span></li>
+            </ol>
+          
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - Переименование материалов</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по странице">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">Переименование материалов</a>
+    <div class="localnav__links">
+      <a href="#export">Экспорт имен MTL</a>
+      <a href="#edit">Подготовка XLSX</a>
+      <a href="#import-materials">Импорт: команда «Переименовать материалы»</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Библиотека</p>
+      <h1>Переименование материалов</h1>
+      <p class="hero__copy">Инструкция по экспорту материалов в XLSX, обновлению имен и параметров, а также импорту изменений в модель Revit.</p>
+      <div class="hero__links">
+        <a href="#export">Экспорт имен MTL</a>
+        <a href="#edit">Подготовка XLSX</a>
+        <a href="#import-materials">Импорт: команда «Переименовать материалы»</a>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="export">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Экспорт имен MTL</h2>
+      <p class="section__lead">Команда выгружает материалы в XLSX для пакетного обновления имен и параметров материалов.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Откройте модель Revit.</span></li>
+              <li><span class="step-text">На ленте SAB откройте <b>Библиотека</b>.</span></li>
+              <li><span class="step-text">Нажмите <span class="cmd">Экспорт имен MTL</span>.</span></li>
+              <li><span class="step-text">Выберите рабочую папку.</span></li>
+              <li><span class="step-text">Откройте XLSX в папке <span class="kbd">name</span>.</span></li>
+            </ol>
+            <div class="content-grid">
+              <article class="content-card"><h3>Имена</h3><p>Старое и новое имя материала используются для поиска и переименования.</p></article>
+              <article class="content-card"><h3>Параметры</h3><p>Можно обновить описание, изготовителя, модель, ключевую заметку и маркировку.</p></article>
+            </div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="edit">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Подготовка XLSX</h2>
+      <p class="section__lead">Таблица должна оставаться в исходной структуре. Заполняйте только значения, которые нужно применить.</p>
+      <div class="content-stack">
+
+            
+            <ul class="compact-list">
+              <li><b>Старое имя материала</b> оставьте как есть, чтобы команда нашла материал в модели.</li>
+              <li><b>Новое имя материала</b> заполните, если материал нужно переименовать.</li>
+              <li><b>Описание, Изготовитель, Модель, Ключевая заметка, Маркировка</b> заполните при необходимости обновить свойства.</li>
+              <li><b>Удалить</b>: поставьте <span class="kbd">1</span>, если материал нужно удалить; поставьте <span class="kbd">0</span>, если он должен остаться.</li>
+            </ul>
+            <div class="callout danger"><strong>Перед массовым удалением:</strong> сохраните резервную копию модели.</div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="import-materials">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 03</p>
+      <h2>Импорт: команда «Переименовать материалы»</h2>
+      <p class="section__lead">Команда применяет изменения имен и параметров материалов, а при флаге удаления удаляет целевые материалы.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Нажмите <span class="cmd">Переименовать материалы</span>.</span></li>
+              <li><span class="step-text">Выберите XLSX-файл.</span></li>
+              <li><span class="step-text">Дождитесь сообщения об итогах обработки.</span></li>
+              <li><span class="step-text">Проверьте несколько материалов в браузере материалов Revit.</span></li>
+              <li><span class="step-text">Если создан отчет ошибок, исправьте строки и повторите импорт.</span></li>
+            </ol>
+          
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>

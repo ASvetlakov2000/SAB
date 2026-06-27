@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - HTML просмотр CSV</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по странице">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">HTML просмотр CSV</a>
+    <div class="localnav__links">
+      <a href="#purpose">Что делает команда</a>
+      <a href="#open">Как открыть CSV</a>
+      <a href="#profile">Проверка профиля по имени файла</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Библиотека</p>
+      <h1>HTML просмотр CSV</h1>
+      <p class="hero__copy">Инструкция по открытию CSV-источников в профильном HTML viewer для системных, загружаемых семейств, линий и штриховок.</p>
+      <div class="hero__links">
+        <a href="#purpose">Что делает команда</a>
+        <a href="#open">Как открыть CSV</a>
+        <a href="#profile">Проверка профиля по имени файла</a>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="purpose">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Что делает команда</h2>
+      <p class="section__lead">Команда открывает CSV-источник в отдельном HTML viewer и автоматически выбирает профиль отображения по имени файла.</p>
+      <div class="content-stack">
+
+            
+            <div class="content-grid">
+              <article class="content-card">
+                <h3>Поддерживаемые профили</h3>
+                <ul>
+                  <li>Системные семейства.</li>
+                  <li>Загружаемые семейства.</li>
+                  <li>Линии.</li>
+                  <li>Штриховки.</li>
+                </ul>
+              </article>
+              <article class="content-card">
+                <h3>Что показывает viewer</h3>
+                <ul>
+                  <li>Табличные данные из CSV.</li>
+                  <li>Миниатюры PNG, если они есть.</li>
+                  <li>Поля, важные для проверки библиотеки.</li>
+                </ul>
+              </article>
+            </div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="open">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Как открыть CSV</h2>
+      <p class="section__lead">Сценарий одинаковый для всех профилей. Главное - выбрать корректный CSV, созданный командами SAB.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Нажмите <span class="cmd">HTML просмотр</span> на панели <b>Библиотека</b>.</span></li>
+              <li><span class="step-text">Нажмите <span class="cmd">Выбрать источник</span>.</span></li>
+              <li><span class="step-text">Укажите CSV-файл.</span></li>
+              <li><span class="step-text">Проверьте выбранный профиль по имени файла.</span></li>
+              <li><span class="step-text">Нажмите <span class="cmd">Открыть</span>.</span></li>
+            </ol>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="profile">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 03</p>
+      <h2>Проверка профиля по имени файла</h2>
+      <p class="section__lead">Viewer выбирает логику отображения автоматически, поэтому имя CSV должно соответствовать типу выгрузки.</p>
+      <div class="content-stack">
+
+            
+            <div class="command-table-wrap">
+              <table class="command-table">
+                <thead><tr><th>Фраза в имени CSV</th><th>Профиль</th><th>Что проверить</th></tr></thead>
+                <tbody>
+                  <tr><td>Системные семейства</td><td>Системные</td><td>Категория, структура, толщина, миниатюра.</td></tr>
+                  <tr><td>Загружаемые семейства</td><td>Загружаемые</td><td>Категория, семейство, типоразмер, PNG.</td></tr>
+                  <tr><td>Линии</td><td>Линии</td><td>Наименование, вес линии, цвет, образец.</td></tr>
+                  <tr><td>Штриховки</td><td>Штриховки</td><td>Передний план, задний план, маскирование, тип.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>

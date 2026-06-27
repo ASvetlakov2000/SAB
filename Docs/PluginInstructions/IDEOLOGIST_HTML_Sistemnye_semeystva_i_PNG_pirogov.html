@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - Системные семейства и PNG пирогов</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по странице">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">Системные семейства и PNG пирогов</a>
+    <div class="localnav__links">
+      <a href="#purpose">Когда использовать</a>
+      <a href="#export-csv">Экспорт таблиц системных типов</a>
+      <a href="#png-pirogi">Экспорт PNG пирогов</a>
+      <a href="#load-pirogi">Загрузка PNG в Type Image</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Библиотека</p>
+      <h1>Системные семейства и PNG пирогов</h1>
+      <p class="hero__copy">Инструкция по экспорту системных типов Revit, подготовке легенд-компонентов, выгрузке PNG пирогов и записи изображений в параметр Type Image.</p>
+      <div class="hero__links">
+        <a href="#purpose">Когда использовать</a>
+        <a href="#export-csv">Экспорт таблиц системных типов</a>
+        <a href="#png-pirogi">Экспорт PNG пирогов</a>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="purpose">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Когда использовать</h2>
+      <p class="section__lead">Команды нужны, когда требуется собрать библиотечную таблицу системных типов и связать типы с наглядными PNG-изображениями пирогов.</p>
+      <div class="content-stack">
+
+            
+            <div class="content-grid">
+              <article class="content-card">
+                <h3>Подходит для категорий</h3>
+                <ul>
+                  <li>Стены.</li>
+                  <li>Перекрытия.</li>
+                  <li>Потолки.</li>
+                  <li>Крыши.</li>
+                </ul>
+              </article>
+              <article class="content-card">
+                <h3>Что получится</h3>
+                <ul>
+                  <li>CSV по категориям и общий CSV.</li>
+                  <li>Папка <span class="kbd">ctg_system families</span>.</li>
+                  <li>Папка <span class="kbd">PNG_Pirogi</span> с изображениями.</li>
+                  <li>Заполненный параметр <span class="kbd">Type Image</span> при загрузке PNG.</li>
+                </ul>
+              </article>
+            </div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="export-csv">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Экспорт таблиц системных типов</h2>
+      <p class="section__lead">Команда выгружает системные типы в CSV. Для пользователя это основной источник данных для HTML-просмотра и дальнейшей проверки библиотеки.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Откройте проект Revit, из которого нужно выгрузить системные типы.</span></li>
+              <li><span class="step-text">На ленте SAB откройте модуль <b>Библиотека</b>.</span></li>
+              <li><span class="step-text">Нажмите <span class="cmd">Экспорт системных</span>.</span></li>
+              <li><span class="step-text">Выберите рабочую папку для результата.</span></li>
+              <li><span class="step-text">После завершения откройте папку <span class="kbd">ctg_system families</span> и проверьте CSV-файлы.</span></li>
+            </ol>
+            <div class="command-table-wrap">
+              <table class="command-table">
+                <thead><tr><th>Колонка CSV</th><th>Назначение</th></tr></thead>
+                <tbody>
+                  <tr><td>Категория</td><td>Категория системного типа.</td></tr>
+                  <tr><td>Семейство</td><td>Имя системного семейства.</td></tr>
+                  <tr><td>Миниатюра</td><td>Путь к PNG, если изображение уже подготовлено.</td></tr>
+                  <tr><td>Типоразмер</td><td>Имя типа в Revit.</td></tr>
+                  <tr><td>Структура</td><td>Слои системы, записанные многострочно в ячейке.</td></tr>
+                  <tr><td>Включить</td><td>Служебный флаг для последующих операций.</td></tr>
+                  <tr><td>Толщина типа, мм</td><td>Толщина системного типа.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="png-pirogi">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 03</p>
+      <h2>Экспорт PNG пирогов</h2>
+      <p class="section__lead">PNG создаются с подготовленного вида Легенда. Сначала нужно расставить легенд-компоненты, затем экспортировать изображения.</p>
+      <div class="content-stack">
+
+            
+            <div class="content-grid">
+              <article class="content-card">
+                <h3>Подготовка вида</h3>
+                <ol>
+                  <li>Откройте вид категории <b>Легенда</b>.</li>
+                  <li>Нажмите <span class="cmd">Расставить комп. легенды</span>.</li>
+                  <li>Проверьте, что компоненты размещены и не перекрывают друг друга.</li>
+                </ol>
+              </article>
+              <article class="content-card">
+                <h3>Экспорт PNG</h3>
+                <ol>
+                  <li>На этом же виде нажмите <span class="cmd">Экспорт PNG пирогов</span>.</li>
+                  <li>Выберите папку результата.</li>
+                  <li>Проверьте папку <span class="kbd">PNG_Pirogi</span>.</li>
+                </ol>
+              </article>
+            </div>
+            <div class="callout note"><strong>Проверка:</strong> имена PNG должны совпадать с именами типоразмеров. Если имя файла отличается, последующая загрузка в <span class="kbd">Type Image</span> может пропустить тип.</div>
+          
+      </div>
+    </div>
+  </section>
+  <section class="section" id="load-pirogi">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 04</p>
+      <h2>Загрузка PNG в Type Image</h2>
+      <p class="section__lead">Команда сопоставляет имя PNG без расширения с именем типоразмера и записывает изображение в параметр типа.</p>
+      <div class="content-stack">
+
+            
+            <ol class="steps">
+              <li><span class="step-text">Нажмите <span class="cmd">Загрузить PNG пироги</span>.</span></li>
+              <li><span class="step-text">Выберите папку с PNG-изображениями.</span></li>
+              <li><span class="step-text">Дождитесь сообщения о результате.</span></li>
+              <li><span class="step-text">Откройте несколько типов и проверьте параметр <span class="kbd">Type Image</span>.</span></li>
+            </ol>
+            <div class="callout warning"><strong>Если совпадения нет:</strong> тип пропускается и фиксируется в отчете. Обычно причина в переименовании типа после экспорта PNG или в лишних символах в имени файла.</div>
+          
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>

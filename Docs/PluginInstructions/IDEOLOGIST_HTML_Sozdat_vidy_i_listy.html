@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - Создать виды и листы</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по странице">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">Создать виды и листы</a>
+    <div class="localnav__links">
+      <a href="#purpose">Когда использовать</a>
+      <a href="#prepare">Подготовка</a>
+      <a href="#settings">Поля окна</a>
+      <a href="#table">Таблица</a>
+      <a href="#workflow">Сценарий</a>
+      <a href="#check">Проверка</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Листы</p>
+      <h1>Создать виды и листы</h1>
+      <p class="hero__copy">Команда создает новые листы, дублирует выбранные виды-образцы с детализацией и размещает полученные виды на листах в заданной точке.</p>
+      <div class="hero__links">
+        <a href="#settings">Поля окна</a>
+        <a href="#workflow">Сценарий работы</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="purpose">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Когда использовать</h2>
+      <p class="section__lead">Используйте команду, когда нужно быстро подготовить набор одинаково оформленных листов: планы этажей, планы потолков или повторяющиеся листы по нескольким этажам.</p>
+      <div class="content-grid">
+        <article class="content-card">
+          <h3>Что делает команда</h3>
+          <ul>
+            <li>Дублирует выбранный вид-образец с детализацией.</li>
+            <li>Создает новый лист с выбранной основной надписью.</li>
+            <li>Копирует с листа-образца выбранные элементы детализации, если включено копирование.</li>
+            <li>Размещает новый вид на листе как Viewport в заданной точке.</li>
+            <li>Заполняет номер, имя листа и параметры группировки листов.</li>
+          </ul>
+        </article>
+        <article class="content-card">
+          <h3>Что нужно понимать</h3>
+          <ul>
+            <li>Вид-образец - это исходный вид Revit, который можно дублировать с детализацией.</li>
+            <li>Лист-образец нужен как источник габаритов и детализации листа.</li>
+            <li>Viewport - это размещение вида на листе.</li>
+            <li>Если в строке есть ошибка, команда отменяет всю операцию целиком.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft" id="prepare">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Подготовка в Revit</h2>
+      <p class="section__lead">Перед запуском проверьте, что в проекте уже есть исходные виды, листы-образцы, типы видовых экранов, основные надписи и шаблоны видов.</p>
+      <div class="content-stack">
+        <ol class="steps">
+          <li><span class="step-text">Откройте проект Revit, в котором нужно создать новые виды и листы.</span></li>
+          <li><span class="step-text">Подготовьте вид-образец для стандартного плана и, если нужно, отдельный вид-образец для плана потолков.</span></li>
+          <li><span class="step-text">Подготовьте лист-образец с основной надписью и нужной детализацией.</span></li>
+          <li><span class="step-text">Проверьте, что названия будущих видов и номера будущих листов еще не заняты.</span></li>
+          <li><span class="step-text">На ленте SAB запустите команду <span class="cmd">Создать виды и листы</span>.</span></li>
+        </ol>
+        <div class="callout note"><strong>Важно:</strong> если в проекте нет видов, которые можно дублировать с детализацией, листов-образцов, типов Viewport, основных надписей или шаблонов видов, команда остановится до открытия рабочего сценария.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="settings">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 03</p>
+      <h2>Поля и настройки окна</h2>
+      <p class="section__lead">Основные настройки задают, из каких образцов создавать виды и листы, куда ставить Viewport и какие элементы переносить с листа-образца.</p>
+      <div class="content-stack">
+        <div class="command-table-wrap">
+          <table class="command-table">
+            <thead>
+              <tr><th>Блок</th><th>Что настроить</th><th>Когда менять</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Структура</strong></td><td>Одноэтажная или многоэтажная структура.</td><td>Одноэтажная подходит для одного набора образцов. Многоэтажная нужна, когда для каждого этажа свой вид-образец и лист-образец.</td></tr>
+              <tr><td><strong>Группирование и сортировка листов</strong></td><td>Параметры листа, которые команда заполнит для браузера проекта.</td><td>Используйте, если листы в проекте группируются по разделу, стадии, комплекту или другому параметру.</td></tr>
+              <tr><td><strong>Образец</strong></td><td>Вид-образец, лист-образец, тип видового экрана и основная надпись.</td><td>Заполняется для одноэтажного сценария. Эти элементы будут использоваться для всех строк таблицы.</td></tr>
+              <tr><td><strong>Этажи</strong></td><td>Сопоставление этажей с видами-образцами и листами-образцами.</td><td>Заполняется для многоэтажного сценария. Кнопка <span class="kbd">+</span> добавляет этаж, <span class="kbd">X</span> удаляет этаж.</td></tr>
+              <tr><td><strong>Размещение вида</strong></td><td>X и Y центра вида или кнопка <span class="cmd">Указать точку размещения вида</span>.</td><td>Определяет, где на листе появится центр Viewport.</td></tr>
+              <tr><td><strong>Размещение заголовка</strong></td><td>X и Y заголовка или кнопка <span class="cmd">Указать точку размещения заголовка</span>.</td><td>Определяет положение подписи вида на листе.</td></tr>
+              <tr><td><strong>Сохранить настройки</strong></td><td>Флажок сохранения выбранных настроек.</td><td>Оставьте включенным, если хотите использовать эти значения при следующем запуске команды.</td></tr>
+              <tr><td><strong>Копирование</strong></td><td>Флажок <span class="cmd">Копировать лист с детализацией</span> и типы элементов: ведомости, легенды, чертежные виды, линии, области заливки, текст, аннотации, изображения.</td><td>Включайте, если новый лист должен повторить оформление листа-образца.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft" id="table">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 04</p>
+      <h2>Таблица создаваемых видов и листов</h2>
+      <p class="section__lead">Каждая строка таблицы - это один будущий вид и один будущий лист. Заполняйте только те строки, которые нужно создать.</p>
+      <div class="command-table-wrap">
+        <table class="command-table">
+          <thead>
+            <tr><th>Поле</th><th>Что означает</th><th>Совет пользователю Revit</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>№</strong></td><td>Порядковый номер строки.</td><td>Используется для проверки ошибок и отчета.</td></tr>
+            <tr><td><strong>Этаж</strong></td><td>Этаж, для которого создается строка.</td><td>В многоэтажном режиме должен совпадать с этажом из блока сопоставления.</td></tr>
+            <tr><td><strong>Тип плана</strong></td><td>Стандартный план или план потолков.</td><td>Выбор определяет, какой вид-образец и лист-образец будут использованы.</td></tr>
+            <tr><td><strong>Имя вида</strong></td><td>Имя нового вида Revit.</td><td>Должно быть уникальным. Если такое имя уже есть, команда покажет ошибку.</td></tr>
+            <tr><td><strong>Масштаб</strong></td><td>Масштаб нового вида.</td><td>Если шаблон вида управляет масштабом, поле может быть недоступно.</td></tr>
+            <tr><td><strong>Шаблон вида</strong></td><td>Шаблон, который будет назначен новому виду.</td><td>Выбирайте шаблон под тип плана: обычный план или потолок.</td></tr>
+            <tr><td><strong>№ листа</strong></td><td>Номер нового листа.</td><td>Номер должен быть уникальным в проекте.</td></tr>
+            <tr><td><strong>Имя листа</strong></td><td>Название нового листа.</td><td>Пишите так, как лист должен отображаться в браузере проекта и ведомостях.</td></tr>
+            <tr><td><strong>Параметры группировки</strong></td><td>Дополнительные столбцы, которые появляются по настройкам браузера листов.</td><td>Заполняют параметры листа после создания.</td></tr>
+            <tr><td><strong>Действия</strong></td><td><span class="kbd">+</span> добавляет строку ниже, <span class="kbd">X</span> удаляет строку.</td><td>Строки также можно переставлять перетаскиванием за левый маркер.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="workflow">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 05</p>
+      <h2>Как выполнить команду</h2>
+      <p class="section__lead">Работайте сверху вниз: сначала настройте образцы и размещение, затем заполните строки таблицы и запустите создание.</p>
+      <div class="content-stack">
+        <ol class="steps">
+          <li><span class="step-text">Нажмите <span class="cmd">Настройки</span> и выберите структуру: одноэтажную или многоэтажную.</span></li>
+          <li><span class="step-text">Выберите вид-образец, лист-образец, тип видового экрана и основную надпись.</span></li>
+          <li><span class="step-text">Задайте размещение вида и заголовка вручную по X/Y или нажмите <span class="cmd">Указать точку</span> и выберите точку на листе.</span></li>
+          <li><span class="step-text">Если нужно перенести оформление листа-образца, включите <span class="cmd">Копировать лист с детализацией</span> и отметьте нужные типы элементов.</span></li>
+          <li><span class="step-text">В таблице заполните имя вида, масштаб, шаблон вида, номер и имя листа.</span></li>
+          <li><span class="step-text">Проверьте панель сообщений внизу окна. Кнопка <span class="cmd">Создать</span> активна только когда нет ошибок.</span></li>
+          <li><span class="step-text">Нажмите <span class="cmd">Создать</span> и дождитесь уведомления о количестве созданных листов.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--soft" id="check">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 06</p>
+      <h2>Проверка результата</h2>
+      <p class="section__lead">После создания откройте несколько новых листов и проверьте, что результат совпадает с ожиданием.</p>
+      <div class="content-grid">
+        <article class="content-card">
+          <h3>Проверьте листы</h3>
+          <ul>
+            <li>Номера и имена листов созданы без дублей.</li>
+            <li>Основная надпись соответствует выбранному типу.</li>
+            <li>Параметры группировки листов заполнены.</li>
+            <li>Скопированные ведомости, легенды, текст и изображения находятся на листе.</li>
+          </ul>
+        </article>
+        <article class="content-card">
+          <h3>Проверьте виды</h3>
+          <ul>
+            <li>Имена новых видов соответствуют таблице.</li>
+            <li>Масштаб и шаблон вида применены корректно.</li>
+            <li>Viewport стоит в нужном месте.</li>
+            <li>Заголовок вида не пересекается с основной надписью и графикой листа.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="callout note"><strong>Если появилась ошибка:</strong> исправьте строку, указанную в сообщении. Команда работает по принципу “всё или ничего”, поэтому при ошибке изменения откатываются.</div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>

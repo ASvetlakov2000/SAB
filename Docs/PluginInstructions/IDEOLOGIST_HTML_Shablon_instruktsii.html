@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - Шаблон инструкции</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по странице">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">Название инструкции</a>
+    <div class="localnav__links">
+      <a href="#purpose">Когда использовать</a>
+      <a href="#workflow">Сценарий</a>
+      <a href="#fields">Поля и кнопки</a>
+      <a href="#check">Проверка</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Модуль</p>
+      <h1>Название инструкции</h1>
+      <p class="hero__copy">Коротко опишите, что пользователь получит после выполнения команды.</p>
+      <div class="hero__links">
+        <a href="#workflow">Сценарий работы</a>
+        <a href="#fields">Поля и кнопки</a>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="purpose">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Когда использовать</h2>
+      <p class="section__lead">Опишите рабочую ситуацию пользователя Revit начального-среднего уровня.</p>
+      <div class="content-grid">
+        <article class="content-card">
+          <h3>Что делает команда</h3>
+          <ul>
+            <li>Первое действие команды.</li>
+            <li>Второе действие команды.</li>
+          </ul>
+        </article>
+        <article class="content-card">
+          <h3>Перед запуском</h3>
+          <ul>
+            <li>Что проверить в модели.</li>
+            <li>Какие элементы подготовить заранее.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section class="section section--soft" id="workflow">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Сценарий работы</h2>
+      <ol class="steps">
+        <li><span class="step-text">Откройте нужный проект Revit.</span></li>
+        <li><span class="step-text">На ленте SAB нажмите <span class="cmd">Название команды</span>.</span></li>
+        <li><span class="step-text">Заполните настройки окна.</span></li>
+        <li><span class="step-text">Нажмите <span class="cmd">Создать</span> или другую основную кнопку команды.</span></li>
+        <li><span class="step-text">Проверьте результат в модели.</span></li>
+      </ol>
+    </div>
+  </section>
+  <section class="section" id="fields">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 03</p>
+      <h2>Поля и кнопки</h2>
+      <div class="command-table-wrap">
+        <table class="command-table">
+          <thead><tr><th>Поле или кнопка</th><th>Что делает</th><th>Когда использовать</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Поле</strong></td><td>Описание поля.</td><td>Когда его нужно менять.</td></tr>
+            <tr><td><span class="cmd">Кнопка</span></td><td>Описание кнопки.</td><td>Когда нажимать.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  <section class="section section--soft" id="check">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 04</p>
+      <h2>Проверка результата</h2>
+      <div class="content-card">
+        <ul>
+          <li>Что проверить после выполнения команды.</li>
+          <li>Как понять, что результат корректный.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>
