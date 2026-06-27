@@ -7,6 +7,7 @@ namespace SAB.CreateViewsAndSheets.Models
         public SheetCreationItem()
         {
             RowNumber = 0;
+            PlanKind = SheetPlanKind.StandardPlan;
             FloorId = ElementId.InvalidElementId;
             FloorName = string.Empty;
             ViewName = string.Empty;
@@ -19,6 +20,8 @@ namespace SAB.CreateViewsAndSheets.Models
         }
 
         public int RowNumber { get; set; }
+
+        public SheetPlanKind PlanKind { get; set; }
 
         public ElementId FloorId { get; set; }
 

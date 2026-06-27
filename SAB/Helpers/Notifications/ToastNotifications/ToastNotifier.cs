@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace Helpers.Notifications.ToastNotifications
@@ -133,15 +134,50 @@ namespace Helpers.Notifications.ToastNotifications
 
             if (!string.IsNullOrWhiteSpace(folderLink))
             {
+                ToastButton openFolderButton = new ToastButton()
+                    .SetContent(OpenFolderButtonText);
+                Uri folderUri = CreateFolderUri(folderLink);
+                if (folderUri != null)
+                {
+                    openFolderButton.SetProtocolActivation(folderUri);
+                }
+                else
+                {
+                    openFolderButton
+                        .AddArgument("folder", folderLink)
+                        .SetBackgroundActivation();
+                }
+
                 builder.AddText(folderLink)
                     .AddArgument("folder", folderLink)
-                    .AddButton(new ToastButton()
-                        .SetContent(OpenFolderButtonText)
-                        .AddArgument("folder", folderLink)
-                        .SetBackgroundActivation());
+                    .AddButton(openFolderButton);
             }
 
             return builder;
+        }
+
+        private static Uri CreateFolderUri(string folderLink)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(folderLink))
+                {
+                    return null;
+                }
+
+                Uri uri;
+                if (Uri.TryCreate(folderLink, UriKind.Absolute, out uri))
+                {
+                    return uri;
+                }
+
+                string fullPath = Path.GetFullPath(folderLink);
+                return new Uri(fullPath);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static int GetSafeDuration(int durationSeconds)

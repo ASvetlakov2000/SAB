@@ -67,12 +67,8 @@ namespace SAB.CreateViewsAndSheets.Services
             }
 
             View sourceView = settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory
-                ? document.GetElement(settings.SourceViewId) as View
+                ? null
                 : null;
-            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory && sourceView == null)
-            {
-                throw new InvalidOperationException("Вид-образец не найден в документе.");
-            }
 
             CreateViewsAndSheetsResult result = new CreateViewsAndSheetsResult();
 
@@ -116,12 +112,24 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
             {
-                if (singleStorySourceView == null)
+                bool isSingleStoryCeilingPlan = item != null && item.PlanKind == SheetPlanKind.CeilingPlan;
+                ElementId singleStorySourceViewId = isSingleStoryCeilingPlan ? settings.CeilingSourceViewId : settings.SourceViewId;
+                ElementId singleStorySourceSheetId = isSingleStoryCeilingPlan ? settings.CeilingSourceSheetId : settings.SourceSheetId;
+                string singleStoryPlanName = isSingleStoryCeilingPlan ? "плана потолков" : "стандартного плана";
+
+                View singleStorySource = document.GetElement(singleStorySourceViewId) as View;
+                if (singleStorySource == null)
                 {
-                    throw new InvalidOperationException("Вид-образец не найден в документе.");
+                    throw new InvalidOperationException("Вид-образец " + singleStoryPlanName + " не найден в документе.");
                 }
 
-                return new RowSourceSelection(singleStorySourceView, settings.SourceSheetId);
+                ViewSheet singleStorySheet = document.GetElement(singleStorySourceSheetId) as ViewSheet;
+                if (singleStorySheet == null)
+                {
+                    throw new InvalidOperationException("Лист-образец " + singleStoryPlanName + " не найден в документе.");
+                }
+
+                return new RowSourceSelection(singleStorySource, singleStorySourceSheetId);
             }
 
             FloorSourceMapping mapping = FindFloorMapping(settings.FloorMappings, item != null ? item.FloorName : string.Empty);
@@ -130,19 +138,23 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Для этажа \"" + (item != null ? item.FloorName : string.Empty) + "\" не найдено сопоставление вида-образца и листа-образца.");
             }
 
-            View sourceView = document.GetElement(mapping.SourceViewId) as View;
+            bool isCeilingPlan = item != null && item.PlanKind == SheetPlanKind.CeilingPlan;
+            ElementId sourceViewId = isCeilingPlan ? mapping.CeilingSourceViewId : mapping.SourceViewId;
+            ElementId sourceSheetId = isCeilingPlan ? mapping.CeilingSourceSheetId : mapping.SourceSheetId;
+
+            View sourceView = document.GetElement(sourceViewId) as View;
             if (sourceView == null)
             {
                 throw new InvalidOperationException("Для этажа \"" + mapping.FloorName + "\" вид-образец не найден в документе.");
             }
 
-            ViewSheet sourceSheet = document.GetElement(mapping.SourceSheetId) as ViewSheet;
+            ViewSheet sourceSheet = document.GetElement(sourceSheetId) as ViewSheet;
             if (sourceSheet == null)
             {
                 throw new InvalidOperationException("Для этажа \"" + mapping.FloorName + "\" лист-образец не найден в документе.");
             }
 
-            return new RowSourceSelection(sourceView, mapping.SourceSheetId);
+            return new RowSourceSelection(sourceView, sourceSheetId);
         }
 
         private FloorSourceMapping FindFloorMapping(IList<FloorSourceMapping> mappings, string floorName)
@@ -319,14 +331,24 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
             {
-                if (settings.SourceViewId == null || settings.SourceViewId == ElementId.InvalidElementId)
+                for (int i = 0; i < items.Count; i++)
                 {
-                    throw new InvalidOperationException("Не выбран вид-образец.");
-                }
+                    SheetCreationItem item = items[i];
+                    bool isCeilingPlan = item != null && item.PlanKind == SheetPlanKind.CeilingPlan;
+                    ElementId sourceViewId = isCeilingPlan ? settings.CeilingSourceViewId : settings.SourceViewId;
+                    ElementId sourceSheetId = isCeilingPlan ? settings.CeilingSourceSheetId : settings.SourceSheetId;
+                    string planName = isCeilingPlan ? "плана потолков" : "стандартного плана";
+                    int rowNumber = item != null ? item.RowNumber : i + 1;
 
-                if (settings.SourceSheetId == null || settings.SourceSheetId == ElementId.InvalidElementId)
-                {
-                    throw new InvalidOperationException("Не выбран лист-образец.");
+                    if (sourceViewId == null || sourceViewId == ElementId.InvalidElementId)
+                    {
+                        throw new InvalidOperationException("Строка " + rowNumber + ": не выбран вид-образец " + planName + ".");
+                    }
+
+                    if (sourceSheetId == null || sourceSheetId == ElementId.InvalidElementId)
+                    {
+                        throw new InvalidOperationException("Строка " + rowNumber + ": не выбран лист-образец " + planName + ".");
+                    }
                 }
 
                 return;
@@ -337,7 +359,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Для многоэтажной структуры не заполнено сопоставление этажей.");
             }
 
-            HashSet<string> mappingFloorNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FloorSourceMapping> mappingsByFloorName = new Dictionary<string, FloorSourceMapping>(StringComparer.OrdinalIgnoreCase);
             for (int i = 0; i < settings.FloorMappings.Count; i++)
             {
                 FloorSourceMapping mapping = settings.FloorMappings[i];
@@ -352,20 +374,12 @@ namespace SAB.CreateViewsAndSheets.Services
                     throw new InvalidOperationException("В сопоставлении этажей есть строка без названия этажа.");
                 }
 
-                if (!mappingFloorNames.Add(floorName))
+                if (mappingsByFloorName.ContainsKey(floorName))
                 {
                     throw new InvalidOperationException("Этаж \"" + floorName + "\" повторяется в сопоставлении этажей.");
                 }
 
-                if (mapping.SourceViewId == null || mapping.SourceViewId == ElementId.InvalidElementId)
-                {
-                    throw new InvalidOperationException("Для этажа \"" + floorName + "\" не выбран вид-образец.");
-                }
-
-                if (mapping.SourceSheetId == null || mapping.SourceSheetId == ElementId.InvalidElementId)
-                {
-                    throw new InvalidOperationException("Для этажа \"" + floorName + "\" не выбран лист-образец.");
-                }
+                mappingsByFloorName[floorName] = mapping;
             }
 
             for (int i = 0; i < items.Count; i++)
@@ -377,9 +391,25 @@ namespace SAB.CreateViewsAndSheets.Services
                     throw new InvalidOperationException("Строка " + (item != null ? item.RowNumber : i + 1) + ": не заполнен этаж.");
                 }
 
-                if (!mappingFloorNames.Contains(floorName))
+                FloorSourceMapping mapping;
+                if (!mappingsByFloorName.TryGetValue(floorName, out mapping))
                 {
                     throw new InvalidOperationException("Строка " + item.RowNumber + ": для этажа \"" + floorName + "\" нет сопоставления.");
+                }
+
+                bool isCeilingPlan = item != null && item.PlanKind == SheetPlanKind.CeilingPlan;
+                ElementId sourceViewId = isCeilingPlan ? mapping.CeilingSourceViewId : mapping.SourceViewId;
+                ElementId sourceSheetId = isCeilingPlan ? mapping.CeilingSourceSheetId : mapping.SourceSheetId;
+                string planName = isCeilingPlan ? "плана потолков" : "стандартного плана";
+
+                if (sourceViewId == null || sourceViewId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": для этажа \"" + floorName + "\" не выбран вид-образец " + planName + ".");
+                }
+
+                if (sourceSheetId == null || sourceSheetId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": для этажа \"" + floorName + "\" не выбран лист-образец " + planName + ".");
                 }
             }
         }
@@ -445,3 +475,4 @@ namespace SAB.CreateViewsAndSheets.Services
         }
     }
 }
+

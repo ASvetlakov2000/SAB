@@ -8,6 +8,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private string _floorName;
         private RevitElementItem _selectedSourceView;
         private RevitElementItem _selectedSourceSheet;
+        private RevitElementItem _selectedCeilingSourceView;
+        private RevitElementItem _selectedCeilingSourceSheet;
 
         public FloorSourceMappingRowViewModel()
         {
@@ -59,6 +61,36 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
                 _selectedSourceSheet = value;
                 OnPropertyChanged("SelectedSourceSheet");
+            }
+        }
+
+        public RevitElementItem SelectedCeilingSourceView
+        {
+            get { return _selectedCeilingSourceView; }
+            set
+            {
+                if (ReferenceEquals(_selectedCeilingSourceView, value))
+                {
+                    return;
+                }
+
+                _selectedCeilingSourceView = value;
+                OnPropertyChanged("SelectedCeilingSourceView");
+            }
+        }
+
+        public RevitElementItem SelectedCeilingSourceSheet
+        {
+            get { return _selectedCeilingSourceSheet; }
+            set
+            {
+                if (ReferenceEquals(_selectedCeilingSourceSheet, value))
+                {
+                    return;
+                }
+
+                _selectedCeilingSourceSheet = value;
+                OnPropertyChanged("SelectedCeilingSourceSheet");
             }
         }
 

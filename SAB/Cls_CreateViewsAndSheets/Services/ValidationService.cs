@@ -58,22 +58,17 @@ namespace SAB.CreateViewsAndSheets.Services
             }
 
             View sourceView = null;
-            Dictionary<string, View> sourceViewsByFloorName = null;
-            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
+            Dictionary<string, FloorSourceValidationData> sourceDataByFloorName = null;
+            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiStory)
             {
-                sourceView = ValidateSourceView(document, settings.SourceViewId, result);
-                ValidateSourceSheet(document, settings.SourceSheetId, result);
-            }
-            else
-            {
-                sourceViewsByFloorName = ValidateFloorMappings(document, settings, result);
+                sourceDataByFloorName = ValidateFloorMappings(document, settings, result);
             }
 
             ValidateViewportType(document, settings.ViewportTypeId, result);
             ValidateTitleBlockType(document, settings.TitleBlockTypeId, result);
             ValidateSheetBrowserParameters(document, settings.SheetBrowserParameterIds, result);
             ValidatePlacement(settings, result);
-            ValidateRows(document, settings, sourceView, sourceViewsByFloorName, items, result);
+            ValidateRows(document, settings, sourceView, sourceDataByFloorName, items, result);
 
             return result;
         }
@@ -129,16 +124,16 @@ namespace SAB.CreateViewsAndSheets.Services
             }
         }
 
-        private Dictionary<string, View> ValidateFloorMappings(
+        private Dictionary<string, FloorSourceValidationData> ValidateFloorMappings(
             Document document,
             CreateViewsAndSheetsSettings settings,
             CreateViewsAndSheetsValidationResult result)
         {
-            Dictionary<string, View> sourceViewsByFloorName = new Dictionary<string, View>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FloorSourceValidationData> sourceDataByFloorName = new Dictionary<string, FloorSourceValidationData>(StringComparer.OrdinalIgnoreCase);
             if (settings.FloorMappings == null || settings.FloorMappings.Count == 0)
             {
                 result.Errors.Add("Для многоэтажной структуры не заполнено сопоставление этажей.");
-                return sourceViewsByFloorName;
+                return sourceDataByFloorName;
             }
 
             for (int i = 0; i < settings.FloorMappings.Count; i++)
@@ -151,33 +146,47 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 string floorName = (mapping.FloorName ?? string.Empty).Trim();
                 string rowPrefix = "Сопоставление этажа " + (i + 1) + ": ";
-
                 if (string.IsNullOrWhiteSpace(floorName))
                 {
                     result.Errors.Add(rowPrefix + "не заполнено поле Этаж.");
                     continue;
                 }
 
-                if (sourceViewsByFloorName.ContainsKey(floorName))
+                if (sourceDataByFloorName.ContainsKey(floorName))
                 {
                     result.Errors.Add(rowPrefix + "этаж повторяется.");
                     continue;
                 }
 
-                View sourceView = ValidateSourceView(document, mapping.SourceViewId, result);
-                ValidateSourceSheet(document, mapping.SourceSheetId, result);
-                if (sourceView != null)
+                FloorSourceValidationData sourceData = new FloorSourceValidationData();
+                sourceData.FloorName = floorName;
+
+                bool hasStandardData = mapping.SourceViewId != null && mapping.SourceViewId != ElementId.InvalidElementId ||
+                                       mapping.SourceSheetId != null && mapping.SourceSheetId != ElementId.InvalidElementId;
+                bool hasCeilingData = mapping.CeilingSourceViewId != null && mapping.CeilingSourceViewId != ElementId.InvalidElementId ||
+                                      mapping.CeilingSourceSheetId != null && mapping.CeilingSourceSheetId != ElementId.InvalidElementId;
+
+                if (hasStandardData)
                 {
-                    sourceViewsByFloorName[floorName] = sourceView;
+                    sourceData.StandardSourceView = ValidateSourceView(document, mapping.SourceViewId, result);
+                    ValidateSourceSheet(document, mapping.SourceSheetId, result);
                 }
+
+                if (hasCeilingData)
+                {
+                    sourceData.CeilingSourceView = ValidateSourceView(document, mapping.CeilingSourceViewId, result);
+                    ValidateSourceSheet(document, mapping.CeilingSourceSheetId, result);
+                }
+
+                sourceDataByFloorName[floorName] = sourceData;
             }
 
-            if (sourceViewsByFloorName.Count == 0)
+            if (sourceDataByFloorName.Count == 0)
             {
-                result.Errors.Add("Для многоэтажной структуры нет ни одного полностью проверенного сопоставления этажа.");
+                result.Errors.Add("Для многоэтажной структуры нет ни одного сопоставления этажа.");
             }
 
-            return sourceViewsByFloorName;
+            return sourceDataByFloorName;
         }
 
         private void ValidateViewportType(Document document, ElementId viewportTypeId, CreateViewsAndSheetsValidationResult result)
@@ -337,7 +346,7 @@ namespace SAB.CreateViewsAndSheets.Services
             Document document,
             CreateViewsAndSheetsSettings settings,
             View sourceView,
-            Dictionary<string, View> sourceViewsByFloorName,
+            Dictionary<string, FloorSourceValidationData> sourceDataByFloorName,
             IList<SheetCreationItem> items,
             CreateViewsAndSheetsValidationResult result)
         {
@@ -367,16 +376,43 @@ namespace SAB.CreateViewsAndSheets.Services
                 string sheetName = (item.SheetName ?? string.Empty).Trim();
                 View templateSourceView = sourceView;
 
-                if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiStory)
+                if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
+                {
+                    bool isCeilingPlan = item.PlanKind == SheetPlanKind.CeilingPlan;
+                    ElementId sourceViewId = isCeilingPlan ? settings.CeilingSourceViewId : settings.SourceViewId;
+                    ElementId sourceSheetId = isCeilingPlan ? settings.CeilingSourceSheetId : settings.SourceSheetId;
+                    string planName = isCeilingPlan ? "плана потолков" : "стандартного плана";
+
+                    templateSourceView = ValidateSourceView(document, sourceViewId, result);
+                    ValidateSourceSheet(document, sourceSheetId, result);
+                    if (templateSourceView == null)
+                    {
+                        result.Errors.Add(rowPrefix + "не выбран корректный вид-образец " + planName + ".");
+                    }
+                }
+                else if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiStory)
                 {
                     string floorName = (item.FloorName ?? string.Empty).Trim();
                     if (string.IsNullOrWhiteSpace(floorName))
                     {
                         result.Errors.Add(rowPrefix + "не заполнен этаж.");
                     }
-                    else if (sourceViewsByFloorName == null || !sourceViewsByFloorName.TryGetValue(floorName, out templateSourceView))
+                    else
                     {
-                        result.Errors.Add(rowPrefix + "для этажа \"" + floorName + "\" нет корректного сопоставления.");
+                        FloorSourceValidationData sourceData;
+                        if (sourceDataByFloorName == null || !sourceDataByFloorName.TryGetValue(floorName, out sourceData))
+                        {
+                            result.Errors.Add(rowPrefix + "для этажа \"" + floorName + "\" нет корректного сопоставления.");
+                        }
+                        else
+                        {
+                            bool isCeilingPlan = item.PlanKind == SheetPlanKind.CeilingPlan;
+                            templateSourceView = isCeilingPlan ? sourceData.CeilingSourceView : sourceData.StandardSourceView;
+                            if (templateSourceView == null)
+                            {
+                                result.Errors.Add(rowPrefix + "для этажа \"" + floorName + "\" не выбран вид-образец " + (isCeilingPlan ? "плана потолков" : "стандартного плана") + ".");
+                            }
+                        }
                     }
                 }
 
@@ -455,5 +491,16 @@ namespace SAB.CreateViewsAndSheets.Services
                 result.Errors.Add(rowPrefix + "шаблон вида несовместим с типом вида-образца.");
             }
         }
+
+        private class FloorSourceValidationData
+        {
+            public string FloorName { get; set; }
+
+            public View StandardSourceView { get; set; }
+
+            public View CeilingSourceView { get; set; }
+        }
     }
 }
+
+

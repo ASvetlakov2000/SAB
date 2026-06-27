@@ -26,33 +26,46 @@
 
         <Grid Grid.Row="0" Margin="20,18,20,14">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="36" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" MinWidth="680" />
             </Grid.ColumnDefinitions>
 
-            <ToggleButton x:Name="SettingsDrawerToggle"
-                          Grid.Column="0"
-                          HorizontalAlignment="Left"
-                          IsChecked="True"
-                          Style="{StaticResource SabSettingsDrawerToggleButtonStyle}"
-                          ToolTip="Скрыть настройки">
-                <StackPanel Orientation="Horizontal"
-                            LayoutTransform="{StaticResource SabRotateLeftTransform}">
-                    <TextBlock Text="⚙"
-                               FontFamily="Segoe UI Symbol"
-                               FontSize="15"
-                               Margin="0,0,6,0"
-                               VerticalAlignment="Center" />
-                    <TextBlock Text="Настройки"
-                               VerticalAlignment="Center" />
-                </StackPanel>
-            </ToggleButton>
+            <Button x:Name="SettingsButton"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Width="28"
+                    MinWidth="0"
+                    Height="112"
+                    Padding="0"
+                    Command="{Binding OpenSettingsWindowCommand}"
+                    Style="{StaticResource SabPrimaryButtonStyle}"
+                    Margin="0,0,10,0"
+                    ToolTip="Открыть настройки">
+                <Grid Width="94" Height="22">
+                    <Grid.LayoutTransform>
+                        <RotateTransform Angle="-90" />
+                    </Grid.LayoutTransform>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="⚙"
+                                   FontFamily="Segoe UI Symbol"
+                                   FontSize="15"
+                                   Margin="0,0,6,0"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="Настройки"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+            </Button>
 
             <ScrollViewer x:Name="SettingsDrawerPanel"
                           Grid.Column="1"
-                          Width="320"
+                          Width="0"
                           Margin="0,0,20,0"
+                          Visibility="Collapsed"
                           VerticalScrollBarVisibility="Hidden"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
@@ -125,7 +138,7 @@
                                 <Border Style="{StaticResource SabPanelIconBorderStyle}">
                                     <TextBlock Text="▣" Style="{StaticResource SabPanelIconTextStyle}" />
                                 </Border>
-                                <TextBlock Text="Эталон" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                <TextBlock Text="Образец" Style="{StaticResource SabPanelHeaderTextStyle}" />
                             </StackPanel>
                         </Expander.Header>
 
@@ -217,7 +230,7 @@
                                                             ToolTip="Добавить сопоставление этажа"
                                                             Command="{Binding DataContext.AddFloorMappingCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                             Style="{StaticResource SabRowAddButtonStyle}" />
-                                                    <Button Content="×"
+                                                    <Button Content="X"
                                                             ToolTip="Удалить сопоставление этажа"
                                                             Command="{Binding DataContext.DeleteFloorMappingCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                             CommandParameter="{Binding}"
@@ -254,7 +267,7 @@
                                 <Border Style="{StaticResource SabPanelIconBorderStyle}">
                                     <TextBlock Text="▥" Style="{StaticResource SabPanelIconTextStyle}" />
                                 </Border>
-                                <TextBlock Text="Настройки размещения" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                <TextBlock Text="Размещение" Style="{StaticResource SabPanelHeaderTextStyle}" />
                             </StackPanel>
                         </Expander.Header>
 
@@ -401,7 +414,7 @@
                                 <Border Style="{StaticResource SabPanelIconBorderStyle}">
                                     <TextBlock Text="☑" Style="{StaticResource SabPanelIconTextStyle}" />
                                 </Border>
-                                <TextBlock Text="Настройки копирования с детализацией"
+                                <TextBlock Text="Копирование"
                                            Style="{StaticResource SabPanelHeaderTextStyle}" />
                             </StackPanel>
                         </Expander.Header>
@@ -520,6 +533,22 @@
                                                   Text="{Binding FloorName, UpdateSourceTrigger=PropertyChanged}"
                                                   IsEditable="True"
                                                   IsTextSearchEnabled="False"
+                                                  Style="{StaticResource SabDataGridComboBoxStyle}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Тип плана"
+                                                    SortMemberPath="PlanKind"
+                                                    Width="150"
+                                                    MinWidth="130">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.PlanKindOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                  SelectedValue="{Binding PlanKind, UpdateSourceTrigger=PropertyChanged}"
+                                                  SelectedValuePath="Kind"
+                                                  DisplayMemberPath="DisplayName"
+                                                  TextSearch.TextPath="DisplayName"
                                                   Style="{StaticResource SabDataGridComboBoxStyle}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -651,7 +680,7 @@
                                                     Command="{Binding DataContext.InsertRowAfterCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                     CommandParameter="{Binding}"
                                                     Style="{StaticResource SabRowAddButtonStyle}" />
-                                            <Button Content="×"
+                                            <Button Content="X"
                                                     ToolTip="Удалить строку"
                                                     Command="{Binding DataContext.DeleteRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                                     CommandParameter="{Binding}"
@@ -722,3 +751,4 @@
         </Border>
     </Grid>
 </Window>
+

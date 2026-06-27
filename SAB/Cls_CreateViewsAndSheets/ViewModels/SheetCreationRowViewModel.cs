@@ -8,6 +8,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
     public class SheetCreationRowViewModel : INotifyPropertyChanged
     {
         private int _rowNumber;
+        private SheetPlanKind _planKind;
         private string _floorName;
         private string _viewName;
         private string _viewScaleText;
@@ -20,6 +21,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public SheetCreationRowViewModel()
         {
+            _planKind = SheetPlanKind.StandardPlan;
             _floorName = string.Empty;
             _viewName = string.Empty;
             _viewScaleText = "50";
@@ -47,6 +49,21 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
                 _rowNumber = value;
                 OnPropertyChanged("RowNumber");
+            }
+        }
+
+        public SheetPlanKind PlanKind
+        {
+            get { return _planKind; }
+            set
+            {
+                if (_planKind == value)
+                {
+                    return;
+                }
+
+                _planKind = value;
+                OnPropertyChanged("PlanKind");
             }
         }
 

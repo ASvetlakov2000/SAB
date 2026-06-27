@@ -132,6 +132,8 @@
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetDetailCopySettings.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetBounds.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationItem.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationSessionRow.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetPlanKind.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsOperationService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsWindowLayoutService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\RevitDataService.cs" />
@@ -147,6 +149,9 @@
     <Compile Include="Cls_CreateViewsAndSheets\ViewModels\SheetCreationRowViewModel.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml.cs">
       <DependentUpon>CreateViewsAndSheetsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsSettingsWindow.cs">
+      <DependentUpon>CreateViewsAndSheetsSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
@@ -384,6 +389,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsSettingsWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Resources\CreateViewsAndSheets_16.png" />

@@ -82,7 +82,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                     dataService.CollectExistingSheetNumbers(document),
                     savedSettings);
 
-                bool dialogAccepted = ShowCreationWindowUntilAccepted(uiDocument, document, viewModel);
+                bool dialogAccepted = ShowCreationWindowUntilAccepted(uiDocument, document, viewModel, settingsService);
                 if (!dialogAccepted)
                 {
                     return Result.Cancelled;
@@ -256,7 +256,8 @@ namespace SAB.CreateViewsAndSheets.Commands
         private bool ShowCreationWindowUntilAccepted(
             UIDocument uiDocument,
             Document document,
-            CreateViewsAndSheetsViewModel viewModel)
+            CreateViewsAndSheetsViewModel viewModel,
+            SettingsService settingsService)
         {
             if (uiDocument == null)
             {
@@ -276,21 +277,36 @@ namespace SAB.CreateViewsAndSheets.Commands
                 return false;
             }
 
+            bool reopenSettingsWindowAfterPointSelection = false;
             while (true)
             {
-                CreateViewsAndSheetsWindow window = new CreateViewsAndSheetsWindow(viewModel);
+                CreateViewsAndSheetsWindow window = new CreateViewsAndSheetsWindow(viewModel, reopenSettingsWindowAfterPointSelection);
+                reopenSettingsWindowAfterPointSelection = false;
                 PrepareWindowForRevit(window);
 
                 bool? dialogResult = window.ShowDialog();
+                SaveLastWindowSession(settingsService, viewModel);
                 PlacementPointSelectionRequestEventArgs pointRequest = window.PendingPointSelectionRequest;
                 if (pointRequest != null)
                 {
+                    bool shouldReopenSettingsWindow = window.OpenSettingsAfterPointSelection;
                     TryPickPlacementPoint(uiDocument, document, viewModel, pointRequest);
+                    reopenSettingsWindowAfterPointSelection = shouldReopenSettingsWindow;
                     continue;
                 }
 
                 return dialogResult.HasValue && dialogResult.Value;
             }
+        }
+
+        private void SaveLastWindowSession(SettingsService settingsService, CreateViewsAndSheetsViewModel viewModel)
+        {
+            if (settingsService == null || viewModel == null)
+            {
+                return;
+            }
+
+            settingsService.SaveSettings(viewModel.BuildSessionSettings());
         }
 
         private bool TryPickPlacementPoint(

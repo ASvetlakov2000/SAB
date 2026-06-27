@@ -20,6 +20,7 @@ namespace SAB.CreateViewsAndSheets.Views
     {
         private readonly CreateViewsAndSheetsViewModel _viewModel;
         private readonly CreateViewsAndSheetsWindowLayoutService _layoutService;
+        private readonly bool _openSettingsWindowAfterLoaded;
 
         private DataGrid _rowsDataGrid;
         private readonly List<DataGridColumn> _observedWidthColumns;
@@ -35,9 +36,15 @@ namespace SAB.CreateViewsAndSheets.Views
         private bool _normalizingColumnWidths;
 
         public CreateViewsAndSheetsWindow(CreateViewsAndSheetsViewModel viewModel)
+            : this(viewModel, false)
+        {
+        }
+
+        public CreateViewsAndSheetsWindow(CreateViewsAndSheetsViewModel viewModel, bool openSettingsWindowAfterLoaded)
         {
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             _layoutService = new CreateViewsAndSheetsWindowLayoutService();
+            _openSettingsWindowAfterLoaded = openSettingsWindowAfterLoaded;
             _observedWidthColumns = new List<DataGridColumn>();
             _sheetBrowserParameterColumns = new List<DataGridColumn>();
 
@@ -45,6 +52,7 @@ namespace SAB.CreateViewsAndSheets.Views
             DataContext = _viewModel;
 
             _viewModel.RequestClose += ViewModel_RequestClose;
+            _viewModel.RequestSettingsWindow += ViewModel_RequestSettingsWindow;
             _viewModel.RequestPointSelection += ViewModel_RequestPointSelection;
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             Loaded += CreateViewsAndSheetsWindow_Loaded;
@@ -53,6 +61,8 @@ namespace SAB.CreateViewsAndSheets.Views
         }
 
         public PlacementPointSelectionRequestEventArgs PendingPointSelectionRequest { get; private set; }
+
+        public bool OpenSettingsAfterPointSelection { get; private set; }
 
         private void InitializeWindowFromXamlFile()
         {
@@ -97,12 +107,65 @@ namespace SAB.CreateViewsAndSheets.Views
             AttachSettingsDrawerHandlers();
             AttachRowsDataGridHandlers();
             RestoreWindowLayout();
+            OpenSettingsWindowAfterLoadedIfNeeded();
         }
 
         private void ViewModel_RequestClose(object sender, EventArgs e)
         {
             DialogResult = _viewModel.IsAccepted;
             Close();
+        }
+
+        private void ViewModel_RequestSettingsWindow(object sender, EventArgs e)
+        {
+            CreateViewsAndSheetsSettingsWindow settingsWindow = new CreateViewsAndSheetsSettingsWindow(_viewModel);
+            settingsWindow.Owner = this;
+            _viewModel.RequestPointSelection -= ViewModel_RequestPointSelection;
+            try
+            {
+                settingsWindow.ShowDialog();
+            }
+            finally
+            {
+                _viewModel.RequestPointSelection += ViewModel_RequestPointSelection;
+            }
+
+            if (settingsWindow.PendingPointSelectionRequest != null)
+            {
+                PendingPointSelectionRequest = settingsWindow.PendingPointSelectionRequest;
+                OpenSettingsAfterPointSelection = true;
+                DialogResult = false;
+                Close();
+                return;
+            }
+
+            ScheduleNormalizeRowsDataGridColumnWidths();
+        }
+
+        private void OpenSettingsWindowAfterLoadedIfNeeded()
+        {
+            if (!_openSettingsWindowAfterLoaded)
+            {
+                return;
+            }
+
+            Dispatcher.BeginInvoke(new Action(OpenSettingsWindowAfterLoaded), DispatcherPriority.ContextIdle);
+        }
+
+        private void OpenSettingsWindowAfterLoaded()
+        {
+            if (!IsLoaded || PendingPointSelectionRequest != null || _viewModel == null)
+            {
+                return;
+            }
+
+            if (_viewModel.OpenSettingsWindowCommand == null ||
+                !_viewModel.OpenSettingsWindowCommand.CanExecute(null))
+            {
+                return;
+            }
+
+            _viewModel.OpenSettingsWindowCommand.Execute(null);
         }
 
         private void ViewModel_RequestPointSelection(object sender, PlacementPointSelectionRequestEventArgs e)
@@ -141,6 +204,7 @@ namespace SAB.CreateViewsAndSheets.Views
             DetachRowsDataGridHandlers();
             DetachSettingsDrawerHandlers();
             _viewModel.RequestClose -= ViewModel_RequestClose;
+            _viewModel.RequestSettingsWindow -= ViewModel_RequestSettingsWindow;
             _viewModel.RequestPointSelection -= ViewModel_RequestPointSelection;
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
             Loaded -= CreateViewsAndSheetsWindow_Loaded;
@@ -563,15 +627,17 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             DataGridColumn floorColumn = GetFloorColumn();
-            if (floorColumn == null)
-            {
-                return;
-            }
+            DataGridColumn planKindColumn = GetPlanKindColumn();
 
             Visibility targetVisibility = _viewModel.IsMultiStoryStructure ? Visibility.Visible : Visibility.Collapsed;
-            if (floorColumn.Visibility != targetVisibility)
+            if (floorColumn != null && floorColumn.Visibility != targetVisibility)
             {
                 floorColumn.Visibility = targetVisibility;
+            }
+
+            if (planKindColumn != null && planKindColumn.Visibility != Visibility.Visible)
+            {
+                planKindColumn.Visibility = Visibility.Visible;
             }
 
             ScheduleNormalizeRowsDataGridColumnWidths();
@@ -588,6 +654,25 @@ namespace SAB.CreateViewsAndSheets.Views
             {
                 DataGridColumn column = _rowsDataGrid.Columns[i];
                 if (column != null && string.Equals(column.SortMemberPath, "FloorName", StringComparison.Ordinal))
+                {
+                    return column;
+                }
+            }
+
+            return null;
+        }
+
+        private DataGridColumn GetPlanKindColumn()
+        {
+            if (_rowsDataGrid == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
+            {
+                DataGridColumn column = _rowsDataGrid.Columns[i];
+                if (column != null && string.Equals(column.SortMemberPath, "PlanKind", StringComparison.Ordinal))
                 {
                     return column;
                 }

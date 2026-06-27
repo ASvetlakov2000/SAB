@@ -10,6 +10,8 @@ namespace SAB.CreateViewsAndSheets.Models
             FloorName = string.Empty;
             SourceViewId = ElementId.InvalidElementId;
             SourceSheetId = ElementId.InvalidElementId;
+            CeilingSourceViewId = ElementId.InvalidElementId;
+            CeilingSourceSheetId = ElementId.InvalidElementId;
         }
 
         public ElementId FloorId { get; set; }
@@ -20,6 +22,12 @@ namespace SAB.CreateViewsAndSheets.Models
 
         public ElementId SourceSheetId { get; set; }
 
+        public ElementId CeilingSourceViewId { get; set; }
+
+        public ElementId CeilingSourceSheetId { get; set; }
+
         public SheetBounds SheetBounds { get; set; }
+
+        public SheetBounds CeilingSheetBounds { get; set; }
     }
 }

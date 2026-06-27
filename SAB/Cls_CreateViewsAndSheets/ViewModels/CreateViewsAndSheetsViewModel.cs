@@ -24,6 +24,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private CreateViewsAndSheetsStructureMode _structureMode;
         private RevitElementItem _selectedSourceView;
         private RevitElementItem _selectedSourceSheet;
+        private RevitElementItem _selectedCeilingSourceView;
+        private RevitElementItem _selectedCeilingSourceSheet;
         private RevitElementItem _selectedViewportType;
         private RevitElementItem _selectedTitleBlockType;
         private RevitElementItem _selectedSheetBrowserParameter;
@@ -64,6 +66,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             CreateViewsAndSheetsSettings initialSettings)
         {
             SourceViews = new ObservableCollection<RevitElementItem>();
+            StandardSourceViews = new ObservableCollection<RevitElementItem>();
+            CeilingSourceViews = new ObservableCollection<RevitElementItem>();
             SourceSheets = new ObservableCollection<RevitElementItem>();
             ViewportTypes = new ObservableCollection<RevitElementItem>();
             TitleBlockTypes = new ObservableCollection<RevitElementItem>();
@@ -72,6 +76,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             SheetBrowserParameterLevels = new ObservableCollection<SheetBrowserParameterLevelViewModel>();
             FloorMappings = new ObservableCollection<FloorSourceMappingRowViewModel>();
             FloorNames = new ObservableCollection<string>();
+            PlanKindOptions = new ObservableCollection<PlanKindOptionViewModel>();
             ViewTemplates = new ObservableCollection<RevitElementItem>();
             Rows = new ObservableCollection<SheetCreationRowViewModel>();
             ScaleOptions = new ObservableCollection<string>();
@@ -82,6 +87,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             _existingSheetNumbers = existingSheetNumbers ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             FillCollection(SourceViews, sourceViews);
+            PopulateSourceViewGroups(sourceViews);
             FillCollection(SourceSheets, sourceSheets);
             FillCollection(ViewportTypes, viewportTypes);
             FillCollection(TitleBlockTypes, titleBlockTypes);
@@ -96,6 +102,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ScaleOptions.Add("75");
             ScaleOptions.Add("100");
             ScaleOptions.Add("200");
+            PlanKindOptions.Add(new PlanKindOptionViewModel(SheetPlanKind.StandardPlan, "План стандартный"));
+            PlanKindOptions.Add(new PlanKindOptionViewModel(SheetPlanKind.CeilingPlan, "План потолков"));
 
             PlacementSettings placement = initialSettings != null && initialSettings.Placement != null
                 ? initialSettings.Placement
@@ -127,9 +135,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
             InitializeFloorMappings(initialSettings);
 
-            AddRowInternal(null);
-
             ValidateCommand = new RelayCommand(delegate { RefreshValidation(); });
+            OpenSettingsWindowCommand = new RelayCommand(delegate { RequestSettingsWindowInternal(); });
             PickViewCenterPointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewCenter); });
             PickViewTitlePointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewTitle); });
             MoveRowUpCommand = new RelayCommand(
@@ -146,6 +153,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             CancelCommand = new RelayCommand(delegate { CancelWindow(); });
 
             ApplyInitialSelections(initialSettings);
+            InitializeRows(initialSettings);
             RefreshValidation();
         }
 
@@ -153,9 +161,15 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public event EventHandler RequestClose;
 
+        public event EventHandler RequestSettingsWindow;
+
         public event EventHandler<PlacementPointSelectionRequestEventArgs> RequestPointSelection;
 
         public ObservableCollection<RevitElementItem> SourceViews { get; private set; }
+
+        public ObservableCollection<RevitElementItem> StandardSourceViews { get; private set; }
+
+        public ObservableCollection<RevitElementItem> CeilingSourceViews { get; private set; }
 
         public ObservableCollection<RevitElementItem> SourceSheets { get; private set; }
 
@@ -173,6 +187,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public ObservableCollection<string> FloorNames { get; private set; }
 
+        public ObservableCollection<PlanKindOptionViewModel> PlanKindOptions { get; private set; }
+
         public ObservableCollection<RevitElementItem> ViewTemplates { get; private set; }
 
         public ObservableCollection<SheetCreationRowViewModel> Rows { get; private set; }
@@ -180,6 +196,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public ObservableCollection<string> ScaleOptions { get; private set; }
 
         public ICommand ValidateCommand { get; private set; }
+
+        public ICommand OpenSettingsWindowCommand { get; private set; }
 
         public ICommand PickViewCenterPointCommand { get; private set; }
 
@@ -315,6 +333,30 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             {
                 _selectedSourceSheet = value;
                 OnPropertyChanged("SelectedSourceSheet");
+                ApplyTitleBlockFromSourceSheet();
+                RefreshValidation();
+            }
+        }
+
+        public RevitElementItem SelectedCeilingSourceView
+        {
+            get { return _selectedCeilingSourceView; }
+            set
+            {
+                _selectedCeilingSourceView = value;
+                OnPropertyChanged("SelectedCeilingSourceView");
+                ReloadCompatibleViewTemplates();
+                RefreshValidation();
+            }
+        }
+
+        public RevitElementItem SelectedCeilingSourceSheet
+        {
+            get { return _selectedCeilingSourceSheet; }
+            set
+            {
+                _selectedCeilingSourceSheet = value;
+                OnPropertyChanged("SelectedCeilingSourceSheet");
                 ApplyTitleBlockFromSourceSheet();
                 RefreshValidation();
             }
@@ -633,6 +675,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.StructureMode = _structureMode;
             settings.SourceViewId = SelectedSourceView != null ? SelectedSourceView.Id : ElementId.InvalidElementId;
             settings.SourceSheetId = SelectedSourceSheet != null ? SelectedSourceSheet.Id : ElementId.InvalidElementId;
+            settings.CeilingSourceViewId = SelectedCeilingSourceView != null ? SelectedCeilingSourceView.Id : ElementId.InvalidElementId;
+            settings.CeilingSourceSheetId = SelectedCeilingSourceSheet != null ? SelectedCeilingSourceSheet.Id : ElementId.InvalidElementId;
             settings.ViewportTypeId = SelectedViewportType != null ? SelectedViewportType.Id : ElementId.InvalidElementId;
             settings.TitleBlockTypeId = SelectedTitleBlockType != null ? SelectedTitleBlockType.Id : ElementId.InvalidElementId;
             settings.SheetBrowserParameterId = SheetBrowserParameterLevels.Count > 0 ? SheetBrowserParameterLevels[0].ParameterId : ElementId.InvalidElementId;
@@ -659,9 +703,53 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.DetailCopy.CopyTextNotes = CopyTextNotes;
             settings.DetailCopy.CopyGenericAnnotations = CopyGenericAnnotations;
             settings.DetailCopy.CopyImages = CopyImages;
+            settings.SessionRows = BuildSessionRows();
 
             items = BuildItems();
             return true;
+        }
+
+        public CreateViewsAndSheetsSettings BuildSessionSettings()
+        {
+            double centerX = ParseDouble(ViewCenterXText);
+            double centerY = ParseDouble(ViewCenterYText);
+            double titleX = ParseDouble(ViewTitleXText);
+            double titleY = ParseDouble(ViewTitleYText);
+
+            CreateViewsAndSheetsSettings settings = new CreateViewsAndSheetsSettings();
+            settings.StructureMode = _structureMode;
+            settings.SourceViewId = SelectedSourceView != null ? SelectedSourceView.Id : ElementId.InvalidElementId;
+            settings.SourceSheetId = SelectedSourceSheet != null ? SelectedSourceSheet.Id : ElementId.InvalidElementId;
+            settings.CeilingSourceViewId = SelectedCeilingSourceView != null ? SelectedCeilingSourceView.Id : ElementId.InvalidElementId;
+            settings.CeilingSourceSheetId = SelectedCeilingSourceSheet != null ? SelectedCeilingSourceSheet.Id : ElementId.InvalidElementId;
+            settings.ViewportTypeId = SelectedViewportType != null ? SelectedViewportType.Id : ElementId.InvalidElementId;
+            settings.TitleBlockTypeId = SelectedTitleBlockType != null ? SelectedTitleBlockType.Id : ElementId.InvalidElementId;
+            settings.SheetBrowserParameterId = SheetBrowserParameterLevels.Count > 0 ? SheetBrowserParameterLevels[0].ParameterId : ElementId.InvalidElementId;
+            settings.SheetBrowserParameterIds = BuildSheetBrowserParameterIds();
+            settings.SheetBounds = ResolveCurrentSheetBounds();
+            settings.FloorMappings = BuildFloorMappings();
+            settings.Placement = new PlacementSettings();
+            settings.Placement.CoordinateUnits = "мм";
+            settings.Placement.ViewCenterXmm = centerX;
+            settings.Placement.ViewCenterYmm = centerY;
+            settings.Placement.ViewTitleXmm = titleX;
+            settings.Placement.ViewTitleYmm = titleY;
+            settings.Placement.TitleLineLengthMm = DefaultTitleLineLengthMm;
+            settings.Placement.UsePointSelectionForViewCenter = IsViewCenterPointMode;
+            settings.Placement.UsePointSelectionForViewTitle = IsViewTitlePointMode;
+            settings.Placement.SaveSettings = SaveSettings;
+            settings.DetailCopy = new SheetDetailCopySettings();
+            settings.DetailCopy.CopySheetWithDetailing = CopySheetWithDetailing;
+            settings.DetailCopy.CopySchedules = CopySchedules;
+            settings.DetailCopy.CopyLegends = CopyLegends;
+            settings.DetailCopy.CopyDraftingViews = CopyDraftingViews;
+            settings.DetailCopy.CopyDetailLines = CopyDetailLines;
+            settings.DetailCopy.CopyFilledRegions = CopyFilledRegions;
+            settings.DetailCopy.CopyTextNotes = CopyTextNotes;
+            settings.DetailCopy.CopyGenericAnnotations = CopyGenericAnnotations;
+            settings.DetailCopy.CopyImages = CopyImages;
+            settings.SessionRows = BuildSessionRows();
+            return settings;
         }
 
         public void ApplyPickedPoint(PlacementPointTarget target, double xMm, double yMm)
@@ -691,15 +779,25 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             {
                 for (int i = 0; i < FloorMappings.Count; i++)
                 {
-                    FloorSourceMappingRowViewModel mapping = FloorMappings[i];
-                    if (mapping != null && mapping.SelectedSourceSheet != null)
-                    {
-                        return mapping.SelectedSourceSheet;
-                    }
+                FloorSourceMappingRowViewModel mapping = FloorMappings[i];
+                if (mapping != null && mapping.SelectedSourceSheet != null)
+                {
+                    return mapping.SelectedSourceSheet;
+                }
+
+                if (mapping != null && mapping.SelectedCeilingSourceSheet != null)
+                {
+                    return mapping.SelectedCeilingSourceSheet;
                 }
             }
+            }
 
-            return SelectedSourceSheet;
+            if (SelectedSourceSheet != null)
+            {
+                return SelectedSourceSheet;
+            }
+
+            return SelectedCeilingSourceSheet;
         }
 
         public SheetBounds GetPointSelectionSourceSheetBounds()
@@ -767,6 +865,15 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             RefreshValidation();
         }
 
+        private void RequestSettingsWindowInternal()
+        {
+            EventHandler handler = RequestSettingsWindow;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
         private void RequestPointSelectionInternal(PlacementPointTarget target)
         {
             EventHandler<PlacementPointSelectionRequestEventArgs> handler = RequestPointSelection;
@@ -784,11 +891,17 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         private void ApplyInitialSelections(CreateViewsAndSheetsSettings initialSettings)
         {
-            SelectedSourceView = FindById(SourceViews, initialSettings != null ? initialSettings.SourceViewId : ElementId.InvalidElementId)
-                                 ?? (SourceViews.Count > 0 ? SourceViews[0] : null);
+            SelectedSourceView = FindById(StandardSourceViews, initialSettings != null ? initialSettings.SourceViewId : ElementId.InvalidElementId)
+                                 ?? (StandardSourceViews.Count > 0 ? StandardSourceViews[0] : null);
 
             SelectedSourceSheet = FindById(SourceSheets, initialSettings != null ? initialSettings.SourceSheetId : ElementId.InvalidElementId)
                                   ?? (SourceSheets.Count > 0 ? SourceSheets[0] : null);
+
+            SelectedCeilingSourceView = FindById(CeilingSourceViews, initialSettings != null ? initialSettings.CeilingSourceViewId : ElementId.InvalidElementId)
+                                        ?? (CeilingSourceViews.Count > 0 ? CeilingSourceViews[0] : null);
+
+            SelectedCeilingSourceSheet = FindById(SourceSheets, initialSettings != null ? initialSettings.CeilingSourceSheetId : ElementId.InvalidElementId)
+                                         ?? (SourceSheets.Count > 0 ? SourceSheets[0] : null);
 
             SelectedViewportType = FindById(ViewportTypes, initialSettings != null ? initialSettings.ViewportTypeId : ElementId.InvalidElementId)
                                    ?? (ViewportTypes.Count > 0 ? ViewportTypes[0] : null);
@@ -831,6 +944,97 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        private void InitializeRows(CreateViewsAndSheetsSettings initialSettings)
+        {
+            if (initialSettings != null && initialSettings.SessionRows != null && initialSettings.SessionRows.Count > 0)
+            {
+                for (int i = 0; i < initialSettings.SessionRows.Count; i++)
+                {
+                    AddSessionRow(initialSettings.SessionRows[i]);
+                }
+            }
+
+            if (Rows.Count == 0)
+            {
+                AddRowInternal(null);
+            }
+
+            RenumberRows();
+            EnsureRowsHaveValidTemplateSelection();
+        }
+
+        private void AddSessionRow(SheetCreationSessionRow sessionRow)
+        {
+            if (sessionRow == null)
+            {
+                return;
+            }
+
+            SheetCreationRowViewModel row = CreateRow();
+            row.PlanKind = sessionRow.PlanKind;
+            row.FloorName = sessionRow.FloorName ?? string.Empty;
+            row.ViewName = sessionRow.ViewName ?? string.Empty;
+            row.ViewScaleText = string.IsNullOrWhiteSpace(sessionRow.ViewScaleText) ? "50" : sessionRow.ViewScaleText;
+            row.SelectedViewTemplate = FindById(ViewTemplates, sessionRow.ViewTemplateId)
+                                       ?? FindById(_allViewTemplates, sessionRow.ViewTemplateId)
+                                       ?? row.SelectedViewTemplate;
+            row.SheetNumber = sessionRow.SheetNumber ?? string.Empty;
+            row.SheetName = sessionRow.SheetName ?? string.Empty;
+            row.SheetBrowserParameterValue = sessionRow.SheetBrowserParameterValue ?? string.Empty;
+            ApplySessionSheetBrowserParameterValues(row, sessionRow.SheetBrowserParameterValues);
+            Rows.Add(row);
+        }
+
+        private void ApplySessionSheetBrowserParameterValues(
+            SheetCreationRowViewModel row,
+            IList<SheetBrowserParameterValueItem> savedValues)
+        {
+            if (row == null || savedValues == null || savedValues.Count == 0)
+            {
+                return;
+            }
+
+            row.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+            for (int i = 0; i < savedValues.Count; i++)
+            {
+                SheetBrowserParameterValueItem savedValue = savedValues[i];
+                if (savedValue == null)
+                {
+                    continue;
+                }
+
+                SheetBrowserParameterValueViewModel targetValue = FindRowParameterValue(row, savedValue.ParameterId);
+                if (targetValue == null && i < row.SheetBrowserParameterValues.Count)
+                {
+                    targetValue = row.SheetBrowserParameterValues[i];
+                }
+
+                if (targetValue != null)
+                {
+                    targetValue.Value = savedValue.Value ?? string.Empty;
+                }
+            }
+        }
+
+        private SheetBrowserParameterValueViewModel FindRowParameterValue(SheetCreationRowViewModel row, ElementId parameterId)
+        {
+            if (row == null || parameterId == null || parameterId == ElementId.InvalidElementId)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < row.SheetBrowserParameterValues.Count; i++)
+            {
+                SheetBrowserParameterValueViewModel value = row.SheetBrowserParameterValues[i];
+                if (value != null && RevitElementIdUtils.AreEqual(value.ParameterId, parameterId))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
         private void AddFloorMapping(FloorSourceMapping sourceMapping)
         {
             FloorSourceMappingRowViewModel row = new FloorSourceMappingRowViewModel();
@@ -840,6 +1044,12 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 : null;
             row.SelectedSourceSheet = sourceMapping != null
                 ? FindById(SourceSheets, sourceMapping.SourceSheetId)
+                : null;
+            row.SelectedCeilingSourceView = sourceMapping != null
+                ? FindById(SourceViews, sourceMapping.CeilingSourceViewId)
+                : null;
+            row.SelectedCeilingSourceSheet = sourceMapping != null
+                ? FindById(SourceSheets, sourceMapping.CeilingSourceSheetId)
                 : null;
 
             row.PropertyChanged += FloorMappingRow_PropertyChanged;
@@ -902,7 +1112,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 RefreshFloorNames();
             }
 
-            if (e != null && string.Equals(e.PropertyName, "SelectedSourceView", StringComparison.Ordinal))
+            if (e != null &&
+                (string.Equals(e.PropertyName, "SelectedSourceView", StringComparison.Ordinal) ||
+                 string.Equals(e.PropertyName, "SelectedCeilingSourceView", StringComparison.Ordinal)))
             {
                 EnsureRowsHaveValidTemplateSelection();
             }
@@ -925,7 +1137,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 return;
             }
 
-            if (IsSingleStoryStructure && SelectedSourceView == null)
+            if (IsSingleStoryStructure && SelectedSourceView == null && SelectedCeilingSourceView == null)
             {
                 return;
             }
@@ -938,7 +1150,10 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     continue;
                 }
 
-                if (template.Id == ElementId.InvalidElementId || template.ViewType == SelectedSourceView.ViewType)
+                bool isEmptyTemplate = template.Id == ElementId.InvalidElementId;
+                bool matchesStandardView = SelectedSourceView != null && template.ViewType == SelectedSourceView.ViewType;
+                bool matchesCeilingView = SelectedCeilingSourceView != null && template.ViewType == SelectedCeilingSourceView.ViewType;
+                if (isEmptyTemplate || matchesStandardView || matchesCeilingView)
                 {
                     ViewTemplates.Add(template);
                 }
@@ -949,13 +1164,14 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         private void ApplyTitleBlockFromSourceSheet()
         {
-            if (SelectedSourceSheet == null || SelectedSourceSheet.RelatedElementId == null ||
-                SelectedSourceSheet.RelatedElementId == ElementId.InvalidElementId)
+            RevitElementItem sourceSheet = SelectedSourceSheet ?? SelectedCeilingSourceSheet;
+            if (sourceSheet == null || sourceSheet.RelatedElementId == null ||
+                sourceSheet.RelatedElementId == ElementId.InvalidElementId)
             {
                 return;
             }
 
-            RevitElementItem titleBlockType = FindById(TitleBlockTypes, SelectedSourceSheet.RelatedElementId);
+            RevitElementItem titleBlockType = FindById(TitleBlockTypes, sourceSheet.RelatedElementId);
             if (titleBlockType != null)
             {
                 _selectedTitleBlockType = titleBlockType;
@@ -974,12 +1190,22 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     {
                         return mapping.SelectedSourceSheet.SheetBounds;
                     }
+
+                    if (mapping != null && mapping.SelectedCeilingSourceSheet != null && mapping.SelectedCeilingSourceSheet.SheetBounds != null)
+                    {
+                        return mapping.SelectedCeilingSourceSheet.SheetBounds;
+                    }
                 }
             }
 
             if (SelectedSourceSheet != null && SelectedSourceSheet.SheetBounds != null)
             {
                 return SelectedSourceSheet.SheetBounds;
+            }
+
+            if (SelectedCeilingSourceSheet != null && SelectedCeilingSourceSheet.SheetBounds != null)
+            {
+                return SelectedCeilingSourceSheet.SheetBounds;
             }
 
             if (SelectedTitleBlockType != null && SelectedTitleBlockType.SheetBounds != null)
@@ -1004,7 +1230,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 string floorName = (row.FloorName ?? string.Empty).Trim();
                 bool hasData = !string.IsNullOrWhiteSpace(floorName) ||
                                row.SelectedSourceView != null ||
-                               row.SelectedSourceSheet != null;
+                               row.SelectedSourceSheet != null ||
+                               row.SelectedCeilingSourceView != null ||
+                               row.SelectedCeilingSourceSheet != null;
                 if (!hasData)
                 {
                     continue;
@@ -1015,7 +1243,10 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 mapping.FloorName = floorName;
                 mapping.SourceViewId = row.SelectedSourceView != null ? row.SelectedSourceView.Id : ElementId.InvalidElementId;
                 mapping.SourceSheetId = row.SelectedSourceSheet != null ? row.SelectedSourceSheet.Id : ElementId.InvalidElementId;
+                mapping.CeilingSourceViewId = row.SelectedCeilingSourceView != null ? row.SelectedCeilingSourceView.Id : ElementId.InvalidElementId;
+                mapping.CeilingSourceSheetId = row.SelectedCeilingSourceSheet != null ? row.SelectedCeilingSourceSheet.Id : ElementId.InvalidElementId;
                 mapping.SheetBounds = row.SelectedSourceSheet != null ? row.SelectedSourceSheet.SheetBounds : null;
+                mapping.CeilingSheetBounds = row.SelectedCeilingSourceSheet != null ? row.SelectedCeilingSourceSheet.SheetBounds : null;
                 result.Add(mapping);
             }
 
@@ -1152,6 +1383,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             targetRow.FloorName = sourceRow.FloorName;
+            targetRow.PlanKind = sourceRow.PlanKind;
             targetRow.ViewName = sourceRow.ViewName;
             targetRow.ViewScaleText = sourceRow.ViewScaleText;
             targetRow.SelectedViewTemplate = sourceRow.SelectedViewTemplate;
@@ -1257,7 +1489,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         {
             if (!IsMultiStoryStructure)
             {
-                return SelectedSourceView;
+                return row != null && row.PlanKind == SheetPlanKind.CeilingPlan
+                    ? SelectedCeilingSourceView
+                    : SelectedSourceView;
             }
 
             if (row == null)
@@ -1266,7 +1500,14 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             FloorSourceMappingRowViewModel mapping = FindFloorMappingForName(row.FloorName);
-            return mapping != null ? mapping.SelectedSourceView : null;
+            if (mapping == null)
+            {
+                return null;
+            }
+
+            return row.PlanKind == SheetPlanKind.CeilingPlan
+                ? mapping.SelectedCeilingSourceView
+                : mapping.SelectedSourceView;
         }
 
         private void Row_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -1285,7 +1526,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             SheetCreationRowViewModel row = sender as SheetCreationRowViewModel;
-            if (e != null && string.Equals(e.PropertyName, "FloorName", StringComparison.Ordinal))
+            if (e != null &&
+                (string.Equals(e.PropertyName, "FloorName", StringComparison.Ordinal) ||
+                 string.Equals(e.PropertyName, "PlanKind", StringComparison.Ordinal)))
             {
                 EnsureRowHasValidTemplateSelection(row);
             }
@@ -1370,14 +1613,27 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ValidationState state = new ValidationState();
             ClearRowErrors();
 
-            if (SelectedSourceView == null)
+            bool hasStandardRows = HasFilledRowsForPlanKind(SheetPlanKind.StandardPlan);
+            bool hasCeilingRows = HasFilledRowsForPlanKind(SheetPlanKind.CeilingPlan);
+
+            if (IsSingleStoryStructure && hasStandardRows && SelectedSourceView == null)
             {
-                state.Errors.Add("Не выбран вид-образец.");
+                state.Errors.Add("Не выбран вид-образец стандартного плана.");
             }
 
-            if (IsSingleStoryStructure && SelectedSourceSheet == null)
+            if (IsSingleStoryStructure && hasStandardRows && SelectedSourceSheet == null)
             {
-                state.Errors.Add("Не выбран лист-образец.");
+                state.Errors.Add("Не выбран лист-образец стандартного плана.");
+            }
+
+            if (IsSingleStoryStructure && hasCeilingRows && SelectedCeilingSourceView == null)
+            {
+                state.Errors.Add("Не выбран вид-образец плана потолков.");
+            }
+
+            if (IsSingleStoryStructure && hasCeilingRows && SelectedCeilingSourceSheet == null)
+            {
+                state.Errors.Add("Не выбран лист-образец плана потолков.");
             }
 
             if (SelectedViewportType == null)
@@ -1425,13 +1681,19 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 string floorName = (mapping.FloorName ?? string.Empty).Trim();
                 bool hasAnyData = !string.IsNullOrWhiteSpace(floorName) ||
                                   mapping.SelectedSourceView != null ||
-                                  mapping.SelectedSourceSheet != null;
+                                  mapping.SelectedSourceSheet != null ||
+                                  mapping.SelectedCeilingSourceView != null ||
+                                  mapping.SelectedCeilingSourceSheet != null;
                 if (!hasAnyData)
                 {
                     continue;
                 }
 
                 string rowPrefix = "Сопоставление этажа " + (i + 1) + ": ";
+                bool hasStandardData = mapping.SelectedSourceView != null || mapping.SelectedSourceSheet != null;
+                bool hasCeilingData = mapping.SelectedCeilingSourceView != null || mapping.SelectedCeilingSourceSheet != null;
+                bool hasCompleteStandardData = mapping.SelectedSourceView != null && mapping.SelectedSourceSheet != null;
+                bool hasCompleteCeilingData = mapping.SelectedCeilingSourceView != null && mapping.SelectedCeilingSourceSheet != null;
 
                 if (string.IsNullOrWhiteSpace(floorName))
                 {
@@ -1442,19 +1704,27 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     state.Errors.Add(rowPrefix + "этаж повторяется в списке сопоставлений.");
                 }
 
-                if (mapping.SelectedSourceView == null)
+                if (hasStandardData && mapping.SelectedSourceView == null)
                 {
-                    state.Errors.Add(rowPrefix + "не выбран вид-образец.");
+                    state.Errors.Add(rowPrefix + "не выбран вид-образец для стандартного плана.");
                 }
 
-                if (mapping.SelectedSourceSheet == null)
+                if (hasStandardData && mapping.SelectedSourceSheet == null)
                 {
-                    state.Errors.Add(rowPrefix + "не выбран лист-образец.");
+                    state.Errors.Add(rowPrefix + "не выбран лист-образец для стандартного плана.");
                 }
 
-                if (!string.IsNullOrWhiteSpace(floorName) &&
-                    mapping.SelectedSourceView != null &&
-                    mapping.SelectedSourceSheet != null)
+                if (hasCeilingData && mapping.SelectedCeilingSourceView == null)
+                {
+                    state.Errors.Add(rowPrefix + "не выбран вид-образец для плана потолков.");
+                }
+
+                if (hasCeilingData && mapping.SelectedCeilingSourceSheet == null)
+                {
+                    state.Errors.Add(rowPrefix + "не выбран лист-образец для плана потолков.");
+                }
+
+                if (!string.IsNullOrWhiteSpace(floorName) && (hasCompleteStandardData || hasCompleteCeilingData))
                 {
                     completeCount++;
                 }
@@ -1462,7 +1732,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
             if (completeCount == 0)
             {
-                state.Errors.Add("Для многоэтажной структуры добавьте хотя бы одно заполненное сопоставление: Этаж, Вид-образец и Лист-образец.");
+                state.Errors.Add("Для многоэтажной структуры добавьте хотя бы одно заполненное сопоставление этажа.");
             }
         }
 
@@ -1523,7 +1793,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             for (int i = 0; i < Rows.Count; i++)
             {
                 SheetCreationRowViewModel row = Rows[i];
-                if (row == null || !row.IsFilled)
+                if (!HasSessionRowData(row))
                 {
                     continue;
                 }
@@ -1536,7 +1806,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 string sheetName = (row.SheetName ?? string.Empty).Trim();
                 string floorName = (row.FloorName ?? string.Empty).Trim();
                 FloorSourceMappingRowViewModel rowFloorMapping = null;
-                RevitElementItem templateSourceView = SelectedSourceView;
+                bool isCeilingPlan = row.PlanKind == SheetPlanKind.CeilingPlan;
+                RevitElementItem templateSourceView = isCeilingPlan ? SelectedCeilingSourceView : SelectedSourceView;
 
                 if (IsMultiStoryStructure)
                 {
@@ -1553,17 +1824,44 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                         }
                         else
                         {
-                            templateSourceView = rowFloorMapping.SelectedSourceView;
-                            if (rowFloorMapping.SelectedSourceView == null)
+                            templateSourceView = isCeilingPlan
+                                ? rowFloorMapping.SelectedCeilingSourceView
+                                : rowFloorMapping.SelectedSourceView;
+
+                            if (templateSourceView == null)
                             {
-                                rowErrors.Add("для этажа не выбран вид-образец");
+                                rowErrors.Add(isCeilingPlan
+                                    ? "для этажа не выбран вид-образец плана потолков"
+                                    : "для этажа не выбран вид-образец стандартного плана");
                             }
 
-                            if (rowFloorMapping.SelectedSourceSheet == null)
+                            RevitElementItem sourceSheet = isCeilingPlan
+                                ? rowFloorMapping.SelectedCeilingSourceSheet
+                                : rowFloorMapping.SelectedSourceSheet;
+                            if (sourceSheet == null)
                             {
-                                rowErrors.Add("для этажа не выбран лист-образец");
+                                rowErrors.Add(isCeilingPlan
+                                    ? "для этажа не выбран лист-образец плана потолков"
+                                    : "для этажа не выбран лист-образец стандартного плана");
                             }
                         }
+                    }
+                }
+                else
+                {
+                    if (templateSourceView == null)
+                    {
+                        rowErrors.Add(isCeilingPlan
+                            ? "не выбран вид-образец плана потолков"
+                            : "не выбран вид-образец стандартного плана");
+                    }
+
+                    RevitElementItem sourceSheet = isCeilingPlan ? SelectedCeilingSourceSheet : SelectedSourceSheet;
+                    if (sourceSheet == null)
+                    {
+                        rowErrors.Add(isCeilingPlan
+                            ? "не выбран лист-образец плана потолков"
+                            : "не выбран лист-образец стандартного плана");
                     }
                 }
 
@@ -1598,7 +1896,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 }
                 else if (!IsTemplateCompatibleWithSource(row.SelectedViewTemplate, templateSourceView))
                 {
-                    rowErrors.Add("шаблон вида не совместим с видом-образцом выбранного этажа");
+                    rowErrors.Add("шаблон вида не совместим с выбранным видом-образцом");
                 }
                 else if (row.SelectedViewTemplate.ControlsScale)
                 {
@@ -1718,6 +2016,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
                 SheetCreationItem item = new SheetCreationItem();
                 item.RowNumber = row.RowNumber;
+                item.PlanKind = row.PlanKind;
                 item.FloorId = ElementId.InvalidElementId;
                 item.FloorName = (row.FloorName ?? string.Empty).Trim();
                 item.ViewName = (row.ViewName ?? string.Empty).Trim();
@@ -1731,6 +2030,75 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             return result;
+        }
+
+        private List<SheetCreationSessionRow> BuildSessionRows()
+        {
+            List<SheetCreationSessionRow> result = new List<SheetCreationSessionRow>();
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                SheetCreationRowViewModel row = Rows[i];
+                if (row == null || !row.IsFilled)
+                {
+                    continue;
+                }
+
+                SheetCreationSessionRow sessionRow = new SheetCreationSessionRow();
+                sessionRow.PlanKind = row.PlanKind;
+                sessionRow.FloorName = row.FloorName ?? string.Empty;
+                sessionRow.ViewName = row.ViewName ?? string.Empty;
+                sessionRow.ViewScaleText = row.ViewScaleText ?? string.Empty;
+                sessionRow.ViewTemplateId = row.SelectedViewTemplate != null ? row.SelectedViewTemplate.Id : ElementId.InvalidElementId;
+                sessionRow.SheetNumber = row.SheetNumber ?? string.Empty;
+                sessionRow.SheetName = row.SheetName ?? string.Empty;
+                sessionRow.SheetBrowserParameterValue = row.SheetBrowserParameterValue ?? string.Empty;
+                sessionRow.SheetBrowserParameterValues = BuildSheetBrowserParameterValues(row);
+                result.Add(sessionRow);
+            }
+
+            return result;
+        }
+
+        private bool HasSessionRowData(SheetCreationRowViewModel row)
+        {
+            if (row == null)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(row.FloorName) ||
+                !string.IsNullOrWhiteSpace(row.ViewName) ||
+                !string.IsNullOrWhiteSpace(row.SheetNumber) ||
+                !string.IsNullOrWhiteSpace(row.SheetName) ||
+                !string.IsNullOrWhiteSpace(row.SheetBrowserParameterValue))
+            {
+                return true;
+            }
+
+            for (int i = 0; i < row.SheetBrowserParameterValues.Count; i++)
+            {
+                SheetBrowserParameterValueViewModel parameterValue = row.SheetBrowserParameterValues[i];
+                if (parameterValue != null && !string.IsNullOrWhiteSpace(parameterValue.Value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool HasFilledRowsForPlanKind(SheetPlanKind planKind)
+        {
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                SheetCreationRowViewModel row = Rows[i];
+                if (row != null && row.PlanKind == planKind && HasSessionRowData(row))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void ClearRowErrors()
@@ -1826,6 +2194,56 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             {
                 target.Add(source[i]);
             }
+        }
+
+        private void PopulateSourceViewGroups(IList<RevitElementItem> source)
+        {
+            StandardSourceViews.Clear();
+            CeilingSourceViews.Clear();
+
+            if (source == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < source.Count; i++)
+            {
+                RevitElementItem item = source[i];
+                if (item == null)
+                {
+                    continue;
+                }
+
+                if (IsCeilingPlanSourceView(item))
+                {
+                    CeilingSourceViews.Add(item);
+                    continue;
+                }
+
+                if (IsLevelBasedStandardSourceView(item))
+                {
+                    StandardSourceViews.Add(item);
+                }
+            }
+        }
+
+        private bool IsCeilingPlanSourceView(RevitElementItem item)
+        {
+            return item != null && item.ViewType == ViewType.CeilingPlan;
+        }
+
+        private bool IsLevelBasedStandardSourceView(RevitElementItem item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            string viewTypeName = item.ViewType.ToString();
+            return item.ViewType == ViewType.FloorPlan ||
+                   item.ViewType == ViewType.EngineeringPlan ||
+                   item.ViewType == ViewType.AreaPlan ||
+                   string.Equals(viewTypeName, "StructuralPlan", StringComparison.OrdinalIgnoreCase);
         }
 
         private void FillParameterValuesMap(
@@ -2091,4 +2509,23 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public ObservableCollection<string> Values { get; private set; }
     }
+
+    public class PlanKindOptionViewModel
+    {
+        public PlanKindOptionViewModel(SheetPlanKind kind, string displayName)
+        {
+            Kind = kind;
+            DisplayName = displayName ?? string.Empty;
+        }
+
+        public SheetPlanKind Kind { get; private set; }
+
+        public string DisplayName { get; private set; }
+
+        public override string ToString()
+        {
+            return DisplayName;
+        }
+    }
 }
+
