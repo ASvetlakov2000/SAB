@@ -4,7 +4,7 @@ using System.IO;
 namespace RevitLibraryBuilder.Services.Regulations
 {
     /// <summary>
-    /// Settings object for HTML regulation launcher.
+    /// Settings object for HTML instruction and regulation launcher.
     /// </summary>
     public class HtmlRegulationLaunchOptions
     {
@@ -12,18 +12,18 @@ namespace RevitLibraryBuilder.Services.Regulations
         {
             CandidateDirectories = new List<string>();
             SearchPattern = "*.html";
-            StartFileNameContains = "index";
+            StartFileNameContains = "IDEOLOGIST_HTML";
             IncludeSubdirectories = false;
         }
 
         // Блок отвечает за список папок-кандидатов.
-        // Здесь можно вручную менять порядок путей: используется первая существующая папка.
-        public List<string> CandidateDirectories { get; }
+        // Используется первая папка, где найден нужный стартовый HTML-файл.
+        public List<string> CandidateDirectories { get; private set; }
 
         // Блок отвечает за маску файлов для поиска HTML.
         public string SearchPattern { get; set; }
 
-        // Блок отвечает за признак стартового файла (обычно "index").
+        // Блок отвечает за имя или маркер стартового HTML-файла.
         public string StartFileNameContains { get; set; }
 
         // Блок отвечает за глубину поиска HTML-файлов.

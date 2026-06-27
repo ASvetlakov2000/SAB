@@ -8,6 +8,8 @@ namespace RevitLibraryBuilder.Commands.Regulations
     [Transaction(TransactionMode.ReadOnly)]
     public class OpenNamingStandardsHtmlCommand : IExternalCommand
     {
+        private const string StartFileName = "IDEOLOGIST_HTML_Reglamenty.html";
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             HtmlRegulationLaunchOptions options = BuildLaunchOptions();
@@ -32,23 +34,16 @@ namespace RevitLibraryBuilder.Commands.Regulations
         {
             HtmlRegulationLaunchOptions options = new HtmlRegulationLaunchOptions
             {
-                // Блок отвечает за имя стартового файла.
-                // При необходимости можно заменить "index" на другой маркер.
-                StartFileNameContains = "index",
-
-                // Блок отвечает за маску файлов.
-                // При необходимости можно расширить до "*.htm*" или иной маски.
+                // Блок отвечает за имя стартового HTML-файла регламентов.
+                StartFileNameContains = StartFileName,
                 SearchPattern = "*.html",
-
-                // Блок отвечает за глубину поиска.
-                // false = искать только в указанной папке.
                 IncludeSubdirectories = false
             };
 
-            // Блок путей-кандидатов.
-            // 1) Рабочий сетевой путь для команды.
-            // 2) Локальный fallback-путь для разработки/проверки.
-            // Можно вручную менять или добавлять пути.
+            // Блок путей-кандидатов. Первым идет актуальная рабочая папка регламентов.
+            options.CandidateDirectories.Add(@"Z:\01_IN\SAB\Стандарты");
+
+            // Блок fallback-путей для установленных или старых рабочих окружений.
             options.CandidateDirectories.Add(
                 @"G:\Общие диски\Ideologist Архитектурный\Софт\Плагины для Revit\SAB\Инструкции\Стандарты_HTML\Наименования");
 

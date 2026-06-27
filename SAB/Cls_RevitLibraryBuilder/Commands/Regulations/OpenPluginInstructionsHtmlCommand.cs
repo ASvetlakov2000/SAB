@@ -13,6 +13,8 @@ namespace RevitLibraryBuilder.Commands.Regulations
     [Transaction(TransactionMode.ReadOnly)]
     public class OpenPluginInstructionsHtmlCommand : IExternalCommand
     {
+        private const string StartFileName = "IDEOLOGIST_HTML_Instruktsii.html";
+
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             HtmlRegulationLaunchOptions options = BuildLaunchOptions();
@@ -62,10 +64,13 @@ namespace RevitLibraryBuilder.Commands.Regulations
         {
             HtmlRegulationLaunchOptions options = new HtmlRegulationLaunchOptions
             {
-                StartFileNameContains = "index-light",
+                StartFileNameContains = StartFileName,
                 SearchPattern = "*.html",
                 IncludeSubdirectories = false
             };
+
+            // Блок основного рабочего пути для актуальных HTML-инструкций.
+            AddCandidate(options, @"Z:\01_IN\SAB\Инструкции\HTML");
 
             // Блок динамического поиска папки Docs\PluginInstructions рядом с местом сборки.
             AddDynamicCandidateDirectories(options);
@@ -140,7 +145,7 @@ namespace RevitLibraryBuilder.Commands.Regulations
 
             using (Forms.FolderBrowserDialog dialog = new Forms.FolderBrowserDialog())
             {
-                dialog.Description = "Выберите папку с HTML-инструкциями (должен быть файл index-light.html).";
+                dialog.Description = "Выберите папку с HTML-инструкциями (должен быть файл " + StartFileName + ").";
                 dialog.ShowNewFolderButton = false;
 
                 Forms.DialogResult dialogResult = dialog.ShowDialog();
@@ -158,6 +163,7 @@ namespace RevitLibraryBuilder.Commands.Regulations
         {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("Этап: запуск инструкции по кнопке \"Инструкции\".");
+            builder.AppendLine("Стартовый HTML: " + (options != null ? options.StartFileNameContains : StartFileName));
             builder.AppendLine();
             builder.AppendLine("Текст ошибки:");
             builder.AppendLine(string.IsNullOrWhiteSpace(errorMessage) ? "(пусто)" : errorMessage);
