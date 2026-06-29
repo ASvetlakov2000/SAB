@@ -345,24 +345,73 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="4" Grid.Column="0">
-                                            <TextBlock Text="Старт X, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
-                                            <TextBox Text="{Binding StartXmmText, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                            <TextBlock Text="Точка размещения вида" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="12" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Старт X, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                    <TextBox Text="{Binding StartXmmText, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource SabTextBoxStyle}"
+                                                             Margin="0,0,0,8" />
+
+                                                    <TextBlock Text="Старт Y, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                    <TextBox Text="{Binding StartYmmText, UpdateSourceTrigger=PropertyChanged}"
+                                                             Style="{StaticResource SabTextBoxStyle}" />
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Top" Margin="0,12,0,0">
+                                                    <RadioButton x:Name="ManualSheetPointRadioButton"
+                                                                 Content="Ручной ввод"
+                                                                 GroupName="SheetPointMode"
+                                                                 IsChecked="{Binding IsSheetPointManualMode, Mode=TwoWay}"
+                                                                 Style="{StaticResource SabRadioButtonStyle}"
+                                                                 Margin="0,0,0,12" />
+                                                    <RadioButton x:Name="PickSheetPointRadioButton"
+                                                                 Content="Указать точку"
+                                                                 GroupName="SheetPointMode"
+                                                                 IsChecked="{Binding IsSheetPointPointMode, Mode=TwoWay}"
+                                                                 Style="{StaticResource SabRadioButtonStyle}"
+                                                                 Margin="0" />
+
+                                                    <StackPanel Margin="0,20,0,0">
+                                                        <StackPanel.Style>
+                                                            <Style TargetType="{x:Type StackPanel}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsSheetPointPointMode}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </StackPanel.Style>
+                                                        <Button x:Name="PickSheetPointButton"
+                                                                Style="{StaticResource SabOutlineButtonStyle}"
+                                                                HorizontalAlignment="Stretch">
+                                                            <TextBlock Text="Указать точку размещения вида"
+                                                                       TextAlignment="Center"
+                                                                       TextWrapping="Wrap" />
+                                                        </Button>
+                                                        <TextBlock Text="{Binding SheetPointSummary}"
+                                                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                                                   TextWrapping="Wrap"
+                                                                   Margin="0,6,0,0" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="4" Grid.Column="2">
-                                            <TextBlock Text="Старт Y, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
-                                            <TextBox Text="{Binding StartYmmText, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource SabTextBoxStyle}" />
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Row="6" Grid.Column="0">
+                                            <TextBlock Text="Шаг видов друг от друга" Style="{StaticResource SabFieldLabelTextStyle}" />
                                             <TextBlock Text="Шаг X, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
                                             <TextBox Text="{Binding StepXmmText, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource SabTextBoxStyle}" />
-                                        </StackPanel>
+                                                     Style="{StaticResource SabTextBoxStyle}"
+                                                     Margin="0,0,0,8" />
 
-                                        <StackPanel Grid.Row="6" Grid.Column="2">
                                             <TextBlock Text="Шаг Y, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
                                             <TextBox Text="{Binding StepYmmText, UpdateSourceTrigger=PropertyChanged}"
                                                      Style="{StaticResource SabTextBoxStyle}" />

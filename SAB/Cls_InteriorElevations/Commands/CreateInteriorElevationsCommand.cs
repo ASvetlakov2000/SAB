@@ -102,6 +102,7 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document, savedSettings);
+                SheetPointSelectionService sheetPointSelectionService = new SheetPointSelectionService();
                 bool useMultipleLineGroups = false;
                 string selectionStatusText = "Линии и помещение не выбраны.";
                 ElevationSelectionPackage selectionPackage = null;
@@ -149,6 +150,45 @@ namespace SAB.InteriorElevations.Commands
                         else
                         {
                             selectionStatusText = "Линии и помещение не выбраны. Нажмите Выбрать линии.";
+                        }
+
+                        continue;
+                    }
+
+                    if (settingsWindow.RequestedAction == ElevationSettingsWindowAction.PickSheetPoint)
+                    {
+                        ElevationSettings sheetPointSettings = settingsWindow.SelectedSettings;
+                        if (sheetPointSettings == null)
+                        {
+                            ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло параметры листа.");
+                            continue;
+                        }
+
+                        XYZ pickedSheetPoint;
+                        bool pointSelectionCancelled;
+                        List<string> pointSelectionWarnings = new List<string>();
+                        bool pointPicked = sheetPointSelectionService.TryPickStartPointOnSheet(
+                            uiDocument,
+                            activeView,
+                            sheetPointSettings,
+                            pointSelectionWarnings,
+                            out pickedSheetPoint,
+                            out pointSelectionCancelled);
+
+                        AppendWarnings(warnings, pointSelectionWarnings);
+
+                        if (pointPicked)
+                        {
+                            settingsViewModel.SetSheetStartPointFromRevitPoint(pickedSheetPoint);
+                            ToastNotifier.ShowInfo("SAB Развертки", "Координата на листе выбрана и записана в поля Старт X/Y.");
+                        }
+                        else if (!pointSelectionCancelled)
+                        {
+                            string warningText = pointSelectionWarnings.Count > 0
+                                ? pointSelectionWarnings[pointSelectionWarnings.Count - 1]
+                                : "Координата на листе не была выбрана.";
+
+                            ToastNotifier.ShowWarning("SAB Развертки", warningText);
                         }
 
                         continue;

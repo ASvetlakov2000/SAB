@@ -14,7 +14,8 @@ namespace SAB.InteriorElevations.Views
     {
         Cancel = 0,
         PickSelection = 1,
-        Create = 2
+        Create = 2,
+        PickSheetPoint = 3
     }
 
     public partial class ElevationSettingsWindow : Window
@@ -26,6 +27,9 @@ namespace SAB.InteriorElevations.Views
         private Button _okButton;
         private Button _cancelButton;
         private Button _pickLinesButton;
+        private Button _pickSheetPointButton;
+        private RadioButton _manualSheetPointRadioButton;
+        private RadioButton _pickSheetPointRadioButton;
         private RadioButton _singleGroupRadioButton;
         private RadioButton _multipleGroupsRadioButton;
         private TextBlock _selectionStatusTextBlock;
@@ -89,6 +93,9 @@ namespace SAB.InteriorElevations.Views
                 _okButton = loadedWindow.FindName("OkButton") as Button;
                 _cancelButton = loadedWindow.FindName("CancelButton") as Button;
                 _pickLinesButton = loadedWindow.FindName("PickLinesButton") as Button;
+                _pickSheetPointButton = loadedWindow.FindName("PickSheetPointButton") as Button;
+                _manualSheetPointRadioButton = loadedWindow.FindName("ManualSheetPointRadioButton") as RadioButton;
+                _pickSheetPointRadioButton = loadedWindow.FindName("PickSheetPointRadioButton") as RadioButton;
                 _singleGroupRadioButton = loadedWindow.FindName("SingleGroupRadioButton") as RadioButton;
                 _multipleGroupsRadioButton = loadedWindow.FindName("MultipleGroupsRadioButton") as RadioButton;
                 _selectionStatusTextBlock = loadedWindow.FindName("SelectionStatusTextBlock") as TextBlock;
@@ -129,6 +136,21 @@ namespace SAB.InteriorElevations.Views
                 _pickLinesButton = FindElementByName<Button>(Content as DependencyObject, "PickLinesButton");
             }
 
+            if (_pickSheetPointButton == null)
+            {
+                _pickSheetPointButton = FindElementByName<Button>(Content as DependencyObject, "PickSheetPointButton");
+            }
+
+            if (_manualSheetPointRadioButton == null)
+            {
+                _manualSheetPointRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "ManualSheetPointRadioButton");
+            }
+
+            if (_pickSheetPointRadioButton == null)
+            {
+                _pickSheetPointRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "PickSheetPointRadioButton");
+            }
+
             if (_singleGroupRadioButton == null)
             {
                 _singleGroupRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "SingleGroupRadioButton");
@@ -144,7 +166,12 @@ namespace SAB.InteriorElevations.Views
                 _selectionStatusTextBlock = FindElementByName<TextBlock>(Content as DependencyObject, "SelectionStatusTextBlock");
             }
 
-            if (_okButton == null || _cancelButton == null || _pickLinesButton == null)
+            if (_okButton == null ||
+                _cancelButton == null ||
+                _pickLinesButton == null ||
+                _pickSheetPointButton == null ||
+                _manualSheetPointRadioButton == null ||
+                _pickSheetPointRadioButton == null)
             {
                 throw new InvalidOperationException("Не удалось привязать кнопки окна настроек.");
             }
@@ -152,6 +179,7 @@ namespace SAB.InteriorElevations.Views
             _okButton.Click += OkButton_Click;
             _cancelButton.Click += CancelButton_Click;
             _pickLinesButton.Click += PickLinesButton_Click;
+            _pickSheetPointButton.Click += PickSheetPointButton_Click;
         }
 
         private void ApplyInitialSelectionUiState()
@@ -238,6 +266,24 @@ namespace SAB.InteriorElevations.Views
         private void PickLinesButton_Click(object sender, RoutedEventArgs e)
         {
             RequestedAction = ElevationSettingsWindowAction.PickSelection;
+            DialogResult = true;
+            Close();
+        }
+
+        private void PickSheetPointButton_Click(object sender, RoutedEventArgs e)
+        {
+            ElevationSettings settings;
+            string validationMessage;
+
+            if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
+            {
+                ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
+                return;
+            }
+
+            _viewModel.IsSheetPointManualMode = false;
+            SelectedSettings = settings;
+            RequestedAction = ElevationSettingsWindowAction.PickSheetPoint;
             DialogResult = true;
             Close();
         }

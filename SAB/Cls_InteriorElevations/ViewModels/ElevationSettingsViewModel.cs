@@ -34,6 +34,9 @@ namespace SAB.InteriorElevations.ViewModels
         private RevitElementOption _selectedRoomPlanViewTemplate;
         private RevitElementOption _selectedRoomPlanRoomTagType;
         private bool _createSheet;
+        private bool _isSheetPointManualMode;
+        private string _startXmmText;
+        private string _startYmmText;
 
         public ElevationSettingsViewModel(Document document, ElevationSettings initialSettings = null)
         {
@@ -57,6 +60,7 @@ namespace SAB.InteriorElevations.ViewModels
             MarkerOffsetMmText = "250";
 
             ColumnsCountText = "2";
+            _isSheetPointManualMode = true;
             StartXmmText = "150";
             StartYmmText = "200";
             StepXmmText = "180";
@@ -196,9 +200,70 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string ColumnsCountText { get; set; }
 
-        public string StartXmmText { get; set; }
+        public bool IsSheetPointManualMode
+        {
+            get { return _isSheetPointManualMode; }
+            set
+            {
+                if (_isSheetPointManualMode == value)
+                {
+                    return;
+                }
 
-        public string StartYmmText { get; set; }
+                _isSheetPointManualMode = value;
+                OnPropertyChanged("IsSheetPointManualMode");
+                OnPropertyChanged("IsSheetPointPointMode");
+            }
+        }
+
+        public bool IsSheetPointPointMode
+        {
+            get { return !IsSheetPointManualMode; }
+            set
+            {
+                if (value)
+                {
+                    IsSheetPointManualMode = false;
+                }
+            }
+        }
+
+        public string StartXmmText
+        {
+            get { return _startXmmText; }
+            set
+            {
+                if (string.Equals(_startXmmText, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _startXmmText = value;
+                OnPropertyChanged("StartXmmText");
+                OnPropertyChanged("SheetPointSummary");
+            }
+        }
+
+        public string StartYmmText
+        {
+            get { return _startYmmText; }
+            set
+            {
+                if (string.Equals(_startYmmText, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _startYmmText = value;
+                OnPropertyChanged("StartYmmText");
+                OnPropertyChanged("SheetPointSummary");
+            }
+        }
+
+        public string SheetPointSummary
+        {
+            get { return "X: " + StartXmmText + " мм | Y: " + StartYmmText + " мм"; }
+        }
 
         public string StepXmmText { get; set; }
 
@@ -275,6 +340,19 @@ namespace SAB.InteriorElevations.ViewModels
 
             settings = elevationSettings;
             return true;
+        }
+
+        public void SetSheetStartPointFromRevitPoint(XYZ sheetPoint)
+        {
+            if (sheetPoint == null)
+            {
+                return;
+            }
+
+            // Блок переноса координаты листа из внутренних футов Revit в миллиметры окна настроек.
+            StartXmmText = FormatDouble(UnitConversionUtils.FeetToMillimeters(sheetPoint.X));
+            StartYmmText = FormatDouble(UnitConversionUtils.FeetToMillimeters(sheetPoint.Y));
+            IsSheetPointManualMode = false;
         }
 
         private string ValidateInput()

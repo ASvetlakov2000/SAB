@@ -191,6 +191,7 @@
     <Compile Include="Cls_InteriorElevations\Services\Settings\ElevationSettingsStorageService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Settings\RoomPlanSchemeSettingsStorageService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Sheets\SheetCreationService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Sheets\SheetPointSelectionService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Sheets\ViewportTransferService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Sheets\ViewportPlacementService.cs" />
     <Compile Include="Cls_InteriorElevations\Utils\RevitElementIdUtils.cs" />
