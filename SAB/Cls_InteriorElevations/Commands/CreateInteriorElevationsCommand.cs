@@ -18,6 +18,7 @@ using SAB.InteriorElevations.Services.Sheets;
 using SAB.InteriorElevations.Utils;
 using SAB.InteriorElevations.ViewModels;
 using SAB.InteriorElevations.Views;
+using SAB.Services.PluginResources;
 
 namespace SAB.InteriorElevations.Commands
 {
@@ -89,6 +90,11 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 List<string> warnings = new List<string>();
+                PluginFamilyResourceService pluginFamilyResourceService = new PluginFamilyResourceService();
+                pluginFamilyResourceService.EnsureCommandFamiliesLoaded(document, typeof(CreateInteriorElevationsCommand), warnings);
+
+                RoomVisibilityService roomVisibilityService = new RoomVisibilityService();
+                roomVisibilityService.EnsureRoomsAndObjectVisible(document, activeView, warnings);
 
                 ElevationSettingsStorageService settingsStorageService = new ElevationSettingsStorageService();
                 ElevationSettings savedSettings = null;
@@ -103,6 +109,7 @@ namespace SAB.InteriorElevations.Commands
 
                 ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document, savedSettings);
                 SheetPointSelectionService sheetPointSelectionService = new SheetPointSelectionService();
+                ElevationCropByExampleService cropByExampleService = new ElevationCropByExampleService();
                 bool useMultipleLineGroups = false;
                 string selectionStatusText = "Линии и помещение не выбраны.";
                 ElevationSelectionPackage selectionPackage = null;
@@ -192,6 +199,42 @@ namespace SAB.InteriorElevations.Commands
                         }
 
                         continue;
+                    }
+
+                    if (settingsWindow.RequestedAction == ElevationSettingsWindowAction.PickCropByExample)
+                    {
+                        ElevationSettings cropByExampleSettings = settingsWindow.SelectedSettings;
+                        if (cropByExampleSettings == null)
+                        {
+                            ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло параметры для вида-примера.");
+                            continue;
+                        }
+
+                        CropByExampleActionWindow cropByExampleActionWindow = new CropByExampleActionWindow();
+                        bool? cropByExampleDialogResult = cropByExampleActionWindow.ShowDialog();
+                        if (!cropByExampleDialogResult.HasValue || !cropByExampleDialogResult.Value)
+                        {
+                            settingsViewModel.IsCropManualMode = true;
+                            continue;
+                        }
+
+                        bool workflowStarted = TryStartCropByExampleWorkflow(
+                            uiApplication,
+                            activePlanView,
+                            activePlanLevelId,
+                            cropByExampleSettings,
+                            cropByExampleActionWindow.RequestedAction,
+                            cropByExampleService,
+                            warnings);
+
+                        if (!workflowStarted)
+                        {
+                            settingsViewModel.IsCropManualMode = true;
+                            ToastNotifier.ShowWarning("SAB Развертки", "Сценарий обрезки по виду-примеру не был запущен.");
+                            continue;
+                        }
+
+                        return Result.Succeeded;
                     }
 
                     settings = settingsWindow.SelectedSettings;
@@ -703,6 +746,67 @@ namespace SAB.InteriorElevations.Commands
             return actionWindow.IsNextGroupAction
                 ? TaskDialogResult.CommandLink1
                 : TaskDialogResult.CommandLink2;
+        }
+
+        private bool TryStartCropByExampleWorkflow(
+            UIApplication uiApplication,
+            ViewPlan sourcePlanView,
+            ElementId sourcePlanLevelId,
+            ElevationSettings settings,
+            CropByExampleAction requestedAction,
+            ElevationCropByExampleService cropByExampleService,
+            IList<string> warnings)
+        {
+            if (uiApplication == null || sourcePlanView == null || settings == null || cropByExampleService == null)
+            {
+                return false;
+            }
+
+            if (requestedAction == CropByExampleAction.None)
+            {
+                return false;
+            }
+
+            CropByExampleSession session = cropByExampleService.CreateSession(
+                sourcePlanView,
+                sourcePlanLevelId,
+                settings);
+
+            CropByExampleExternalEventHandler externalEventHandler =
+                new CropByExampleExternalEventHandler(session, cropByExampleService);
+
+            ExternalEvent externalEvent = ExternalEvent.Create(externalEventHandler);
+
+            CropByExampleLineCreationWindow helperWindow =
+                new CropByExampleLineCreationWindow(externalEventHandler, externalEvent);
+
+            externalEventHandler.SetWindow(helperWindow);
+
+            if (requestedAction == CropByExampleAction.PickLine)
+            {
+                helperWindow.SetExistingLineMode();
+                helperWindow.Show();
+
+                externalEventHandler.RequestOperation(CropByExampleOperation.PickExistingLineAndCreateView);
+                externalEvent.Raise();
+                return true;
+            }
+
+            if (requestedAction == CropByExampleAction.CreateLine)
+            {
+                helperWindow.SetCreateLineMode();
+                helperWindow.Show();
+
+                bool commandPosted = cropByExampleService.TryPostDetailLineCommand(uiApplication, warnings);
+                if (!commandPosted && warnings != null && warnings.Count > 0)
+                {
+                    ToastNotifier.ShowWarning("SAB Развертки", warnings[warnings.Count - 1]);
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         private List<DetailLine> FilterUniqueGroupLines(

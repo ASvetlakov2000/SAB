@@ -1,0 +1,173 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Линия для развертки-примера"
+        Height="455"
+        Width="815"
+        MinHeight="455"
+        MinWidth="815"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        Topmost="True"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Style="{StaticResource SabPanelBorderStyle}"
+                Margin="16,16,16,14">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                    <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                        <TextBlock Text="-" Style="{StaticResource SabPanelIconTextStyle}" />
+                    </Border>
+                    <TextBlock Text="Создание линии-основы" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                </StackPanel>
+
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           Margin="0,0,0,8"
+                           LineHeight="18">
+                    <Run Text="1. " FontWeight="SemiBold" />
+                    <Run Text="Нарисуйте одну линию детализации" FontWeight="SemiBold" />
+                    <Run Text=" на исходном плане. Линию рисуйте слева направо по направлению будущей развертки." />
+                </TextBlock>
+
+                <WrapPanel Margin="0,0,0,8" VerticalAlignment="Center">
+                    <TextBlock Text="2. "
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                    <TextBlock Text="После завершения команды Revit нажмите "
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,4,0" />
+                    <Button Content="Выбрать линию"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabOutlineButtonStyle}" />
+                    <TextBlock Text=" и укажите созданную линию."
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                </WrapPanel>
+
+                <WrapPanel Margin="0,0,0,6" VerticalAlignment="Center">
+                    <TextBlock Text="3. "
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                    <TextBlock Text="Затем нажмите "
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,4,0" />
+                    <Button Content="Создать вид"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                    <TextBlock Text=" и выберите помещение, когда Revit запросит выбор."
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                </WrapPanel>
+
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           Margin="0,0,0,8"
+                           LineHeight="18">
+                    <Run Text="Помещение нужно для определения направления развертки-примера." />
+                </TextBlock>
+
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           Margin="0,0,0,4"
+                           LineHeight="18">
+                    <Run Text="4. " FontWeight="SemiBold" />
+                    <Run Text="Настройте границу вида по высоте." FontWeight="SemiBold" />
+                    <Run Text=" Если Revit автоматически открыл редактирование crop, после настройки нажмите зеленую галочку Revit. Если автоматический вход не сработал, откройте редактирование границы вида вручную, настройте crop, нажмите зеленую галочку Revit, затем нажмите" />
+                </TextBlock>
+
+                <WrapPanel Margin="200,0,0,12" VerticalAlignment="Center">
+                    <Button Content="Принять границы"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                    <TextBlock Text=" ."
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                </WrapPanel>
+
+                <Border Style="{StaticResource SabValidationPanelStyle}">
+                    <StackPanel>
+                        <TextBlock x:Name="StatusHeaderTextBlock"
+                                   Text="Линия еще не выбрана."
+                                   Style="{StaticResource SabFieldLabelTextStyle}"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,6" />
+                        <TextBlock x:Name="StatusDescriptionTextBlock"
+                                   Text="Нарисуйте одну линию детализации слева направо, завершите команду Revit, затем нажмите Выбрать линию."
+                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                   TextWrapping="Wrap"
+                                   LineHeight="18" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="16,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="CancelButton"
+                        Grid.Column="0"
+                        Content="Отмена"
+                        Width="120"
+                        Style="{StaticResource SabNeutralButtonStyle}" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="SelectLineButton"
+                            Content="Выбрать линию"
+                            Width="150"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="CreateViewButton"
+                            Content="Создать вид"
+                            Width="150"
+                            IsEnabled="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="AcceptCropButton"
+                            Content="Принять границы"
+                            Width="160"
+                            IsEnabled="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -64,7 +64,7 @@ namespace SAB.InteriorElevations.Views
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
 
-                WindowSizeSettingsService.Apply(this, "InteriorElevations.LineGroupNextActionWindow.Compact");
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.LineGroupNextActionWindow.CompactV3");
             }
         }
 

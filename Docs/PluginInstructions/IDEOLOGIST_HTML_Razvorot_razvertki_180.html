@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="assets/sab-work.css">
-  <title>SAB - Перенос видов на следующий лист</title>
+  <title>SAB - Разворот 180</title>
 </head>
 <body>
 <nav class="globalnav" aria-label="SAB">
@@ -33,7 +33,7 @@
 </nav>
 <nav class="localnav" aria-label="Навигация по сценариям">
   <div class="localnav__inner">
-    <a class="localnav__title" href="#top">Перенос видов на следующий лист</a>
+    <a class="localnav__title" href="#top">Разворот 180</a>
     <div class="localnav__links">
       <a href="#description">Описание</a>
       <a href="#workflow">Порядок</a>
@@ -45,30 +45,30 @@
   <section class="hero">
     <div class="hero__inner">
       <p class="eyebrow">Развертки</p>
-      <h1>Перенос видов на следующий лист</h1>
-      <p class="hero__copy">Команда переносит выбранные viewport разверток на следующий лист, когда текущий лист уже заполнен.</p>
+      <h1>Разворот 180</h1>
+      <p class="hero__copy">Команда разворачивает направление развертки, если созданный вид смотрит в противоположную сторону.</p>
     </div>
   </section>
   <section class="section" id="description">
     <div class="section__inner">
       <p class="eyebrow">Сценарий 01</p>
       <h2>Когда использовать</h2>
-      <p class="section__lead">Команда нужна после создания разверток и первичной проверки листов. Используйте ее, если часть видов нужно быстро переместить на следующий лист без ручного копирования viewport.</p>
+      <p class="section__lead">Используйте команду после проверки созданных разверток на плане или листе. Если вид направлен не в ту сторону, его проще развернуть командой, чем пересоздавать весь набор.</p>
       <div class="description-flow">
         <article class="info-card">
           <h3>Подходит для</h3>
           <ul>
-            <li>Viewport разверток, размещенных на листе.</li>
-            <li>Ситуаций, когда на текущем листе не хватает места.</li>
-            <li>Переноса группы видов на следующий лист комплекта.</li>
+            <li>Разверток, созданных по линиям детализации.</li>
+            <li>Ситуаций, когда направление исходной линии было задано наоборот.</li>
+            <li>Корректировки отдельных видов без изменения всего комплекта.</li>
           </ul>
         </article>
         <article class="info-card">
           <h3>Что проверить</h3>
           <ul>
-            <li>Следующий лист уже существует или может быть создан по логике команды.</li>
-            <li>На исходном листе выбраны именно те viewport, которые нужно перенести.</li>
-            <li>После переноса подписи видов не накладываются друг на друга.</li>
+            <li>Нужный вид развертки найден на плане.</li>
+            <li>Вы понимаете, какую развертку нужно повернуть.</li>
+            <li>После разворота подписи и марки не конфликтуют с соседними элементами.</li>
           </ul>
         </article>
       </div>
@@ -80,11 +80,11 @@
       <h2>Порядок работы</h2>
       <article class="info-card">
         <ol class="step-list">
-          <li><span class="step-index">01</span><span>Откройте лист с размещенными развертками.</span></li>
-          <li><span class="step-index">02</span><span>Выберите viewport, которые нужно перенести.</span></li>
-          <li><span class="step-index">03</span><span>Нажмите <span class="cmd">Перенос видов на следующий лист</span>.</span></li>
-          <li><span class="step-index">04</span><span>Дождитесь завершения операции.</span></li>
-          <li><span class="step-index">05</span><span>Откройте следующий лист и проверьте размещение viewport.</span></li>
+          <li><span class="step-index">01</span><span>Откройте план, на котором размещены марка или линия нужной развертки.</span></li>
+          <li><span class="step-index">02</span><span>Нажмите команду <span class="cmd">Разворот 180</span>.</span></li>
+          <li><span class="step-index">03</span><span>Выберите развертку или связанный с ней элемент, когда Revit запросит выбор.</span></li>
+          <li><span class="step-index">04</span><span>Дождитесь завершения операции и откройте вид для проверки направления.</span></li>
+          <li><span class="step-index">05</span><span>Если развертка размещена на листе, проверьте положение viewport и подписи вида.</span></li>
         </ol>
       </article>
     </div>
@@ -92,8 +92,17 @@
   <section class="section" id="result">
     <div class="section__inner">
       <p class="eyebrow">Результат</p>
-      <h2>После переноса</h2>
-      <div class="callout">Проверьте сетку размещения видов, подписи viewport и номера листов. Если часть видов осталась на исходном листе, повторите команду только для оставшихся viewport.</div>
+      <h2>Что изменится</h2>
+      <div class="description-flow">
+        <article class="info-card">
+          <h3>Вид</h3>
+          <p>Направление развертки будет повернуто на 180 градусов относительно исходного положения.</p>
+        </article>
+        <article class="info-card">
+          <h3>Лист</h3>
+          <p>Если viewport уже размещен, после разворота проверьте читаемость подписей, марок и границ обрезки.</p>
+        </article>
+      </div>
     </div>
   </section>
 </main>

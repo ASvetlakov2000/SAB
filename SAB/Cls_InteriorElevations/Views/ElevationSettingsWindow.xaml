@@ -182,6 +182,8 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="12" />
                                         <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="14" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <StackPanel Grid.Row="0" Grid.Column="0">
@@ -206,6 +208,23 @@
                                         <TextBlock Text="Правый отступ, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
                                         <TextBox Text="{Binding RightOffsetMmText, UpdateSourceTrigger=PropertyChanged}"
                                                  Style="{StaticResource SabTextBoxStyle}" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="4"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="3"
+                                                Orientation="Horizontal">
+                                        <RadioButton x:Name="ManualCropRadioButton"
+                                                     Content="Ручной ввод"
+                                                     GroupName="CropMode"
+                                                     IsChecked="{Binding IsCropManualMode, Mode=TwoWay}"
+                                                     Style="{StaticResource SabRadioButtonStyle}"
+                                                     Margin="0,0,22,0" />
+                                        <RadioButton x:Name="CropByExampleRadioButton"
+                                                     Content="Обрезка вида на примере"
+                                                     GroupName="CropMode"
+                                                     IsChecked="{Binding IsCropByExampleMode, Mode=TwoWay}"
+                                                     Style="{StaticResource SabRadioButtonStyle}" />
                                     </StackPanel>
                                 </Grid>
                             </Expander>

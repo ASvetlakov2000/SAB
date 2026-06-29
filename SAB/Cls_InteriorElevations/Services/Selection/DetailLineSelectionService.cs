@@ -24,6 +24,77 @@ namespace SAB.InteriorElevations.Services.Selection
 
     public class DetailLineSelectionService
     {
+        public DetailLineSelectionResult PickSingleDetailLine(UIDocument uiDocument, View activeView)
+        {
+            return PickSingleDetailLine(uiDocument, activeView, "Выберите одну линию детализации");
+        }
+
+        public DetailLineSelectionResult PickSingleDetailLine(UIDocument uiDocument, View activeView, string statusPrompt)
+        {
+            DetailLineSelectionResult result = new DetailLineSelectionResult();
+
+            if (uiDocument == null || activeView == null)
+            {
+                result.Warnings.Add("Не удалось начать выбор линии, потому что документ или активный вид недоступен.");
+                return result;
+            }
+
+            Reference pickedReference;
+            try
+            {
+                pickedReference = uiDocument.Selection.PickObject(
+                    ObjectType.Element,
+                    new DetailLineSelectionFilter(activeView.Id),
+                    string.IsNullOrWhiteSpace(statusPrompt)
+                        ? "Выберите одну линию детализации"
+                        : statusPrompt);
+            }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+            {
+                result.IsCancelled = true;
+                return result;
+            }
+
+            if (pickedReference == null)
+            {
+                result.Warnings.Add("Линия не выбрана.");
+                return result;
+            }
+
+            Document document = uiDocument.Document;
+            Element element = document.GetElement(pickedReference);
+            DetailLine detailLine = element as DetailLine;
+
+            if (detailLine == null)
+            {
+                result.Warnings.Add("Выбранный элемент не является линией детализации.");
+                return result;
+            }
+
+            if (!RevitElementIdUtils.AreEqual(detailLine.OwnerViewId, activeView.Id))
+            {
+                result.Warnings.Add("Выбранная линия находится не в активном виде.");
+                return result;
+            }
+
+            Curve sourceCurve = GetCurve(detailLine);
+            Line line = sourceCurve as Line;
+            if (line == null)
+            {
+                result.Warnings.Add("Выбранная линия не является прямым отрезком.");
+                return result;
+            }
+
+            if (line.Length <= 1e-9)
+            {
+                result.Warnings.Add("Выбранная линия имеет нулевую длину.");
+                return result;
+            }
+
+            result.Lines.Add(detailLine);
+            return result;
+        }
+
         public DetailLineSelectionResult PickDetailLines(UIDocument uiDocument, View activeView)
         {
             return PickDetailLines(uiDocument, activeView, "Выберите линии, вдоль которых будут созданы развертки");

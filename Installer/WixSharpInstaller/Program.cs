@@ -122,6 +122,20 @@ namespace WixSharpInstaller
 
             pluginFiles.Add(pluginInstructionsDirectory);
 
+            string familiesSourcePath = ResolveFamiliesForPluginSourcePath(repositoryRoot, binFolder);
+            Dir familiesForPluginDirectory = BuildContentDirectory(
+                familiesSourcePath,
+                "Families for Plugin");
+
+            if (familiesForPluginDirectory == null)
+            {
+                throw new DirectoryNotFoundException(
+                    "Families for Plugin directory was not found or is empty. " +
+                    "Expected SAB\\Families for Plugin or bin\\Families for Plugin.");
+            }
+
+            pluginFiles.Add(familiesForPluginDirectory);
+
             Dir pluginFilesDirectory = new Dir(@"%AppDataFolder%\Autodesk\Revit\Addins\" + year + @"\SAB",
                 pluginFiles.ToArray());
 
@@ -182,8 +196,34 @@ namespace WixSharpInstaller
                 string.Join("\n - ", candidates));
         }
 
+        // Блок выбора папки Families for Plugin для установки рядом с DLL.
+        private static string ResolveFamiliesForPluginSourcePath(string repositoryRoot, string binFolder)
+        {
+            List<string> candidates = new List<string>();
+            candidates.Add(Path.Combine(binFolder, "Families for Plugin"));
+            candidates.Add(Path.Combine(repositoryRoot, "SAB", "Families for Plugin"));
+
+            foreach (string candidate in candidates)
+            {
+                if (Directory.Exists(candidate) && DirectoryHasFiles(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            throw new DirectoryNotFoundException(
+                "Families for Plugin source directory was not found.\nChecked:\n - " +
+                string.Join("\n - ", candidates));
+        }
+
         // Блок рекурсивной сборки директории документации для включения в MSI.
         private static Dir BuildDocumentationDirectory(string sourceDirectoryPath, string targetDirectoryName)
+        {
+            return BuildContentDirectory(sourceDirectoryPath, targetDirectoryName);
+        }
+
+        // Блок рекурсивной сборки любой контентной папки для включения в MSI.
+        private static Dir BuildContentDirectory(string sourceDirectoryPath, string targetDirectoryName)
         {
             if (string.IsNullOrWhiteSpace(sourceDirectoryPath) || !Directory.Exists(sourceDirectoryPath))
             {
@@ -213,6 +253,30 @@ namespace WixSharpInstaller
             }
 
             return new Dir(targetDirectoryName, childEntities.ToArray());
+        }
+
+        private static bool DirectoryHasFiles(string directoryPath)
+        {
+            if (string.IsNullOrWhiteSpace(directoryPath) || !Directory.Exists(directoryPath))
+            {
+                return false;
+            }
+
+            if (Directory.GetFiles(directoryPath).Length > 0)
+            {
+                return true;
+            }
+
+            string[] directories = Directory.GetDirectories(directoryPath);
+            foreach (string childDirectory in directories)
+            {
+                if (DirectoryHasFiles(childDirectory))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static Version ResolveInstallerVersion(string assemblyPath, string explicitVersion)

@@ -15,7 +15,8 @@ namespace SAB.InteriorElevations.Views
         Cancel = 0,
         PickSelection = 1,
         Create = 2,
-        PickSheetPoint = 3
+        PickSheetPoint = 3,
+        PickCropByExample = 4
     }
 
     public partial class ElevationSettingsWindow : Window
@@ -28,6 +29,8 @@ namespace SAB.InteriorElevations.Views
         private Button _cancelButton;
         private Button _pickLinesButton;
         private Button _pickSheetPointButton;
+        private RadioButton _manualCropRadioButton;
+        private RadioButton _cropByExampleRadioButton;
         private RadioButton _manualSheetPointRadioButton;
         private RadioButton _pickSheetPointRadioButton;
         private RadioButton _singleGroupRadioButton;
@@ -94,6 +97,8 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton = loadedWindow.FindName("CancelButton") as Button;
                 _pickLinesButton = loadedWindow.FindName("PickLinesButton") as Button;
                 _pickSheetPointButton = loadedWindow.FindName("PickSheetPointButton") as Button;
+                _manualCropRadioButton = loadedWindow.FindName("ManualCropRadioButton") as RadioButton;
+                _cropByExampleRadioButton = loadedWindow.FindName("CropByExampleRadioButton") as RadioButton;
                 _manualSheetPointRadioButton = loadedWindow.FindName("ManualSheetPointRadioButton") as RadioButton;
                 _pickSheetPointRadioButton = loadedWindow.FindName("PickSheetPointRadioButton") as RadioButton;
                 _singleGroupRadioButton = loadedWindow.FindName("SingleGroupRadioButton") as RadioButton;
@@ -141,6 +146,16 @@ namespace SAB.InteriorElevations.Views
                 _pickSheetPointButton = FindElementByName<Button>(Content as DependencyObject, "PickSheetPointButton");
             }
 
+            if (_manualCropRadioButton == null)
+            {
+                _manualCropRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "ManualCropRadioButton");
+            }
+
+            if (_cropByExampleRadioButton == null)
+            {
+                _cropByExampleRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "CropByExampleRadioButton");
+            }
+
             if (_manualSheetPointRadioButton == null)
             {
                 _manualSheetPointRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "ManualSheetPointRadioButton");
@@ -170,6 +185,8 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton == null ||
                 _pickLinesButton == null ||
                 _pickSheetPointButton == null ||
+                _manualCropRadioButton == null ||
+                _cropByExampleRadioButton == null ||
                 _manualSheetPointRadioButton == null ||
                 _pickSheetPointRadioButton == null)
             {
@@ -180,6 +197,8 @@ namespace SAB.InteriorElevations.Views
             _cancelButton.Click += CancelButton_Click;
             _pickLinesButton.Click += PickLinesButton_Click;
             _pickSheetPointButton.Click += PickSheetPointButton_Click;
+            _manualCropRadioButton.Click += ManualCropRadioButton_Click;
+            _cropByExampleRadioButton.Click += CropByExampleRadioButton_Click;
         }
 
         private void ApplyInitialSelectionUiState()
@@ -284,6 +303,29 @@ namespace SAB.InteriorElevations.Views
             _viewModel.IsSheetPointManualMode = false;
             SelectedSettings = settings;
             RequestedAction = ElevationSettingsWindowAction.PickSheetPoint;
+            DialogResult = true;
+            Close();
+        }
+
+        private void ManualCropRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.IsCropManualMode = true;
+        }
+
+        private void CropByExampleRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            ElevationSettings settings;
+            string validationMessage;
+
+            if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
+            {
+                _viewModel.IsCropManualMode = true;
+                ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
+                return;
+            }
+
+            SelectedSettings = settings;
+            RequestedAction = ElevationSettingsWindowAction.PickCropByExample;
             DialogResult = true;
             Close();
         }

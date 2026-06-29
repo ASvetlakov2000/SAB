@@ -16,94 +16,57 @@
       <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
       <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
       <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
-      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
     </div>
   </div>
 </nav>
 <nav class="localnav" aria-label="Навигация по странице">
   <div class="localnav__inner">
-    <a class="localnav__title" href="#top">Название инструкции</a>
+    <a class="localnav__title" href="#top">Шаблон инструкции</a>
     <div class="localnav__links">
-      <a href="#purpose">Когда использовать</a>
-      <a href="#workflow">Сценарий</a>
-      <a href="#fields">Поля и кнопки</a>
-      <a href="#check">Проверка</a>
+      <a href="#description">Описание</a>
+      <a href="#structure">Структура</a>
     </div>
   </div>
 </nav>
 <main id="top">
   <section class="hero">
     <div class="hero__inner">
-      <p class="eyebrow">Модуль</p>
-      <h1>Название инструкции</h1>
-      <p class="hero__copy">Коротко опишите, что пользователь получит после выполнения команды.</p>
+      <p class="eyebrow">Шаблон</p>
+      <h1>Шаблон инструкции</h1>
+      <p class="hero__copy">Структура для новых HTML-инструкций SAB.</p>
       <div class="hero__links">
-        <a href="#workflow">Сценарий работы</a>
-        <a href="#fields">Поля и кнопки</a>
+        <a href="#description">Описание</a>
+        <a href="#structure">Структура</a>
       </div>
     </div>
   </section>
-  <section class="section" id="purpose">
+  <section class="section section--soft" id="description">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 01</p>
-      <h2>Когда использовать</h2>
-      <p class="section__lead">Опишите рабочую ситуацию пользователя Revit начального-среднего уровня.</p>
-      <div class="content-grid">
-        <article class="content-card">
-          <h3>Что делает команда</h3>
-          <ul>
-            <li>Первое действие команды.</li>
-            <li>Второе действие команды.</li>
-          </ul>
-        </article>
-        <article class="content-card">
-          <h3>Перед запуском</h3>
-          <ul>
-            <li>Что проверить в модели.</li>
-            <li>Какие элементы подготовить заранее.</li>
-          </ul>
-        </article>
+      <p class="eyebrow">Описание плагина</p>
+      <h2>Шаблон инструкции.</h2>
+      <p class="section__lead">Этот файл фиксирует текущую структуру HTML-инструкций SAB для новых страниц.</p>
+      <div class="content-stack">
+        <div class="description-flow">
+          <p>Новая инструкция должна начинаться с темного заголовка, затем сразу идти серый блок Описание плагина, после него команды и их пошаговые инструкции.</p>
+          <p>Если страница относится к модулю Библиотека, добавляйте ссылки на соседние страницы модуля, чтобы пользователь мог перейти к связанным командам.</p>
+        </div>
       </div>
     </div>
   </section>
-  <section class="section section--soft" id="workflow">
+  <section class="section" id="structure">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 02</p>
-      <h2>Сценарий работы</h2>
-      <ol class="steps">
-        <li><span class="step-text">Откройте нужный проект Revit.</span></li>
-        <li><span class="step-text">На ленте SAB нажмите <span class="cmd">Название команды</span>.</span></li>
-        <li><span class="step-text">Заполните настройки окна.</span></li>
-        <li><span class="step-text">Нажмите <span class="cmd">Создать</span> или другую основную кнопку команды.</span></li>
-        <li><span class="step-text">Проверьте результат в модели.</span></li>
-      </ol>
-    </div>
-  </section>
-  <section class="section" id="fields">
-    <div class="section__inner">
-      <p class="eyebrow">Сценарий 03</p>
-      <h2>Поля и кнопки</h2>
-      <div class="command-table-wrap">
-        <table class="command-table">
-          <thead><tr><th>Поле или кнопка</th><th>Что делает</th><th>Когда использовать</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Поле</strong></td><td>Описание поля.</td><td>Когда его нужно менять.</td></tr>
-            <tr><td><span class="cmd">Кнопка</span></td><td>Описание кнопки.</td><td>Когда нажимать.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-  <section class="section section--soft" id="check">
-    <div class="section__inner">
-      <p class="eyebrow">Сценарий 04</p>
-      <h2>Проверка результата</h2>
-      <div class="content-card">
-        <ul>
-          <li>Что проверить после выполнения команды.</li>
-          <li>Как понять, что результат корректный.</li>
-        </ul>
+      <p class="eyebrow">Структура</p>
+      <h2>Как собирать новую страницу.</h2>
+      <p class="section__lead">Используйте одинаковые смысловые блоки, чтобы все инструкции читались одинаково.</p>
+      <div class="content-stack">
+        <ol class="steps">
+          <li><span class="step-text">Темный hero: кластер, название страницы, короткое описание и 2-3 ссылки на разделы.</span></li>
+          <li><span class="step-text">Серый блок: Описание плагина, что делает команда и когда ее использовать.</span></li>
+          <li><span class="step-text">Команды: Команда 01, Команда 02 и так далее, если на странице несколько команд.</span></li>
+          <li><span class="step-text">Поля окна: таблица с названием поля или кнопки и простым объяснением.</span></li>
+          <li><span class="step-text">Проверка результата: короткий блок о том, что пользователь должен увидеть после выполнения.</span></li>
+        </ol>
       </div>
     </div>
   </section>

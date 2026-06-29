@@ -1,0 +1,165 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Обрезка вида по высоте на примере"
+        Height="410"
+        Width="850"
+        MinHeight="410"
+        MinWidth="850"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Style="{StaticResource SabPanelBorderStyle}"
+                Margin="22,18,20,14">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                    <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                        <TextBlock Text="▣" Style="{StaticResource SabPanelIconTextStyle}" />
+                    </Border>
+                    <TextBlock Text="Обрезка вида по высоте на примере" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                </StackPanel>
+
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           Margin="0,0,0,12">
+                    <Run Text="Сначала выбирается линия, затем помещение. " FontWeight="SemiBold" />
+                    <Run Text="На основе этих данных будет создана одна развертка-пример для настройки верхней и нижней границы вида." />
+                </TextBlock>
+
+                <WrapPanel Margin="0,0,0,8" VerticalAlignment="Center">
+                    <TextBlock Text="1. " FontWeight="SemiBold" Style="{StaticResource SabFieldHintTextStyle}" Margin="0,4,4,0" />
+                    <Button Content="Выбрать линию"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabOutlineButtonStyle}" />
+                    <TextBlock Text=" - выберите одну существующую линию детализации, затем "
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                    <TextBlock Text="выберите помещение"
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                    <TextBlock Text=", когда Revit запросит выбор."
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                </WrapPanel>
+
+                <WrapPanel Margin="0,0,0,8" VerticalAlignment="Center">
+                    <TextBlock Text="2. " FontWeight="SemiBold" Style="{StaticResource SabFieldHintTextStyle}" Margin="0,4,4,0" />
+                    <Button Content="Создать линию"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                    <TextBlock Text=" - Revit перейдет к штатному инструменту Линия детализации. После рисования в отдельном окне нажмите "
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                    <Button Content="Выбрать линию"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabOutlineButtonStyle}" />
+                    <TextBlock Text=", затем "
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                    <Button Content="Создать вид"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                    <TextBlock Text=" и "
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                    <TextBlock Text="выберите помещение"
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                    <TextBlock Text="."
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                </WrapPanel>
+
+                <TextBlock TextWrapping="Wrap"
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           Margin="0,0,0,8">
+                    <Run Text="3. " FontWeight="SemiBold" />
+                    <Run Text="На виде-примере регулируйте только верхнюю и нижнюю границу crop. " FontWeight="SemiBold" />
+                    <Run Text="Изменения левой и правой границы игнорируются при записи настроек." />
+                </TextBlock>
+
+                <WrapPanel Margin="0,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="4. " FontWeight="SemiBold" Style="{StaticResource SabFieldHintTextStyle}" Margin="0,4,4,0" />
+                    <TextBlock Text="После зеленой галочки Revit "
+                               FontWeight="SemiBold"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                    <TextBlock Text="плагин запишет верхнюю и нижнюю подрезку. Если автоматический вход в редактирование crop не сработает, используйте кнопку "
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="0,4,0,0" />
+                    <Button Content="Принять границы"
+                            Height="26"
+                            Padding="10,0"
+                            IsHitTestVisible="False"
+                            Focusable="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                    <TextBlock Text=" в окне подсказки."
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               Margin="8,4,0,0" />
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="22,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="CloseButton"
+                        Grid.Column="0"
+                        Content="Закрыть"
+                        Width="120"
+                        Style="{StaticResource SabNeutralButtonStyle}" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="PickLineButton"
+                            Content="Выбрать линию"
+                            Width="150"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="CreateLineButton"
+                            Content="Создать линию"
+                            Width="150"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

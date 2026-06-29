@@ -16,8 +16,20 @@
       <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
       <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
       <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
-      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="commandnav" aria-label="Навигация по командам кластера">
+  <div class="commandnav__inner">
+    <span class="commandnav__title">Библиотека</span>
+    <div class="commandnav__links">
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+      <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+      <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+      <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
     </div>
   </div>
 </nav>
@@ -25,9 +37,8 @@
   <div class="localnav__inner">
     <a class="localnav__title" href="#top">Переименование типов</a>
     <div class="localnav__links">
-      <a href="#export">Экспорт имен типов</a>
-      <a href="#edit-xlsx">Правка XLSX перед импортом</a>
-      <a href="#import-types">Импорт: команда «Переименовать типы»</a>
+      <a href="#description">Описание</a>
+      <a href="#workflow">Команды</a>
     </div>
   </div>
 </nav>
@@ -36,81 +47,48 @@
     <div class="hero__inner">
       <p class="eyebrow">Библиотека</p>
       <h1>Переименование типов</h1>
-      <p class="hero__copy">Инструкция по экспорту имен типоразмеров в XLSX, безопасной правке таблицы и импорту изменений обратно в Revit.</p>
+      <p class="hero__copy">Пакетная подготовка и загрузка имен типов через XLSX/CSV.</p>
       <div class="hero__links">
-        <a href="#export">Экспорт имен типов</a>
-        <a href="#edit-xlsx">Правка XLSX перед импортом</a>
-        <a href="#import-types">Импорт: команда «Переименовать типы»</a>
+        <a href="#description">Описание</a>
+        <a href="#workflow">Команды</a>
       </div>
     </div>
   </section>
-  <section class="section" id="export">
+  <section class="section section--soft" id="description">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 01</p>
-      <h2>Экспорт имен типов</h2>
-      <p class="section__lead">Команда формирует XLSX-наборы для системных, загружаемых и прочих категорий, чтобы переименование выполнялось по отдельным группам.</p>
+      <p class="eyebrow">Описание плагина</p>
+      <h2>Переименование типов.</h2>
+      <p class="section__lead">Команды помогают выгрузить имена типов, отредактировать их в таблице и загрузить обратно в Revit.</p>
       <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Откройте модель Revit.</span></li>
-              <li><span class="step-text">На ленте SAB откройте <b>Библиотека</b>.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Экспорт имен типов</span>.</span></li>
-              <li><span class="step-text">Выберите рабочую папку.</span></li>
-              <li><span class="step-text">Откройте папку <span class="kbd">name</span> и проверьте XLSX-файлы.</span></li>
-            </ol>
-            <div class="content-grid">
-              <article class="content-card"><h3>Системные семейства</h3><p>Содержат столбец <span class="kbd">Структура</span> для справочной проверки слоев.</p></article>
-              <article class="content-card"><h3>Загружаемые семейства</h3><p>Используются для переименования семейств и типоразмеров.</p></article>
-              <article class="content-card"><h3>Прочее</h3><p>Отдельная группа для категорий, которые не попали в первые два набора.</p></article>
-            </div>
-          
+        <div class="description-flow">
+          <p>Экспорт создает таблицу XLSX/CSV с текущими типами. В Excel или LibreOffice можно подготовить новые имена, отметить лишние строки и проверить структуру перед загрузкой обратно.</p>
+          <p>Импорт читает подготовленную таблицу и пакетно переименовывает типоразмеры или семейства. Если включены служебные флаги удаления, команда удаляет отмеченные типы.</p>
+        </div>
+        <div class="cluster-links" aria-label="Страницы модуля Библиотека">
+          <span>Библиотека:</span>
+          <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+          <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+          <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+          <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
+        </div>
       </div>
     </div>
   </section>
-  <section class="section" id="edit-xlsx">
+  <section class="section" id="workflow">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 02</p>
-      <h2>Правка XLSX перед импортом</h2>
-      <p class="section__lead">Редактируйте только целевые значения и флаги удаления. Названия столбцов и общий формат файла менять нельзя.</p>
+      <p class="eyebrow">Команды</p>
+      <h2>Экспорт и импорт имен типов.</h2>
+      <p class="section__lead">Используйте команды как пару: сначала выгрузка, затем правка таблицы и обратная загрузка.</p>
       <div class="content-stack">
-
-            
-            <div class="command-table-wrap">
-              <table class="command-table">
-                <thead><tr><th>Колонка</th><th>Что заполнять</th></tr></thead>
-                <tbody>
-                  <tr><td>Категория</td><td>Не менять. Это категория типа.</td></tr>
-                  <tr><td>Старое семейство</td><td>Не менять без необходимости. Это исходное имя семейства.</td></tr>
-                  <tr><td>Новое семейство</td><td>Новое имя семейства, если его нужно изменить.</td></tr>
-                  <tr><td>Старый типоразмер</td><td>Не менять. Это исходное имя типа.</td></tr>
-                  <tr><td>Новый типоразмер</td><td>Новое имя типа.</td></tr>
-                  <tr><td>Структура</td><td>Справочная информация для системных типов.</td></tr>
-                  <tr><td>Удалить</td><td><span class="kbd">1</span> - удалить тип, <span class="kbd">0</span> - оставить.</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="callout warning"><strong>Правило безопасности:</strong> не совмещайте массовое переименование и массовое удаление в первом проходе, если таблица еще не проверена.</div>
-          
-      </div>
-    </div>
-  </section>
-  <section class="section" id="import-types">
-    <div class="section__inner">
-      <p class="eyebrow">Сценарий 03</p>
-      <h2>Импорт: команда «Переименовать типы»</h2>
-      <p class="section__lead">Команда применяет изменения построчно. Проблемные строки попадают в отдельный отчет, а обработка остальных строк продолжается.</p>
-      <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Нажмите <span class="cmd">Переименовать типы</span>.</span></li>
-              <li><span class="step-text">Выберите подготовленный XLSX-файл.</span></li>
-              <li><span class="step-text">Дождитесь итогового уведомления.</span></li>
-              <li><span class="step-text">Проверьте несколько измененных типов в диспетчере проекта.</span></li>
-              <li><span class="step-text">Если создан отчет <span class="kbd">Проблемные наименования.csv</span>, откройте его и исправьте строки.</span></li>
-            </ol>
-          
+        <ol class="steps">
+          <li><span class="step-text">Нажмите <span class="cmd">Экспорт имен типов</span> и выберите папку результата.</span></li>
+          <li><span class="step-text">Откройте XLSX/CSV в Excel или LibreOffice.</span></li>
+          <li><span class="step-text">Заполните новые имена, удалите лишние строки или отметьте элементы для удаления по служебным колонкам.</span></li>
+          <li><span class="step-text">Нажмите <span class="cmd">Переименовать типы</span> и выберите подготовленный XLSX/CSV.</span></li>
+          <li><span class="step-text">Проверьте итоговое уведомление: сколько типов переименовано, сколько удалено и есть ли проблемные строки.</span></li>
+        </ol>
       </div>
     </div>
   </section>

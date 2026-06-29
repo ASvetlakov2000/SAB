@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="assets/sab-work.css">
-  <title>SAB - Создание и корректировка разверток</title>
+  <title>SAB - Создать развертки</title>
 </head>
 <body>
 <nav class="globalnav" aria-label="SAB">
@@ -16,19 +16,29 @@
       <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
       <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
       <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
-      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
     </div>
   </div>
 </nav>
-<nav class="localnav" aria-label="Навигация по странице">
+<nav class="commandnav" aria-label="Навигация по командам кластера">
+  <div class="commandnav__inner">
+    <span class="commandnav__title">Развертки</span>
+    <div class="commandnav__links">
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Создать развертки</a>
+      <a href="IDEOLOGIST_HTML_Razvorot_razvertki_180.html">Разворот 180</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Перенос видов на следующий лист</a>
+      <a href="IDEOLOGIST_HTML_Vyrovnyat_marki_uglov.html">Выровнять марки</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по сценариям">
   <div class="localnav__inner">
-    <a class="localnav__title" href="#top">Создание и корректировка разверток</a>
+    <a class="localnav__title" href="#top">Создать развертки</a>
     <div class="localnav__links">
-      <a href="#prepare">Перед созданием разверток</a>
-      <a href="#elev-create">Создать развертки по линии</a>
-      <a href="#elev-flip">Разворот развертки 180</a>
-      <a href="#elev-align-corners">Выровнять марки углов</a>
+      <a href="#description">Описание</a>
+      <a href="#prepare">Подготовка</a>
+      <a href="#create">Основное окно</a>
+      <a href="#crop-example">Обрезка</a>
     </div>
   </div>
 </nav>
@@ -36,100 +46,116 @@
   <section class="hero">
     <div class="hero__inner">
       <p class="eyebrow">Развертки</p>
-      <h1>Создание и корректировка разверток</h1>
-      <p class="hero__copy">Инструкция по созданию разверток по линиям, развороту вида на 180 градусов и выравниванию марок углов.</p>
-      <div class="hero__links">
-        <a href="#prepare">Перед созданием разверток</a>
-        <a href="#elev-create">Создать развертки по линии</a>
-        <a href="#elev-flip">Разворот развертки 180</a>
-      </div>
+      <h1>Создать развертки</h1>
+      <p class="hero__copy">Команда создает развертки помещений по выбранным линиям, настраивает обрезку вида и при необходимости размещает виды на листах.</p>
     </div>
   </section>
-  <section class="section" id="prepare">
+  <section class="section" id="description">
     <div class="section__inner">
       <p class="eyebrow">Сценарий 01</p>
-      <h2>Перед созданием разверток</h2>
-      <p class="section__lead">Подготовьте линии и помещение на плане. Чем чище исходные линии, тем меньше корректировок потребуется после создания видов.</p>
-      <div class="content-stack">
-
-            
-            <ul class="compact-list">
-              <li>Откройте план помещения, для которого нужны развертки.</li>
-              <li>Проверьте, что линии разверток лежат в нужном месте и имеют понятное направление.</li>
-              <li>Проверьте, что помещение размещено и корректно ограничено.</li>
-              <li>Если нужно переносить готовые виды на лист, после создания откройте инструкцию <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>.</li>
-            </ul>
-          
+      <h2>Когда использовать</h2>
+      <p class="section__lead">Используйте команду после подготовки линий детализации на плане помещения. Линия задает направление будущей развертки, а выбранное помещение помогает плагину назвать вид и определить границы.</p>
+      <div class="description-flow">
+        <article class="info-card">
+          <h3>Что подготовить</h3>
+          <ul>
+            <li>Активный план, на котором видны помещения.</li>
+            <li>Линии детализации для направлений разверток.</li>
+            <li>Тип вида развертки и шаблон вида.</li>
+            <li>Основную надпись и тип марки угла, если создаются листы.</li>
+          </ul>
+        </article>
+        <article class="info-card">
+          <h3>Что получится</h3>
+          <ul>
+            <li>Отдельные виды разверток по выбранным линиям.</li>
+            <li>Настроенная глубина проекции и отступы обрезки.</li>
+            <li>Листы с размещенными viewport, если включен параметр создания листа.</li>
+            <li>Марки углов на плане для связи разверток с листом.</li>
+          </ul>
+        </article>
       </div>
     </div>
   </section>
-  <section class="section" id="elev-create">
+  <section class="section section--soft" id="prepare">
     <div class="section__inner">
       <p class="eyebrow">Сценарий 02</p>
-      <h2>Создать развертки по линии</h2>
-      <p class="section__lead">Команда строит фасады по выбранным линиям. Можно работать с одной группой линий или с несколькими группами для одного помещения.</p>
+      <h2>Подготовка</h2>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card">
-                <h3>Режим: одна группа линий</h3>
-                <ol>
-                  <li>Нажмите <span class="cmd">Создать развертки по линии</span>.</li>
-                  <li>Выберите режим <b>По одной группе линий</b>.</li>
-                  <li>Выберите линии группы.</li>
-                  <li>Выберите помещение.</li>
-                  <li>Проверьте настройки и нажмите <span class="cmd">Создать развертки</span>.</li>
-                </ol>
-              </article>
-              <article class="content-card">
-                <h3>Режим: несколько групп линий</h3>
-                <ol>
-                  <li>Выберите режим <b>По нескольким группам линий</b>.</li>
-                  <li>После каждой группы нажимайте <b>Выбрать следующую группу линий</b>.</li>
-                  <li>После завершения нажмите <span class="cmd">Завершить выбор групп</span>.</li>
-                  <li>Выберите помещение и запустите построение.</li>
-                </ol>
-              </article>
-            </div>
-            <div class="callout note"><strong>Нумерация:</strong> углы и виды нумеруются сквозным образом по всем группам текущего помещения.</div>
-          
+        <article class="info-card">
+          <h3>Линии</h3>
+          <ol class="step-list">
+            <li><span class="step-index">01</span><span>Нарисуйте линии детализации вдоль стен или зон, по которым нужны развертки.</span></li>
+            <li><span class="step-index">02</span><span>Рисуйте линию слева направо по направлению будущей развертки.</span></li>
+            <li><span class="step-index">03</span><span>После запуска команды нажмите <span class="cmd">Выбрать линии</span> и выделите нужные линии.</span></li>
+          </ol>
+        </article>
+        <article class="info-card">
+          <h3>Помещение</h3>
+          <ol class="step-list">
+            <li><span class="step-index">01</span><span>После выбора линий укажите помещение в активном плане.</span></li>
+            <li><span class="step-index">02</span><span>Плагин использует помещение для имени вида и автоматической привязки к зоне.</span></li>
+            <li><span class="step-index">03</span><span>Если помещение не выбирается, проверьте границы помещения и активную фазу вида.</span></li>
+          </ol>
+        </article>
       </div>
     </div>
   </section>
-  <section class="section" id="elev-flip">
+  <section class="section" id="create">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 03</p>
-      <h2>Разворот развертки 180</h2>
-      <p class="section__lead">Команда создает корректный повернутый вариант фасада относительно выбранной линии и сохраняет настройки вида.</p>
-      <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">На плане выберите фасад, который нужно развернуть.</span></li>
-              <li><span class="step-text">Выберите линию, по которой создавался фасад.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Разворот развертки 180</span>.</span></li>
-              <li><span class="step-text">Проверьте направление нового вида и его настройки.</span></li>
-            </ol>
-          
+      <p class="eyebrow">Окно</p>
+      <h2>Основное окно команды</h2>
+      <p class="section__lead">В окне задаются параметры будущих разверток, листов и марок. Сначала выберите линии, затем проверьте настройки и нажмите <span class="cmd">Создать развертки</span>.</p>
+      <div class="media-description-grid media-description-grid--reverse">
+        <div class="window-note">
+          <h3>Что находится в окне</h3>
+          <div class="data-table">
+            <div><strong>Режим работы</strong><span>Одна группа линий создает один набор разверток. Несколько групп линий подходят, когда нужно обработать несколько помещений или зон.</span></div>
+            <div><strong>Тип вида развертки</strong><span>Тип вида Revit, на основе которого создаются новые развертки.</span></div>
+            <div><strong>Шаблон вида развертки</strong><span>Шаблон, который будет применен к созданным видам.</span></div>
+            <div><strong>Масштаб вида</strong><span>Масштаб создаваемых разверток.</span></div>
+            <div><strong>Глубина проекции</strong><span>Расстояние от линии развертки до дальней границы видимости.</span></div>
+            <div><strong>Отступ вида от линии</strong><span>Смещение границы вида от исходной линии, если нужно захватить участок перед линией.</span></div>
+            <div><strong>Обрезка вида</strong><span>Верхний, нижний, левый и правый отступы задают рамку обрезки будущего вида.</span></div>
+            <div><strong>План-схема помещения</strong><span>Настройки дополнительного плана-схемы помещения, если он нужен в составе листа.</span></div>
+            <div><strong>Лист</strong><span>Параметры создания листа, основная надпись, формат, количество колонок и шаг размещения видов.</span></div>
+            <div><strong>Марки</strong><span>Тип марки угла на плане и тип марки помещения для план-схемы.</span></div>
+          </div>
+        </div>
+        <figure class="window-figure">
+          <img src="assets/windows/okno_sozdat_razvertki_po_linii.png" alt="Окно команды Создать развертки">
+          <figcaption>Основное окно команды. Поля задают вид, обрезку, лист и размещение разверток.</figcaption>
+        </figure>
       </div>
+      <div class="callout">Перед созданием нажмите <span class="cmd">Выбрать линии</span>, затем укажите линии детализации и помещение в активном плане. Параметры сохраняются и будут использованы при следующем запуске команды.</div>
     </div>
   </section>
-  <section class="section" id="elev-align-corners">
+  <section class="section section--soft" id="crop-example">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 04</p>
-      <h2>Выровнять марки углов</h2>
-      <p class="section__lead">Команда используется как финальный этап после создания или переноса разверток.</p>
+      <p class="eyebrow">Настройка</p>
+      <h2>Обрезка вида по высоте на примере</h2>
+      <p class="section__lead">Этот режим помогает подобрать верхнюю и нижнюю границу развертки по тестовому виду. Используйте его, если точные значения отступов пока неизвестны.</p>
+      <div class="window-pair">
+        <figure class="window-figure">
+          <img src="assets/windows/okno_liniya_dlya_primera.png" alt="Окно создания линии-основы">
+          <figcaption>Сначала выберите или создайте линию-основу для тестовой развертки.</figcaption>
+        </figure>
+        <figure class="window-figure">
+          <img src="assets/windows/okno_obrezka_po_primeru.png" alt="Окно обрезки вида по высоте на примере">
+          <figcaption>Затем настройте верхнюю и нижнюю границу на созданном виде-примере.</figcaption>
+        </figure>
+      </div>
       <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Откройте план с марками углов.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Выровнять марки углов</span>.</span></li>
-              <li><span class="step-text">Проверьте, что марки читаются и не перекрывают линии или подписи.</span></li>
-            </ol>
-            <div class="callout success"><strong>Хороший результат:</strong> все марки углов стоят ровно, читаются на плане и соответствуют созданным разверткам.</div>
-          
+        <article class="info-card">
+          <h3>Порядок работы</h3>
+          <ol class="step-list">
+            <li><span class="step-index">01</span><span>Нажмите <span class="cmd">Обрезка вида на примере</span> в настройках команды.</span></li>
+            <li><span class="step-index">02</span><span>Выберите существующую линию детализации или создайте новую линию через кнопку <span class="cmd">Создать линию</span>.</span></li>
+            <li><span class="step-index">03</span><span>Нажмите <span class="cmd">Создать вид</span> и выберите помещение, когда Revit запросит выбор.</span></li>
+            <li><span class="step-index">04</span><span>На виде-примере настройте верхнюю и нижнюю границы crop.</span></li>
+            <li><span class="step-index">05</span><span>Нажмите <span class="cmd">Принять границы</span>. Плагин запишет значения в основные настройки.</span></li>
+          </ol>
+        </article>
       </div>
     </div>
   </section>

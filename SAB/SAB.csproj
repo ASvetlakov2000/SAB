@@ -157,6 +157,7 @@
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\FlipElevation180ByLineCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\MoveElevationViewportsToNewSheetCommand.cs" />
+    <Compile Include="Cls_InteriorElevations\Models\CropByExampleSession.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationFlipResult.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationLineData.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationSettings.cs" />
@@ -171,6 +172,8 @@
     <Compile Include="Cls_InteriorElevations\Models\RoomPlanSchemeSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Models\RoomPlanSchemeCreationSummary.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationCropService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationCropByExampleService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Elevations\CropByExampleExternalEventHandler.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationFlipService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationMarkerService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Elevations\ElevationNamingService.cs" />
@@ -185,6 +188,7 @@
     <Compile Include="Cls_InteriorElevations\Services\Reports\ElevationCreationReportService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomDetectionService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomPlanSelectionService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomVisibilityService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Selection\DetailLineSelectionService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Plans\RoomPlanSchemeCreationService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Settings\PlanCornerMarkAlignmentSettingsStorageService.cs" />
@@ -207,6 +211,12 @@
     </Compile>
     <Compile Include="Cls_InteriorElevations\Views\LineGroupNextActionWindow.xaml.cs">
       <DependentUpon>LineGroupNextActionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_InteriorElevations\Views\CropByExampleActionWindow.xaml.cs">
+      <DependentUpon>CropByExampleActionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_InteriorElevations\Views\CropByExampleLineCreationWindow.xaml.cs">
+      <DependentUpon>CropByExampleLineCreationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml.cs">
       <DependentUpon>ElevationSettingsWindow.xaml</DependentUpon>
@@ -319,6 +329,7 @@
     <Compile Include="Cls_RoomGeometryTools\Utils\PolygonUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
+    <Compile Include="Services\PluginResources\PluginFamilyResourceService.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -416,7 +427,22 @@
     <Content Include="Cls_InteriorElevations\Views\LineGroupNextActionWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Cls_InteriorElevations\Views\CropByExampleActionWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_InteriorElevations\Views\CropByExampleLineCreationWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Cls_RoomGeometryTools\UI\RoomGeometryToolsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Families for Plugin\CreateInteriorElevationsCommand\SAB_Марка угла_План.rfa">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Families for Plugin\CreateInteriorElevationsCommand\SAB_Марка угла_Развертки.rfa">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Families for Plugin\CreateInteriorElevationsCommand\SAB_Марка_Помещение.rfa">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="BimDashboard\wwwroot\dashboard.css">

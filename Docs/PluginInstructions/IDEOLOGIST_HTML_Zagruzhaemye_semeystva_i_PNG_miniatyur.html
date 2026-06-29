@@ -16,8 +16,20 @@
       <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
       <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
       <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
-      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="commandnav" aria-label="Навигация по командам кластера">
+  <div class="commandnav__inner">
+    <span class="commandnav__title">Библиотека</span>
+    <div class="commandnav__links">
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+      <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+      <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+      <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
     </div>
   </div>
 </nav>
@@ -25,10 +37,10 @@
   <div class="localnav__inner">
     <a class="localnav__title" href="#top">Загружаемые семейства и PNG миниатюр</a>
     <div class="localnav__links">
-      <a href="#purpose">Когда использовать</a>
-      <a href="#export-csv">Экспорт CSV загружаемых семейств</a>
-      <a href="#png-family">Экспорт PNG миниатюр</a>
-      <a href="#viewer">Открытие в HTML просмотре</a>
+      <a href="#description">Описание</a>
+      <a href="#export-loadable">Экспорт</a>
+      <a href="#png-loadable">PNG миниатюры</a>
+      <a href="#placement">Размещение</a>
     </div>
   </div>
 </nav>
@@ -37,111 +49,91 @@
     <div class="hero__inner">
       <p class="eyebrow">Библиотека</p>
       <h1>Загружаемые семейства и PNG миниатюр</h1>
-      <p class="hero__copy">Инструкция по выгрузке CSV для загружаемых семейств, созданию PNG-миниатюр и открытию результата в HTML viewer.</p>
+      <p class="hero__copy">Экспорт загружаемых семейств, создание миниатюр и подготовка таблиц для дальнейшей работы.</p>
       <div class="hero__links">
-        <a href="#purpose">Когда использовать</a>
-        <a href="#export-csv">Экспорт CSV загружаемых семейств</a>
-        <a href="#png-family">Экспорт PNG миниатюр</a>
+        <a href="#description">Описание</a>
+        <a href="#export-loadable">Экспорт</a>
+        <a href="#png-loadable">PNG миниатюры</a>
       </div>
     </div>
   </section>
-  <section class="section" id="purpose">
+  <section class="section section--soft" id="description">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 01</p>
-      <h2>Когда использовать</h2>
-      <p class="section__lead">Сценарий нужен для каталогизации загружаемых семейств: мебели, оборудования, аннотаций, профилей и других RFA-семейств в проекте.</p>
+      <p class="eyebrow">Описание плагина</p>
+      <h2>Загружаемые семейства.</h2>
+      <p class="section__lead">Страница описывает экспорт загружаемых семейств, создание PNG-миниатюр и подготовку данных для переименования или размещения.</p>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card">
-                <h3>Команда выгружает</h3>
-                <ul>
-                  <li>Категорию семейства.</li>
-                  <li>Имя семейства.</li>
-                  <li>Имя типоразмера.</li>
-                  <li>Путь к миниатюре.</li>
-                  <li>Служебный флаг <span class="kbd">Включить</span>.</li>
-                </ul>
-              </article>
-              <article class="content-card">
-                <h3>Рабочие папки</h3>
-                <ul>
-                  <li><span class="kbd">ctg_loadable families</span> для CSV.</li>
-                  <li><span class="kbd">PNG_Family</span> для изображений.</li>
-                </ul>
-              </article>
-            </div>
-          
+        <div class="description-flow">
+          <p>Рабочий процесс такой же, как у всего модуля Библиотека: выгрузить категории из Revit, проверить и отредактировать таблицы в Excel или LibreOffice, затем использовать CSV для просмотра, переименования, удаления или размещения элементов.</p>
+          <p>PNG-миниатюры нужны для наглядной проверки в HTML viewer. Если миниатюры не экспортированы, таблица откроется, но изображений в строках не будет.</p>
+        </div>
+        <div class="cluster-links" aria-label="Страницы модуля Библиотека">
+          <span>Библиотека:</span>
+          <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+          <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+          <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+          <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
+        </div>
       </div>
     </div>
   </section>
-  <section class="section" id="export-csv">
+  <section class="section" id="export-loadable">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 02</p>
-      <h2>Экспорт CSV загружаемых семейств</h2>
-      <p class="section__lead">CSV нужен для просмотра библиотеки и последующей работы с семействами по категориям.</p>
+      <p class="eyebrow">Команда 01</p>
+      <h2>Экспорт загружаемых.</h2>
+      <p class="section__lead">Команда собирает типы загружаемых семейств и сохраняет CSV по категориям.</p>
       <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Откройте проект Revit с нужными загружаемыми семействами.</span></li>
-              <li><span class="step-text">На ленте SAB откройте <b>Библиотека</b>.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Экспорт загружаемых</span>.</span></li>
-              <li><span class="step-text">Выберите рабочую папку.</span></li>
-              <li><span class="step-text">Проверьте общий CSV и CSV по категориям в <span class="kbd">ctg_loadable families</span>.</span></li>
-            </ol>
-            <div class="callout note"><strong>Для начинающих:</strong> загружаемые семейства - это элементы, которые обычно загружаются в проект как отдельные RFA-файлы, в отличие от стен, перекрытий и потолков.</div>
-          
+        <ol class="steps">
+          <li><span class="step-text">Откройте проект Revit с нужными загружаемыми семействами.</span></li>
+          <li><span class="step-text">На панели <span class="kbd">Библиотека</span> нажмите <span class="cmd">Экспорт загружаемых</span>.</span></li>
+          <li><span class="step-text">Выберите папку результата.</span></li>
+          <li><span class="step-text">Откройте папку <span class="kbd">ctg_loadable families</span>.</span></li>
+          <li><span class="step-text">Проверьте CSV по категориям: категория, семейство, типоразмер, путь к миниатюре и служебные поля.</span></li>
+        </ol>
       </div>
     </div>
   </section>
-  <section class="section" id="png-family">
+  <section class="section" id="png-loadable">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 03</p>
-      <h2>Экспорт PNG миниатюр</h2>
-      <p class="section__lead">Миниатюры помогают быстрее проверять библиотеку в HTML viewer и визуально отличать типы.</p>
+      <p class="eyebrow">Команда 02</p>
+      <h2>Экспорт PNG семейств.</h2>
+      <p class="section__lead">Команда формирует PNG-миниатюры для загружаемых семейств, чтобы HTML viewer показывал карточки визуально.</p>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card">
-                <h3>Шаги</h3>
-                <ol>
-                  <li>Нажмите <span class="cmd">Экспорт PNG семейств</span>.</li>
-                  <li>Выберите папку результата.</li>
-                  <li>Проверьте подпапку <span class="kbd">PNG_Family</span>.</li>
-                </ol>
-              </article>
-              <article class="content-card">
-                <h3>Как viewer ищет PNG</h3>
-                <ul>
-                  <li>Основной ключ: <b>Типоразмер</b>.</li>
-                  <li>Запасной ключ: <b>Семейство_Типоразмер</b>.</li>
-                  <li>Если PNG добавлены позже, повторите экспорт CSV.</li>
-                </ul>
-              </article>
-            </div>
-          
+        <ol class="steps">
+          <li><span class="step-text">Нажмите <span class="cmd">Экспорт PNG семейств</span>.</span></li>
+          <li><span class="step-text">Выберите папку для изображений.</span></li>
+          <li><span class="step-text">После экспорта проверьте, что имена PNG соответствуют строкам CSV.</span></li>
+          <li><span class="step-text">Откройте CSV через <span class="cmd">HTML просмотр</span> и проверьте колонку <span class="kbd">Миниатюра</span>.</span></li>
+        </ol>
       </div>
     </div>
   </section>
-  <section class="section" id="viewer">
+  <section class="section" id="placement">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 04</p>
-      <h2>Открытие в HTML просмотре</h2>
-      <p class="section__lead">Viewer автоматически выбирает профиль по имени CSV и показывает таблицу с миниатюрами, семействами и типоразмерами.</p>
+      <p class="eyebrow">Команды 03</p>
+      <h2>Размещение и удаление.</h2>
+      <p class="section__lead">CSV можно использовать как управляющую таблицу для размещения элементов в проекте и удаления лишних типов.</p>
       <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Нажмите <span class="cmd">HTML просмотр</span>.</span></li>
-              <li><span class="step-text">Выберите CSV, в имени которого есть <b>Загружаемые семейства</b>.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Открыть</span>.</span></li>
-              <li><span class="step-text">Проверьте, что миниатюры отображаются рядом с типоразмерами.</span></li>
-            </ol>
-            <div class="callout warning"><strong>Если миниатюры пустые:</strong> проверьте, что PNG лежат рядом с CSV-набором в ожидаемой папке и что имена файлов совпадают с типами.</div>
-          
+        <div class="content-grid">
+        <article class="content-card">
+          <h3>Размещение</h3>
+          <ul>
+            <li><span class="cmd">Размещение по точке</span> размещает экземпляры в выбранной точке.</li>
+            <li><span class="cmd">Размещение по линии</span> раскладывает элементы вдоль линии.</li>
+            <li><span class="cmd">Размещение по границе</span> использует контур или границу размещения.</li>
+          </ul>
+        </article>
+        <article class="content-card">
+          <h3>Удаление</h3>
+          <ul>
+            <li><span class="cmd">Удаление элементов</span> удаляет выбранные типы или семейства.</li>
+            <li>Перед удалением проверьте выборку и зависимости в модели.</li>
+            <li>После операции смотрите итоговое уведомление и ошибки, если они есть.</li>
+          </ul>
+        </article>
+        </div>
       </div>
     </div>
   </section>
@@ -151,3 +143,4 @@
 </footer>
 </body>
 </html>
+

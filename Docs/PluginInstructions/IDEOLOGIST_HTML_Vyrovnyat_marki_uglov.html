@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/sab-work.css">
+  <title>SAB - Выровнять марки</title>
+</head>
+<body>
+<nav class="globalnav" aria-label="SAB">
+  <div class="globalnav__inner">
+    <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
+    <span class="globalnav__divider" aria-hidden="true"></span>
+    <div class="globalnav__links">
+      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
+      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="commandnav" aria-label="Навигация по командам кластера">
+  <div class="commandnav__inner">
+    <span class="commandnav__title">Развертки</span>
+    <div class="commandnav__links">
+      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Создать развертки</a>
+      <a href="IDEOLOGIST_HTML_Razvorot_razvertki_180.html">Разворот 180</a>
+      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Перенос видов на следующий лист</a>
+      <a href="IDEOLOGIST_HTML_Vyrovnyat_marki_uglov.html">Выровнять марки</a>
+    </div>
+  </div>
+</nav>
+<nav class="localnav" aria-label="Навигация по сценариям">
+  <div class="localnav__inner">
+    <a class="localnav__title" href="#top">Выровнять марки</a>
+    <div class="localnav__links">
+      <a href="#description">Описание</a>
+      <a href="#window">Окно</a>
+      <a href="#workflow">Порядок</a>
+    </div>
+  </div>
+</nav>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Развертки</p>
+      <h1>Выровнять марки</h1>
+      <p class="hero__copy">Команда выравнивает марки углов на плане и задает единый отступ от угла.</p>
+    </div>
+  </section>
+  <section class="section" id="description">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 01</p>
+      <h2>Когда использовать</h2>
+      <p class="section__lead">Используйте команду после создания разверток, если марки углов стоят на разном расстоянии или мешают чтению плана.</p>
+      <div class="description-flow">
+        <article class="info-card">
+          <h3>Что делает команда</h3>
+          <ul>
+            <li>Находит марки углов, связанные с развертками.</li>
+            <li>Смещает марки на заданный отступ от угла.</li>
+            <li>Помогает привести план к единому визуальному виду.</li>
+          </ul>
+        </article>
+        <article class="info-card">
+          <h3>Когда проверять вручную</h3>
+          <ul>
+            <li>Если рядом с углом много аннотаций.</li>
+            <li>Если план имеет нестандартную геометрию помещения.</li>
+            <li>Если после выравнивания марка пересекает стены, размеры или текст.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section class="section section--soft" id="window">
+    <div class="section__inner">
+      <p class="eyebrow">Окно</p>
+      <h2>Параметры выравнивания</h2>
+      <div class="media-description-grid media-description-grid--reverse">
+        <div class="window-note">
+          <h3>Поля и кнопки</h3>
+          <div class="data-table">
+            <div><strong>Отступ марки от угла, мм</strong><span>Расстояние от угла помещения до марки. Значение задается в миллиметрах.</span></div>
+            <div><strong>Применить</strong><span>Запускает выравнивание марок с указанным отступом.</span></div>
+            <div><strong>Отмена</strong><span>Закрывает окно без изменения марок.</span></div>
+          </div>
+        </div>
+        <figure class="window-figure">
+          <img src="assets/windows/okno_vyravnivanie_marok_uglov.png" alt="Окно выравнивания марок углов">
+          <figcaption>Окно настройки отступа марки угла.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="section" id="workflow">
+    <div class="section__inner">
+      <p class="eyebrow">Сценарий 02</p>
+      <h2>Порядок работы</h2>
+      <article class="info-card">
+        <ol class="step-list">
+          <li><span class="step-index">01</span><span>Откройте план с марками углов разверток.</span></li>
+          <li><span class="step-index">02</span><span>Нажмите <span class="cmd">Выровнять марки углов</span>.</span></li>
+          <li><span class="step-index">03</span><span>Введите отступ марки от угла в миллиметрах.</span></li>
+          <li><span class="step-index">04</span><span>Нажмите <span class="cmd">Применить</span>.</span></li>
+          <li><span class="step-index">05</span><span>Проверьте план и при необходимости вручную поправьте конфликтующие марки.</span></li>
+        </ol>
+      </article>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
+</footer>
+</body>
+</html>

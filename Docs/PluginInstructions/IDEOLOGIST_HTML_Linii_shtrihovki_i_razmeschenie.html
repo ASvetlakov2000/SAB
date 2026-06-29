@@ -16,8 +16,20 @@
       <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
       <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
       <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
-      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="commandnav" aria-label="Навигация по командам кластера">
+  <div class="commandnav__inner">
+    <span class="commandnav__title">Библиотека</span>
+    <div class="commandnav__links">
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+      <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+      <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+      <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
     </div>
   </div>
 </nav>
@@ -25,11 +37,9 @@
   <div class="localnav__inner">
     <a class="localnav__title" href="#top">Линии, штриховки и размещение</a>
     <div class="localnav__links">
-      <a href="#export-lines">Экспорт CSV</a>
-      <a href="#placement">Размещение элементов по CSV</a>
-      <a href="#extra-placement">Дополнительные способы размещения</a>
-      <a href="#png-preview">Экспорт PNG превью</a>
-      <a href="#delete-elements">Удаление элементов</a>
+      <a href="#description">Описание</a>
+      <a href="#export">Экспорт CSV</a>
+      <a href="#preview">PNG-образцы</a>
     </div>
   </div>
 </nav>
@@ -38,145 +48,75 @@
     <div class="hero__inner">
       <p class="eyebrow">Библиотека</p>
       <h1>Линии, штриховки и размещение</h1>
-      <p class="hero__copy">Инструкция по экспорту CSV линий и штриховок, размещению элементов на видах и созданию PNG-превью для HTML viewer.</p>
+      <p class="hero__copy">Работа со стилями линий, штриховками и их визуальными образцами.</p>
       <div class="hero__links">
-        <a href="#export-lines">Экспорт CSV</a>
-        <a href="#placement">Размещение элементов по CSV</a>
-        <a href="#extra-placement">Дополнительные способы размещения</a>
+        <a href="#description">Описание</a>
+        <a href="#export">Экспорт CSV</a>
+        <a href="#preview">PNG-образцы</a>
       </div>
     </div>
   </section>
-  <section class="section" id="export-lines">
+  <section class="section section--soft" id="description">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 01</p>
-      <h2>Экспорт CSV</h2>
-      <p class="section__lead">CSV является исходной таблицей для размещения элементов и последующего просмотра.</p>
+      <p class="eyebrow">Описание плагина</p>
+      <h2>Линии и штриховки.</h2>
+      <p class="section__lead">Команды выгружают стили линий и штриховки, создают образцы на видах и экспортируют PNG для HTML-просмотра.</p>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card">
-                <h3>Линии</h3>
-                <ol>
-                  <li>Нажмите <span class="cmd">Экспорт линий</span>.</li>
-                  <li>Выберите рабочую папку.</li>
-                  <li>Проверьте файл в <span class="kbd">ctg_lines-patterns</span>.</li>
-                </ol>
-                <p>Колонки: Наименование, Миниатюра, Категория, Вес линии, Цвет, Образец.</p>
-              </article>
-              <article class="content-card" id="export-fills">
-                <h3>Штриховки</h3>
-                <ol>
-                  <li>Нажмите <span class="cmd">Экспорт штриховок</span>.</li>
-                  <li>Выберите рабочую папку.</li>
-                  <li>Проверьте файл в <span class="kbd">ctg_lines-patterns</span>.</li>
-                </ol>
-                <p>Колонки: Наименование, Миниатюра, Штриховка переднего плана, Штриховка заднего плана, Маскирование, Тип штриховки.</p>
-              </article>
-            </div>
-          
+        <div class="description-flow">
+          <p>Эта страница относится к модулю Библиотека. Сначала выгружаются CSV, затем при необходимости размещаются образцы в Revit и экспортируются PNG-превью.</p>
+          <p>Для полноценного HTML-просмотра образцов нужно выполнить не только CSV-экспорт, но и экспорт PNG линий или штриховок.</p>
+        </div>
+        <div class="cluster-links" aria-label="Страницы модуля Библиотека">
+          <span>Библиотека:</span>
+          <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+          <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+          <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+          <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
+        </div>
       </div>
     </div>
   </section>
-  <section class="section" id="placement">
+  <section class="section" id="export">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 02</p>
-      <h2>Размещение элементов по CSV</h2>
-      <p class="section__lead">Размещение создает элементы на активном виде строго по строкам выбранного CSV.</p>
+      <p class="eyebrow">Команды 01</p>
+      <h2>Экспорт CSV.</h2>
+      <p class="section__lead">CSV содержит параметры стилей линий и штриховок, которые нужны для проверки и HTML viewer.</p>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card" id="place-lines">
-                <h3>Размещение линий</h3>
-                <ol>
-                  <li>Откройте чертежный вид для размещения.</li>
-                  <li>Нажмите <span class="cmd">Размещение линий</span>.</li>
-                  <li>Выберите CSV линий.</li>
-                  <li>Проверьте, что размещены все строки таблицы.</li>
-                </ol>
-              </article>
-              <article class="content-card" id="place-fills">
-                <h3>Размещение штриховок</h3>
-                <ol>
-                  <li>Откройте вид для размещения.</li>
-                  <li>Нажмите <span class="cmd">Размещение штриховок</span>.</li>
-                  <li>Выберите CSV штриховок.</li>
-                  <li>Проверьте итоговый набор размещенных штриховок.</li>
-                </ol>
-              </article>
-            </div>
-            <div class="callout note"><strong>Важно:</strong> экспорт PNG запускайте только после корректного размещения элементов на виде.</div>
-          
+        <ol class="steps">
+          <li><span class="step-text">Для линий нажмите <span class="cmd">Экспорт линий</span>.</span></li>
+          <li><span class="step-text">Для штриховок нажмите <span class="cmd">Экспорт штриховок</span>.</span></li>
+          <li><span class="step-text">Результат сохраняется в папку <span class="kbd">ctg_lines-patterns</span>.</span></li>
+          <li><span class="step-text">Откройте CSV и проверьте имена, цвета, веса линий и параметры штриховок.</span></li>
+        </ol>
       </div>
     </div>
   </section>
-  <section class="section" id="extra-placement">
+  <section class="section" id="preview">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 03</p>
-      <h2>Дополнительные способы размещения</h2>
-      <p class="section__lead">Эти команды относятся к блоку размещения и помогают вставлять элементы по точке, границе, линии или подготовить легенд-компоненты.</p>
+      <p class="eyebrow">Команды 02</p>
+      <h2>Размещение и PNG-образцы.</h2>
+      <p class="section__lead">Команды создают наглядные образцы, которые затем попадают в HTML viewer.</p>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card" id="place-point"><h3>Размещение по точке</h3><ol><li>Откройте целевой вид.</li><li>Выберите CSV.</li><li>Укажите точки вставки по сценарию команды.</li></ol></article>
-              <article class="content-card" id="place-boundary"><h3>Размещение по границе</h3><ol><li>Откройте вид с целевыми границами.</li><li>Выберите CSV.</li><li>Запустите размещение вдоль выбранной границы.</li></ol></article>
-              <article class="content-card" id="place-line"><h3>Размещение по линии</h3><ol><li>Откройте вид с линиями привязки.</li><li>Выберите CSV.</li><li>Запустите размещение вдоль линии.</li></ol></article>
-              <article class="content-card" id="place-legend-components"><h3>Расставить комп. легенды</h3><ol><li>Откройте активный вид Легенда.</li><li>Запустите команду.</li><li>После расстановки используйте нужный экспорт PNG.</li></ol></article>
-            </div>
-          
-      </div>
-    </div>
-  </section>
-  <section class="section" id="png-preview">
-    <div class="section__inner">
-      <p class="eyebrow">Сценарий 04</p>
-      <h2>Экспорт PNG превью</h2>
-      <p class="section__lead">PNG создаются для уже размещенных элементов. Если размещения нет или активный вид неверный, часть изображений может не появиться.</p>
-      <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card" id="png-lines">
-                <h3>Экспорт PNG линий</h3>
-                <ul>
-                  <li>Команда: <span class="cmd">Экспорт PNG линий</span>.</li>
-                  <li>Сначала выполните <span class="cmd">Размещение линий</span>.</li>
-                  <li>Источник: активный чертежный вид с размещенными линиями.</li>
-                  <li>Папка результата: <span class="kbd">ctg_lines-patterns\PNG_Lines</span>.</li>
-                </ul>
-              </article>
-              <article class="content-card" id="png-fills">
-                <h3>Экспорт PNG штриховок</h3>
-                <ul>
-                  <li>Команда: <span class="cmd">Экспорт PNG штриховок</span>.</li>
-                  <li>Сначала выполните <span class="cmd">Размещение штриховок</span>.</li>
-                  <li>Источник: вид <b>Библиотека_Штриховки</b>.</li>
-                  <li>Папка результата: <span class="kbd">ctg_lines-patterns\PNG_Fills</span>.</li>
-                </ul>
-              </article>
-            </div>
-            <div class="callout warning"><strong>Если PNG не создались:</strong> проверьте активный вид, наличие размещенных элементов и проблемные символы в именах файлов.</div>
-          
-      </div>
-    </div>
-  </section>
-  <section class="section" id="delete-elements">
-    <div class="section__inner">
-      <p class="eyebrow">Сценарий 05</p>
-      <h2>Удаление элементов</h2>
-      <p class="section__lead">Команда удаляет выбранные типы и семейства по сценарию очистки библиотеки.</p>
-      <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Выберите элементы или типы для удаления по рабочему сценарию.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Удаление элементов</span>.</span></li>
-              <li><span class="step-text">Проверьте отчет или уведомление о результате удаления.</span></li>
-            </ol>
-            <div class="callout danger"><strong>Перед удалением:</strong> сохраните модель или работайте в копии, если операция массовая.</div>
-          
+        <div class="content-grid">
+        <article class="content-card">
+          <h3>Линии</h3>
+          <ul>
+            <li><span class="cmd">Размещение линий</span> создает образцы линий на виде.</li>
+            <li><span class="cmd">Экспорт PNG линий</span> экспортирует изображения образцов.</li>
+            <li>HTML viewer показывает цвет и PNG-превью, если файлы уже созданы.</li>
+          </ul>
+        </article>
+        <article class="content-card">
+          <h3>Штриховки</h3>
+          <ul>
+            <li><span class="cmd">Размещение штриховок</span> размещает образцы заполненных областей.</li>
+            <li><span class="cmd">Экспорт PNG штриховок</span> сохраняет изображения штриховок.</li>
+            <li>Перед экспортом проверьте, что вид с образцами существует и читается.</li>
+          </ul>
+        </article>
+        </div>
       </div>
     </div>
   </section>

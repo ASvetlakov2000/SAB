@@ -34,6 +34,7 @@ namespace SAB.InteriorElevations.ViewModels
         private RevitElementOption _selectedRoomPlanViewTemplate;
         private RevitElementOption _selectedRoomPlanRoomTagType;
         private bool _createSheet;
+        private bool _isCropManualMode;
         private bool _isSheetPointManualMode;
         private string _startXmmText;
         private string _startYmmText;
@@ -56,6 +57,7 @@ namespace SAB.InteriorElevations.ViewModels
             BottomOffsetMmText = "0";
             LeftOffsetMmText = "100";
             RightOffsetMmText = "100";
+            _isCropManualMode = true;
             ViewDepthMmText = "3000";
             MarkerOffsetMmText = "250";
 
@@ -183,6 +185,34 @@ namespace SAB.InteriorElevations.ViewModels
         public string LeftOffsetMmText { get; set; }
 
         public string RightOffsetMmText { get; set; }
+
+        public bool IsCropManualMode
+        {
+            get { return _isCropManualMode; }
+            set
+            {
+                if (_isCropManualMode == value)
+                {
+                    return;
+                }
+
+                _isCropManualMode = value;
+                OnPropertyChanged("IsCropManualMode");
+                OnPropertyChanged("IsCropByExampleMode");
+            }
+        }
+
+        public bool IsCropByExampleMode
+        {
+            get { return !IsCropManualMode; }
+            set
+            {
+                if (value)
+                {
+                    IsCropManualMode = false;
+                }
+            }
+        }
 
         public string ViewDepthMmText { get; set; }
 
@@ -353,6 +383,16 @@ namespace SAB.InteriorElevations.ViewModels
             StartXmmText = FormatDouble(UnitConversionUtils.FeetToMillimeters(sheetPoint.X));
             StartYmmText = FormatDouble(UnitConversionUtils.FeetToMillimeters(sheetPoint.Y));
             IsSheetPointManualMode = false;
+        }
+
+        public void SetCropHeightOffsetsFromExample(double topOffsetMm, double bottomOffsetMm)
+        {
+            // Блок записи значений из вида-примера в те же поля, которые использует основная команда.
+            TopOffsetMmText = FormatDouble(Math.Max(0.0, topOffsetMm));
+            BottomOffsetMmText = FormatDouble(Math.Max(0.0, bottomOffsetMm));
+            IsCropManualMode = true;
+            OnPropertyChanged("TopOffsetMmText");
+            OnPropertyChanged("BottomOffsetMmText");
         }
 
         private string ValidateInput()

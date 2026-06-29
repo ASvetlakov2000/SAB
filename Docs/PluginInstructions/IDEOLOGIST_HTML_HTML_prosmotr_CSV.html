@@ -16,8 +16,20 @@
       <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
       <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
       <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Создать виды и листы</a>
-      <a href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">Листы</a>
+      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
+    </div>
+  </div>
+</nav>
+<nav class="commandnav" aria-label="Навигация по командам кластера">
+  <div class="commandnav__inner">
+    <span class="commandnav__title">Библиотека</span>
+    <div class="commandnav__links">
+      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+      <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+      <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+      <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+      <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
     </div>
   </div>
 </nav>
@@ -25,9 +37,9 @@
   <div class="localnav__inner">
     <a class="localnav__title" href="#top">HTML просмотр CSV</a>
     <div class="localnav__links">
-      <a href="#purpose">Что делает команда</a>
-      <a href="#open">Как открыть CSV</a>
-      <a href="#profile">Проверка профиля по имени файла</a>
+      <a href="#description">Описание</a>
+      <a href="#open">Открыть</a>
+      <a href="#requirements">Данные</a>
     </div>
   </div>
 </nav>
@@ -36,84 +48,69 @@
     <div class="hero__inner">
       <p class="eyebrow">Библиотека</p>
       <h1>HTML просмотр CSV</h1>
-      <p class="hero__copy">Инструкция по открытию CSV-источников в профильном HTML viewer для системных, загружаемых семейств, линий и штриховок.</p>
+      <p class="hero__copy">Профильный просмотр CSV с миниатюрами, образцами, фильтрами и поиском.</p>
       <div class="hero__links">
-        <a href="#purpose">Что делает команда</a>
-        <a href="#open">Как открыть CSV</a>
-        <a href="#profile">Проверка профиля по имени файла</a>
+        <a href="#description">Описание</a>
+        <a href="#open">Открыть</a>
+        <a href="#requirements">Данные</a>
       </div>
     </div>
   </section>
-  <section class="section" id="purpose">
+  <section class="section section--soft" id="description">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 01</p>
-      <h2>Что делает команда</h2>
-      <p class="section__lead">Команда открывает CSV-источник в отдельном HTML viewer и автоматически выбирает профиль отображения по имени файла.</p>
+      <p class="eyebrow">Описание плагина</p>
+      <h2>HTML просмотр CSV.</h2>
+      <p class="section__lead">Команда создает локальный HTML viewer для CSV-источников SAB и подбирает профиль отображения по имени файла.</p>
       <div class="content-stack">
-
-            
-            <div class="content-grid">
-              <article class="content-card">
-                <h3>Поддерживаемые профили</h3>
-                <ul>
-                  <li>Системные семейства.</li>
-                  <li>Загружаемые семейства.</li>
-                  <li>Линии.</li>
-                  <li>Штриховки.</li>
-                </ul>
-              </article>
-              <article class="content-card">
-                <h3>Что показывает viewer</h3>
-                <ul>
-                  <li>Табличные данные из CSV.</li>
-                  <li>Миниатюры PNG, если они есть.</li>
-                  <li>Поля, важные для проверки библиотеки.</li>
-                </ul>
-              </article>
-            </div>
-          
+        <div class="description-flow">
+          <p>Viewer нужен для проверки библиотечных таблиц без ручной сборки HTML. Он читает CSV, показывает профильные колонки, поиск, фильтры, сортировку, миниатюры и образцы.</p>
+          <p>Чтобы увидеть пироги, миниатюры, линии и штриховки, сначала экспортируйте соответствующие PNG. Если изображения не подготовлены, viewer покажет таблицу, но в ячейках превью будут пустые места или сообщение о ненайденном файле.</p>
+        </div>
+        <div class="cluster-links" aria-label="Страницы модуля Библиотека">
+          <span>Библиотека:</span>
+          <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Системные</a>
+          <a href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">Загружаемые</a>
+          <a href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">Линии и штриховки</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">Типы</a>
+          <a href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">Материалы</a>
+          <a href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">HTML просмотр</a>
+        </div>
       </div>
     </div>
   </section>
   <section class="section" id="open">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 02</p>
-      <h2>Как открыть CSV</h2>
-      <p class="section__lead">Сценарий одинаковый для всех профилей. Главное - выбрать корректный CSV, созданный командами SAB.</p>
+      <p class="eyebrow">Команда</p>
+      <h2>Открыть HTML просмотр.</h2>
+      <p class="section__lead">В окне нужно выбрать CSV и проверить профиль просмотра.</p>
       <div class="content-stack">
-
-            
-            <ol class="steps">
-              <li><span class="step-text">Нажмите <span class="cmd">HTML просмотр</span> на панели <b>Библиотека</b>.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Выбрать источник</span>.</span></li>
-              <li><span class="step-text">Укажите CSV-файл.</span></li>
-              <li><span class="step-text">Проверьте выбранный профиль по имени файла.</span></li>
-              <li><span class="step-text">Нажмите <span class="cmd">Открыть</span>.</span></li>
-            </ol>
-          
+        <ol class="steps">
+          <li><span class="step-text">На панели <span class="kbd">Библиотека</span> нажмите <span class="cmd">HTML просмотр</span>.</span></li>
+          <li><span class="step-text">В блоке <span class="kbd">Профиль просмотра</span> оставьте автоматически определенный профиль или выберите его вручную.</span></li>
+          <li><span class="step-text">Нажмите <span class="cmd">Выбрать источник</span> и укажите CSV-файл.</span></li>
+          <li><span class="step-text">Нажмите <span class="cmd">Открыть просмотрщик</span>.</span></li>
+          <li><span class="step-text">В открывшемся HTML используйте поиск, фильтры, сортировку, настройку видимых колонок и кнопку сброса настроек.</span></li>
+        </ol>
       </div>
     </div>
   </section>
-  <section class="section" id="profile">
+  <section class="section" id="requirements">
     <div class="section__inner">
-      <p class="eyebrow">Сценарий 03</p>
-      <h2>Проверка профиля по имени файла</h2>
-      <p class="section__lead">Viewer выбирает логику отображения автоматически, поэтому имя CSV должно соответствовать типу выгрузки.</p>
+      <p class="eyebrow">Данные</p>
+      <h2>Что нужно для полного просмотра.</h2>
+      <p class="section__lead">CSV открывается сам по себе, но визуальные поля появляются только при наличии подготовленных изображений.</p>
       <div class="content-stack">
-
-            
-            <div class="command-table-wrap">
-              <table class="command-table">
-                <thead><tr><th>Фраза в имени CSV</th><th>Профиль</th><th>Что проверить</th></tr></thead>
-                <tbody>
-                  <tr><td>Системные семейства</td><td>Системные</td><td>Категория, структура, толщина, миниатюра.</td></tr>
-                  <tr><td>Загружаемые семейства</td><td>Загружаемые</td><td>Категория, семейство, типоразмер, PNG.</td></tr>
-                  <tr><td>Линии</td><td>Линии</td><td>Наименование, вес линии, цвет, образец.</td></tr>
-                  <tr><td>Штриховки</td><td>Штриховки</td><td>Передний план, задний план, маскирование, тип.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          
+        <div class="command-table-wrap">
+          <table class="command-table">
+            <thead><tr><th>Профиль</th><th>Что открыть</th><th>Что подготовить заранее</th></tr></thead>
+            <tbody>
+              <tr><td>Системные семейства</td><td>CSV из папки ctg_system families.</td><td>Для пирогов экспортируйте PNG пирогов и заполните путь в колонке Миниатюра.</td></tr>
+              <tr><td>Загружаемые семейства</td><td>CSV из папки ctg_loadable families.</td><td>Экспортируйте PNG семейств, чтобы viewer показал миниатюры.</td></tr>
+              <tr><td>Линии</td><td>CSV LineStyles.</td><td>Сначала выполните размещение линий и экспорт PNG линий.</td></tr>
+              <tr><td>Штриховки</td><td>CSV FillPatterns.</td><td>Сначала выполните размещение штриховок и экспорт PNG штриховок.</td></tr>
+            </tbody>
+          </table>
+        </div>        <div class="callout"><strong>Пути к изображениям:</strong> viewer читает поля <span class="kbd">Миниатюра</span>, <span class="kbd">ThumbnailPath</span>, <span class="kbd">Thumbnail</span> и <span class="kbd">IconPath</span>. Относительные пути считаются от папки выбранного CSV.</div>
       </div>
     </div>
   </section>
