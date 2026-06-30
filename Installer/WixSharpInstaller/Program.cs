@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using WixSharp;
 using IOFile = System.IO.File;
 using WxsFile = WixSharp.File;
@@ -13,6 +15,9 @@ namespace WixSharpInstaller
         // Блок констант для стабильных UpgradeCode.
         private const string UpgradeCode2023 = "F9D69961-6B30-4C1E-A469-0CC9C31EFD8E";
         private const string UpgradeCode2024 = "D7A573D9-4A9A-42A1-8D0D-F552AEEA6B87";
+        private const string FamiliesRootFolderName = "Families for Plugin";
+        private const string FamiliesManifestFileName = "families.manifest.tsv";
+        private const string FamiliesInstallerStagingFolderName = "_families_for_installer";
 
         private static int Main(string[] args)
         {
@@ -97,7 +102,8 @@ namespace WixSharpInstaller
             List<WixEntity> pluginFiles = new List<WixEntity>();
 
             // Блок добавления файлов плагина из папки bin.
-            pluginFiles.Add(new Files(Path.Combine(binFolder, "*.*")));
+            // Папка Families for Plugin исключается, потому ниже она упаковывается отдельным безопасным способом.
+            AddPluginBinContent(pluginFiles, binFolder);
 
             // Блок добавления HTML-инструкций в инсталлятор.
             // Инструкции размещаются рядом с DLL: ...\SAB\Docs\PluginInstructions\...
@@ -123,9 +129,12 @@ namespace WixSharpInstaller
             pluginFiles.Add(pluginInstructionsDirectory);
 
             string familiesSourcePath = ResolveFamiliesForPluginSourcePath(repositoryRoot, binFolder);
-            Dir familiesForPluginDirectory = BuildContentDirectory(
+            string familiesInstallerSourcePath = PrepareFamiliesForInstallerSourcePath(
                 familiesSourcePath,
-                "Families for Plugin");
+                outputFolder);
+            Dir familiesForPluginDirectory = BuildContentDirectory(
+                familiesInstallerSourcePath,
+                FamiliesRootFolderName);
 
             if (familiesForPluginDirectory == null)
             {
@@ -200,8 +209,8 @@ namespace WixSharpInstaller
         private static string ResolveFamiliesForPluginSourcePath(string repositoryRoot, string binFolder)
         {
             List<string> candidates = new List<string>();
-            candidates.Add(Path.Combine(binFolder, "Families for Plugin"));
-            candidates.Add(Path.Combine(repositoryRoot, "SAB", "Families for Plugin"));
+            candidates.Add(Path.Combine(repositoryRoot, "SAB", FamiliesRootFolderName));
+            candidates.Add(Path.Combine(binFolder, FamiliesRootFolderName));
 
             foreach (string candidate in candidates)
             {
@@ -216,6 +225,161 @@ namespace WixSharpInstaller
                 string.Join("\n - ", candidates));
         }
 
+        // Блок добавления содержимого bin без повторного включения папки семейств.
+        private static void AddPluginBinContent(List<WixEntity> pluginFiles, string binFolder)
+        {
+            if (pluginFiles == null || string.IsNullOrWhiteSpace(binFolder) || !Directory.Exists(binFolder))
+            {
+                return;
+            }
+
+            string[] files = Directory.GetFiles(binFolder);
+            Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+
+            foreach (string filePath in files)
+            {
+                string fileName = Path.GetFileName(filePath);
+                pluginFiles.Add(CreateInstallerFile(filePath, fileName));
+            }
+
+            string[] directories = Directory.GetDirectories(binFolder);
+            Array.Sort(directories, StringComparer.OrdinalIgnoreCase);
+
+            foreach (string directoryPath in directories)
+            {
+                string directoryName = Path.GetFileName(directoryPath);
+                if (string.Equals(directoryName, FamiliesRootFolderName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                Dir childDirectory = BuildContentDirectory(directoryPath, directoryName);
+                if (childDirectory != null)
+                {
+                    pluginFiles.Add(childDirectory);
+                }
+            }
+        }
+
+        // Блок подготовки семейств к упаковке: MSI получает только ASCII-имена файлов.
+        // Оригинальные русские имена сохраняются в UTF-8 манифесте и восстанавливаются перед загрузкой в Revit.
+        private static string PrepareFamiliesForInstallerSourcePath(string familiesSourcePath, string outputFolder)
+        {
+            if (string.IsNullOrWhiteSpace(familiesSourcePath) || !Directory.Exists(familiesSourcePath))
+            {
+                throw new DirectoryNotFoundException("Families source directory was not found: " + familiesSourcePath);
+            }
+
+            string stagingRootPath = Path.Combine(outputFolder, FamiliesInstallerStagingFolderName);
+            if (Directory.Exists(stagingRootPath))
+            {
+                Directory.Delete(stagingRootPath, true);
+            }
+
+            Directory.CreateDirectory(stagingRootPath);
+
+            List<string> manifestLines = new List<string>();
+            manifestLines.Add("# packageRelativePath\toriginalRelativePath");
+
+            HashSet<string> usedPackageRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            CopyFamiliesDirectoryForInstaller(
+                familiesSourcePath,
+                stagingRootPath,
+                string.Empty,
+                manifestLines,
+                usedPackageRelativePaths);
+
+            string manifestPath = Path.Combine(stagingRootPath, FamiliesManifestFileName);
+            IOFile.WriteAllLines(manifestPath, manifestLines.ToArray(), new UTF8Encoding(true));
+
+            return stagingRootPath;
+        }
+
+        private static void CopyFamiliesDirectoryForInstaller(
+            string sourceDirectoryPath,
+            string stagingRootPath,
+            string relativeDirectoryPath,
+            List<string> manifestLines,
+            HashSet<string> usedPackageRelativePaths)
+        {
+            string targetDirectoryPath = string.IsNullOrWhiteSpace(relativeDirectoryPath)
+                ? stagingRootPath
+                : Path.Combine(stagingRootPath, relativeDirectoryPath);
+
+            Directory.CreateDirectory(targetDirectoryPath);
+
+            string[] files = Directory.GetFiles(sourceDirectoryPath);
+            Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+
+            foreach (string filePath in files)
+            {
+                string originalFileName = Path.GetFileName(filePath);
+                string originalRelativePath = CombineRelativePath(relativeDirectoryPath, originalFileName);
+                string packageFileName = originalFileName;
+
+                if (string.Equals(Path.GetExtension(filePath), ".rfa", StringComparison.OrdinalIgnoreCase))
+                {
+                    packageFileName = BuildSafeFamilyPackageFileName(
+                        originalRelativePath,
+                        relativeDirectoryPath,
+                        usedPackageRelativePaths);
+                }
+
+                string packageRelativePath = CombineRelativePath(relativeDirectoryPath, packageFileName);
+                string targetFilePath = Path.Combine(targetDirectoryPath, packageFileName);
+
+                IOFile.Copy(filePath, targetFilePath, true);
+
+                if (string.Equals(Path.GetExtension(filePath), ".rfa", StringComparison.OrdinalIgnoreCase))
+                {
+                    manifestLines.Add(packageRelativePath + "\t" + originalRelativePath);
+                }
+            }
+
+            string[] directories = Directory.GetDirectories(sourceDirectoryPath);
+            Array.Sort(directories, StringComparer.OrdinalIgnoreCase);
+
+            foreach (string directoryPath in directories)
+            {
+                string directoryName = Path.GetFileName(directoryPath);
+                string childRelativeDirectoryPath = CombineRelativePath(relativeDirectoryPath, directoryName);
+
+                CopyFamiliesDirectoryForInstaller(
+                    directoryPath,
+                    stagingRootPath,
+                    childRelativeDirectoryPath,
+                    manifestLines,
+                    usedPackageRelativePaths);
+            }
+        }
+
+        private static string BuildSafeFamilyPackageFileName(
+            string originalRelativePath,
+            string relativeDirectoryPath,
+            HashSet<string> usedPackageRelativePaths)
+        {
+            string extension = Path.GetExtension(originalRelativePath);
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                extension = ".rfa";
+            }
+
+            string baseName = "family_" + CreateShortHash(originalRelativePath, 8);
+            string packageFileName = baseName + extension.ToLowerInvariant();
+            string packageRelativePath = CombineRelativePath(relativeDirectoryPath, packageFileName);
+
+            int duplicateIndex = 2;
+            while (usedPackageRelativePaths.Contains(packageRelativePath))
+            {
+                packageFileName = baseName + "_" + duplicateIndex + extension.ToLowerInvariant();
+                packageRelativePath = CombineRelativePath(relativeDirectoryPath, packageFileName);
+                duplicateIndex++;
+            }
+
+            usedPackageRelativePaths.Add(packageRelativePath);
+            return packageFileName;
+        }
+
         // Блок рекурсивной сборки директории документации для включения в MSI.
         private static Dir BuildDocumentationDirectory(string sourceDirectoryPath, string targetDirectoryName)
         {
@@ -224,6 +388,14 @@ namespace WixSharpInstaller
 
         // Блок рекурсивной сборки любой контентной папки для включения в MSI.
         private static Dir BuildContentDirectory(string sourceDirectoryPath, string targetDirectoryName)
+        {
+            return BuildContentDirectory(sourceDirectoryPath, targetDirectoryName, targetDirectoryName);
+        }
+
+        private static Dir BuildContentDirectory(
+            string sourceDirectoryPath,
+            string targetDirectoryName,
+            string relativeTargetDirectoryPath)
         {
             if (string.IsNullOrWhiteSpace(sourceDirectoryPath) || !Directory.Exists(sourceDirectoryPath))
             {
@@ -234,17 +406,27 @@ namespace WixSharpInstaller
 
             // Добавляем файлы текущего уровня.
             string[] files = Directory.GetFiles(sourceDirectoryPath);
+            Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+
             foreach (string filePath in files)
             {
-                childEntities.Add(new WxsFile(filePath));
+                string fileName = Path.GetFileName(filePath);
+                string relativeTargetPath = CombineRelativePath(relativeTargetDirectoryPath, fileName);
+                childEntities.Add(CreateInstallerFile(filePath, relativeTargetPath));
             }
 
             // Рекурсивно добавляем подпапки.
             string[] directories = Directory.GetDirectories(sourceDirectoryPath);
+            Array.Sort(directories, StringComparer.OrdinalIgnoreCase);
+
             foreach (string directoryPath in directories)
             {
                 string directoryName = Path.GetFileName(directoryPath);
-                Dir childDirectory = BuildDocumentationDirectory(directoryPath, directoryName);
+                string childRelativeTargetDirectoryPath = CombineRelativePath(relativeTargetDirectoryPath, directoryName);
+                Dir childDirectory = BuildContentDirectory(
+                    directoryPath,
+                    directoryName,
+                    childRelativeTargetDirectoryPath);
 
                 if (childDirectory != null)
                 {
@@ -252,7 +434,97 @@ namespace WixSharpInstaller
                 }
             }
 
-            return new Dir(targetDirectoryName, childEntities.ToArray());
+            if (childEntities.Count == 0)
+            {
+                return null;
+            }
+
+            return new Dir(
+                new Id(CreateWixIdentifier("Dir", relativeTargetDirectoryPath)),
+                targetDirectoryName,
+                childEntities.ToArray());
+        }
+
+        private static WxsFile CreateInstallerFile(string sourceFilePath, string relativeTargetPath)
+        {
+            return new WxsFile(
+                new Id(CreateWixIdentifier("File", relativeTargetPath)),
+                sourceFilePath);
+        }
+
+        private static string CombineRelativePath(string parentRelativePath, string childName)
+        {
+            if (string.IsNullOrWhiteSpace(parentRelativePath))
+            {
+                return childName ?? string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(childName))
+            {
+                return parentRelativePath;
+            }
+
+            return parentRelativePath + "\\" + childName;
+        }
+
+        private static string CreateWixIdentifier(string prefix, string identity)
+        {
+            string text = identity ?? string.Empty;
+            StringBuilder safeTextBuilder = new StringBuilder();
+
+            for (int index = 0; index < text.Length; index++)
+            {
+                char currentChar = text[index];
+                bool isAsciiLetter =
+                    (currentChar >= 'A' && currentChar <= 'Z') ||
+                    (currentChar >= 'a' && currentChar <= 'z');
+                bool isAsciiDigit = currentChar >= '0' && currentChar <= '9';
+
+                if (isAsciiLetter || isAsciiDigit)
+                {
+                    safeTextBuilder.Append(currentChar);
+                }
+                else
+                {
+                    safeTextBuilder.Append('_');
+                }
+            }
+
+            string safeText = safeTextBuilder.ToString().Trim('_');
+            if (string.IsNullOrWhiteSpace(safeText))
+            {
+                safeText = "Item";
+            }
+
+            if (safeText.Length > 42)
+            {
+                safeText = safeText.Substring(0, 42);
+            }
+
+            return prefix + "_" + safeText + "_" + CreateShortHash(text, 8);
+        }
+
+        private static string CreateShortHash(string text, int bytesCount)
+        {
+            if (bytesCount <= 0)
+            {
+                bytesCount = 8;
+            }
+
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] sourceBytes = Encoding.UTF8.GetBytes(text ?? string.Empty);
+                byte[] hashBytes = sha256.ComputeHash(sourceBytes);
+                int length = Math.Min(bytesCount, hashBytes.Length);
+
+                StringBuilder hashBuilder = new StringBuilder(length * 2);
+                for (int index = 0; index < length; index++)
+                {
+                    hashBuilder.Append(hashBytes[index].ToString("x2"));
+                }
+
+                return hashBuilder.ToString();
+            }
         }
 
         private static bool DirectoryHasFiles(string directoryPath)
