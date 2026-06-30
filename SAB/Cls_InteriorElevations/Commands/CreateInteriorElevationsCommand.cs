@@ -112,6 +112,12 @@ namespace SAB.InteriorElevations.Commands
                 ElevationCropByExampleService cropByExampleService = new ElevationCropByExampleService();
                 bool useMultipleLineGroups = false;
                 string selectionStatusText = "Линии и помещение не выбраны.";
+                string windowInfoText = GetDefaultWindowInfoText();
+                if (warnings.Count > 0)
+                {
+                    windowInfoText = BuildWindowInfoText(warnings);
+                }
+
                 ElevationSelectionPackage selectionPackage = null;
                 ElevationSettings settings = null;
 
@@ -120,12 +126,16 @@ namespace SAB.InteriorElevations.Commands
                     ElevationSettingsWindow settingsWindow = new ElevationSettingsWindow(
                         settingsViewModel,
                         useMultipleLineGroups,
-                        selectionStatusText);
+                        selectionPackage != null,
+                        selectionStatusText,
+                        windowInfoText);
 
                     bool? dialogResult = settingsWindow.ShowDialog();
                     if (!dialogResult.HasValue || !dialogResult.Value)
                     {
-                        return Result.Cancelled;
+                        // Семейства и подготовка видимости уже загружены в проект отдельными транзакциями.
+                        // Возвращаем Succeeded, чтобы Revit не откатывал эти изменения при закрытии окна настроек.
+                        return Result.Succeeded;
                     }
 
                     useMultipleLineGroups = settingsWindow.IsMultipleGroupsMode;
@@ -147,16 +157,26 @@ namespace SAB.InteriorElevations.Commands
                             out pickedSelectionPackage);
 
                         AppendWarnings(warnings, selectionWarnings);
+                        if (selectionWarnings.Count > 0)
+                        {
+                            windowInfoText = BuildWindowInfoText(selectionWarnings);
+                        }
 
                         if (selectionPicked)
                         {
                             selectionPackage = pickedSelectionPackage;
                             selectionStatusText = BuildSelectionStatusText(selectionPackage, lineGroupSelectionMode);
+                            windowInfoText = "Стек собран. Проверьте параметры и нажмите Создать развертки.";
                             ToastNotifier.ShowInfo("SAB Развертки", "Линии и помещение выбраны. Проверьте настройки и нажмите Создать развертки.");
                         }
                         else
                         {
+                            selectionPackage = null;
                             selectionStatusText = "Линии и помещение не выбраны. Нажмите Выбрать линии.";
+                            if (selectionWarnings.Count == 0)
+                            {
+                                windowInfoText = "Стек не собран. Нажмите Выбрать линии, затем укажите линии детализации и помещение.";
+                            }
                         }
 
                         continue;
@@ -167,6 +187,7 @@ namespace SAB.InteriorElevations.Commands
                         ElevationSettings sheetPointSettings = settingsWindow.SelectedSettings;
                         if (sheetPointSettings == null)
                         {
+                            windowInfoText = "Окно настроек не вернуло параметры листа.";
                             ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло параметры листа.");
                             continue;
                         }
@@ -183,10 +204,15 @@ namespace SAB.InteriorElevations.Commands
                             out pointSelectionCancelled);
 
                         AppendWarnings(warnings, pointSelectionWarnings);
+                        if (pointSelectionWarnings.Count > 0)
+                        {
+                            windowInfoText = BuildWindowInfoText(pointSelectionWarnings);
+                        }
 
                         if (pointPicked)
                         {
                             settingsViewModel.SetSheetStartPointFromRevitPoint(pickedSheetPoint);
+                            windowInfoText = "Координата на листе выбрана и записана в поля Старт X/Y.";
                             ToastNotifier.ShowInfo("SAB Развертки", "Координата на листе выбрана и записана в поля Старт X/Y.");
                         }
                         else if (!pointSelectionCancelled)
@@ -195,6 +221,7 @@ namespace SAB.InteriorElevations.Commands
                                 ? pointSelectionWarnings[pointSelectionWarnings.Count - 1]
                                 : "Координата на листе не была выбрана.";
 
+                            windowInfoText = warningText;
                             ToastNotifier.ShowWarning("SAB Развертки", warningText);
                         }
 
@@ -206,6 +233,7 @@ namespace SAB.InteriorElevations.Commands
                         ElevationSettings cropByExampleSettings = settingsWindow.SelectedSettings;
                         if (cropByExampleSettings == null)
                         {
+                            windowInfoText = "Окно настроек не вернуло параметры для вида-примера.";
                             ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло параметры для вида-примера.");
                             continue;
                         }
@@ -230,6 +258,7 @@ namespace SAB.InteriorElevations.Commands
                         if (!workflowStarted)
                         {
                             settingsViewModel.IsCropManualMode = true;
+                            windowInfoText = "Сценарий обрезки по виду-примеру не был запущен.";
                             ToastNotifier.ShowWarning("SAB Развертки", "Сценарий обрезки по виду-примеру не был запущен.");
                             continue;
                         }
@@ -240,6 +269,7 @@ namespace SAB.InteriorElevations.Commands
                     settings = settingsWindow.SelectedSettings;
                     if (settings == null)
                     {
+                        windowInfoText = "Окно настроек не вернуло значения параметров.";
                         ToastNotifier.ShowWarning("SAB Развертки", "Окно настроек не вернуло значения параметров.");
                         continue;
                     }
@@ -251,12 +281,14 @@ namespace SAB.InteriorElevations.Commands
                     {
                         ToastNotifier.ShowWarning("SAB Развертки", "Сначала нажмите 'Выбрать линии' и укажите линии детализации и помещение.");
                         selectionStatusText = "Линии и помещение не выбраны. Нажмите Выбрать линии.";
+                        windowInfoText = "Стек не собран. Нажмите Выбрать линии, затем укажите линии детализации и помещение.";
                         continue;
                     }
 
                     string settingsValidationMessage;
                     if (!ValidateSettings(document, settings, out settingsValidationMessage))
                     {
+                        windowInfoText = settingsValidationMessage;
                         ToastNotifier.ShowWarning("SAB Развертки", settingsValidationMessage);
                         continue;
                     }
@@ -526,6 +558,41 @@ namespace SAB.InteriorElevations.Commands
             {
                 target.Add(source[i]);
             }
+        }
+
+        private string GetDefaultWindowInfoText()
+        {
+            return "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане. " +
+                   "Параметры сохраняются и будут использованы при следующем запуске команды.";
+        }
+
+        private string BuildWindowInfoText(IList<string> warningMessages)
+        {
+            if (warningMessages == null || warningMessages.Count == 0)
+            {
+                return GetDefaultWindowInfoText();
+            }
+
+            int firstWarningIndex = Math.Max(0, warningMessages.Count - 3);
+            List<string> visibleWarnings = new List<string>();
+
+            for (int index = firstWarningIndex; index < warningMessages.Count; index++)
+            {
+                string warningMessage = warningMessages[index];
+                if (string.IsNullOrWhiteSpace(warningMessage))
+                {
+                    continue;
+                }
+
+                visibleWarnings.Add(warningMessage.Trim());
+            }
+
+            if (visibleWarnings.Count == 0)
+            {
+                return GetDefaultWindowInfoText();
+            }
+
+            return "Предупреждения: " + string.Join(" ", visibleWarnings.ToArray());
         }
 
         private RoomPlanSchemeSettings BuildRoomPlanSchemeSettings(ElevationSettings settings)
@@ -1093,9 +1160,9 @@ namespace SAB.InteriorElevations.Commands
                 return false;
             }
 
-            if (!IsSymbolFromFamily(planMarkType, CornerMarkConstants.PlanFamilyName))
+            if (!CornerMarkConstants.IsAnnotationSymbol(planMarkType))
             {
-                validationMessage = "Тип марки угла на плане должен относиться к семейству '" + CornerMarkConstants.PlanFamilyName + "'.";
+                validationMessage = "Тип марки угла на плане должен относиться к категории '" + CornerMarkConstants.GetAnnotationCategoryNameForMessage() + "'.";
                 return false;
             }
 
@@ -1121,9 +1188,9 @@ namespace SAB.InteriorElevations.Commands
                     return false;
                 }
 
-                if (!IsSymbolFromFamily(sheetMarkType, CornerMarkConstants.SheetFamilyName))
+                if (!CornerMarkConstants.IsAnnotationSymbol(sheetMarkType))
                 {
-                    validationMessage = "Тип марки угла на листе должен относиться к семейству '" + CornerMarkConstants.SheetFamilyName + "'.";
+                    validationMessage = "Тип марки угла на листе должен относиться к категории '" + CornerMarkConstants.GetAnnotationCategoryNameForMessage() + "'.";
                     return false;
                 }
 
@@ -1147,17 +1214,6 @@ namespace SAB.InteriorElevations.Commands
             }
 
             return true;
-        }
-
-        private bool IsSymbolFromFamily(FamilySymbol symbol, string familyName)
-        {
-            if (symbol == null || string.IsNullOrWhiteSpace(familyName))
-            {
-                return false;
-            }
-
-            string currentFamilyName = symbol.Family != null ? symbol.Family.Name : symbol.FamilyName;
-            return string.Equals(currentFamilyName, familyName, StringComparison.OrdinalIgnoreCase);
         }
 
         private bool TryGetPlanLevelId(ViewPlan viewPlan, out ElementId levelId)

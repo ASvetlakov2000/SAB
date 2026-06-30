@@ -79,8 +79,8 @@ namespace SAB.InteriorElevations.ViewModels
             LoadElevationViewFamilyTypes();
             LoadViewTemplates();
             LoadTitleBlockTypes();
-            LoadCornerMarkTypes(PlanCornerMarkTypes, CornerMarkConstants.PlanFamilyName);
-            LoadCornerMarkTypes(SheetCornerMarkTypes, CornerMarkConstants.SheetFamilyName);
+            LoadCornerMarkTypes(PlanCornerMarkTypes);
+            LoadCornerMarkTypes(SheetCornerMarkTypes);
             LoadRoomPlanViewTemplates();
             LoadRoomPlanRoomTagTypes();
 
@@ -752,11 +752,14 @@ namespace SAB.InteriorElevations.ViewModels
             }
         }
 
-        private void LoadCornerMarkTypes(ObservableCollection<RevitElementOption> targetCollection, string requiredFamilyName)
+        private void LoadCornerMarkTypes(ObservableCollection<RevitElementOption> targetCollection)
         {
             List<RevitElementOption> options = new List<RevitElementOption>();
 
-            FilteredElementCollector collector = new FilteredElementCollector(_document).OfClass(typeof(FamilySymbol));
+            FilteredElementCollector collector = new FilteredElementCollector(_document)
+                .OfClass(typeof(FamilySymbol))
+                .OfCategory(BuiltInCategory.OST_GenericAnnotation);
+
             foreach (Element element in collector)
             {
                 FamilySymbol familySymbol = element as FamilySymbol;
@@ -765,12 +768,12 @@ namespace SAB.InteriorElevations.ViewModels
                     continue;
                 }
 
-                string familyName = familySymbol.Family != null ? familySymbol.Family.Name : familySymbol.FamilyName;
-                if (!string.Equals(familyName, requiredFamilyName, StringComparison.OrdinalIgnoreCase))
+                if (!CornerMarkConstants.IsAnnotationSymbol(familySymbol))
                 {
                     continue;
                 }
 
+                string familyName = familySymbol.Family != null ? familySymbol.Family.Name : familySymbol.FamilyName;
                 RevitElementOption option = new RevitElementOption();
                 option.Id = familySymbol.Id;
                 option.DisplayName = familyName + " : " + familySymbol.Name;

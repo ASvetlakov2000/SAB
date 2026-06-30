@@ -368,11 +368,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                 return false;
             }
 
-            string familyName = markInstance.Symbol.Family != null
-                ? markInstance.Symbol.Family.Name
-                : markInstance.Symbol.FamilyName;
-
-            return string.Equals(familyName, CornerMarkConstants.SheetFamilyName, StringComparison.OrdinalIgnoreCase);
+            return CornerMarkConstants.IsAnnotationInstance(markInstance);
         }
 
         private void TryRestoreViewport(

@@ -23,12 +23,16 @@ namespace SAB.InteriorElevations.Views
     {
         private readonly ElevationSettingsViewModel _viewModel;
         private readonly bool _initialMultipleGroupsMode;
+        private readonly bool _initialHasSelection;
         private readonly string _initialSelectionStatusText;
+        private readonly string _initialWarningInfoText;
 
         private Button _okButton;
         private Button _cancelButton;
         private Button _pickLinesButton;
         private Button _pickSheetPointButton;
+        private Border _selectionStatusBorder;
+        private Border _warningInfoBorder;
         private RadioButton _manualCropRadioButton;
         private RadioButton _cropByExampleRadioButton;
         private RadioButton _manualSheetPointRadioButton;
@@ -36,9 +40,10 @@ namespace SAB.InteriorElevations.Views
         private RadioButton _singleGroupRadioButton;
         private RadioButton _multipleGroupsRadioButton;
         private TextBlock _selectionStatusTextBlock;
+        private TextBlock _warningInfoTextBlock;
 
         public ElevationSettingsWindow(ElevationSettingsViewModel viewModel)
-            : this(viewModel, false, "Линии и помещение не выбраны.")
+            : this(viewModel, false, false, "Линии и помещение не выбраны.", string.Empty)
         {
         }
 
@@ -46,12 +51,26 @@ namespace SAB.InteriorElevations.Views
             ElevationSettingsViewModel viewModel,
             bool initialMultipleGroupsMode,
             string initialSelectionStatusText)
+            : this(viewModel, initialMultipleGroupsMode, false, initialSelectionStatusText, string.Empty)
+        {
+        }
+
+        public ElevationSettingsWindow(
+            ElevationSettingsViewModel viewModel,
+            bool initialMultipleGroupsMode,
+            bool initialHasSelection,
+            string initialSelectionStatusText,
+            string initialWarningInfoText)
         {
             _viewModel = viewModel;
             _initialMultipleGroupsMode = initialMultipleGroupsMode;
+            _initialHasSelection = initialHasSelection;
             _initialSelectionStatusText = string.IsNullOrWhiteSpace(initialSelectionStatusText)
                 ? "Линии и помещение не выбраны."
                 : initialSelectionStatusText;
+            _initialWarningInfoText = string.IsNullOrWhiteSpace(initialWarningInfoText)
+                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане. Параметры сохраняются и будут использованы при следующем запуске команды."
+                : initialWarningInfoText;
 
             // Основной блок инициализации окна: загружаем XAML, назначаем DataContext и подключаем кнопки.
             InitializeWindowFromXamlFile();
@@ -97,6 +116,8 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton = loadedWindow.FindName("CancelButton") as Button;
                 _pickLinesButton = loadedWindow.FindName("PickLinesButton") as Button;
                 _pickSheetPointButton = loadedWindow.FindName("PickSheetPointButton") as Button;
+                _selectionStatusBorder = loadedWindow.FindName("SelectionStatusBorder") as Border;
+                _warningInfoBorder = loadedWindow.FindName("WarningInfoBorder") as Border;
                 _manualCropRadioButton = loadedWindow.FindName("ManualCropRadioButton") as RadioButton;
                 _cropByExampleRadioButton = loadedWindow.FindName("CropByExampleRadioButton") as RadioButton;
                 _manualSheetPointRadioButton = loadedWindow.FindName("ManualSheetPointRadioButton") as RadioButton;
@@ -104,6 +125,7 @@ namespace SAB.InteriorElevations.Views
                 _singleGroupRadioButton = loadedWindow.FindName("SingleGroupRadioButton") as RadioButton;
                 _multipleGroupsRadioButton = loadedWindow.FindName("MultipleGroupsRadioButton") as RadioButton;
                 _selectionStatusTextBlock = loadedWindow.FindName("SelectionStatusTextBlock") as TextBlock;
+                _warningInfoTextBlock = loadedWindow.FindName("WarningInfoTextBlock") as TextBlock;
 
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
@@ -146,6 +168,16 @@ namespace SAB.InteriorElevations.Views
                 _pickSheetPointButton = FindElementByName<Button>(Content as DependencyObject, "PickSheetPointButton");
             }
 
+            if (_selectionStatusBorder == null)
+            {
+                _selectionStatusBorder = FindElementByName<Border>(Content as DependencyObject, "SelectionStatusBorder");
+            }
+
+            if (_warningInfoBorder == null)
+            {
+                _warningInfoBorder = FindElementByName<Border>(Content as DependencyObject, "WarningInfoBorder");
+            }
+
             if (_manualCropRadioButton == null)
             {
                 _manualCropRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "ManualCropRadioButton");
@@ -179,6 +211,11 @@ namespace SAB.InteriorElevations.Views
             if (_selectionStatusTextBlock == null)
             {
                 _selectionStatusTextBlock = FindElementByName<TextBlock>(Content as DependencyObject, "SelectionStatusTextBlock");
+            }
+
+            if (_warningInfoTextBlock == null)
+            {
+                _warningInfoTextBlock = FindElementByName<TextBlock>(Content as DependencyObject, "WarningInfoTextBlock");
             }
 
             if (_okButton == null ||
@@ -218,6 +255,21 @@ namespace SAB.InteriorElevations.Views
                 _selectionStatusTextBlock = FindElementByName<TextBlock>(Content as DependencyObject, "SelectionStatusTextBlock");
             }
 
+            if (_selectionStatusBorder == null)
+            {
+                _selectionStatusBorder = FindElementByName<Border>(Content as DependencyObject, "SelectionStatusBorder");
+            }
+
+            if (_warningInfoTextBlock == null)
+            {
+                _warningInfoTextBlock = FindElementByName<TextBlock>(Content as DependencyObject, "WarningInfoTextBlock");
+            }
+
+            if (_warningInfoBorder == null)
+            {
+                _warningInfoBorder = FindElementByName<Border>(Content as DependencyObject, "WarningInfoBorder");
+            }
+
             if (_singleGroupRadioButton != null)
             {
                 _singleGroupRadioButton.IsChecked = !_initialMultipleGroupsMode;
@@ -232,6 +284,9 @@ namespace SAB.InteriorElevations.Views
             {
                 _selectionStatusTextBlock.Text = _initialSelectionStatusText;
             }
+
+            ApplySelectionState(_initialHasSelection);
+            SetWarningInfoText(_initialWarningInfoText);
         }
 
         private T FindElementByName<T>(DependencyObject root, string name) where T : FrameworkElement
@@ -272,6 +327,7 @@ namespace SAB.InteriorElevations.Views
 
             if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
             {
+                SetWarningInfoText(validationMessage);
                 ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;
             }
@@ -296,6 +352,7 @@ namespace SAB.InteriorElevations.Views
 
             if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
             {
+                SetWarningInfoText(validationMessage);
                 ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;
             }
@@ -320,6 +377,7 @@ namespace SAB.InteriorElevations.Views
             if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
             {
                 _viewModel.IsCropManualMode = true;
+                SetWarningInfoText(validationMessage);
                 ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;
             }
@@ -335,6 +393,55 @@ namespace SAB.InteriorElevations.Views
             RequestedAction = ElevationSettingsWindowAction.Cancel;
             DialogResult = false;
             Close();
+        }
+
+        private void ApplySelectionState(bool hasSelection)
+        {
+            if (_okButton != null)
+            {
+                _okButton.IsEnabled = hasSelection;
+                _okButton.ToolTip = hasSelection
+                    ? null
+                    : "Сначала нажмите Выбрать линии и укажите линии детализации и помещение.";
+            }
+
+            Style panelStyle = TryFindResource(hasSelection ? "SabAccentInfoPanelStyle" : "SabSelectionPendingPanelStyle") as Style;
+            Style textStyle = TryFindResource(hasSelection ? "SabAccentInfoTextStyle" : "SabSelectionPendingTextStyle") as Style;
+
+            if (_selectionStatusBorder != null && panelStyle != null)
+            {
+                _selectionStatusBorder.Style = panelStyle;
+            }
+
+            if (_selectionStatusTextBlock != null && textStyle != null)
+            {
+                _selectionStatusTextBlock.Style = textStyle;
+            }
+        }
+
+        private void SetWarningInfoText(string text)
+        {
+            if (_warningInfoTextBlock == null)
+            {
+                return;
+            }
+
+            _warningInfoTextBlock.Text = string.IsNullOrWhiteSpace(text)
+                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане. Параметры сохраняются и будут использованы при следующем запуске команды."
+                : text;
+
+            Style panelStyle = TryFindResource("SabAccentInfoPanelStyle") as Style;
+            Style textStyle = TryFindResource("SabAccentInfoTextStyle") as Style;
+
+            if (_warningInfoBorder != null && panelStyle != null)
+            {
+                _warningInfoBorder.Style = panelStyle;
+            }
+
+            if (textStyle != null)
+            {
+                _warningInfoTextBlock.Style = textStyle;
+            }
         }
     }
 }

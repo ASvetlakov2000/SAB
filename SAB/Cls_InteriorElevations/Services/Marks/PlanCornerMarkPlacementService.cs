@@ -28,12 +28,12 @@ namespace SAB.InteriorElevations.Services.Marks
                 return 0;
             }
 
-            if (!IsFamilyMatches(symbol, CornerMarkConstants.PlanFamilyName))
+            if (!CornerMarkConstants.IsAnnotationSymbol(symbol))
             {
                 AddWarning(
                     warnings,
-                    "Выбран неверный тип семейства для марок угла на плане. Ожидается семейство '" +
-                    CornerMarkConstants.PlanFamilyName + "'.");
+                    "Выбран неверный тип марки угла на плане. Ожидается категория '" +
+                    CornerMarkConstants.GetAnnotationCategoryNameForMessage() + "'.");
                 return 0;
             }
 
@@ -140,17 +140,6 @@ namespace SAB.InteriorElevations.Services.Marks
                     "Ошибка размещения марки угла на плане (угол " + cornerNumber + "): " + exception.Message);
                 return false;
             }
-        }
-
-        private bool IsFamilyMatches(FamilySymbol symbol, string familyName)
-        {
-            if (symbol == null || string.IsNullOrWhiteSpace(familyName))
-            {
-                return false;
-            }
-
-            string currentFamilyName = symbol.Family != null ? symbol.Family.Name : symbol.FamilyName;
-            return string.Equals(currentFamilyName, familyName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void SetParameter(FamilyInstance markInstance, string parameterName, string value, IList<string> warnings)

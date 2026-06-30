@@ -15,6 +15,34 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="SabSelectionPendingPanelStyle"
+                   TargetType="{x:Type Border}"
+                   BasedOn="{StaticResource SabValidationPanelStyle}">
+                <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+            </Style>
+
+            <Style x:Key="SabAccentInfoPanelStyle"
+                   TargetType="{x:Type Border}"
+                   BasedOn="{StaticResource SabValidationPanelStyle}">
+                <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                <Setter Property="BorderThickness" Value="1.5" />
+            </Style>
+
+            <Style x:Key="SabSelectionPendingTextStyle"
+                   TargetType="{x:Type TextBlock}"
+                   BasedOn="{StaticResource SabFieldHintTextStyle}">
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.TextSecondary}" />
+            </Style>
+
+            <Style x:Key="SabAccentInfoTextStyle"
+                   TargetType="{x:Type TextBlock}"
+                   BasedOn="{StaticResource SabFieldHintTextStyle}">
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -71,10 +99,11 @@
                                                  Style="{StaticResource SabStructureModeRadioButtonStyle}"
                                                  Margin="0,0,0,10" />
 
-                                    <Border Style="{StaticResource SabValidationPanelStyle}">
+                                    <Border x:Name="SelectionStatusBorder"
+                                            Style="{StaticResource SabSelectionPendingPanelStyle}">
                                         <TextBlock x:Name="SelectionStatusTextBlock"
                                                    Text="Линии и помещение не выбраны."
-                                                   Style="{StaticResource SabFieldHintTextStyle}" />
+                                                   Style="{StaticResource SabSelectionPendingTextStyle}" />
                                     </Border>
                                 </StackPanel>
                             </Expander>
@@ -439,14 +468,11 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Border Style="{StaticResource SabValidationPanelStyle}">
-                                <StackPanel>
-                                    <TextBlock Text="Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане."
-                                               Style="{StaticResource SabFieldHintTextStyle}" />
-                                    <TextBlock Text="Параметры сохраняются и будут использованы при следующем запуске команды."
-                                               Style="{StaticResource SabFieldHintTextStyle}"
-                                               Margin="0,4,0,0" />
-                                </StackPanel>
+                            <Border x:Name="WarningInfoBorder"
+                                    Style="{StaticResource SabAccentInfoPanelStyle}">
+                                <TextBlock x:Name="WarningInfoTextBlock"
+                                           Text="Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане. Параметры сохраняются и будут использованы при следующем запуске команды."
+                                           Style="{StaticResource SabAccentInfoTextStyle}" />
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
@@ -483,6 +509,7 @@
                     <Button x:Name="OkButton"
                             Content="Создать развертки"
                             Width="170"
+                            IsEnabled="False"
                             Style="{StaticResource SabPrimaryButtonStyle}" />
                 </StackPanel>
             </Grid>

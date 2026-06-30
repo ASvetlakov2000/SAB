@@ -68,12 +68,12 @@ namespace SAB.InteriorElevations.Commands
 
                 ToastNotifier.ShowInfo(
                     "SAB Развертки",
-                    "Выберите марки семейства SA_Марка угла_План, которые нужно выровнять.");
+                    "Выберите аннотационные обозначения, которые нужно выровнять.");
 
                 IList<Reference> pickedReferences = uiDocument.Selection.PickObjects(
                     ObjectType.Element,
                     new PlanCornerMarkSelectionFilter(activePlanView.Id),
-                    "Выберите SA_Марка угла_План для выравнивания");
+                    "Выберите аннотационные обозначения для выравнивания");
 
                 if (pickedReferences == null || pickedReferences.Count == 0)
                 {
@@ -91,7 +91,7 @@ namespace SAB.InteriorElevations.Commands
                         continue;
                     }
 
-                    if (!IsPlanCornerMarkFamily(familyInstance))
+                    if (!CornerMarkConstants.IsAnnotationInstance(familyInstance))
                     {
                         continue;
                     }
@@ -101,7 +101,7 @@ namespace SAB.InteriorElevations.Commands
 
                 if (selectedMarks.Count == 0)
                 {
-                    ToastNotifier.ShowWarning("SAB Развертки", "Выбранные элементы не относятся к SA_Марка угла_План.");
+                    ToastNotifier.ShowWarning("SAB Развертки", "Выбранные элементы не относятся к категории 'Аннотационные обозначения'.");
                     return Result.Cancelled;
                 }
 
@@ -137,20 +137,6 @@ namespace SAB.InteriorElevations.Commands
                 ToastNotifier.ShowError("SAB Развертки", "Ошибка выравнивания марок: " + exception.Message);
                 return Result.Failed;
             }
-        }
-
-        private bool IsPlanCornerMarkFamily(FamilyInstance familyInstance)
-        {
-            if (familyInstance == null || familyInstance.Symbol == null)
-            {
-                return false;
-            }
-
-            string familyName = familyInstance.Symbol.Family != null
-                ? familyInstance.Symbol.Family.Name
-                : familyInstance.Symbol.FamilyName;
-
-            return string.Equals(familyName, CornerMarkConstants.PlanFamilyName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void ShowResultToast(
@@ -224,11 +210,7 @@ namespace SAB.InteriorElevations.Commands
                     return false;
                 }
 
-                string familyName = familyInstance.Symbol.Family != null
-                    ? familyInstance.Symbol.Family.Name
-                    : familyInstance.Symbol.FamilyName;
-
-                return string.Equals(familyName, CornerMarkConstants.PlanFamilyName, StringComparison.OrdinalIgnoreCase);
+                return CornerMarkConstants.IsAnnotationInstance(familyInstance);
             }
 
             public bool AllowReference(Reference reference, XYZ position)

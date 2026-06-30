@@ -49,10 +49,10 @@ namespace SAB.InteriorElevations.Services.Marks
                     continue;
                 }
 
-                if (!IsPlanCornerFamily(markInstance))
+                if (!CornerMarkConstants.IsAnnotationInstance(markInstance))
                 {
                     result.FailedCount++;
-                    AddWarning(warnings, "Элемент " + markInstance.Id.IntegerValue + " не относится к семейству '" + CornerMarkConstants.PlanFamilyName + "'.");
+                    AddWarning(warnings, "Элемент " + markInstance.Id.IntegerValue + " не относится к категории '" + CornerMarkConstants.GetAnnotationCategoryNameForMessage() + "'.");
                     continue;
                 }
 
@@ -680,20 +680,6 @@ namespace SAB.InteriorElevations.Services.Marks
             }
 
             return new XYZ(x / pointsCount, y / pointsCount, z / pointsCount);
-        }
-
-        private bool IsPlanCornerFamily(FamilyInstance markInstance)
-        {
-            if (markInstance == null || markInstance.Symbol == null)
-            {
-                return false;
-            }
-
-            string familyName = markInstance.Symbol.Family != null
-                ? markInstance.Symbol.Family.Name
-                : markInstance.Symbol.FamilyName;
-
-            return string.Equals(familyName, CornerMarkConstants.PlanFamilyName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void AddWarning(IList<string> warnings, string text)

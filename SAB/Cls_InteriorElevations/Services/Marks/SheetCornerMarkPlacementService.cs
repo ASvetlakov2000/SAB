@@ -33,14 +33,16 @@ namespace SAB.InteriorElevations.Services.Marks
                 return 0;
             }
 
-            if (!IsFamilyMatches(symbol, CornerMarkConstants.SheetFamilyName))
+            if (!CornerMarkConstants.IsAnnotationSymbol(symbol))
             {
                 if (warnings != null)
                 {
                     warnings.Add(
-                        "Выбран неверный тип семейства для марок на листе. Ожидается семейство '" +
-                        CornerMarkConstants.SheetFamilyName + "'.");
+                        "Выбран неверный тип марки угла на листе. Ожидается категория '" +
+                        CornerMarkConstants.GetAnnotationCategoryNameForMessage() + "'.");
                 }
+
+                return 0;
             }
 
             if (!symbol.IsActive)
@@ -140,17 +142,6 @@ namespace SAB.InteriorElevations.Services.Marks
 
                 return false;
             }
-        }
-
-        private bool IsFamilyMatches(FamilySymbol symbol, string familyName)
-        {
-            if (symbol == null || string.IsNullOrWhiteSpace(familyName))
-            {
-                return false;
-            }
-
-            string currentFamilyName = symbol.Family != null ? symbol.Family.Name : symbol.FamilyName;
-            return string.Equals(currentFamilyName, familyName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void SetParameter(FamilyInstance markInstance, string parameterName, string value, IList<string> warnings)

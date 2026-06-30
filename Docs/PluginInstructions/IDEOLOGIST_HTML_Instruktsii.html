@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="assets/sab-work.css">
   <title>SAB - Инструкции SAB</title>
 </head>
-<body>
+<body class="landing-rows-page">
 <nav class="globalnav" aria-label="SAB">
   <div class="globalnav__inner">
     <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
@@ -20,66 +20,102 @@
     </div>
   </div>
 </nav>
-<nav class="localnav" aria-label="Навигация по сценариям">
+<nav class="localnav" aria-label="Навигация по кластерам">
   <div class="localnav__inner">
     <a class="localnav__title" href="#top">Инструкции SAB</a>
     <div class="localnav__links">
-      <a href="#clusters">Кластеры</a>
+      <a href="#library">Библиотека</a>
+      <a href="#regulations">Регламент</a>
+      <a href="#elevations">Развертки</a>
+      <a href="#sheets">Листы</a>
     </div>
   </div>
 </nav>
-<main id="top">
-  <section class="hero">
-    <div class="hero__inner">
-      <p class="eyebrow">Инструкции</p>
-      <h1>Инструкции SAB</h1>
-      <p class="hero__copy">Рабочая навигация по модулям SAB: от экспорта библиотек до разверток и листов.</p>
+<main id="top" class="landing-rows">
+  <section class="landing-rows__hero">
+    <div class="landing-rows__inner">
+      <p class="eyebrow">Страницы</p>
+      <h1>Инструкции SAB.</h1>
+      <p class="landing-rows__lead">Страницы разделены по кластерам, которые соответствуют кнопкам в Revit.</p>
     </div>
   </section>
-  <section class="section section--soft" id="clusters">
-    <div class="section__inner">
-      <p class="eyebrow">Страницы</p>
-      <h2>Инструкции SAB.</h2>
-      <p class="section__lead">Страницы разделены по кластерам, которые соответствуют кнопкам в Revit.</p>
-      <div class="content-stack">
-        <div class="cluster-section">
-        <article class="cluster-card">
-          <h3>Библиотека</h3>
-          <p class="cluster-card__lead">Экспорт, подготовка в таблицах, обратная загрузка, размещение и HTML-просмотр библиотечных данных.</p>
-          <div class="cluster-list">
-            <a class="index-link" href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html"><span><strong>Системные</strong>Экспорт системных типов и PNG пирогов</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html"><span><strong>Загружаемые</strong>Экспорт загружаемых семейств и PNG миниатюр</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html"><span><strong>Линии и штриховки</strong>Экспорт, размещение и PNG-образцы</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html"><span><strong>Типы</strong>Переименование типов по XLSX/CSV</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html"><span><strong>Материалы</strong>Переименование материалов по XLSX/CSV</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html"><span><strong>HTML просмотр</strong>Профильный просмотр CSV</span><b>›</b></a>
-          </div>
-        </article>
-        <article class="cluster-card">
-          <h3>Регламент</h3>
-          <p class="cluster-card__lead">Открытие HTML-регламентов по стандартам наименования.</p>
-          <div class="cluster-list">
-            <a class="index-link" href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html"><span><strong>Наименования</strong>Стандарты наименования</span><b>›</b></a>
-          </div>
-        </article>
-        <article class="cluster-card">
-          <h3>Развертки</h3>
-          <p class="cluster-card__lead">Создание разверток по линиям, разворот видов, перенос viewport и выравнивание марок.</p>
-          <div class="cluster-list">
-            <a class="index-link" href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html"><span><strong>Создать развертки</strong>Создание разверток по линиям и настройка обрезки</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Razvorot_razvertki_180.html"><span><strong>Разворот 180</strong>Разворот направления готовой развертки</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html"><span><strong>Перенос видов на следующий лист</strong>Перенос выбранных viewport разверток</span><b>›</b></a>
-            <a class="index-link" href="IDEOLOGIST_HTML_Vyrovnyat_marki_uglov.html"><span><strong>Выровнять марки</strong>Единый отступ марок углов на плане</span><b>›</b></a>
-          </div>
-        </article>
-        <article class="cluster-card">
-          <h3>Листы</h3>
-          <p class="cluster-card__lead">Создание листов, дублирование видов и размещение viewport.</p>
-          <div class="cluster-list">
-            <a class="index-link" href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html"><span><strong>Создать виды и листы</strong>Создание листов и видов</span><b>›</b></a>
-          </div>
-        </article>
-        </div>
+
+  <section class="landing-rows__section" id="library">
+    <div class="landing-rows__inner">
+      <header class="landing-cluster-heading">
+        <h2>Библиотека</h2>
+        <p>Экспорт, подготовка в таблицах, обратная загрузка, размещение и HTML-просмотр библиотечных данных.</p>
+      </header>
+      <div class="landing-row-list">
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">
+          <span><strong>Системные</strong><small>Экспорт системных типов и PNG пирогов</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">
+          <span><strong>Загружаемые</strong><small>Экспорт загружаемых семейств и PNG миниатюр</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">
+          <span><strong>Линии и штриховки</strong><small>Экспорт, размещение и PNG-образцы</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">
+          <span><strong>Типы</strong><small>Переименование типов по XLSX/CSV</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">
+          <span><strong>Материалы</strong><small>Переименование материалов по XLSX/CSV</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">
+          <span><strong>HTML просмотр</strong><small>Профильный просмотр CSV</small></span><b>›</b>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-rows__section" id="regulations">
+    <div class="landing-rows__inner">
+      <header class="landing-cluster-heading">
+        <h2>Регламент</h2>
+        <p>Открытие HTML-регламентов по стандартам наименования.</p>
+      </header>
+      <div class="landing-row-list">
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">
+          <span><strong>Наименования</strong><small>Стандарты наименования</small></span><b>›</b>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-rows__section" id="elevations">
+    <div class="landing-rows__inner">
+      <header class="landing-cluster-heading">
+        <h2>Развертки</h2>
+        <p>Создание разверток по линиям, разворот видов, перенос и выравнивание марок.</p>
+      </header>
+      <div class="landing-row-list">
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">
+          <span><strong>Создать развертки</strong><small>Создание разверток по линиям и настройка обрезки</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Razvorot_razvertki_180.html">
+          <span><strong>Разворот 180</strong><small>Разворот направления готовой развертки</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">
+          <span><strong>Перенос видов на следующий лист</strong><small>Перенос выбранных viewport разверток</small></span><b>›</b>
+        </a>
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Vyrovnyat_marki_uglov.html">
+          <span><strong>Выровнять марки</strong><small>Единый отступ марок углов на плане</small></span><b>›</b>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-rows__section" id="sheets">
+    <div class="landing-rows__inner">
+      <header class="landing-cluster-heading">
+        <h2>Листы</h2>
+        <p>Создание листов, дублирование видов и размещение viewport.</p>
+      </header>
+      <div class="landing-row-list">
+        <a class="landing-row-link" href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">
+          <span><strong>Создать виды и листы</strong><small>Создание листов и видов</small></span><b>›</b>
+        </a>
       </div>
     </div>
   </section>

@@ -36,12 +36,12 @@ namespace SAB.InteriorElevations.Commands
 
                 ToastNotifier.ShowInfo(
                     "SAB Развертки",
-                    "Выберите рамкой видовые экраны и марки SA_Марка угла_Развертки для переноса на новый лист.");
+                    "Выберите рамкой видовые экраны и аннотационные обозначения для переноса на новый лист.");
 
                 IList<Reference> pickedReferences = uiDocument.Selection.PickObjects(
                     ObjectType.Element,
                     new ViewportAndSheetMarkSelectionFilter(activeSheet.Id),
-                    "Выберите viewport и SA_Марка угла_Развертки для переноса");
+                    "Выберите viewport и аннотационные обозначения для переноса");
 
                 if (pickedReferences == null || pickedReferences.Count == 0)
                 {
@@ -122,11 +122,7 @@ namespace SAB.InteriorElevations.Commands
                 return false;
             }
 
-            string familyName = familyInstance.Symbol.Family != null
-                ? familyInstance.Symbol.Family.Name
-                : familyInstance.Symbol.FamilyName;
-
-            return string.Equals(familyName, CornerMarkConstants.SheetFamilyName, StringComparison.OrdinalIgnoreCase);
+            return CornerMarkConstants.IsAnnotationInstance(familyInstance);
         }
 
         private void ShowTransferReport(ViewportTransferResult result, IList<string> warnings)
@@ -212,11 +208,7 @@ namespace SAB.InteriorElevations.Commands
                     return false;
                 }
 
-                string familyName = familyInstance.Symbol.Family != null
-                    ? familyInstance.Symbol.Family.Name
-                    : familyInstance.Symbol.FamilyName;
-
-                return string.Equals(familyName, CornerMarkConstants.SheetFamilyName, StringComparison.OrdinalIgnoreCase);
+                return CornerMarkConstants.IsAnnotationInstance(familyInstance);
             }
 
             public bool AllowReference(Reference reference, XYZ position)
