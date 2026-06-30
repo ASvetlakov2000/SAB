@@ -335,6 +335,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\SabWindowAnimationService.cs" />
+    <Compile Include="UI\SabWindowBehaviorService.cs" />
+    <Compile Include="UI\SabWindowPlacementService.cs" />
     <Compile Include="UI\WindowSizeSettingsService.cs" />
     <Compile Include="Helpers\ForRevit\AllCategoriesByPlacement.cs" />
     <Compile Include="Helpers\ForRevit\AllUsedCategoryList.cs" />

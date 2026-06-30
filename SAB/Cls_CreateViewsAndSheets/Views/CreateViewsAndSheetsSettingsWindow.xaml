@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Margin="20">
+    <Grid x:Name="CreateViewsAndSheetsSettingsRoot" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -426,7 +426,8 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="Закрыть"
+            <Button x:Name="CloseButton"
+                    Content="Закрыть"
                     Width="120"
                     IsCancel="True"
                     Style="{StaticResource SabPrimaryButtonStyle}" />

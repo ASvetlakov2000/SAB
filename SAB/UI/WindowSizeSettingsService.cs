@@ -17,6 +17,7 @@ namespace SAB.UI
             }
 
             Restore(window, windowKey);
+            SabWindowBehaviorService.Apply(window);
             window.Closing += delegate
             {
                 Save(window, windowKey);

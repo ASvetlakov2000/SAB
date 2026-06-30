@@ -232,6 +232,7 @@ namespace SAB.CreateViewsAndSheets.Commands
             }
 
             window.ShowInTaskbar = false;
+            window.Opacity = 0.0;
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             window.SourceInitialized += CreateViewsAndSheetsWindow_SourceInitialized;
 

@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using SAB.CreateViewsAndSheets.Models;
 using SAB.CreateViewsAndSheets.Services;
 using SAB.CreateViewsAndSheets.ViewModels;
+using SAB.UI;
 
 namespace SAB.CreateViewsAndSheets.Views
 {
@@ -27,6 +28,9 @@ namespace SAB.CreateViewsAndSheets.Views
         private readonly List<DataGridColumn> _sheetBrowserParameterColumns;
         private ToggleButton _settingsDrawerToggle;
         private FrameworkElement _settingsDrawerPanel;
+        private Border _validationPanelBorder;
+        private TextBlock _statusTextBlock;
+        private Button _createButton;
         private Point _dragStartPoint;
         private SheetCreationRowViewModel _draggedRow;
         private DataGridColumn _resizedColumn;
@@ -107,6 +111,8 @@ namespace SAB.CreateViewsAndSheets.Views
             AttachSettingsDrawerHandlers();
             AttachRowsDataGridHandlers();
             RestoreWindowLayout();
+            AttachAnimatedFeedbackTargets();
+            SabWindowBehaviorService.ApplyLoadedBehavior(this);
             OpenSettingsWindowAfterLoadedIfNeeded();
         }
 
@@ -192,6 +198,21 @@ namespace SAB.CreateViewsAndSheets.Views
             {
                 UpdateFloorColumnVisibility();
             }
+
+            if (string.Equals(e.PropertyName, "ValidationSummary", StringComparison.Ordinal))
+            {
+                SabWindowAnimationService.PulseElement(_validationPanelBorder);
+            }
+
+            if (string.Equals(e.PropertyName, "StatusText", StringComparison.Ordinal))
+            {
+                SabWindowAnimationService.PulseElement(_statusTextBlock);
+            }
+
+            if (string.Equals(e.PropertyName, "CanCreate", StringComparison.Ordinal))
+            {
+                ScheduleCreateButtonPulse();
+            }
         }
 
         private void CreateViewsAndSheetsWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -203,6 +224,9 @@ namespace SAB.CreateViewsAndSheets.Views
         {
             DetachRowsDataGridHandlers();
             DetachSettingsDrawerHandlers();
+            _validationPanelBorder = null;
+            _statusTextBlock = null;
+            _createButton = null;
             _viewModel.RequestClose -= ViewModel_RequestClose;
             _viewModel.RequestSettingsWindow -= ViewModel_RequestSettingsWindow;
             _viewModel.RequestPointSelection -= ViewModel_RequestPointSelection;
@@ -210,6 +234,28 @@ namespace SAB.CreateViewsAndSheets.Views
             Loaded -= CreateViewsAndSheetsWindow_Loaded;
             Closing -= CreateViewsAndSheetsWindow_Closing;
             Closed -= CreateViewsAndSheetsWindow_Closed;
+        }
+
+        private void AttachAnimatedFeedbackTargets()
+        {
+            _validationPanelBorder = FindVisualChildByName<Border>(this, "ValidationPanelBorder");
+            _statusTextBlock = FindVisualChildByName<TextBlock>(this, "StatusTextBlock");
+            _createButton = FindVisualChildByName<Button>(this, "CreateButton");
+        }
+
+        private void ScheduleCreateButtonPulse()
+        {
+            if (_createButton == null || _viewModel == null || !_viewModel.CanCreate)
+            {
+                return;
+            }
+
+            Dispatcher.BeginInvoke(
+                new Action(delegate
+                {
+                    SabWindowAnimationService.PulseButton(_createButton);
+                }),
+                DispatcherPriority.Background);
         }
 
         private void AttachSettingsDrawerHandlers()

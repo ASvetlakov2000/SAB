@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
+    <Grid x:Name="CreateViewsAndSheetsRoot">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -693,7 +693,9 @@
                         </DataGrid>
                     </Border>
 
-                    <Border Grid.Row="2" Style="{StaticResource SabValidationPanelStyle}">
+                    <Border x:Name="ValidationPanelBorder"
+                            Grid.Row="2"
+                            Style="{StaticResource SabValidationPanelStyle}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -731,7 +733,8 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0"
+                <TextBlock x:Name="StatusTextBlock"
+                           Grid.Column="0"
                            Text="{Binding StatusText}"
                            Style="{StaticResource SabStatusTextStyle}" />
 
@@ -741,7 +744,8 @@
                             Command="{Binding CancelCommand}"
                             Style="{StaticResource SabNeutralButtonStyle}"
                             Margin="0,0,10,0" />
-                    <Button Content="Создать"
+                    <Button x:Name="CreateButton"
+                            Content="Создать"
                             Width="130"
                             Command="{Binding CreateCommand}"
                             IsEnabled="{Binding CanCreate}"
