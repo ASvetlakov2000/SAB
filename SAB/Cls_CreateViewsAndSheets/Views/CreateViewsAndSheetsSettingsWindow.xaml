@@ -60,17 +60,30 @@
                                 </Expander.Header>
 
                                 <StackPanel>
-                                    <TextBlock Text="Размещение вида" Style="{StaticResource SabFieldLabelTextStyle}" />
-                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,10">
-                                        <RadioButton Content="Ручной ввод"
-                                                     GroupName="SettingsViewCenterPlacementMode"
-                                                     IsChecked="{Binding IsViewCenterManualMode, Mode=TwoWay}"
-                                                     Style="{StaticResource SabRadioButtonStyle}" />
-                                        <RadioButton Content="Указать точку"
-                                                     GroupName="SettingsViewCenterPlacementMode"
-                                                     IsChecked="{Binding IsViewCenterPointMode, Mode=TwoWay}"
-                                                     Style="{StaticResource SabRadioButtonStyle}" />
-                                    </StackPanel>
+                                    <RadioButton x:Name="SourceSheetPlacementToggle"
+                                                 Content="Размещать вид как на листе-образце"
+                                                 GroupName="SettingsViewportPlacementMode"
+                                                 IsChecked="{Binding IsSourceSheetViewportPlacementMode, Mode=TwoWay}"
+                                                 Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                                    <RadioButton x:Name="PointPlacementToggle"
+                                                 Content="Размещать вид по точкам"
+                                                 GroupName="SettingsViewportPlacementMode"
+                                                 IsChecked="{Binding IsPointViewportPlacementMode, Mode=TwoWay}"
+                                                 Style="{StaticResource SabStructureModeRadioButtonStyle}"
+                                                 Margin="0,0,0,12" />
+
+                                    <StackPanel x:Name="ManualViewportPlacementPanel">
+                                        <TextBlock Text="Размещение вида" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,10">
+                                            <RadioButton Content="Ручной ввод"
+                                                         GroupName="SettingsViewCenterPlacementMode"
+                                                         IsChecked="{Binding IsViewCenterManualMode, Mode=TwoWay}"
+                                                         Style="{StaticResource SabRadioButtonStyle}" />
+                                            <RadioButton Content="Указать точку"
+                                                         GroupName="SettingsViewCenterPlacementMode"
+                                                         IsChecked="{Binding IsViewCenterPointMode, Mode=TwoWay}"
+                                                         Style="{StaticResource SabRadioButtonStyle}" />
+                                        </StackPanel>
 
                                     <Grid Margin="0,0,0,14">
                                         <Grid.Style>
@@ -178,6 +191,7 @@
                                         <TextBlock Text="{Binding ViewTitlePointSummary}"
                                                    Style="{StaticResource SabFieldHintTextStyle}"
                                                    Margin="0,6,0,0" />
+                                    </StackPanel>
                                     </StackPanel>
 
                                     <CheckBox Content="Сохранять настройки"

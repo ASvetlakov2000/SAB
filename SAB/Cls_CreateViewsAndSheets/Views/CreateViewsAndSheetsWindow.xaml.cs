@@ -10,10 +10,12 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using SAB.CreateViewsAndSheets.Models;
 using SAB.CreateViewsAndSheets.Services;
 using SAB.CreateViewsAndSheets.ViewModels;
 using SAB.UI;
+using RevitTaskDialog = Autodesk.Revit.UI.TaskDialog;
 
 namespace SAB.CreateViewsAndSheets.Views
 {
@@ -27,7 +29,10 @@ namespace SAB.CreateViewsAndSheets.Views
         private readonly List<DataGridColumn> _observedWidthColumns;
         private readonly List<DataGridColumn> _sheetBrowserParameterColumns;
         private ToggleButton _settingsDrawerToggle;
+        private ButtonBase _sourceSheetPlacementToggle;
+        private ButtonBase _pointPlacementToggle;
         private FrameworkElement _settingsDrawerPanel;
+        private FrameworkElement _manualViewportPlacementPanel;
         private Border _validationPanelBorder;
         private TextBlock _statusTextBlock;
         private Button _createButton;
@@ -57,6 +62,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
             _viewModel.RequestClose += ViewModel_RequestClose;
             _viewModel.RequestSettingsWindow += ViewModel_RequestSettingsWindow;
+            _viewModel.RequestSheetTableImport += ViewModel_RequestSheetTableImport;
             _viewModel.RequestPointSelection += ViewModel_RequestPointSelection;
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             Loaded += CreateViewsAndSheetsWindow_Loaded;
@@ -148,6 +154,35 @@ namespace SAB.CreateViewsAndSheets.Views
             ScheduleNormalizeRowsDataGridColumnWidths();
         }
 
+        private void ViewModel_RequestSheetTableImport(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Выберите таблицу листов";
+            dialog.Filter = "Excel (*.xlsx)|*.xlsx";
+            dialog.CheckFileExists = true;
+            dialog.Multiselect = false;
+
+            bool? result = dialog.ShowDialog(this);
+            if (result != true)
+            {
+                return;
+            }
+
+            try
+            {
+                SheetTableImportService importService = new SheetTableImportService();
+                IList<SheetTableImportRow> importedRows = importService.ReadRows(dialog.FileName);
+                _viewModel.ImportSheetTableRows(importedRows);
+                ScheduleNormalizeRowsDataGridColumnWidths();
+            }
+            catch (Exception exception)
+            {
+                RevitTaskDialog.Show(
+                    "Создание видов и листов",
+                    "Не удалось загрузить таблицу Excel.\n\n" + exception.Message);
+            }
+        }
+
         private void OpenSettingsWindowAfterLoadedIfNeeded()
         {
             if (!_openSettingsWindowAfterLoaded)
@@ -199,6 +234,11 @@ namespace SAB.CreateViewsAndSheets.Views
                 UpdateFloorColumnVisibility();
             }
 
+            if (string.Equals(e.PropertyName, "UseSourceSheetViewportPlacement", StringComparison.Ordinal))
+            {
+                ApplyPlacementModeAnimation(true);
+            }
+
             if (string.Equals(e.PropertyName, "ValidationSummary", StringComparison.Ordinal))
             {
                 SabWindowAnimationService.PulseElement(_validationPanelBorder);
@@ -227,8 +267,12 @@ namespace SAB.CreateViewsAndSheets.Views
             _validationPanelBorder = null;
             _statusTextBlock = null;
             _createButton = null;
+            _manualViewportPlacementPanel = null;
+            _sourceSheetPlacementToggle = null;
+            _pointPlacementToggle = null;
             _viewModel.RequestClose -= ViewModel_RequestClose;
             _viewModel.RequestSettingsWindow -= ViewModel_RequestSettingsWindow;
+            _viewModel.RequestSheetTableImport -= ViewModel_RequestSheetTableImport;
             _viewModel.RequestPointSelection -= ViewModel_RequestPointSelection;
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
             Loaded -= CreateViewsAndSheetsWindow_Loaded;
@@ -241,6 +285,31 @@ namespace SAB.CreateViewsAndSheets.Views
             _validationPanelBorder = FindVisualChildByName<Border>(this, "ValidationPanelBorder");
             _statusTextBlock = FindVisualChildByName<TextBlock>(this, "StatusTextBlock");
             _createButton = FindVisualChildByName<Button>(this, "CreateButton");
+            _manualViewportPlacementPanel = FindVisualChildByName<FrameworkElement>(this, "ManualViewportPlacementPanel");
+            _sourceSheetPlacementToggle = FindVisualChildByName<ButtonBase>(this, "SourceSheetPlacementToggle");
+            _pointPlacementToggle = FindVisualChildByName<ButtonBase>(this, "PointPlacementToggle");
+            ApplyPlacementModeAnimation(false);
+        }
+
+        private void ApplyPlacementModeAnimation(bool animate)
+        {
+            if (_viewModel == null)
+            {
+                return;
+            }
+
+            SabWindowAnimationService.AnimatePlacementModePanel(
+                _manualViewportPlacementPanel,
+                _viewModel.UseSourceSheetViewportPlacement,
+                animate);
+
+            if (animate)
+            {
+                ButtonBase activePlacementToggle = _viewModel.UseSourceSheetViewportPlacement
+                    ? _sourceSheetPlacementToggle
+                    : _pointPlacementToggle;
+                SabWindowAnimationService.PulseButton(activePlacementToggle);
+            }
         }
 
         private void ScheduleCreateButtonPulse()

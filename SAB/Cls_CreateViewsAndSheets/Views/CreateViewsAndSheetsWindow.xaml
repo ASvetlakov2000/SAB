@@ -272,7 +272,19 @@
                         </Expander.Header>
 
                         <StackPanel>
+                            <RadioButton x:Name="SourceSheetPlacementToggle"
+                                         Content="Размещать вид как на листе-образце"
+                                         GroupName="ViewportPlacementMode"
+                                         IsChecked="{Binding IsSourceSheetViewportPlacementMode, Mode=TwoWay}"
+                                         Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                            <RadioButton x:Name="PointPlacementToggle"
+                                         Content="Размещать вид по точкам"
+                                         GroupName="ViewportPlacementMode"
+                                         IsChecked="{Binding IsPointViewportPlacementMode, Mode=TwoWay}"
+                                         Style="{StaticResource SabStructureModeRadioButtonStyle}"
+                                         Margin="0,0,0,12" />
 
+                            <StackPanel x:Name="ManualViewportPlacementPanel">
                             <TextBlock Text="Размещение вида" Style="{StaticResource SabFieldLabelTextStyle}" />
                             <StackPanel Orientation="Horizontal" Margin="0,2,0,10">
                                 <RadioButton Content="Ручной ввод"
@@ -400,6 +412,7 @@
                                         Command="{Binding PickViewTitlePointCommand}"
                                         Style="{StaticResource SabOutlineButtonStyle}" />
                             </StackPanel>
+                            </StackPanel>
 
                             <CheckBox Content="Сохранить настройки"
                                       IsChecked="{Binding SaveSettings}"
@@ -483,12 +496,38 @@
                         <RowDefinition Height="128" />
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
-                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
-                            <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
-                        </Border>
-                        <TextBlock Text="Создаваемые виды и листы" Style="{StaticResource SabPanelHeaderTextStyle}" />
-                    </StackPanel>
+                    <Grid Grid.Row="0" Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
+                            </Border>
+                            <TextBlock Text="Создаваемые виды и листы" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                            <Button Content="Загрузить таблицу"
+                                    Command="{Binding ImportSheetTableCommand}"
+                                    Style="{StaticResource SabOutlineButtonStyle}"
+                                    Margin="0,0,8,0" />
+                            <Button Content="Удалить все строки"
+                                    Command="{Binding ClearRowsCommand}"
+                                    Style="{StaticResource SabNeutralButtonStyle}"
+                                    Margin="0,0,8,0" />
+                            <Button Content="Имя листа → Имя вида"
+                                    Command="{Binding CopySheetNamesToViewNamesCommand}"
+                                    Style="{StaticResource SabOutlineButtonStyle}" />
+                        </StackPanel>
+                    </Grid>
 
                     <Border Grid.Row="1"
                             Style="{StaticResource SabDataGridContainerBorderStyle}"

@@ -229,23 +229,38 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 document.Regenerate();
 
-                SheetBounds actualSheetBounds;
-                if (!_sheetBoundsService.TryGetSheetBounds(document, createdSheet, out actualSheetBounds))
+                if (settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement)
                 {
-                    actualSheetBounds = settings.SheetBounds;
-                    result.Warnings.Add(
-                        "Строка " + item.RowNumber +
-                        ": габарит созданного листа не определен, использован габарит из окна настроек.");
+                    ViewSheet sourceSheet = document.GetElement(sourceSheetId) as ViewSheet;
+                    _viewportPlacementService.PlaceViewOnSheetBySourceViewport(
+                        document,
+                        sourceSheet,
+                        sourceView,
+                        createdSheet,
+                        duplicatedView,
+                        settings.ViewportTypeId,
+                        result.Warnings);
                 }
+                else
+                {
+                    SheetBounds actualSheetBounds;
+                    if (!_sheetBoundsService.TryGetSheetBounds(document, createdSheet, out actualSheetBounds))
+                    {
+                        actualSheetBounds = settings.SheetBounds;
+                        result.Warnings.Add(
+                            "Строка " + item.RowNumber +
+                            ": габарит созданного листа не определен, использован габарит из окна настроек.");
+                    }
 
-                _viewportPlacementService.PlaceViewOnSheet(
-                    document,
-                    createdSheet,
-                    duplicatedView,
-                    settings.ViewportTypeId,
-                    actualSheetBounds,
-                    settings.Placement,
-                    result.Warnings);
+                    _viewportPlacementService.PlaceViewOnSheet(
+                        document,
+                        createdSheet,
+                        duplicatedView,
+                        settings.ViewportTypeId,
+                        actualSheetBounds,
+                        settings.Placement,
+                        result.Warnings);
+                }
 
                 CreatedViewSheetInfo info = new CreatedViewSheetInfo();
                 info.RowNumber = item.RowNumber;
@@ -283,7 +298,8 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Настройки создания видов и листов не получены.");
             }
 
-            if (settings.SheetBounds == null)
+            bool useSourceSheetViewportPlacement = settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement;
+            if (!useSourceSheetViewportPlacement && settings.SheetBounds == null)
             {
                 throw new InvalidOperationException("Не определены габариты листа для создания.");
             }
@@ -419,6 +435,16 @@ namespace SAB.CreateViewsAndSheets.Services
             if (placement == null)
             {
                 throw new InvalidOperationException("Настройки размещения не получены.");
+            }
+
+            if (placement.UseSourceSheetViewportPlacement)
+            {
+                return;
+            }
+
+            if (sheetBounds == null)
+            {
+                throw new InvalidOperationException("Не определены габариты листа для создания.");
             }
 
             if (!IsFinite(sheetBounds.MinXFeet) ||

@@ -10,6 +10,7 @@ namespace SAB.CreateViewsAndSheets.Models
             ViewTitleXmm = 120.0;
             ViewTitleYmm = 130.0;
             TitleLineLengthMm = 80.0;
+            UseSourceSheetViewportPlacement = false;
             UsePointSelectionForViewCenter = false;
             UsePointSelectionForViewTitle = false;
             SaveSettings = true;
@@ -26,6 +27,8 @@ namespace SAB.CreateViewsAndSheets.Models
         public double ViewTitleYmm { get; set; }
 
         public double TitleLineLengthMm { get; set; }
+
+        public bool UseSourceSheetViewportPlacement { get; set; }
 
         public bool UsePointSelectionForViewCenter { get; set; }
 

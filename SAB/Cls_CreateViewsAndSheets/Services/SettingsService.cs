@@ -103,6 +103,7 @@ namespace SAB.CreateViewsAndSheets.Services
             settings.Placement.ViewTitleXmm = persisted.ViewTitleXmm;
             settings.Placement.ViewTitleYmm = persisted.ViewTitleYmm;
             settings.Placement.TitleLineLengthMm = persisted.TitleLineLengthMm;
+            settings.Placement.UseSourceSheetViewportPlacement = persisted.UseSourceSheetViewportPlacement;
             settings.Placement.UsePointSelectionForViewCenter = persisted.UsePointSelectionForViewCenter;
             settings.Placement.UsePointSelectionForViewTitle = persisted.UsePointSelectionForViewTitle;
             settings.Placement.SaveSettings = persisted.SaveSettings;
@@ -141,6 +142,7 @@ namespace SAB.CreateViewsAndSheets.Services
             persisted.ViewTitleXmm = placement.ViewTitleXmm;
             persisted.ViewTitleYmm = placement.ViewTitleYmm;
             persisted.TitleLineLengthMm = placement.TitleLineLengthMm;
+            persisted.UseSourceSheetViewportPlacement = placement.UseSourceSheetViewportPlacement;
             persisted.UsePointSelectionForViewCenter = placement.UsePointSelectionForViewCenter;
             persisted.UsePointSelectionForViewTitle = placement.UsePointSelectionForViewTitle;
             persisted.SaveSettings = placement.SaveSettings;
@@ -504,6 +506,8 @@ namespace SAB.CreateViewsAndSheets.Services
             public double ViewTitleYmm { get; set; }
 
             public double TitleLineLengthMm { get; set; }
+
+            public bool UseSourceSheetViewportPlacement { get; set; }
 
             public bool UsePointSelectionForViewCenter { get; set; }
 

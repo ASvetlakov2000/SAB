@@ -13,6 +13,8 @@ namespace SAB.UI
 {
     public static class SabWindowAnimationService
     {
+        private const double PlacementOptionsExpandedMaxHeight = 520.0;
+
         private static readonly DependencyProperty ButtonAnimationStateProperty =
             DependencyProperty.RegisterAttached(
                 "ButtonAnimationState",
@@ -82,6 +84,47 @@ namespace SAB.UI
 
             scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleUpAnimation, HandoffBehavior.SnapshotAndReplace);
             scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleUpAnimation.Clone(), HandoffBehavior.SnapshotAndReplace);
+        }
+
+        public static void AnimatePlacementModePanel(
+            FrameworkElement panel,
+            bool useSourceSheetViewportPlacement,
+            bool animate)
+        {
+            if (panel == null)
+            {
+                return;
+            }
+
+            panel.ClipToBounds = true;
+            panel.IsHitTestVisible = !useSourceSheetViewportPlacement;
+
+            TranslateTransform translateTransform = EnsureTranslateTransform(panel);
+            double targetOpacity = useSourceSheetViewportPlacement ? 0.0 : 1.0;
+            double targetMaxHeight = useSourceSheetViewportPlacement ? 0.0 : PlacementOptionsExpandedMaxHeight;
+            double targetY = useSourceSheetViewportPlacement ? -8.0 : 0.0;
+
+            if (!animate)
+            {
+                panel.BeginAnimation(UIElement.OpacityProperty, null);
+                panel.BeginAnimation(FrameworkElement.MaxHeightProperty, null);
+                translateTransform.BeginAnimation(TranslateTransform.YProperty, null);
+
+                panel.Opacity = targetOpacity;
+                panel.MaxHeight = targetMaxHeight;
+                translateTransform.Y = targetY;
+                return;
+            }
+
+            int durationMilliseconds = useSourceSheetViewportPlacement ? 150 : 230;
+
+            DoubleAnimation opacityAnimation = CreateDoubleAnimation(targetOpacity, durationMilliseconds);
+            DoubleAnimation heightAnimation = CreateDoubleAnimation(targetMaxHeight, durationMilliseconds);
+            DoubleAnimation yAnimation = CreateDoubleAnimation(targetY, durationMilliseconds);
+
+            panel.BeginAnimation(UIElement.OpacityProperty, opacityAnimation, HandoffBehavior.SnapshotAndReplace);
+            panel.BeginAnimation(FrameworkElement.MaxHeightProperty, heightAnimation, HandoffBehavior.SnapshotAndReplace);
+            translateTransform.BeginAnimation(TranslateTransform.YProperty, yAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
         private static void AttachButtonAnimations(DependencyObject root)

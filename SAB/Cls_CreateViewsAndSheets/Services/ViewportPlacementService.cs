@@ -74,6 +74,75 @@ namespace SAB.CreateViewsAndSheets.Services
             return viewport;
         }
 
+        public Viewport PlaceViewOnSheetBySourceViewport(
+            Document document,
+            ViewSheet sourceSheet,
+            View sourceView,
+            ViewSheet targetSheet,
+            View targetView,
+            ElementId fallbackViewportTypeId,
+            System.Collections.Generic.IList<string> warnings)
+        {
+            if (document == null)
+            {
+                throw new InvalidOperationException("Документ Revit недоступен.");
+            }
+
+            if (sourceSheet == null)
+            {
+                throw new InvalidOperationException("Лист-образец для копирования положения вида недоступен.");
+            }
+
+            if (sourceView == null)
+            {
+                throw new InvalidOperationException("Вид-образец для копирования положения недоступен.");
+            }
+
+            if (targetSheet == null)
+            {
+                throw new InvalidOperationException("Лист для размещения вида недоступен.");
+            }
+
+            if (targetView == null)
+            {
+                throw new InvalidOperationException("Вид для размещения недоступен.");
+            }
+
+            if (!Viewport.CanAddViewToSheet(document, targetSheet.Id, targetView.Id))
+            {
+                throw new InvalidOperationException("Вид \"" + targetView.Name + "\" нельзя разместить на листе " + targetSheet.SheetNumber + ".");
+            }
+
+            Viewport sourceViewport = FindViewportOnSheet(document, sourceSheet, sourceView);
+            if (sourceViewport == null)
+            {
+                throw new InvalidOperationException(
+                    "На листе-образце " + sourceSheet.SheetNumber +
+                    " не найден размещенный вид \"" + sourceView.Name + "\".");
+            }
+
+            SourceViewportPlacementData sourcePlacement = BuildSourceViewportPlacementData(sourceViewport);
+            ElementId viewportTypeId = sourcePlacement.ViewportTypeId != null &&
+                                       sourcePlacement.ViewportTypeId != ElementId.InvalidElementId
+                ? sourcePlacement.ViewportTypeId
+                : fallbackViewportTypeId;
+
+            Viewport targetViewport = Viewport.Create(document, targetSheet.Id, targetView.Id, sourcePlacement.Center);
+            if (targetViewport == null)
+            {
+                throw new InvalidOperationException("Revit API не создал Viewport для вида \"" + targetView.Name + "\".");
+            }
+
+            TryApplyViewportType(targetViewport, viewportTypeId, warnings);
+            document.Regenerate();
+
+            MoveViewportToCenter(document, targetViewport, sourcePlacement.Center);
+
+            document.Regenerate();
+            TryPlaceViewportLabelBySource(targetViewport, sourcePlacement, warnings);
+            return targetViewport;
+        }
+
         private void TryApplyViewportType(Viewport viewport, ElementId viewportTypeId, System.Collections.Generic.IList<string> warnings)
         {
             if (viewport == null || viewportTypeId == null || viewportTypeId == ElementId.InvalidElementId)
@@ -145,6 +214,200 @@ namespace SAB.CreateViewsAndSheets.Services
             catch (Exception exception)
             {
                 AddWarning(warnings, "Не удалось разместить заголовок Viewport: " + exception.Message);
+            }
+        }
+
+        private void TryPlaceViewportLabelBySource(
+            Viewport viewport,
+            SourceViewportPlacementData sourcePlacement,
+            System.Collections.Generic.IList<string> warnings)
+        {
+            if (viewport == null || sourcePlacement == null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!sourcePlacement.HasTitlePoint)
+                {
+                    AddWarning(warnings, "Не удалось скопировать положение заголовка: на листе-образце не определена точка заголовка Viewport.");
+                    return;
+                }
+
+                if (IsViewportTitleHidden(viewport))
+                {
+                    AddWarning(warnings, "У типа Viewport с листа-образца отключено отображение заголовка. Положение заголовка не применялось.");
+                    return;
+                }
+
+                Outline outline = viewport.GetBoxOutline();
+                if (outline == null || outline.MinimumPoint == null)
+                {
+                    AddWarning(warnings, "Не удалось определить габарит нового Viewport для копирования положения заголовка.");
+                    return;
+                }
+
+                XYZ targetBottomLeft = outline.MinimumPoint;
+                XYZ labelOffset = new XYZ(
+                    sourcePlacement.TitlePoint.X - targetBottomLeft.X,
+                    sourcePlacement.TitlePoint.Y - targetBottomLeft.Y,
+                    0.0);
+
+                ValidatePoint(labelOffset, "смещение заголовка Viewport с листа-образца");
+
+                // Блок копирования положения заголовка с листа-образца.
+                // Копируется абсолютная точка заголовка на листе, чтобы заголовок остался на том же месте.
+                TryApplySourceLabelLineLength(viewport, sourcePlacement, warnings);
+                viewport.LabelOffset = labelOffset;
+            }
+            catch (Exception exception)
+            {
+                AddWarning(warnings, "Не удалось скопировать положение заголовка Viewport с листа-образца: " + exception.Message);
+            }
+        }
+
+        private SourceViewportPlacementData BuildSourceViewportPlacementData(Viewport sourceViewport)
+        {
+            if (sourceViewport == null)
+            {
+                throw new InvalidOperationException("Viewport на листе-образце недоступен.");
+            }
+
+            SourceViewportPlacementData data = new SourceViewportPlacementData();
+            data.Center = sourceViewport.GetBoxCenter();
+            data.ViewportTypeId = sourceViewport.GetTypeId();
+            ValidatePoint(data.Center, "центр Viewport на листе-образце");
+
+            if (IsViewportTitleHidden(sourceViewport))
+            {
+                data.HasTitlePoint = false;
+                return data;
+            }
+
+            Outline outline = sourceViewport.GetBoxOutline();
+            if (outline == null || outline.MinimumPoint == null)
+            {
+                data.HasTitlePoint = false;
+                return data;
+            }
+
+            XYZ labelOffset = sourceViewport.LabelOffset;
+            ValidatePoint(labelOffset, "смещение заголовка Viewport на листе-образце");
+            TryReadSourceLabelLineLength(sourceViewport, data);
+
+            XYZ sourceBottomLeft = outline.MinimumPoint;
+            data.TitlePoint = new XYZ(
+                sourceBottomLeft.X + labelOffset.X,
+                sourceBottomLeft.Y + labelOffset.Y,
+                0.0);
+            ValidatePoint(data.TitlePoint, "точка заголовка Viewport на листе-образце");
+            data.HasTitlePoint = true;
+            return data;
+        }
+
+        private void TryReadSourceLabelLineLength(Viewport sourceViewport, SourceViewportPlacementData data)
+        {
+            if (sourceViewport == null || data == null)
+            {
+                return;
+            }
+
+            try
+            {
+                double labelLineLength = sourceViewport.LabelLineLength;
+                if (IsFinite(labelLineLength) && labelLineLength > 0.0)
+                {
+                    data.LabelLineLength = labelLineLength;
+                    data.HasLabelLineLength = true;
+                }
+            }
+            catch
+            {
+                data.HasLabelLineLength = false;
+            }
+        }
+
+        private void TryApplySourceLabelLineLength(
+            Viewport viewport,
+            SourceViewportPlacementData sourcePlacement,
+            System.Collections.Generic.IList<string> warnings)
+        {
+            if (viewport == null || sourcePlacement == null || !sourcePlacement.HasLabelLineLength)
+            {
+                return;
+            }
+
+            try
+            {
+                // Длину линии задаем до LabelOffset: в Revit это свойство может смещать заголовок.
+                viewport.LabelLineLength = sourcePlacement.LabelLineLength;
+            }
+            catch (Exception exception)
+            {
+                AddWarning(warnings, "Не удалось скопировать длину линии заголовка Viewport: " + exception.Message);
+            }
+        }
+
+        private Viewport FindViewportOnSheet(Document document, ViewSheet sheet, View view)
+        {
+            if (document == null || sheet == null || view == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                System.Collections.Generic.ICollection<ElementId> viewportIds = sheet.GetAllViewports();
+                if (viewportIds != null)
+                {
+                    foreach (ElementId viewportId in viewportIds)
+                    {
+                        Viewport viewport = document.GetElement(viewportId) as Viewport;
+                        if (viewport != null && RevitElementIdUtils.AreEqual(viewport.ViewId, view.Id))
+                        {
+                            return viewport;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Если GetAllViewports недоступен для конкретного листа, ниже используется резервный поиск через collector.
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(document, sheet.Id).OfClass(typeof(Viewport));
+            foreach (Element element in collector)
+            {
+                Viewport viewport = element as Viewport;
+                if (viewport != null && RevitElementIdUtils.AreEqual(viewport.ViewId, view.Id))
+                {
+                    return viewport;
+                }
+            }
+
+            return null;
+        }
+
+        private void MoveViewportToCenter(Document document, Viewport viewport, XYZ targetCenter)
+        {
+            if (document == null || viewport == null || targetCenter == null)
+            {
+                return;
+            }
+
+            try
+            {
+                viewport.SetBoxCenter(targetCenter);
+            }
+            catch
+            {
+                XYZ currentCenter = viewport.GetBoxCenter();
+                XYZ moveVector = targetCenter - currentCenter;
+                if (moveVector.GetLength() > 1e-9)
+                {
+                    ElementTransformUtils.MoveElement(document, viewport.Id, moveVector);
+                }
             }
         }
 
@@ -310,6 +573,21 @@ namespace SAB.CreateViewsAndSheets.Services
             }
 
             warnings.Add(warningText);
+        }
+
+        private class SourceViewportPlacementData
+        {
+            public XYZ Center { get; set; }
+
+            public XYZ TitlePoint { get; set; }
+
+            public ElementId ViewportTypeId { get; set; }
+
+            public bool HasTitlePoint { get; set; }
+
+            public double LabelLineLength { get; set; }
+
+            public bool HasLabelLineLength { get; set; }
         }
 
     }

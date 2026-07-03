@@ -64,7 +64,12 @@ namespace SAB.CreateViewsAndSheets.Services
                 sourceDataByFloorName = ValidateFloorMappings(document, settings, result);
             }
 
-            ValidateViewportType(document, settings.ViewportTypeId, result);
+            bool useSourceSheetViewportPlacement = settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement;
+            if (!useSourceSheetViewportPlacement)
+            {
+                ValidateViewportType(document, settings.ViewportTypeId, result);
+            }
+
             ValidateTitleBlockType(document, settings.TitleBlockTypeId, result);
             ValidateSheetBrowserParameters(document, settings.SheetBrowserParameterIds, result);
             ValidatePlacement(settings, result);
@@ -109,19 +114,22 @@ namespace SAB.CreateViewsAndSheets.Services
             return sourceView;
         }
 
-        private void ValidateSourceSheet(Document document, ElementId sourceSheetId, CreateViewsAndSheetsValidationResult result)
+        private ViewSheet ValidateSourceSheet(Document document, ElementId sourceSheetId, CreateViewsAndSheetsValidationResult result)
         {
             if (sourceSheetId == null || sourceSheetId == ElementId.InvalidElementId)
             {
                 result.Errors.Add("Не выбран лист-образец.");
-                return;
+                return null;
             }
 
             ViewSheet sourceSheet = document.GetElement(sourceSheetId) as ViewSheet;
             if (sourceSheet == null)
             {
                 result.Errors.Add("Лист-образец не найден в документе.");
+                return null;
             }
+
+            return sourceSheet;
         }
 
         private Dictionary<string, FloorSourceValidationData> ValidateFloorMappings(
@@ -169,13 +177,13 @@ namespace SAB.CreateViewsAndSheets.Services
                 if (hasStandardData)
                 {
                     sourceData.StandardSourceView = ValidateSourceView(document, mapping.SourceViewId, result);
-                    ValidateSourceSheet(document, mapping.SourceSheetId, result);
+                    sourceData.StandardSourceSheet = ValidateSourceSheet(document, mapping.SourceSheetId, result);
                 }
 
                 if (hasCeilingData)
                 {
                     sourceData.CeilingSourceView = ValidateSourceView(document, mapping.CeilingSourceViewId, result);
-                    ValidateSourceSheet(document, mapping.CeilingSourceSheetId, result);
+                    sourceData.CeilingSourceSheet = ValidateSourceSheet(document, mapping.CeilingSourceSheetId, result);
                 }
 
                 sourceDataByFloorName[floorName] = sourceData;
@@ -318,6 +326,11 @@ namespace SAB.CreateViewsAndSheets.Services
                 return;
             }
 
+            if (settings.Placement.UseSourceSheetViewportPlacement)
+            {
+                return;
+            }
+
             if (settings.SheetBounds == null)
             {
                 result.Errors.Add("Не определены габариты листа для проверки координат.");
@@ -375,6 +388,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 string sheetNumber = (item.SheetNumber ?? string.Empty).Trim();
                 string sheetName = (item.SheetName ?? string.Empty).Trim();
                 View templateSourceView = sourceView;
+                ViewSheet templateSourceSheet = null;
 
                 if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
                 {
@@ -384,7 +398,7 @@ namespace SAB.CreateViewsAndSheets.Services
                     string planName = isCeilingPlan ? "плана потолков" : "стандартного плана";
 
                     templateSourceView = ValidateSourceView(document, sourceViewId, result);
-                    ValidateSourceSheet(document, sourceSheetId, result);
+                    templateSourceSheet = ValidateSourceSheet(document, sourceSheetId, result);
                     if (templateSourceView == null)
                     {
                         result.Errors.Add(rowPrefix + "не выбран корректный вид-образец " + planName + ".");
@@ -408,6 +422,7 @@ namespace SAB.CreateViewsAndSheets.Services
                         {
                             bool isCeilingPlan = item.PlanKind == SheetPlanKind.CeilingPlan;
                             templateSourceView = isCeilingPlan ? sourceData.CeilingSourceView : sourceData.StandardSourceView;
+                            templateSourceSheet = isCeilingPlan ? sourceData.CeilingSourceSheet : sourceData.StandardSourceSheet;
                             if (templateSourceView == null)
                             {
                                 result.Errors.Add(rowPrefix + "для этажа \"" + floorName + "\" не выбран вид-образец " + (isCeilingPlan ? "плана потолков" : "стандартного плана") + ".");
@@ -463,6 +478,11 @@ namespace SAB.CreateViewsAndSheets.Services
                 }
 
                 ValidateTemplate(document, templateSourceView, item, rowPrefix, result);
+
+                if (settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement)
+                {
+                    ValidateSourceViewportPlacement(document, templateSourceSheet, templateSourceView, rowPrefix, result);
+                }
             }
         }
 
@@ -492,6 +512,70 @@ namespace SAB.CreateViewsAndSheets.Services
             }
         }
 
+        private void ValidateSourceViewportPlacement(
+            Document document,
+            ViewSheet sourceSheet,
+            View sourceView,
+            string rowPrefix,
+            CreateViewsAndSheetsValidationResult result)
+        {
+            if (document == null || sourceSheet == null || sourceView == null || result == null)
+            {
+                return;
+            }
+
+            Viewport sourceViewport = FindViewportOnSheet(document, sourceSheet, sourceView);
+            if (sourceViewport != null)
+            {
+                return;
+            }
+
+            result.Errors.Add(
+                rowPrefix +
+                "на листе-образце " + sourceSheet.SheetNumber +
+                " не найден размещенный вид-образец \"" + sourceView.Name + "\".");
+        }
+
+        private Viewport FindViewportOnSheet(Document document, ViewSheet sheet, View view)
+        {
+            if (document == null || sheet == null || view == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                System.Collections.Generic.ICollection<ElementId> viewportIds = sheet.GetAllViewports();
+                if (viewportIds != null)
+                {
+                    foreach (ElementId viewportId in viewportIds)
+                    {
+                        Viewport viewport = document.GetElement(viewportId) as Viewport;
+                        if (viewport != null && RevitElementIdUtils.AreEqual(viewport.ViewId, view.Id))
+                        {
+                            return viewport;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Резервный поиск ниже нужен для устойчивости на нестандартных листах.
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(document, sheet.Id).OfClass(typeof(Viewport));
+            foreach (Element element in collector)
+            {
+                Viewport viewport = element as Viewport;
+                if (viewport != null && RevitElementIdUtils.AreEqual(viewport.ViewId, view.Id))
+                {
+                    return viewport;
+                }
+            }
+
+            return null;
+        }
+
         private class FloorSourceValidationData
         {
             public string FloorName { get; set; }
@@ -499,6 +583,10 @@ namespace SAB.CreateViewsAndSheets.Services
             public View StandardSourceView { get; set; }
 
             public View CeilingSourceView { get; set; }
+
+            public ViewSheet StandardSourceSheet { get; set; }
+
+            public ViewSheet CeilingSourceSheet { get; set; }
         }
     }
 }

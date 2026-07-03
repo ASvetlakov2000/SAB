@@ -41,6 +41,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private bool _isAccepted;
         private bool _canCreate;
         private bool _isRefreshingValidation;
+        private bool _useSourceSheetViewportPlacement;
         private bool _isViewCenterManualMode;
         private bool _isViewTitleManualMode;
         private bool _copySheetWithDetailing;
@@ -114,6 +115,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             _viewTitleXText = FormatDouble(placement.ViewTitleXmm);
             _viewTitleYText = FormatDouble(placement.ViewTitleYmm);
             _titleLineLengthText = FormatDouble(DefaultTitleLineLengthMm);
+            _useSourceSheetViewportPlacement = placement.UseSourceSheetViewportPlacement;
             _isViewCenterManualMode = !placement.UsePointSelectionForViewCenter;
             _isViewTitleManualMode = !placement.UsePointSelectionForViewTitle;
             _saveSettings = placement.SaveSettings;
@@ -137,6 +139,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
             ValidateCommand = new RelayCommand(delegate { RefreshValidation(); });
             OpenSettingsWindowCommand = new RelayCommand(delegate { RequestSettingsWindowInternal(); });
+            ImportSheetTableCommand = new RelayCommand(delegate { RequestSheetTableImportInternal(); });
+            ClearRowsCommand = new RelayCommand(delegate { ClearAllRows(); }, delegate { return Rows != null && Rows.Count > 0; });
+            CopySheetNamesToViewNamesCommand = new RelayCommand(delegate { CopySheetNamesToViewNames(); }, delegate { return Rows != null && Rows.Count > 0; });
             PickViewCenterPointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewCenter); });
             PickViewTitlePointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewTitle); });
             MoveRowUpCommand = new RelayCommand(
@@ -162,6 +167,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public event EventHandler RequestClose;
 
         public event EventHandler RequestSettingsWindow;
+
+        public event EventHandler RequestSheetTableImport;
 
         public event EventHandler<PlacementPointSelectionRequestEventArgs> RequestPointSelection;
 
@@ -198,6 +205,12 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public ICommand ValidateCommand { get; private set; }
 
         public ICommand OpenSettingsWindowCommand { get; private set; }
+
+        public ICommand ImportSheetTableCommand { get; private set; }
+
+        public ICommand ClearRowsCommand { get; private set; }
+
+        public ICommand CopySheetNamesToViewNamesCommand { get; private set; }
 
         public ICommand PickViewCenterPointCommand { get; private set; }
 
@@ -302,6 +315,54 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     IsViewTitleManualMode = false;
                 }
             }
+        }
+
+        public bool UseSourceSheetViewportPlacement
+        {
+            get { return _useSourceSheetViewportPlacement; }
+            set
+            {
+                if (_useSourceSheetViewportPlacement == value)
+                {
+                    return;
+                }
+
+                _useSourceSheetViewportPlacement = value;
+                OnPropertyChanged("UseSourceSheetViewportPlacement");
+                OnPropertyChanged("IsSourceSheetViewportPlacementMode");
+                OnPropertyChanged("IsPointViewportPlacementMode");
+                OnPropertyChanged("IsManualViewportPlacementEnabled");
+                RefreshValidation();
+            }
+        }
+
+        public bool IsSourceSheetViewportPlacementMode
+        {
+            get { return UseSourceSheetViewportPlacement; }
+            set
+            {
+                if (value)
+                {
+                    UseSourceSheetViewportPlacement = true;
+                }
+            }
+        }
+
+        public bool IsPointViewportPlacementMode
+        {
+            get { return !UseSourceSheetViewportPlacement; }
+            set
+            {
+                if (value)
+                {
+                    UseSourceSheetViewportPlacement = false;
+                }
+            }
+        }
+
+        public bool IsManualViewportPlacementEnabled
+        {
+            get { return !UseSourceSheetViewportPlacement; }
         }
 
         public string ViewCenterPointSummary
@@ -690,6 +751,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.Placement.ViewTitleXmm = titleX;
             settings.Placement.ViewTitleYmm = titleY;
             settings.Placement.TitleLineLengthMm = lineLength;
+            settings.Placement.UseSourceSheetViewportPlacement = UseSourceSheetViewportPlacement;
             settings.Placement.UsePointSelectionForViewCenter = IsViewCenterPointMode;
             settings.Placement.UsePointSelectionForViewTitle = IsViewTitlePointMode;
             settings.Placement.SaveSettings = SaveSettings;
@@ -735,6 +797,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.Placement.ViewTitleXmm = titleX;
             settings.Placement.ViewTitleYmm = titleY;
             settings.Placement.TitleLineLengthMm = DefaultTitleLineLengthMm;
+            settings.Placement.UseSourceSheetViewportPlacement = UseSourceSheetViewportPlacement;
             settings.Placement.UsePointSelectionForViewCenter = IsViewCenterPointMode;
             settings.Placement.UsePointSelectionForViewTitle = IsViewTitlePointMode;
             settings.Placement.SaveSettings = SaveSettings;
@@ -868,6 +931,15 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private void RequestSettingsWindowInternal()
         {
             EventHandler handler = RequestSettingsWindow;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void RequestSheetTableImportInternal()
+        {
+            EventHandler handler = RequestSheetTableImport;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
@@ -1279,6 +1351,123 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             return null;
         }
 
+        public void ImportSheetTableRows(IList<SheetTableImportRow> importedRows)
+        {
+            if (importedRows == null || importedRows.Count == 0)
+            {
+                return;
+            }
+
+            ClearRowsWithoutDefaultRow();
+
+            for (int i = 0; i < importedRows.Count; i++)
+            {
+                SheetTableImportRow importedRow = importedRows[i];
+                if (importedRow == null)
+                {
+                    continue;
+                }
+
+                SheetCreationRowViewModel row = CreateImportedSheetTableRow(importedRow);
+                Rows.Add(row);
+            }
+
+            if (Rows.Count == 0)
+            {
+                AddRowInternal(null);
+            }
+
+            RenumberRows();
+            RefreshValidation();
+        }
+
+        public void ClearAllRows()
+        {
+            ClearRowsWithoutDefaultRow();
+            AddRowInternal(null);
+            RenumberRows();
+            RefreshValidation();
+        }
+
+        public void CopySheetNamesToViewNames()
+        {
+            if (Rows == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                SheetCreationRowViewModel row = Rows[i];
+                if (row == null)
+                {
+                    continue;
+                }
+
+                string sheetName = (row.SheetName ?? string.Empty).Trim();
+                if (!string.IsNullOrWhiteSpace(sheetName))
+                {
+                    row.ViewName = sheetName;
+                }
+            }
+
+            RefreshValidation();
+        }
+
+        private SheetCreationRowViewModel CreateImportedSheetTableRow(SheetTableImportRow importedRow)
+        {
+            SheetCreationRowViewModel row = CreateRow();
+            row.PropertyChanged -= Row_PropertyChanged;
+
+            // Блок импорта Excel: заполняем только данные из таблицы, остальные рабочие поля остаются пустыми.
+            row.FloorName = string.Empty;
+            row.ViewName = string.Empty;
+            row.ViewScaleText = string.Empty;
+            row.SelectedViewTemplate = null;
+            row.SheetNumber = importedRow.SheetNumber ?? string.Empty;
+            row.SheetName = importedRow.SheetName ?? string.Empty;
+            ApplyImportedSheetSection(row, importedRow.SectionName);
+
+            row.PropertyChanged += Row_PropertyChanged;
+            return row;
+        }
+
+        private void ApplyImportedSheetSection(SheetCreationRowViewModel row, string sectionName)
+        {
+            if (row == null)
+            {
+                return;
+            }
+
+            string cleanSectionName = (sectionName ?? string.Empty).Trim();
+            row.SheetBrowserParameterValue = cleanSectionName;
+            row.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+
+            // Раздел из таблицы записывается в первый параметр группирования листов.
+            if (row.SheetBrowserParameterValues.Count > 0 && row.SheetBrowserParameterValues[0] != null)
+            {
+                row.SheetBrowserParameterValues[0].Value = cleanSectionName;
+            }
+        }
+
+        private void ClearRowsWithoutDefaultRow()
+        {
+            if (Rows == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                if (Rows[i] != null)
+                {
+                    Rows[i].PropertyChanged -= Row_PropertyChanged;
+                }
+            }
+
+            Rows.Clear();
+        }
+
         private void AddRowAtEnd()
         {
             SheetCreationRowViewModel sourceRow = Rows != null && Rows.Count > 0 ? Rows[Rows.Count - 1] : null;
@@ -1551,6 +1740,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             RaiseCanExecuteChanged(MoveRowUpCommand);
             RaiseCanExecuteChanged(MoveRowDownCommand);
             RaiseCanExecuteChanged(DeleteRowCommand);
+            RaiseCanExecuteChanged(ClearRowsCommand);
+            RaiseCanExecuteChanged(CopySheetNamesToViewNamesCommand);
         }
 
         private void RaiseCanExecuteChanged(ICommand command)
@@ -1636,7 +1827,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 state.Errors.Add("Не выбран лист-образец плана потолков.");
             }
 
-            if (SelectedViewportType == null)
+            if (!UseSourceSheetViewportPlacement && SelectedViewportType == null)
             {
                 state.Errors.Add("Не выбран тип видового экрана.");
             }
@@ -1649,12 +1840,16 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ValidateFloorMappings(state);
 
             SheetBounds bounds = ResolveCurrentSheetBounds();
-            if (bounds == null)
+            if (!UseSourceSheetViewportPlacement && bounds == null)
             {
                 state.Errors.Add("Не удалось определить габарит листа по выбранной основной надписи или листу-образцу.");
             }
 
-            ValidatePlacementValues(bounds, state);
+            if (!UseSourceSheetViewportPlacement)
+            {
+                ValidatePlacementValues(bounds, state);
+            }
+
             ValidateRows(state);
             UpdateStatusText(state);
             return state;
