@@ -19,6 +19,7 @@ namespace SAB.CreateViewsAndSheets.Models
             DetailCopy = new SheetDetailCopySettings();
             StructureMode = CreateViewsAndSheetsStructureMode.SingleStory;
             FloorMappings = new List<FloorSourceMapping>();
+            MultiViewZoneMappings = new List<MultiViewZoneMapping>();
             SessionRows = new List<SheetCreationSessionRow>();
         }
 
@@ -47,6 +48,8 @@ namespace SAB.CreateViewsAndSheets.Models
         public SheetDetailCopySettings DetailCopy { get; set; }
 
         public List<FloorSourceMapping> FloorMappings { get; set; }
+
+        public List<MultiViewZoneMapping> MultiViewZoneMappings { get; set; }
 
         public List<SheetCreationSessionRow> SessionRows { get; set; }
     }

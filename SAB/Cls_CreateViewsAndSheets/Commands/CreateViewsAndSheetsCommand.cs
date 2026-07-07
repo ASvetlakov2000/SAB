@@ -23,8 +23,12 @@ namespace SAB.CreateViewsAndSheets.Commands
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
+            string debugStep = "Старт команды";
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             try
             {
+                debugStep = "Получение активного документа";
                 UIApplication uiApplication = commandData != null ? commandData.Application : null;
                 UIDocument uiDocument = uiApplication != null ? uiApplication.ActiveUIDocument : null;
                 if (uiDocument == null)
@@ -52,13 +56,13 @@ namespace SAB.CreateViewsAndSheets.Commands
                 List<string> warnings = new List<string>();
                 RevitDataService dataService = new RevitDataService();
 
+                debugStep = "Сбор данных для окна создания";
                 List<RevitElementItem> sourceViews = dataService.GetDuplicatableViews(document);
                 List<RevitElementItem> sourceSheets = dataService.GetSheets(document);
                 List<RevitElementItem> viewportTypes = dataService.GetViewportTypes(document);
                 List<RevitElementItem> titleBlockTypes = dataService.GetTitleBlockTypes(document);
                 List<RevitElementItem> sheetBrowserParameters = dataService.GetSheetBrowserParameters(document);
                 Dictionary<long, List<string>> sheetBrowserParameterValuesById = dataService.GetSheetBrowserParameterValues(document, sheetBrowserParameters);
-                Dictionary<long, HashSet<long>> placedViewIdsBySheetId = dataService.GetPlacedViewIdsBySheetId(document);
                 List<RevitElementItem> viewTemplates = dataService.GetViewTemplates(document);
 
                 string startupValidationMessage;
@@ -71,6 +75,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                 SettingsService settingsService = new SettingsService();
                 CreateViewsAndSheetsSettings savedSettings = settingsService.LoadSettings(document, warnings);
 
+                debugStep = "Создание модели окна";
                 CreateViewsAndSheetsViewModel viewModel = new CreateViewsAndSheetsViewModel(
                     sourceViews,
                     sourceSheets,
@@ -78,12 +83,13 @@ namespace SAB.CreateViewsAndSheets.Commands
                     titleBlockTypes,
                     sheetBrowserParameters,
                     sheetBrowserParameterValuesById,
-                    placedViewIdsBySheetId,
+                    new Dictionary<long, HashSet<long>>(),
                     viewTemplates,
                     dataService.CollectExistingViewNames(document),
                     dataService.CollectExistingSheetNumbers(document),
                     savedSettings);
 
+                debugStep = "Открытие окна создания";
                 bool dialogAccepted = ShowCreationWindowUntilAccepted(uiDocument, document, viewModel, settingsService);
                 if (!dialogAccepted)
                 {
@@ -128,13 +134,22 @@ namespace SAB.CreateViewsAndSheets.Commands
             catch (InvalidOperationException operationException)
             {
                 message = operationException.Message;
-                TaskDialog.Show(CommandTitle, operationException.Message);
+                TaskDialog.Show(
+                    CommandTitle,
+                    operationException.Message + "\n\n" +
+                    "Шаг: " + debugStep + "\n" +
+                    "Время: " + stopwatch.ElapsedMilliseconds + " мс");
                 return Result.Cancelled;
             }
             catch (Exception exception)
             {
                 message = exception.Message;
-                TaskDialog.Show(CommandTitle, "Неожиданная ошибка:\n\n" + exception);
+                TaskDialog.Show(
+                    CommandTitle,
+                    "Неожиданная ошибка:\n\n" +
+                    "Шаг: " + debugStep + "\n" +
+                    "Время: " + stopwatch.ElapsedMilliseconds + " мс\n\n" +
+                    exception);
                 return Result.Failed;
             }
         }

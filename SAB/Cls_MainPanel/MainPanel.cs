@@ -302,6 +302,14 @@ namespace SAB
                 "SAB.Resources.CreateViewsAndSheets_32.png",
                 "SAB.Resources.CreateViewsAndSheets_16.png");
 
+            Ribbon.AddPushButtonSingle(
+            structurePanel,
+                "SAB_DeleteViewsAndSheets",
+                "Удалить виды\nи листы",
+                "SAB.CreateViewsAndSheets.Commands.DeleteViewsAndSheetsCommand",
+                "SAB.Resources.DeleteSelectedTypesAndFamiliesCommand_32.png",
+                "SAB.Resources.DeleteSelectedTypesAndFamiliesCommand_16.png");
+
             return Result.Succeeded;
         }
 

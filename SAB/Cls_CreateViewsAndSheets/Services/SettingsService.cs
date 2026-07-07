@@ -135,9 +135,18 @@ namespace SAB.CreateViewsAndSheets.Services
         private CreateViewsAndSheetsSettings ConvertToSettings(Document document, PersistedSettings persisted, IList<string> warnings)
         {
             CreateViewsAndSheetsSettings settings = new CreateViewsAndSheetsSettings();
-            settings.StructureMode = persisted.StructureModeValue == (int)CreateViewsAndSheetsStructureMode.MultiStory
-                ? CreateViewsAndSheetsStructureMode.MultiStory
-                : CreateViewsAndSheetsStructureMode.SingleStory;
+            if (persisted.StructureModeValue == (int)CreateViewsAndSheetsStructureMode.MultiView)
+            {
+                settings.StructureMode = CreateViewsAndSheetsStructureMode.MultiView;
+            }
+            else if (persisted.StructureModeValue == (int)CreateViewsAndSheetsStructureMode.MultiStory)
+            {
+                settings.StructureMode = CreateViewsAndSheetsStructureMode.MultiStory;
+            }
+            else
+            {
+                settings.StructureMode = CreateViewsAndSheetsStructureMode.SingleStory;
+            }
             settings.SourceViewId = RestoreElementId(document, persisted.SourceViewIdValue, "эталонный вид", warnings);
             settings.SourceSheetId = RestoreElementId(document, persisted.SourceSheetIdValue, "эталонный лист", warnings);
             settings.CeilingSourceViewId = RestoreElementId(document, persisted.CeilingSourceViewIdValue, "вид-образец плана потолков", warnings);
@@ -147,6 +156,7 @@ namespace SAB.CreateViewsAndSheets.Services
             settings.SheetBrowserParameterId = RestoreParameterId(persisted.SheetBrowserParameterIdValue);
 
             settings.FloorMappings = RestoreFloorMappings(document, persisted.FloorMappings, warnings);
+            settings.MultiViewZoneMappings = RestoreMultiViewZoneMappings(document, persisted.MultiViewZoneMappings, warnings);
             settings.SessionRows = RestoreSessionRows(document, persisted.SessionRows, warnings);
 
             settings.Placement = new PlacementSettings();
@@ -211,6 +221,7 @@ namespace SAB.CreateViewsAndSheets.Services
             persisted.CopyGenericAnnotations = detailCopy.CopyGenericAnnotations;
             persisted.CopyImages = detailCopy.CopyImages;
             persisted.FloorMappings = ConvertFloorMappings(settings.FloorMappings);
+            persisted.MultiViewZoneMappings = ConvertMultiViewZoneMappings(settings.MultiViewZoneMappings);
             persisted.SessionRows = ConvertSessionRows(settings.SessionRows);
             return persisted;
         }
@@ -269,6 +280,100 @@ namespace SAB.CreateViewsAndSheets.Services
                 persistedMapping.SourceSheetIdValue = RevitElementIdUtils.GetElementIdValue(mapping.SourceSheetId);
                 persistedMapping.CeilingSourceViewIdValue = RevitElementIdUtils.GetElementIdValue(mapping.CeilingSourceViewId);
                 persistedMapping.CeilingSourceSheetIdValue = RevitElementIdUtils.GetElementIdValue(mapping.CeilingSourceSheetId);
+                result.Add(persistedMapping);
+            }
+
+            return result;
+        }
+
+        private List<MultiViewZoneMapping> RestoreMultiViewZoneMappings(
+            Document document,
+            IList<PersistedMultiViewZoneMapping> persistedMappings,
+            IList<string> warnings)
+        {
+            List<MultiViewZoneMapping> result = new List<MultiViewZoneMapping>();
+            if (persistedMappings == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < persistedMappings.Count; i++)
+            {
+                PersistedMultiViewZoneMapping persistedMapping = persistedMappings[i];
+                if (persistedMapping == null)
+                {
+                    continue;
+                }
+
+                MultiViewZoneMapping mapping = new MultiViewZoneMapping();
+                mapping.ZoneName = persistedMapping.ZoneName ?? string.Empty;
+                mapping.SourceSheetId = RestoreElementId(document, persistedMapping.SourceSheetIdValue, "лист-образец зоны " + mapping.ZoneName, warnings);
+                mapping.ViewportTypeId = RestoreElementId(document, persistedMapping.ViewportTypeIdValue, "тип Viewport зоны " + mapping.ZoneName, warnings);
+                mapping.TitleBlockTypeId = RestoreElementId(document, persistedMapping.TitleBlockTypeIdValue, "основная надпись зоны " + mapping.ZoneName, warnings);
+
+                if (persistedMapping.Floors != null)
+                {
+                    for (int j = 0; j < persistedMapping.Floors.Count; j++)
+                    {
+                        PersistedMultiViewZoneFloorMapping persistedFloor = persistedMapping.Floors[j];
+                        if (persistedFloor == null)
+                        {
+                            continue;
+                        }
+
+                        MultiViewZoneFloorMapping floor = new MultiViewZoneFloorMapping();
+                        floor.FloorName = persistedFloor.FloorName ?? string.Empty;
+                        floor.SourceViewId = RestoreElementId(document, persistedFloor.SourceViewIdValue, "вид-образец этажа " + floor.FloorName + " зоны " + mapping.ZoneName, warnings);
+                        mapping.Floors.Add(floor);
+                    }
+                }
+
+                result.Add(mapping);
+            }
+
+            return result;
+        }
+
+        private List<PersistedMultiViewZoneMapping> ConvertMultiViewZoneMappings(IList<MultiViewZoneMapping> mappings)
+        {
+            List<PersistedMultiViewZoneMapping> result = new List<PersistedMultiViewZoneMapping>();
+            if (mappings == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < mappings.Count; i++)
+            {
+                MultiViewZoneMapping mapping = mappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                PersistedMultiViewZoneMapping persistedMapping = new PersistedMultiViewZoneMapping();
+                persistedMapping.ZoneName = mapping.ZoneName ?? string.Empty;
+                persistedMapping.SourceSheetIdValue = RevitElementIdUtils.GetElementIdValue(mapping.SourceSheetId);
+                persistedMapping.ViewportTypeIdValue = RevitElementIdUtils.GetElementIdValue(mapping.ViewportTypeId);
+                persistedMapping.TitleBlockTypeIdValue = RevitElementIdUtils.GetElementIdValue(mapping.TitleBlockTypeId);
+                persistedMapping.Floors = new List<PersistedMultiViewZoneFloorMapping>();
+
+                if (mapping.Floors != null)
+                {
+                    for (int j = 0; j < mapping.Floors.Count; j++)
+                    {
+                        MultiViewZoneFloorMapping floor = mapping.Floors[j];
+                        if (floor == null)
+                        {
+                            continue;
+                        }
+
+                        PersistedMultiViewZoneFloorMapping persistedFloor = new PersistedMultiViewZoneFloorMapping();
+                        persistedFloor.FloorName = floor.FloorName ?? string.Empty;
+                        persistedFloor.SourceViewIdValue = RevitElementIdUtils.GetElementIdValue(floor.SourceViewId);
+                        persistedMapping.Floors.Add(persistedFloor);
+                    }
+                }
+
                 result.Add(persistedMapping);
             }
 
@@ -590,6 +695,8 @@ namespace SAB.CreateViewsAndSheets.Services
 
             public List<PersistedFloorMapping> FloorMappings { get; set; }
 
+            public List<PersistedMultiViewZoneMapping> MultiViewZoneMappings { get; set; }
+
             public List<PersistedSessionRow> SessionRows { get; set; }
         }
 
@@ -604,6 +711,26 @@ namespace SAB.CreateViewsAndSheets.Services
             public long CeilingSourceViewIdValue { get; set; }
 
             public long CeilingSourceSheetIdValue { get; set; }
+        }
+
+        private class PersistedMultiViewZoneMapping
+        {
+            public string ZoneName { get; set; }
+
+            public long SourceSheetIdValue { get; set; }
+
+            public long ViewportTypeIdValue { get; set; }
+
+            public long TitleBlockTypeIdValue { get; set; }
+
+            public List<PersistedMultiViewZoneFloorMapping> Floors { get; set; }
+        }
+
+        private class PersistedMultiViewZoneFloorMapping
+        {
+            public string FloorName { get; set; }
+
+            public long SourceViewIdValue { get; set; }
         }
 
         private class PersistedSessionRow

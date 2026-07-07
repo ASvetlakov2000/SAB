@@ -23,13 +23,13 @@ namespace SAB.CreateViewsAndSheets.Views
     public partial class CreateViewsAndSheetsWindow : Window
     {
         private static readonly bool ShowBatchEditDebugDialogs = false;
+        private const string ColumnLayoutKeyPrefix = "ManualColumnsV4";
 
         private readonly CreateViewsAndSheetsViewModel _viewModel;
         private readonly CreateViewsAndSheetsWindowLayoutService _layoutService;
         private readonly bool _openSettingsWindowAfterLoaded;
 
         private DataGrid _rowsDataGrid;
-        private readonly List<DataGridColumn> _observedWidthColumns;
         private readonly List<DataGridColumn> _sheetBrowserParameterColumns;
         private ToggleButton _settingsDrawerToggle;
         private ButtonBase _sourceSheetPlacementToggle;
@@ -40,6 +40,7 @@ namespace SAB.CreateViewsAndSheets.Views
         private Button _createButton;
         private Point _dragStartPoint;
         private SheetCreationRowViewModel _draggedRow;
+        private List<SheetCreationRowViewModel> _draggedRows;
         private SheetCreationRowViewModel _selectionAnchorRow;
         private SheetCreationRowViewModel _batchEditSourceRow;
         private List<SheetCreationRowViewModel> _batchEditRowsSnapshot;
@@ -62,7 +63,6 @@ namespace SAB.CreateViewsAndSheets.Views
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             _layoutService = new CreateViewsAndSheetsWindowLayoutService();
             _openSettingsWindowAfterLoaded = openSettingsWindowAfterLoaded;
-            _observedWidthColumns = new List<DataGridColumn>();
             _sheetBrowserParameterColumns = new List<DataGridColumn>();
 
             InitializeWindowFromXamlFile();
@@ -366,8 +366,13 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             if (string.Equals(e.PropertyName, "IsSingleStoryStructure", StringComparison.Ordinal) ||
-                string.Equals(e.PropertyName, "IsMultiStoryStructure", StringComparison.Ordinal))
+                string.Equals(e.PropertyName, "IsMultiStoryStructure", StringComparison.Ordinal) ||
+                string.Equals(e.PropertyName, "IsMultiViewStructure", StringComparison.Ordinal) ||
+                string.Equals(e.PropertyName, "IsDeletionMode", StringComparison.Ordinal) ||
+                string.Equals(e.PropertyName, "ActiveRows", StringComparison.Ordinal))
             {
+                ConfigureRowsGrouping();
+                ResetRowsGridTransientState();
                 UpdateFloorColumnVisibility();
             }
 
@@ -528,14 +533,15 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.AllowDrop = true;
             _rowsDataGrid.PreviewMouseLeftButtonDown += RowsDataGrid_PreviewMouseLeftButtonDown;
             _rowsDataGrid.PreviewMouseLeftButtonUp += RowsDataGrid_PreviewMouseLeftButtonUp;
+            _rowsDataGrid.PreviewKeyDown += RowsDataGrid_PreviewKeyDown;
             _rowsDataGrid.MouseMove += RowsDataGrid_MouseMove;
             _rowsDataGrid.SizeChanged += RowsDataGrid_SizeChanged;
             _rowsDataGrid.DragOver += RowsDataGrid_DragOver;
             _rowsDataGrid.Drop += RowsDataGrid_Drop;
             _rowsDataGrid.AddHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler(RowsDataGrid_EditorTextChanged), true);
             _rowsDataGrid.AddHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(RowsDataGrid_EditorSelectionChanged), true);
+            ConfigureRowsGrouping();
             RebuildSheetBrowserParameterColumns();
-            AttachRowsDataGridColumnWidthObservers();
             UpdateFloorColumnVisibility();
             _gridHandlersAttached = true;
         }
@@ -549,25 +555,85 @@ namespace SAB.CreateViewsAndSheets.Views
 
             _rowsDataGrid.PreviewMouseLeftButtonDown -= RowsDataGrid_PreviewMouseLeftButtonDown;
             _rowsDataGrid.PreviewMouseLeftButtonUp -= RowsDataGrid_PreviewMouseLeftButtonUp;
+            _rowsDataGrid.PreviewKeyDown -= RowsDataGrid_PreviewKeyDown;
             _rowsDataGrid.MouseMove -= RowsDataGrid_MouseMove;
             _rowsDataGrid.SizeChanged -= RowsDataGrid_SizeChanged;
             _rowsDataGrid.DragOver -= RowsDataGrid_DragOver;
             _rowsDataGrid.Drop -= RowsDataGrid_Drop;
             _rowsDataGrid.RemoveHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler(RowsDataGrid_EditorTextChanged));
             _rowsDataGrid.RemoveHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(RowsDataGrid_EditorSelectionChanged));
-            DetachRowsDataGridColumnWidthObservers();
             _batchEditRowsSnapshot = null;
             _batchEditSourceRow = null;
             _lastMultiSelectedRowsSnapshot = null;
             _batchEditPropertyPath = null;
             _selectionAnchorRow = null;
+            _draggedRows = null;
+            _draggedRow = null;
             _gridHandlersAttached = false;
+        }
+
+        private void ConfigureRowsGrouping()
+        {
+            if (_rowsDataGrid == null || _viewModel == null)
+            {
+                return;
+            }
+
+            IList<SheetCreationRowViewModel> activeRows = GetActiveRows();
+            if (activeRows == null)
+            {
+                return;
+            }
+
+            ICollectionView rowsView = CollectionViewSource.GetDefaultView(activeRows);
+            if (rowsView == null)
+            {
+                return;
+            }
+
+            rowsView.GroupDescriptions.Clear();
+            rowsView.GroupDescriptions.Add(new PropertyGroupDescription("ProjectSectionGroupName"));
+
+            ICollectionViewLiveShaping liveShapingView = rowsView as ICollectionViewLiveShaping;
+            if (liveShapingView != null && liveShapingView.CanChangeLiveGrouping)
+            {
+                liveShapingView.LiveGroupingProperties.Clear();
+                liveShapingView.LiveGroupingProperties.Add("ProjectSectionGroupName");
+                liveShapingView.IsLiveGrouping = true;
+            }
+        }
+
+        private IList<SheetCreationRowViewModel> GetActiveRows()
+        {
+            if (_viewModel == null || _viewModel.ActiveRows == null)
+            {
+                return null;
+            }
+
+            return _viewModel.ActiveRows;
+        }
+
+        private void ResetRowsGridTransientState()
+        {
+            _batchEditRowsSnapshot = null;
+            _batchEditSourceRow = null;
+            _lastMultiSelectedRowsSnapshot = null;
+            _batchEditPropertyPath = null;
+            _selectionAnchorRow = null;
+            _draggedRows = null;
+            _draggedRow = null;
+
+            if (_rowsDataGrid != null)
+            {
+                _rowsDataGrid.SelectedItems.Clear();
+            }
         }
 
         private void RowsDataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _dragStartPoint = e.GetPosition(null);
             _draggedRow = null;
+            _draggedRows = null;
             _resizedColumn = null;
             _columnResizeStarted = false;
 
@@ -577,6 +643,11 @@ namespace SAB.CreateViewsAndSheets.Views
             if (TrySelectRowsByShift(clickedRowViewModel))
             {
                 e.Handled = true;
+                return;
+            }
+
+            if (_viewModel != null && _viewModel.IsDeletionMode)
+            {
                 return;
             }
 
@@ -601,6 +672,7 @@ namespace SAB.CreateViewsAndSheets.Views
                 if (row != null)
                 {
                     _draggedRow = row.Item as SheetCreationRowViewModel;
+                    _draggedRows = BuildDraggedRows(_draggedRow);
                 }
 
                 return;
@@ -627,13 +699,47 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             _columnResizeStarted = false;
-            NormalizeRowsDataGridColumnWidths();
+            SetColumnWidthToActualPixel(_resizedColumn);
+            StretchRowsDataGridRightSideIfNeeded();
             _resizedColumn = null;
+        }
+
+        private void RowsDataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e == null || e.Key != Key.Enter)
+            {
+                return;
+            }
+
+            DependencyObject source = e.OriginalSource as DependencyObject;
+            if (source == null)
+            {
+                return;
+            }
+
+            DataGridCell cell = FindParent<DataGridCell>(source);
+            if (cell == null || cell.Column == null)
+            {
+                return;
+            }
+
+            string propertyPath = cell.Column.SortMemberPath;
+            if (string.IsNullOrWhiteSpace(propertyPath) ||
+                !propertyPath.StartsWith("SheetBrowserParameterValues[", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            UpdateEditorBindingSource(source);
+            _rowsDataGrid.CommitEdit(DataGridEditingUnit.Cell, true);
+            Keyboard.ClearFocus();
+            e.Handled = true;
         }
 
         private bool TrySelectRowsByShift(SheetCreationRowViewModel clickedRow)
         {
-            if (_rowsDataGrid == null || _viewModel == null || _viewModel.Rows == null || clickedRow == null)
+            IList<SheetCreationRowViewModel> activeRows = GetActiveRows();
+            if (_rowsDataGrid == null || activeRows == null || clickedRow == null)
             {
                 return false;
             }
@@ -644,18 +750,18 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             SheetCreationRowViewModel anchorRow = _selectionAnchorRow;
-            if (anchorRow == null || !_viewModel.Rows.Contains(anchorRow))
+            if (anchorRow == null || !activeRows.Contains(anchorRow))
             {
                 anchorRow = _rowsDataGrid.SelectedItem as SheetCreationRowViewModel;
             }
 
-            if (anchorRow == null || !_viewModel.Rows.Contains(anchorRow))
+            if (anchorRow == null || !activeRows.Contains(anchorRow))
             {
                 anchorRow = clickedRow;
             }
 
-            int anchorIndex = _viewModel.Rows.IndexOf(anchorRow);
-            int clickedIndex = _viewModel.Rows.IndexOf(clickedRow);
+            int anchorIndex = activeRows.IndexOf(anchorRow);
+            int clickedIndex = activeRows.IndexOf(clickedRow);
             if (anchorIndex < 0 || clickedIndex < 0)
             {
                 return false;
@@ -667,7 +773,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.SelectedItems.Clear();
             for (int i = startIndex; i <= endIndex; i++)
             {
-                SheetCreationRowViewModel row = _viewModel.Rows[i];
+                SheetCreationRowViewModel row = activeRows[i];
                 if (row != null)
                 {
                     _rowsDataGrid.SelectedItems.Add(row);
@@ -703,6 +809,11 @@ namespace SAB.CreateViewsAndSheets.Views
             _batchEditSourceRow = null;
             _batchEditRowsSnapshot = null;
             _batchEditPropertyPath = null;
+
+            if (_viewModel != null && _viewModel.IsDeletionMode)
+            {
+                return;
+            }
 
             if (_rowsDataGrid == null || clickedRow == null || !IsBatchEditableGridChild(source))
             {
@@ -759,6 +870,69 @@ namespace SAB.CreateViewsAndSheets.Views
             return result;
         }
 
+        private List<SheetCreationRowViewModel> BuildDraggedRows(SheetCreationRowViewModel clickedRow)
+        {
+            List<SheetCreationRowViewModel> result = new List<SheetCreationRowViewModel>();
+            IList<SheetCreationRowViewModel> activeRows = GetActiveRows();
+            if (_rowsDataGrid == null ||
+                _viewModel == null ||
+                _viewModel.IsDeletionMode ||
+                activeRows == null ||
+                clickedRow == null)
+            {
+                return result;
+            }
+
+            List<SheetCreationRowViewModel> selectedRows = GetSelectedRowsSnapshot();
+            if (!selectedRows.Contains(clickedRow))
+            {
+                _rowsDataGrid.SelectedItems.Clear();
+                _rowsDataGrid.SelectedItems.Add(clickedRow);
+                result.Add(clickedRow);
+                return result;
+            }
+
+            // Перенос блока строк сохраняет порядок строк из таблицы, а не порядок кликов по выделению.
+            for (int i = 0; i < activeRows.Count; i++)
+            {
+                SheetCreationRowViewModel row = activeRows[i];
+                if (row != null && selectedRows.Contains(row))
+                {
+                    result.Add(row);
+                }
+            }
+
+            if (result.Count == 0)
+            {
+                result.Add(clickedRow);
+            }
+
+            return result;
+        }
+
+        private void RestoreDraggedRowsSelection(IList<SheetCreationRowViewModel> draggedRows)
+        {
+            if (_rowsDataGrid == null || draggedRows == null)
+            {
+                return;
+            }
+
+            _rowsDataGrid.SelectedItems.Clear();
+            for (int i = 0; i < draggedRows.Count; i++)
+            {
+                SheetCreationRowViewModel row = draggedRows[i];
+                if (row != null)
+                {
+                    _rowsDataGrid.SelectedItems.Add(row);
+                }
+            }
+
+            if (draggedRows.Count > 0)
+            {
+                _rowsDataGrid.CurrentItem = draggedRows[0];
+            }
+        }
+
         private bool IsBatchEditableGridChild(DependencyObject source)
         {
             DependencyObject current = source;
@@ -793,6 +967,13 @@ namespace SAB.CreateViewsAndSheets.Views
                 return;
             }
 
+            string propertyPath = GetBatchEditablePropertyPath(textBox);
+            if (!string.IsNullOrWhiteSpace(propertyPath) &&
+                propertyPath.StartsWith("SheetBrowserParameterValues[", StringComparison.Ordinal))
+            {
+                return;
+            }
+
             ApplyBatchValueFromEditor(textBox);
         }
 
@@ -821,6 +1002,11 @@ namespace SAB.CreateViewsAndSheets.Views
         private void ApplyBatchValueFromEditor(DependencyObject editor)
         {
             if (_viewModel == null || _rowsDataGrid == null)
+            {
+                return;
+            }
+
+            if (_viewModel.IsDeletionMode)
             {
                 return;
             }
@@ -1008,11 +1194,15 @@ namespace SAB.CreateViewsAndSheets.Views
             TextBox textBox = editor as TextBox;
             if (textBox != null)
             {
-                BindingExpression bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
-                if (bindingExpression != null)
+                ComboBox ownerComboBox = FindParent<ComboBox>(textBox);
+                if (ownerComboBox == null)
                 {
-                    bindingExpression.UpdateSource();
-                    return;
+                    BindingExpression bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
+                    if (bindingExpression != null)
+                    {
+                        bindingExpression.UpdateSource();
+                        return;
+                    }
                 }
             }
 
@@ -1048,18 +1238,22 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void RowsDataGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ScheduleNormalizeRowsDataGridColumnWidths();
+            ScheduleStretchRowsDataGridRightSide();
         }
 
         private void RowsDataGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (_columnResizeStarted)
             {
-                NormalizeRowsDataGridColumnWidths();
                 return;
             }
 
-            if (e.LeftButton != MouseButtonState.Pressed || _draggedRow == null || _rowsDataGrid == null)
+            if (_viewModel != null && _viewModel.IsDeletionMode)
+            {
+                return;
+            }
+
+            if (e.LeftButton != MouseButtonState.Pressed || _draggedRows == null || _draggedRows.Count == 0 || _rowsDataGrid == null)
             {
                 return;
             }
@@ -1073,13 +1267,22 @@ namespace SAB.CreateViewsAndSheets.Views
                 return;
             }
 
-            DragDrop.DoDragDrop(_rowsDataGrid, _draggedRow, DragDropEffects.Move);
+            DragDrop.DoDragDrop(_rowsDataGrid, _draggedRows, DragDropEffects.Move);
             _draggedRow = null;
+            _draggedRows = null;
         }
 
         private void RowsDataGrid_DragOver(object sender, DragEventArgs e)
         {
-            if (!e.Data.GetDataPresent(typeof(SheetCreationRowViewModel)))
+            if (_viewModel != null && _viewModel.IsDeletionMode)
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
+                return;
+            }
+
+            if (!e.Data.GetDataPresent(typeof(List<SheetCreationRowViewModel>)) &&
+                !e.Data.GetDataPresent(typeof(SheetCreationRowViewModel)))
             {
                 e.Effects = DragDropEffects.None;
                 e.Handled = true;
@@ -1092,26 +1295,35 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void RowsDataGrid_Drop(object sender, DragEventArgs e)
         {
-            SheetCreationRowViewModel draggedRow = e.Data.GetData(typeof(SheetCreationRowViewModel)) as SheetCreationRowViewModel;
-            if (draggedRow == null || _rowsDataGrid == null)
+            if (_viewModel != null && _viewModel.IsDeletionMode)
             {
                 return;
             }
 
-            int targetIndex = CalculateDropTargetIndex(e.OriginalSource as DependencyObject, e.GetPosition(_rowsDataGrid), draggedRow);
-            _viewModel.MoveRowToIndex(draggedRow, targetIndex);
+            List<SheetCreationRowViewModel> draggedRows = e.Data.GetData(typeof(List<SheetCreationRowViewModel>)) as List<SheetCreationRowViewModel>;
+            if ((draggedRows == null || draggedRows.Count == 0) && e.Data.GetDataPresent(typeof(SheetCreationRowViewModel)))
+            {
+                SheetCreationRowViewModel singleDraggedRow = e.Data.GetData(typeof(SheetCreationRowViewModel)) as SheetCreationRowViewModel;
+                if (singleDraggedRow != null)
+                {
+                    draggedRows = new List<SheetCreationRowViewModel> { singleDraggedRow };
+                }
+            }
+
+            if (draggedRows == null || draggedRows.Count == 0 || _rowsDataGrid == null)
+            {
+                return;
+            }
+
+            int targetIndex = CalculateDropTargetIndex(e.OriginalSource as DependencyObject);
+            _viewModel.MoveRowsToIndex(draggedRows, targetIndex);
+            RestoreDraggedRowsSelection(draggedRows);
             e.Handled = true;
         }
 
-        private int CalculateDropTargetIndex(DependencyObject dropSource, Point dropPoint, SheetCreationRowViewModel draggedRow)
+        private int CalculateDropTargetIndex(DependencyObject dropSource)
         {
             if (_rowsDataGrid == null || _viewModel.Rows == null || _viewModel.Rows.Count == 0)
-            {
-                return 0;
-            }
-
-            int sourceIndex = _viewModel.Rows.IndexOf(draggedRow);
-            if (sourceIndex < 0)
             {
                 return 0;
             }
@@ -1119,15 +1331,14 @@ namespace SAB.CreateViewsAndSheets.Views
             DataGridRow targetRow = FindParent<DataGridRow>(dropSource);
             if (targetRow == null)
             {
-                int lastIndex = _viewModel.Rows.Count - 1;
-                return sourceIndex < _viewModel.Rows.Count ? lastIndex : sourceIndex;
+                return _viewModel.Rows.Count;
             }
 
             SheetCreationRowViewModel targetRowViewModel = targetRow.Item as SheetCreationRowViewModel;
             int targetIndex = _viewModel.Rows.IndexOf(targetRowViewModel);
             if (targetIndex < 0)
             {
-                return sourceIndex;
+                return _viewModel.Rows.Count;
             }
 
             Point pointInTargetRow = Mouse.GetPosition(targetRow);
@@ -1135,19 +1346,14 @@ namespace SAB.CreateViewsAndSheets.Views
                 ? targetIndex + 1
                 : targetIndex;
 
-            if (sourceIndex < insertionIndex)
-            {
-                insertionIndex--;
-            }
-
             if (insertionIndex < 0)
             {
                 insertionIndex = 0;
             }
 
-            if (insertionIndex >= _viewModel.Rows.Count)
+            if (insertionIndex > _viewModel.Rows.Count)
             {
-                insertionIndex = _viewModel.Rows.Count - 1;
+                insertionIndex = _viewModel.Rows.Count;
             }
 
             return insertionIndex;
@@ -1244,63 +1450,6 @@ namespace SAB.CreateViewsAndSheets.Views
             }
         }
 
-        private void AttachRowsDataGridColumnWidthObservers()
-        {
-            DetachRowsDataGridColumnWidthObservers();
-
-            if (_rowsDataGrid == null)
-            {
-                return;
-            }
-
-            DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(
-                DataGridColumn.WidthProperty,
-                typeof(DataGridColumn));
-            if (descriptor == null)
-            {
-                return;
-            }
-
-            DataGridColumn fillColumn = GetRowsDataGridFillColumn();
-            for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
-            {
-                DataGridColumn column = _rowsDataGrid.Columns[i];
-                if (column == null || column == fillColumn)
-                {
-                    continue;
-                }
-
-                descriptor.AddValueChanged(column, RowsDataGridColumnWidthChanged);
-                _observedWidthColumns.Add(column);
-            }
-        }
-
-        private void DetachRowsDataGridColumnWidthObservers()
-        {
-            if (_observedWidthColumns.Count == 0)
-            {
-                return;
-            }
-
-            DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(
-                DataGridColumn.WidthProperty,
-                typeof(DataGridColumn));
-            if (descriptor != null)
-            {
-                for (int i = 0; i < _observedWidthColumns.Count; i++)
-                {
-                    descriptor.RemoveValueChanged(_observedWidthColumns[i], RowsDataGridColumnWidthChanged);
-                }
-            }
-
-            _observedWidthColumns.Clear();
-        }
-
-        private void RowsDataGridColumnWidthChanged(object sender, EventArgs e)
-        {
-            NormalizeRowsDataGridColumnWidths();
-        }
-
         private bool IsLastGridColumn(DataGridColumn column)
         {
             if (_rowsDataGrid == null || column == null || _rowsDataGrid.Columns.Count == 0)
@@ -1318,24 +1467,80 @@ namespace SAB.CreateViewsAndSheets.Views
                 return;
             }
 
+            bool isDeletionMode = _viewModel.IsDeletionMode;
+            bool isCreationMode = !isDeletionMode;
+            bool isMultiViewStructure = _viewModel.IsMultiViewStructure;
+
+            SetColumnVisibility(GetDragColumn(), isCreationMode ? Visibility.Visible : Visibility.Collapsed);
+
             DataGridColumn floorColumn = GetFloorColumn();
             DataGridColumn planKindColumn = GetPlanKindColumn();
+            DataGridColumn viewNameColumn = GetColumnBySortMemberPath("ViewName");
+            DataGridColumn scaleColumn = GetColumnBySortMemberPath("ViewScaleText");
+            DataGridColumn viewTemplateColumn = GetColumnBySortMemberPath("SelectedViewTemplate.Name");
+            DataGridColumn placedViewsColumn = GetColumnBySortMemberPath("PlacedViewsText");
+            DataGridColumn actionsColumn = GetActionsColumn();
 
-            Visibility targetVisibility = _viewModel.IsMultiStoryStructure ? Visibility.Visible : Visibility.Collapsed;
-            if (floorColumn != null && floorColumn.Visibility != targetVisibility)
+            if (floorColumn != null)
             {
-                floorColumn.Visibility = targetVisibility;
+                floorColumn.Header = isMultiViewStructure ? "Зона" : "Этаж";
+                SetColumnVisibility(
+                    floorColumn,
+                    isCreationMode && (_viewModel.IsMultiStoryStructure || isMultiViewStructure)
+                        ? Visibility.Visible
+                        : Visibility.Collapsed);
             }
 
-            if (planKindColumn != null && planKindColumn.Visibility != Visibility.Visible)
+            SetColumnVisibility(planKindColumn, isCreationMode && !isMultiViewStructure ? Visibility.Visible : Visibility.Collapsed);
+            if (viewNameColumn != null)
             {
-                planKindColumn.Visibility = Visibility.Visible;
+                viewNameColumn.Header = isMultiViewStructure ? "Часть имени вида" : "Имя вида";
             }
 
-            ScheduleNormalizeRowsDataGridColumnWidths();
+            SetColumnVisibility(viewNameColumn, isCreationMode ? Visibility.Visible : Visibility.Collapsed);
+            SetColumnVisibility(scaleColumn, isCreationMode ? Visibility.Visible : Visibility.Collapsed);
+            SetColumnVisibility(viewTemplateColumn, isCreationMode ? Visibility.Visible : Visibility.Collapsed);
+            SetColumnVisibility(placedViewsColumn, isDeletionMode ? Visibility.Visible : Visibility.Collapsed);
+
+            if (actionsColumn != null)
+            {
+                actionsColumn.Header = isDeletionMode ? "Удалить" : "Действия";
+            }
+
+            ScheduleFreezeRowsDataGridColumnWidths();
+        }
+
+        private void SetColumnVisibility(DataGridColumn column, Visibility visibility)
+        {
+            if (column == null || column.Visibility == visibility)
+            {
+                return;
+            }
+
+            column.Visibility = visibility;
+        }
+
+        private DataGridColumn GetDragColumn()
+        {
+            if (_rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
+            {
+                return null;
+            }
+
+            return _rowsDataGrid.Columns[0];
         }
 
         private DataGridColumn GetFloorColumn()
+        {
+            return GetColumnBySortMemberPath("FloorName");
+        }
+
+        private DataGridColumn GetPlanKindColumn()
+        {
+            return GetColumnBySortMemberPath("PlanKind");
+        }
+
+        private DataGridColumn GetColumnBySortMemberPath(string sortMemberPath)
         {
             if (_rowsDataGrid == null)
             {
@@ -1345,7 +1550,7 @@ namespace SAB.CreateViewsAndSheets.Views
             for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
             {
                 DataGridColumn column = _rowsDataGrid.Columns[i];
-                if (column != null && string.Equals(column.SortMemberPath, "FloorName", StringComparison.Ordinal))
+                if (column != null && string.Equals(column.SortMemberPath, sortMemberPath, StringComparison.Ordinal))
                 {
                     return column;
                 }
@@ -1354,9 +1559,9 @@ namespace SAB.CreateViewsAndSheets.Views
             return null;
         }
 
-        private DataGridColumn GetPlanKindColumn()
+        private DataGridColumn GetActionsColumn()
         {
-            if (_rowsDataGrid == null)
+            if (_rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
             {
                 return null;
             }
@@ -1364,7 +1569,9 @@ namespace SAB.CreateViewsAndSheets.Views
             for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
             {
                 DataGridColumn column = _rowsDataGrid.Columns[i];
-                if (column != null && string.Equals(column.SortMemberPath, "PlanKind", StringComparison.Ordinal))
+                string header = column != null && column.Header != null ? column.Header.ToString() : string.Empty;
+                if (string.Equals(header, "Действия", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(header, "Удалить", StringComparison.OrdinalIgnoreCase))
                 {
                     return column;
                 }
@@ -1428,7 +1635,8 @@ namespace SAB.CreateViewsAndSheets.Views
             {
                 DataGridColumn column = _rowsDataGrid.Columns[i];
                 string header = column != null && column.Header != null ? column.Header.ToString() : string.Empty;
-                if (string.Equals(header, "Действия", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(header, "Действия", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(header, "Удалить", StringComparison.OrdinalIgnoreCase))
                 {
                     return i;
                 }
@@ -1458,7 +1666,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
             Binding textBinding = new Binding("SheetBrowserParameterValues[" + parameterIndex + "].Value");
             textBinding.Mode = BindingMode.TwoWay;
-            textBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            textBinding.UpdateSourceTrigger = UpdateSourceTrigger.LostFocus;
             comboBoxFactory.SetBinding(ComboBox.TextProperty, textBinding);
 
             comboBoxFactory.SetValue(ComboBox.IsEditableProperty, true);
@@ -1477,25 +1685,41 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void ScheduleNormalizeRowsDataGridColumnWidths()
         {
+            ScheduleFreezeRowsDataGridColumnWidths();
+        }
+
+        private void ScheduleFreezeRowsDataGridColumnWidths()
+        {
             if (_rowsDataGrid == null)
             {
                 return;
             }
 
             _rowsDataGrid.Dispatcher.BeginInvoke(
-                new Action(NormalizeRowsDataGridColumnWidths),
+                new Action(FreezeRowsDataGridColumnWidthsToPixels),
+                DispatcherPriority.Background);
+        }
+
+        private void ScheduleStretchRowsDataGridRightSide()
+        {
+            if (_rowsDataGrid == null)
+            {
+                return;
+            }
+
+            _rowsDataGrid.Dispatcher.BeginInvoke(
+                new Action(StretchRowsDataGridRightSideIfNeeded),
                 DispatcherPriority.Background);
         }
 
         private void NormalizeRowsDataGridColumnWidths()
         {
-            if (_normalizingColumnWidths || _rowsDataGrid == null || _rowsDataGrid.Columns.Count < 2 || _rowsDataGrid.ActualWidth <= 0)
-            {
-                return;
-            }
+            FreezeRowsDataGridColumnWidthsToPixels();
+        }
 
-            DataGridColumn fillColumn = GetRowsDataGridFillColumn();
-            if (fillColumn == null)
+        private void FreezeRowsDataGridColumnWidthsToPixels()
+        {
+            if (_normalizingColumnWidths || _columnResizeStarted || _rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
             {
                 return;
             }
@@ -1504,103 +1728,147 @@ namespace SAB.CreateViewsAndSheets.Views
             {
                 _normalizingColumnWidths = true;
 
-                double availableWidth = _rowsDataGrid.ActualWidth - 2.0;
-                ScrollViewer scrollViewer = FindVisualChild<ScrollViewer>(_rowsDataGrid);
-                if (scrollViewer != null && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
-                {
-                    availableWidth -= SystemParameters.VerticalScrollBarWidth;
-                }
-
-                double fixedWidth = 0.0;
+                // Block responsible for switching the table from star widths to manual pixel widths.
                 for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
                 {
-                    DataGridColumn column = _rowsDataGrid.Columns[i];
-                    if (column == fillColumn || column.Visibility != Visibility.Visible)
-                    {
-                        continue;
-                    }
-
-                    fixedWidth += GetColumnActualWidth(column);
-                }
-
-                double minimumWidth = fillColumn.MinWidth > 0 ? fillColumn.MinWidth : 20.0;
-                double targetWidth = availableWidth - fixedWidth;
-                if (targetWidth < minimumWidth)
-                {
-                    targetWidth = TryLimitResizedColumnWidth(fillColumn, availableWidth, fixedWidth, minimumWidth);
-                }
-
-                if (targetWidth < minimumWidth)
-                {
-                    targetWidth = minimumWidth;
-                }
-
-                if (!double.IsInfinity(fillColumn.MaxWidth) && targetWidth > fillColumn.MaxWidth)
-                {
-                    targetWidth = fillColumn.MaxWidth;
-                }
-
-                if (targetWidth > 0 && Math.Abs(GetColumnActualWidth(fillColumn) - targetWidth) > 0.5)
-                {
-                    fillColumn.Width = new DataGridLength(targetWidth, DataGridLengthUnitType.Pixel);
+                    SetColumnWidthToActualPixel(_rowsDataGrid.Columns[i]);
                 }
             }
             finally
             {
                 _normalizingColumnWidths = false;
             }
+
+            StretchRowsDataGridRightSideIfNeeded();
         }
 
-        private DataGridColumn GetRowsDataGridFillColumn()
+        private void SetColumnWidthToActualPixel(DataGridColumn column)
         {
-            if (_rowsDataGrid == null || _rowsDataGrid.Columns.Count < 2)
+            if (column == null || column.Visibility != Visibility.Visible)
             {
-                return null;
+                return;
             }
 
+            if (column.Width.UnitType == DataGridLengthUnitType.Pixel &&
+                !double.IsNaN(column.Width.Value) &&
+                column.Width.Value > 0)
+            {
+                return;
+            }
+
+            double width = column.ActualWidth;
+            if (width <= 0 && !double.IsNaN(column.Width.DisplayValue))
+            {
+                width = column.Width.DisplayValue;
+            }
+
+            if (width <= 20.0)
+            {
+                return;
+            }
+
+            double minimumWidth = column.MinWidth > 0 ? column.MinWidth : 20.0;
+            if (width < minimumWidth)
+            {
+                width = minimumWidth;
+            }
+
+            if (!double.IsInfinity(column.MaxWidth) && width > column.MaxWidth)
+            {
+                width = column.MaxWidth;
+            }
+
+            if (width > 0)
+            {
+                column.Width = new DataGridLength(width, DataGridLengthUnitType.Pixel);
+            }
+        }
+
+        private void StretchRowsDataGridRightSideIfNeeded()
+        {
+            if (_normalizingColumnWidths || _columnResizeStarted || _rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
+            {
+                return;
+            }
+
+            double availableWidth = GetRowsDataGridViewportWidth();
+            if (availableWidth <= 0)
+            {
+                return;
+            }
+
+            double visibleColumnsWidth = 0.0;
             for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
             {
                 DataGridColumn column = _rowsDataGrid.Columns[i];
-                if (column != null && string.Equals(column.SortMemberPath, "SheetName", StringComparison.Ordinal))
+                if (column == null || column.Visibility != Visibility.Visible)
                 {
-                    return column;
+                    continue;
                 }
+
+                visibleColumnsWidth += GetColumnWidthForStretch(column);
             }
 
-            return _rowsDataGrid.Columns[_rowsDataGrid.Columns.Count - 2];
+            double missingWidth = availableWidth - visibleColumnsWidth;
+            if (missingWidth <= 0.5)
+            {
+                return;
+            }
+
+            DataGridColumn stretchColumn = GetRowsDataGridRightStretchColumn();
+            if (stretchColumn == null)
+            {
+                return;
+            }
+
+            double currentWidth = GetColumnWidthForStretch(stretchColumn);
+            double targetWidth = currentWidth + missingWidth;
+            if (!double.IsInfinity(stretchColumn.MaxWidth) && targetWidth > stretchColumn.MaxWidth)
+            {
+                targetWidth = stretchColumn.MaxWidth;
+            }
+
+            if (targetWidth > currentWidth + 0.5)
+            {
+                stretchColumn.Width = new DataGridLength(targetWidth, DataGridLengthUnitType.Pixel);
+            }
         }
 
-        private double TryLimitResizedColumnWidth(DataGridColumn fillColumn, double availableWidth, double fixedWidth, double fillColumnMinimumWidth)
+        private double GetRowsDataGridViewportWidth()
         {
-            if (_resizedColumn == null || _resizedColumn == fillColumn || _resizedColumn.Visibility != Visibility.Visible)
+            if (_rowsDataGrid == null || _rowsDataGrid.ActualWidth <= 0)
             {
-                return availableWidth - fixedWidth;
+                return 0.0;
             }
 
-            double deficit = fillColumnMinimumWidth - (availableWidth - fixedWidth);
-            if (deficit <= 0.5)
+            double width = _rowsDataGrid.ActualWidth - 2.0;
+            ScrollViewer scrollViewer = FindVisualChild<ScrollViewer>(_rowsDataGrid);
+            if (scrollViewer != null && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
             {
-                return availableWidth - fixedWidth;
+                width -= SystemParameters.VerticalScrollBarWidth;
             }
 
-            double currentWidth = GetColumnActualWidth(_resizedColumn);
-            double resizedColumnMinimumWidth = _resizedColumn.MinWidth > 0 ? _resizedColumn.MinWidth : 20.0;
-            double limitedWidth = currentWidth - deficit;
-            if (limitedWidth < resizedColumnMinimumWidth)
-            {
-                limitedWidth = resizedColumnMinimumWidth;
-            }
-
-            if (limitedWidth < currentWidth)
-            {
-                _resizedColumn.Width = new DataGridLength(limitedWidth, DataGridLengthUnitType.Pixel);
-                fixedWidth -= currentWidth - limitedWidth;
-            }
-
-            return availableWidth - fixedWidth;
+            return width > 0 ? width : 0.0;
         }
 
-        private double GetColumnActualWidth(DataGridColumn column)
+        private DataGridColumn GetRowsDataGridRightStretchColumn()
+        {
+            DataGridColumn sheetNameColumn = GetColumnBySortMemberPath("SheetName");
+            if (sheetNameColumn != null && sheetNameColumn.Visibility == Visibility.Visible)
+            {
+                return sheetNameColumn;
+            }
+
+            DataGridColumn viewNameColumn = GetColumnBySortMemberPath("ViewName");
+            if (viewNameColumn != null && viewNameColumn.Visibility == Visibility.Visible)
+            {
+                return viewNameColumn;
+            }
+
+            return null;
+        }
+
+        private double GetColumnWidthForStretch(DataGridColumn column)
         {
             if (column == null)
             {
@@ -1703,7 +1971,8 @@ namespace SAB.CreateViewsAndSheets.Views
         private string BuildColumnLayoutKey(DataGridColumn column, int index)
         {
             string header = column != null && column.Header != null ? column.Header.ToString() : string.Empty;
-            return index + "|" + header;
+            // Key version resets old saved column widths after changing the default presets.
+            return ColumnLayoutKeyPrefix + "|" + index + "|" + header;
         }
 
         private T FindVisualChildByName<T>(DependencyObject parent, string name)

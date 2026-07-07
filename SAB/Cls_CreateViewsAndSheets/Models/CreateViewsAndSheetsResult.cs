@@ -21,7 +21,22 @@ namespace SAB.CreateViewsAndSheets.Models
 
         public int CreatedSheetsCount
         {
-            get { return CreatedItems.Count; }
+            get
+            {
+                HashSet<string> sheetKeys = new HashSet<string>();
+                for (int i = 0; i < CreatedItems.Count; i++)
+                {
+                    CreatedViewSheetInfo item = CreatedItems[i];
+                    if (item == null || item.SheetId == null)
+                    {
+                        continue;
+                    }
+
+                    sheetKeys.Add(item.SheetId.ToString());
+                }
+
+                return sheetKeys.Count;
+            }
         }
     }
 }

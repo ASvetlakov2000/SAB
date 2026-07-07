@@ -121,15 +121,19 @@
     <Compile Include="BimDashboard\UI\DataSourceDialogService.cs" />
     <Compile Include="BimDashboard\Utils\FileUtils.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Commands\CreateViewsAndSheetsCommand.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Commands\DeleteViewsAndSheetsCommand.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreatedViewSheetInfo.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsResult.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsSettings.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsStructureMode.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\CreateViewsAndSheetsWindowLayoutSettings.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\FloorSourceMapping.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\MultiViewZoneMapping.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\PlacementSettings.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\RevitElementItem.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetDetailCopySettings.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetDeletionItem.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\SheetDeletionResult.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetBounds.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationItem.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationSessionRow.cs" />
@@ -142,19 +146,26 @@
     <Compile Include="Cls_CreateViewsAndSheets\Services\SettingsService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\SheetBoundsService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\SheetCreationService.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Services\SheetDeletionService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\SheetDetailCopyService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\SheetTableImportService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\ValidationService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\ViewDuplicationService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\ViewportPlacementService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\ViewModels\CreateViewsAndSheetsViewModel.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\ViewModels\DeleteViewsAndSheetsRowViewModel.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\ViewModels\DeleteViewsAndSheetsViewModel.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\ViewModels\FloorSourceMappingRowViewModel.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\ViewModels\MultiViewZoneRowViewModel.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\ViewModels\SheetCreationRowViewModel.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml.cs">
       <DependentUpon>CreateViewsAndSheetsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsSettingsWindow.cs">
       <DependentUpon>CreateViewsAndSheetsSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_CreateViewsAndSheets\Views\DeleteViewsAndSheetsWindow.cs">
+      <DependentUpon>DeleteViewsAndSheetsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
@@ -411,6 +422,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsSettingsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_CreateViewsAndSheets\Views\DeleteViewsAndSheetsWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Resources\CreateViewsAndSheets_16.png" />

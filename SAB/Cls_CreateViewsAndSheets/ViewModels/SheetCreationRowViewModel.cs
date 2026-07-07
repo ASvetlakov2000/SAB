@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Autodesk.Revit.DB;
 using SAB.CreateViewsAndSheets.Models;
+using SAB.InteriorElevations.Utils;
 
 namespace SAB.CreateViewsAndSheets.ViewModels
 {
@@ -18,6 +21,11 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private string _sheetBrowserParameterValue;
         private string _rowError;
         private bool _isScaleEnabled;
+        private SheetBrowserParameterValueViewModel _projectSectionParameterValue;
+        private bool _isDeletionRow;
+        private bool _isSelectedForDeletion;
+        private ElementId _existingSheetId;
+        private string _placedViewsText;
 
         public SheetCreationRowViewModel()
         {
@@ -30,12 +38,20 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             _sheetBrowserParameterValue = string.Empty;
             _rowError = string.Empty;
             _isScaleEnabled = true;
+            _existingSheetId = ElementId.InvalidElementId;
+            _placedViewsText = string.Empty;
+            ExistingPlacedViewIds = new List<ElementId>();
+            ExistingPlacedViewNames = new List<string>();
             SheetBrowserParameterValues = new ObservableCollection<SheetBrowserParameterValueViewModel>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<SheetBrowserParameterValueViewModel> SheetBrowserParameterValues { get; private set; }
+
+        public List<ElementId> ExistingPlacedViewIds { get; private set; }
+
+        public List<string> ExistingPlacedViewNames { get; private set; }
 
         public int RowNumber
         {
@@ -179,6 +195,26 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
                 _sheetBrowserParameterValue = newValue;
                 OnPropertyChanged("SheetBrowserParameterValue");
+                OnPropertyChanged("ProjectSectionGroupName");
+            }
+        }
+
+        public string ProjectSectionGroupName
+        {
+            get
+            {
+                string sectionName = string.Empty;
+                if (SheetBrowserParameterValues.Count > 0 && SheetBrowserParameterValues[0] != null)
+                {
+                    sectionName = (SheetBrowserParameterValues[0].Value ?? string.Empty).Trim();
+                }
+
+                if (string.IsNullOrWhiteSpace(sectionName))
+                {
+                    sectionName = (SheetBrowserParameterValue ?? string.Empty).Trim();
+                }
+
+                return string.IsNullOrWhiteSpace(sectionName) ? "Без раздела" : sectionName;
             }
         }
 
@@ -223,9 +259,77 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         {
             get
             {
+                if (IsDeletionRow)
+                {
+                    return IsSelectedForDeletion;
+                }
+
                 return !string.IsNullOrWhiteSpace(ViewName) ||
                        !string.IsNullOrWhiteSpace(SheetNumber) ||
                        !string.IsNullOrWhiteSpace(SheetName);
+            }
+        }
+
+        public bool IsDeletionRow
+        {
+            get { return _isDeletionRow; }
+            set
+            {
+                if (_isDeletionRow == value)
+                {
+                    return;
+                }
+
+                _isDeletionRow = value;
+                OnPropertyChanged("IsDeletionRow");
+                OnPropertyChanged("IsFilled");
+            }
+        }
+
+        public bool IsSelectedForDeletion
+        {
+            get { return _isSelectedForDeletion; }
+            set
+            {
+                if (_isSelectedForDeletion == value)
+                {
+                    return;
+                }
+
+                _isSelectedForDeletion = value;
+                OnPropertyChanged("IsSelectedForDeletion");
+                OnPropertyChanged("IsFilled");
+            }
+        }
+
+        public ElementId ExistingSheetId
+        {
+            get { return _existingSheetId; }
+            set
+            {
+                if (RevitElementIdUtils.AreEqual(_existingSheetId, value))
+                {
+                    return;
+                }
+
+                _existingSheetId = value ?? ElementId.InvalidElementId;
+                OnPropertyChanged("ExistingSheetId");
+            }
+        }
+
+        public string PlacedViewsText
+        {
+            get { return _placedViewsText; }
+            set
+            {
+                string newValue = value ?? string.Empty;
+                if (_placedViewsText == newValue)
+                {
+                    return;
+                }
+
+                _placedViewsText = newValue;
+                OnPropertyChanged("PlacedViewsText");
             }
         }
 
@@ -234,6 +338,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             if (levels == null)
             {
                 SheetBrowserParameterValues.Clear();
+                UpdateProjectSectionParameterSubscription();
                 return;
             }
 
@@ -266,6 +371,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 value.ParameterId = level.ParameterId;
                 value.ParameterName = level.ParameterName;
             }
+
+            UpdateProjectSectionParameterSubscription();
         }
 
         private SheetBrowserParameterValueViewModel CreateParameterValue(SheetBrowserParameterLevelViewModel level)
@@ -274,6 +381,37 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             value.ParameterId = level != null ? level.ParameterId : Autodesk.Revit.DB.ElementId.InvalidElementId;
             value.ParameterName = level != null ? level.ParameterName : string.Empty;
             return value;
+        }
+
+        private void UpdateProjectSectionParameterSubscription()
+        {
+            SheetBrowserParameterValueViewModel newProjectSectionValue =
+                SheetBrowserParameterValues.Count > 0 ? SheetBrowserParameterValues[0] : null;
+            if (ReferenceEquals(_projectSectionParameterValue, newProjectSectionValue))
+            {
+                return;
+            }
+
+            if (_projectSectionParameterValue != null)
+            {
+                _projectSectionParameterValue.PropertyChanged -= ProjectSectionParameterValue_PropertyChanged;
+            }
+
+            _projectSectionParameterValue = newProjectSectionValue;
+            if (_projectSectionParameterValue != null)
+            {
+                _projectSectionParameterValue.PropertyChanged += ProjectSectionParameterValue_PropertyChanged;
+            }
+
+            OnPropertyChanged("ProjectSectionGroupName");
+        }
+
+        private void ProjectSectionParameterValue_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e == null || string.Equals(e.PropertyName, "Value", StringComparison.Ordinal))
+            {
+                OnPropertyChanged("ProjectSectionGroupName");
+            }
         }
 
         protected void OnPropertyChanged(string propertyName)

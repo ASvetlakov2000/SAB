@@ -11,7 +11,7 @@
     <SolidColorBrush x:Key="SabBrush.AccentHover" Color="#0B5EA8" />
     <SolidColorBrush x:Key="SabBrush.AccentLight" Color="#EAF3FF" />
     <SolidColorBrush x:Key="SabBrush.Error" Color="#D92D20" />
-    <SolidColorBrush x:Key="SabBrush.Warning" Color="#B54708" />
+    <SolidColorBrush x:Key="SabBrush.Warning" Color="#FACC15" />
     <SolidColorBrush x:Key="SabBrush.Success" Color="#039855" />
     <SolidColorBrush x:Key="SabBrush.DisabledBackground" Color="#F2F4F7" />
     <SolidColorBrush x:Key="SabBrush.DisabledText" Color="#98A2B3" />
@@ -433,6 +433,7 @@
         <Setter Property="Margin" Value="10,4" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Cursor" Value="Arrow" />
     </Style>
 
     <Style x:Key="SabRadioButtonStyle" TargetType="{x:Type RadioButton}">
@@ -763,6 +764,22 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="SabDangerOutlineButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabButtonBaseStyle}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Error}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Error}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#FEF3F2" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+                <Setter Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="SabNeutralButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SabButtonBaseStyle}">
         <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
         <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
@@ -845,6 +862,7 @@
         <Setter Property="ColumnHeaderStyle" Value="{DynamicResource SabDataGridColumnHeaderStyle}" />
         <Setter Property="CellStyle" Value="{DynamicResource SabDataGridCellStyle}" />
         <Setter Property="RowStyle" Value="{DynamicResource SabDataGridRowStyle}" />
+        <Setter Property="Cursor" Value="Arrow" />
     </Style>
 
     <Style x:Key="SabDataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
@@ -871,6 +889,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource SabBrush.BorderWeak}" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Cursor" Value="Arrow" />
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
@@ -886,6 +905,7 @@
     <Style x:Key="SabDataGridRowStyle" TargetType="{x:Type DataGridRow}">
         <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
         <Setter Property="ToolTip" Value="{Binding RowError}" />
+        <Setter Property="Cursor" Value="Arrow" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource SabBrush.AccentLight}" />
@@ -955,6 +975,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Cursor" Value="Arrow" />
     </Style>
 
     <Style x:Key="SabDataGridInlineTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource SabTextBoxStyle}">
@@ -966,6 +987,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Cursor" Value="Arrow" />
     </Style>
 
     <Style x:Key="SabValidationPanelStyle" TargetType="{x:Type Border}">

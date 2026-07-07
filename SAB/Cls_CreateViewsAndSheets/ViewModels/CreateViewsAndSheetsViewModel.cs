@@ -16,10 +16,11 @@ namespace SAB.CreateViewsAndSheets.ViewModels
     {
         private const double DefaultTitleLineLengthMm = 80.0;
         private const string ValidationBorderOkBrush = "#0F6CBD";
-        private const string ValidationBorderWarningBrush = "#B54708";
+        private const string ValidationBorderWarningBrush = "#FACC15";
         private const string ValidationBorderErrorBrush = "#D92D20";
         private const string ValidationTextBrush = "#1F2937";
-        private const string ValidationCriticalWarningBrush = "#D92D20";
+        private const string ValidationIconForegroundBrush = "#FFFFFF";
+        private const string ValidationWarningIconForegroundBrush = "#1F2937";
 
         private readonly List<RevitElementItem> _allViewTemplates;
         private readonly Dictionary<long, List<string>> _sheetBrowserParameterValuesById;
@@ -49,6 +50,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private string _statusErrorsText;
         private string _validationBorderBrush;
         private string _validationSummaryForeground;
+        private string _validationIconText;
+        private string _validationIconBackground;
+        private string _validationIconForeground;
         private bool _saveSettings;
         private bool _isAccepted;
         private bool _canCreate;
@@ -65,6 +69,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private bool _copyTextNotes;
         private bool _copyGenericAnnotations;
         private bool _copyImages;
+        private bool _isDeletionMode;
 
         public CreateViewsAndSheetsViewModel(
             IList<RevitElementItem> sourceViews,
@@ -82,6 +87,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             SourceViews = new ObservableCollection<RevitElementItem>();
             StandardSourceViews = new ObservableCollection<RevitElementItem>();
             CeilingSourceViews = new ObservableCollection<RevitElementItem>();
+            MultiViewSourceViews = new ObservableCollection<RevitElementItem>();
             SourceSheets = new ObservableCollection<RevitElementItem>();
             ViewportTypes = new ObservableCollection<RevitElementItem>();
             TitleBlockTypes = new ObservableCollection<RevitElementItem>();
@@ -93,6 +99,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             PlanKindOptions = new ObservableCollection<PlanKindOptionViewModel>();
             ViewTemplates = new ObservableCollection<RevitElementItem>();
             Rows = new ObservableCollection<SheetCreationRowViewModel>();
+            DeletionRows = new ObservableCollection<SheetCreationRowViewModel>();
+            MultiViewZoneMappings = new ObservableCollection<MultiViewZoneRowViewModel>();
             ScaleOptions = new ObservableCollection<string>();
 
             _allViewTemplates = new List<RevitElementItem>();
@@ -113,6 +121,9 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             FillList(_allViewTemplates, viewTemplates);
             _validationBorderBrush = ValidationBorderOkBrush;
             _validationSummaryForeground = ValidationTextBrush;
+            _validationIconText = "✓";
+            _validationIconBackground = ValidationBorderOkBrush;
+            _validationIconForeground = ValidationIconForegroundBrush;
 
             ScaleOptions.Add("20");
             ScaleOptions.Add("25");
@@ -151,16 +162,22 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             _copyGenericAnnotations = detailCopy.CopyGenericAnnotations;
             _copyImages = detailCopy.CopyImages;
             _structureMode = initialSettings != null ? initialSettings.StructureMode : CreateViewsAndSheetsStructureMode.SingleStory;
+            if (_structureMode == CreateViewsAndSheetsStructureMode.MultiView)
+            {
+                _useSourceSheetViewportPlacement = true;
+            }
 
             InitializeFloorMappings(initialSettings);
+            InitializeMultiViewZoneMappings(initialSettings);
 
             ValidateCommand = new RelayCommand(delegate { RefreshValidation(); });
             OpenSettingsWindowCommand = new RelayCommand(delegate { RequestSettingsWindowInternal(); });
             ImportSheetTableCommand = new RelayCommand(delegate { RequestSheetTableImportInternal(); });
             ExportSettingsCommand = new RelayCommand(delegate { RequestSettingsExportInternal(); });
             ImportSettingsCommand = new RelayCommand(delegate { RequestSettingsImportInternal(); });
-            ClearRowsCommand = new RelayCommand(delegate { ClearAllRows(); }, delegate { return Rows != null && Rows.Count > 0; });
-            CopySheetNamesToViewNamesCommand = new RelayCommand(delegate { CopySheetNamesToViewNames(); }, delegate { return Rows != null && Rows.Count > 0; });
+            ToggleDeletionModeCommand = new RelayCommand(delegate { ToggleDeletionMode(); });
+            ClearRowsCommand = new RelayCommand(delegate { ClearAllRows(); }, delegate { return IsCreationMode && Rows != null && Rows.Count > 0; });
+            CopySheetNamesToViewNamesCommand = new RelayCommand(delegate { CopySheetNamesToViewNames(); }, delegate { return IsCreationMode && Rows != null && Rows.Count > 0; });
             PickViewCenterPointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewCenter); });
             PickViewTitlePointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewTitle); });
             MoveRowUpCommand = new RelayCommand(
@@ -173,6 +190,10 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             DeleteRowCommand = new RelayCommand(delegate(object parameter) { DeleteRow(parameter as SheetCreationRowViewModel); });
             AddFloorMappingCommand = new RelayCommand(delegate { AddFloorMapping(null); RefreshValidation(); });
             DeleteFloorMappingCommand = new RelayCommand(delegate(object parameter) { DeleteFloorMapping(parameter as FloorSourceMappingRowViewModel); });
+            AddMultiViewZoneCommand = new RelayCommand(delegate { AddMultiViewZone(null); RefreshValidation(); });
+            DeleteMultiViewZoneCommand = new RelayCommand(delegate(object parameter) { DeleteMultiViewZone(parameter as MultiViewZoneRowViewModel); });
+            AddMultiViewZoneFloorCommand = new RelayCommand(delegate(object parameter) { AddOrCopyMultiViewZoneFloor(parameter); });
+            DeleteMultiViewZoneFloorCommand = new RelayCommand(delegate(object parameter) { DeleteMultiViewZoneFloor(parameter as MultiViewZoneFloorRowViewModel); });
             CreateCommand = new RelayCommand(delegate { AcceptWindow(); }, delegate { return CanCreate; });
             CancelCommand = new RelayCommand(delegate { CancelWindow(); });
 
@@ -201,6 +222,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public ObservableCollection<RevitElementItem> CeilingSourceViews { get; private set; }
 
+        public ObservableCollection<RevitElementItem> MultiViewSourceViews { get; private set; }
+
         public ObservableCollection<RevitElementItem> SourceSheets { get; private set; }
 
         public ObservableCollection<RevitElementItem> ViewportTypes { get; private set; }
@@ -223,6 +246,15 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public ObservableCollection<SheetCreationRowViewModel> Rows { get; private set; }
 
+        public ObservableCollection<SheetCreationRowViewModel> DeletionRows { get; private set; }
+
+        public ObservableCollection<SheetCreationRowViewModel> ActiveRows
+        {
+            get { return IsDeletionMode ? DeletionRows : Rows; }
+        }
+
+        public ObservableCollection<MultiViewZoneRowViewModel> MultiViewZoneMappings { get; private set; }
+
         public ObservableCollection<string> ScaleOptions { get; private set; }
 
         public ICommand ValidateCommand { get; private set; }
@@ -234,6 +266,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public ICommand ExportSettingsCommand { get; private set; }
 
         public ICommand ImportSettingsCommand { get; private set; }
+
+        public ICommand ToggleDeletionModeCommand { get; private set; }
 
         public ICommand ClearRowsCommand { get; private set; }
 
@@ -255,6 +289,14 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public ICommand DeleteFloorMappingCommand { get; private set; }
 
+        public ICommand AddMultiViewZoneCommand { get; private set; }
+
+        public ICommand DeleteMultiViewZoneCommand { get; private set; }
+
+        public ICommand AddMultiViewZoneFloorCommand { get; private set; }
+
+        public ICommand DeleteMultiViewZoneFloorCommand { get; private set; }
+
         public ICommand CreateCommand { get; private set; }
 
         public ICommand CancelCommand { get; private set; }
@@ -262,6 +304,42 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public bool IsAccepted
         {
             get { return _isAccepted; }
+        }
+
+        public bool IsCreationMode
+        {
+            get { return !IsDeletionMode; }
+        }
+
+        public bool IsDeletionMode
+        {
+            get { return _isDeletionMode; }
+            private set
+            {
+                if (_isDeletionMode == value)
+                {
+                    return;
+                }
+
+                _isDeletionMode = value;
+                OnPropertyChanged("IsDeletionMode");
+                OnPropertyChanged("IsCreationMode");
+                OnPropertyChanged("ActiveRows");
+                OnPropertyChanged("PrimaryActionText");
+                OnPropertyChanged("DeletionModeButtonText");
+                RaiseRowCommandCanExecuteChanged();
+                RefreshValidation();
+            }
+        }
+
+        public string PrimaryActionText
+        {
+            get { return IsDeletionMode ? "Удалить" : "Создать"; }
+        }
+
+        public string DeletionModeButtonText
+        {
+            get { return IsDeletionMode ? "Создание" : "Удаление"; }
         }
 
         public bool IsSingleStoryStructure
@@ -344,11 +422,28 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        public bool IsMultiViewStructure
+        {
+            get { return _structureMode == CreateViewsAndSheetsStructureMode.MultiView; }
+            set
+            {
+                if (value)
+                {
+                    SetStructureMode(CreateViewsAndSheetsStructureMode.MultiView);
+                }
+            }
+        }
+
         public bool UseSourceSheetViewportPlacement
         {
             get { return _useSourceSheetViewportPlacement; }
             set
             {
+                if (IsMultiViewStructure && !value)
+                {
+                    value = true;
+                }
+
                 if (_useSourceSheetViewportPlacement == value)
                 {
                     return;
@@ -779,6 +874,36 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        public string ValidationIconText
+        {
+            get { return _validationIconText; }
+            private set
+            {
+                _validationIconText = string.IsNullOrWhiteSpace(value) ? "✓" : value;
+                OnPropertyChanged("ValidationIconText");
+            }
+        }
+
+        public string ValidationIconBackground
+        {
+            get { return _validationIconBackground; }
+            private set
+            {
+                _validationIconBackground = string.IsNullOrWhiteSpace(value) ? ValidationBorderOkBrush : value;
+                OnPropertyChanged("ValidationIconBackground");
+            }
+        }
+
+        public string ValidationIconForeground
+        {
+            get { return _validationIconForeground; }
+            private set
+            {
+                _validationIconForeground = string.IsNullOrWhiteSpace(value) ? ValidationIconForegroundBrush : value;
+                OnPropertyChanged("ValidationIconForeground");
+            }
+        }
+
         public bool CanCreate
         {
             get { return _canCreate; }
@@ -831,6 +956,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.SheetBrowserParameterIds = BuildSheetBrowserParameterIds();
             settings.SheetBounds = ResolveCurrentSheetBounds();
             settings.FloorMappings = BuildFloorMappings();
+            settings.MultiViewZoneMappings = BuildMultiViewZoneMappings();
             settings.Placement = new PlacementSettings();
             settings.Placement.CoordinateUnits = "мм";
             settings.Placement.ViewCenterXmm = centerX;
@@ -877,6 +1003,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             settings.SheetBrowserParameterIds = BuildSheetBrowserParameterIds();
             settings.SheetBounds = ResolveCurrentSheetBounds();
             settings.FloorMappings = BuildFloorMappings();
+            settings.MultiViewZoneMappings = BuildMultiViewZoneMappings();
             settings.Placement = new PlacementSettings();
             settings.Placement.CoordinateUnits = "мм";
             settings.Placement.ViewCenterXmm = centerX;
@@ -968,13 +1095,17 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         public void MoveRowToIndex(SheetCreationRowViewModel row, int targetIndex)
         {
-            if (row == null || Rows == null || Rows.Count <= 1)
+            if (row == null)
             {
                 return;
             }
 
-            int currentIndex = Rows.IndexOf(row);
-            if (currentIndex < 0)
+            MoveRowsToIndex(new List<SheetCreationRowViewModel> { row }, targetIndex);
+        }
+
+        public void MoveRowsToIndex(IList<SheetCreationRowViewModel> rowsToMove, int targetIndex)
+        {
+            if (rowsToMove == null || Rows == null || Rows.Count <= 1)
             {
                 return;
             }
@@ -984,17 +1115,66 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 targetIndex = 0;
             }
 
-            if (targetIndex >= Rows.Count)
+            if (targetIndex > Rows.Count)
             {
-                targetIndex = Rows.Count - 1;
+                targetIndex = Rows.Count;
             }
 
-            if (currentIndex == targetIndex)
+            List<SheetCreationRowViewModel> orderedRowsToMove = new List<SheetCreationRowViewModel>();
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                SheetCreationRowViewModel row = Rows[i];
+                if (row != null && rowsToMove.Contains(row) && !orderedRowsToMove.Contains(row))
+                {
+                    orderedRowsToMove.Add(row);
+                }
+            }
+
+            if (orderedRowsToMove.Count == 0 || orderedRowsToMove.Count == Rows.Count)
             {
                 return;
             }
 
-            Rows.Move(currentIndex, targetIndex);
+            int adjustedTargetIndex = targetIndex;
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                SheetCreationRowViewModel row = Rows[i];
+                if (i < targetIndex && orderedRowsToMove.Contains(row))
+                {
+                    adjustedTargetIndex--;
+                }
+            }
+
+            int firstCurrentIndex = Rows.IndexOf(orderedRowsToMove[0]);
+            if (orderedRowsToMove.Count == 1 && firstCurrentIndex == adjustedTargetIndex)
+            {
+                return;
+            }
+
+            for (int i = Rows.Count - 1; i >= 0; i--)
+            {
+                SheetCreationRowViewModel row = Rows[i];
+                if (orderedRowsToMove.Contains(row))
+                {
+                    Rows.RemoveAt(i);
+                }
+            }
+
+            if (adjustedTargetIndex < 0)
+            {
+                adjustedTargetIndex = 0;
+            }
+
+            if (adjustedTargetIndex > Rows.Count)
+            {
+                adjustedTargetIndex = Rows.Count;
+            }
+
+            for (int i = 0; i < orderedRowsToMove.Count; i++)
+            {
+                Rows.Insert(adjustedTargetIndex + i, orderedRowsToMove[i]);
+            }
+
             RenumberRows();
             RefreshValidation();
         }
@@ -1009,8 +1189,15 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             _structureMode = mode;
             OnPropertyChanged("IsSingleStoryStructure");
             OnPropertyChanged("IsMultiStoryStructure");
+            OnPropertyChanged("IsMultiViewStructure");
+
+            if (IsMultiViewStructure)
+            {
+                UseSourceSheetViewportPlacement = true;
+            }
 
             ReloadCompatibleViewTemplates();
+            RefreshFloorNames();
             EnsureRowsHaveDefaultFloorName();
             RefreshValidation();
         }
@@ -1062,6 +1249,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             SetStructureMode(importedSettings.StructureMode);
             ApplyInitialSelections(importedSettings);
             ReplaceFloorMappings(importedSettings.FloorMappings);
+            ReplaceMultiViewZoneMappings(importedSettings.MultiViewZoneMappings);
             ReplaceRows(importedSettings.SessionRows);
             ReloadCompatibleViewTemplates();
             EnsureRowsHaveValidTemplateSelection();
@@ -1124,6 +1312,31 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             if (FloorMappings.Count == 0)
             {
                 AddFloorMapping(null);
+            }
+
+            RefreshFloorNames();
+        }
+
+        private void ReplaceMultiViewZoneMappings(IList<MultiViewZoneMapping> zoneMappings)
+        {
+            for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+            {
+                DetachMultiViewZone(MultiViewZoneMappings[i]);
+            }
+
+            MultiViewZoneMappings.Clear();
+
+            if (zoneMappings != null)
+            {
+                for (int i = 0; i < zoneMappings.Count; i++)
+                {
+                    AddMultiViewZone(zoneMappings[i]);
+                }
+            }
+
+            if (MultiViewZoneMappings.Count == 0)
+            {
+                AddMultiViewZone(null);
             }
 
             RefreshFloorNames();
@@ -1214,6 +1427,90 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             {
                 AddFloorMapping(null);
             }
+        }
+
+        private void InitializeMultiViewZoneMappings(CreateViewsAndSheetsSettings initialSettings)
+        {
+            if (initialSettings != null && initialSettings.MultiViewZoneMappings != null && initialSettings.MultiViewZoneMappings.Count > 0)
+            {
+                for (int i = 0; i < initialSettings.MultiViewZoneMappings.Count; i++)
+                {
+                    AddMultiViewZone(initialSettings.MultiViewZoneMappings[i]);
+                }
+            }
+
+            if (MultiViewZoneMappings.Count == 0)
+            {
+                AddMultiViewZone(null);
+            }
+        }
+
+        private void InitializeDeletionRows(IList<SheetDeletionItem> sheetDeletionItems)
+        {
+            if (sheetDeletionItems == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < sheetDeletionItems.Count; i++)
+            {
+                SheetDeletionItem item = sheetDeletionItems[i];
+                if (item == null)
+                {
+                    continue;
+                }
+
+                SheetCreationRowViewModel row = CreateDeletionRow(item);
+                DeletionRows.Add(row);
+            }
+
+            RenumberDeletionRows();
+        }
+
+        private SheetCreationRowViewModel CreateDeletionRow(SheetDeletionItem item)
+        {
+            SheetCreationRowViewModel row = new SheetCreationRowViewModel();
+            row.PropertyChanged -= Row_PropertyChanged;
+            row.IsDeletionRow = true;
+            row.RowNumber = item.RowNumber;
+            row.ExistingSheetId = item.SheetId;
+            row.SheetNumber = item.SheetNumber ?? string.Empty;
+            row.SheetName = item.SheetName ?? string.Empty;
+            row.ViewName = string.Empty;
+            row.ViewScaleText = string.Empty;
+            row.SelectedViewTemplate = FindEmptyViewTemplate();
+            row.SheetBrowserParameterValue = item.SheetBrowserParameterValue ?? string.Empty;
+            ApplySessionSheetBrowserParameterValues(row, item.SheetBrowserParameterValues);
+
+            row.ExistingPlacedViewIds.Clear();
+            if (item.PlacedViewIds != null)
+            {
+                for (int i = 0; i < item.PlacedViewIds.Count; i++)
+                {
+                    if (item.PlacedViewIds[i] != null && item.PlacedViewIds[i] != ElementId.InvalidElementId)
+                    {
+                        row.ExistingPlacedViewIds.Add(item.PlacedViewIds[i]);
+                    }
+                }
+            }
+
+            row.ExistingPlacedViewNames.Clear();
+            if (item.PlacedViewNames != null)
+            {
+                for (int i = 0; i < item.PlacedViewNames.Count; i++)
+                {
+                    if (!string.IsNullOrWhiteSpace(item.PlacedViewNames[i]))
+                    {
+                        row.ExistingPlacedViewNames.Add(item.PlacedViewNames[i]);
+                    }
+                }
+            }
+
+            row.PlacedViewsText = row.ExistingPlacedViewNames.Count == 0
+                ? "Нет размещенных видов"
+                : string.Join("; ", row.ExistingPlacedViewNames);
+            row.PropertyChanged += Row_PropertyChanged;
+            return row;
         }
 
         private void InitializeRows(CreateViewsAndSheetsSettings initialSettings)
@@ -1350,9 +1647,194 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             RefreshValidation();
         }
 
+        private void AddMultiViewZone(MultiViewZoneMapping sourceMapping)
+        {
+            MultiViewZoneRowViewModel row = new MultiViewZoneRowViewModel();
+            row.ZoneName = sourceMapping != null ? sourceMapping.ZoneName : string.Empty;
+            row.SelectedSourceSheet = sourceMapping != null
+                ? FindById(SourceSheets, sourceMapping.SourceSheetId)
+                : null;
+            row.SelectedViewportType = sourceMapping != null
+                ? FindById(ViewportTypes, sourceMapping.ViewportTypeId)
+                : null;
+            row.SelectedTitleBlockType = sourceMapping != null
+                ? FindById(TitleBlockTypes, sourceMapping.TitleBlockTypeId)
+                : null;
+
+            row.PropertyChanged += MultiViewZoneRow_PropertyChanged;
+            MultiViewZoneMappings.Add(row);
+
+            if (sourceMapping != null && sourceMapping.Floors != null && sourceMapping.Floors.Count > 0)
+            {
+                for (int i = 0; i < sourceMapping.Floors.Count; i++)
+                {
+                    AddMultiViewZoneFloor(row, sourceMapping.Floors[i]);
+                }
+            }
+
+            if (row.Floors.Count == 0)
+            {
+                AddMultiViewZoneFloor(row, null);
+            }
+
+            RefreshFloorNames();
+        }
+
+        private void DeleteMultiViewZone(MultiViewZoneRowViewModel row)
+        {
+            if (row == null || MultiViewZoneMappings == null || !MultiViewZoneMappings.Contains(row))
+            {
+                return;
+            }
+
+            DetachMultiViewZone(row);
+            MultiViewZoneMappings.Remove(row);
+
+            if (MultiViewZoneMappings.Count == 0)
+            {
+                AddMultiViewZone(null);
+                RefreshValidation();
+                return;
+            }
+
+            RefreshFloorNames();
+            RefreshValidation();
+        }
+
+        private void AddMultiViewZoneFloor(MultiViewZoneRowViewModel zone, MultiViewZoneFloorMapping sourceMapping)
+        {
+            if (zone == null)
+            {
+                return;
+            }
+
+            MultiViewZoneFloorRowViewModel floor = new MultiViewZoneFloorRowViewModel();
+            floor.FloorName = sourceMapping != null ? sourceMapping.FloorName : string.Empty;
+            floor.SelectedSourceView = sourceMapping != null
+                ? FindById(SourceViews, sourceMapping.SourceViewId)
+                : null;
+            floor.PropertyChanged += MultiViewZoneFloorRow_PropertyChanged;
+            zone.Floors.Add(floor);
+            RefreshValidation();
+        }
+
+        private void AddOrCopyMultiViewZoneFloor(object parameter)
+        {
+            MultiViewZoneRowViewModel zone = parameter as MultiViewZoneRowViewModel;
+            if (zone != null)
+            {
+                MultiViewZoneFloorRowViewModel sourceFloor = zone.Floors.Count > 0 ? zone.Floors[zone.Floors.Count - 1] : null;
+                InsertMultiViewZoneFloorAfter(zone, sourceFloor);
+                return;
+            }
+
+            MultiViewZoneFloorRowViewModel floor = parameter as MultiViewZoneFloorRowViewModel;
+            if (floor == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneRowViewModel ownerZone = MultiViewZoneMappings[i];
+                if (ownerZone != null && ownerZone.Floors.Contains(floor))
+                {
+                    InsertMultiViewZoneFloorAfter(ownerZone, floor);
+                    return;
+                }
+            }
+        }
+
+        private void InsertMultiViewZoneFloorAfter(MultiViewZoneRowViewModel zone, MultiViewZoneFloorRowViewModel sourceFloor)
+        {
+            if (zone == null)
+            {
+                return;
+            }
+
+            MultiViewZoneFloorRowViewModel newFloor = new MultiViewZoneFloorRowViewModel();
+            if (sourceFloor != null)
+            {
+                // Блок копирования строки этажа для быстрого заполнения похожих этажей зоны.
+                newFloor.FloorName = sourceFloor.FloorName;
+                newFloor.SelectedSourceView = sourceFloor.SelectedSourceView;
+            }
+
+            newFloor.PropertyChanged += MultiViewZoneFloorRow_PropertyChanged;
+
+            int insertIndex = sourceFloor != null ? zone.Floors.IndexOf(sourceFloor) + 1 : zone.Floors.Count;
+            if (insertIndex < 0 || insertIndex > zone.Floors.Count)
+            {
+                insertIndex = zone.Floors.Count;
+            }
+
+            zone.Floors.Insert(insertIndex, newFloor);
+            RefreshValidation();
+        }
+
+        private void DeleteMultiViewZoneFloor(MultiViewZoneFloorRowViewModel floor)
+        {
+            if (floor == null || MultiViewZoneMappings == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneRowViewModel zone = MultiViewZoneMappings[i];
+                if (zone == null || !zone.Floors.Contains(floor))
+                {
+                    continue;
+                }
+
+                floor.PropertyChanged -= MultiViewZoneFloorRow_PropertyChanged;
+                zone.Floors.Remove(floor);
+                if (zone.Floors.Count == 0)
+                {
+                    AddMultiViewZoneFloor(zone, null);
+                }
+
+                RefreshValidation();
+                return;
+            }
+        }
+
+        private void DetachMultiViewZone(MultiViewZoneRowViewModel zone)
+        {
+            if (zone == null)
+            {
+                return;
+            }
+
+            zone.PropertyChanged -= MultiViewZoneRow_PropertyChanged;
+            for (int i = 0; i < zone.Floors.Count; i++)
+            {
+                if (zone.Floors[i] != null)
+                {
+                    zone.Floors[i].PropertyChanged -= MultiViewZoneFloorRow_PropertyChanged;
+                }
+            }
+        }
+
         private void RefreshFloorNames()
         {
             FloorNames.Clear();
+
+            if (IsMultiViewStructure)
+            {
+                for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+                {
+                    MultiViewZoneRowViewModel zone = MultiViewZoneMappings[i];
+                    string zoneName = zone != null ? (zone.ZoneName ?? string.Empty).Trim() : string.Empty;
+                    if (!string.IsNullOrWhiteSpace(zoneName) && !ContainsText(FloorNames, zoneName))
+                    {
+                        FloorNames.Add(zoneName);
+                    }
+                }
+
+                EnsureRowsHaveDefaultFloorName();
+                return;
+            }
 
             for (int i = 0; i < FloorMappings.Count; i++)
             {
@@ -1398,39 +1880,16 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         {
             ViewTemplates.Clear();
 
-            if (IsMultiStoryStructure)
-            {
-                for (int i = 0; i < _allViewTemplates.Count; i++)
-                {
-                    ViewTemplates.Add(_allViewTemplates[i]);
-                }
-
-                EnsureRowsHaveValidTemplateSelection();
-                return;
-            }
-
-            if (IsSingleStoryStructure && SelectedSourceView == null && SelectedCeilingSourceView == null)
-            {
-                return;
-            }
-
             for (int i = 0; i < _allViewTemplates.Count; i++)
             {
                 RevitElementItem template = _allViewTemplates[i];
-                if (template == null)
-                {
-                    continue;
-                }
-
-                bool isEmptyTemplate = template.Id == ElementId.InvalidElementId;
-                bool matchesStandardView = SelectedSourceView != null && template.ViewType == SelectedSourceView.ViewType;
-                bool matchesCeilingView = SelectedCeilingSourceView != null && template.ViewType == SelectedCeilingSourceView.ViewType;
-                if (isEmptyTemplate || matchesStandardView || matchesCeilingView)
+                if (template != null)
                 {
                     ViewTemplates.Add(template);
                 }
             }
 
+            // Список шаблонов не фильтруется по типу вида: Revit позволяет назначать такие шаблоны вручную.
             EnsureRowsHaveValidTemplateSelection();
         }
 
@@ -1525,6 +1984,82 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             return result;
         }
 
+        private List<MultiViewZoneMapping> BuildMultiViewZoneMappings()
+        {
+            List<MultiViewZoneMapping> result = new List<MultiViewZoneMapping>();
+            for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneRowViewModel row = MultiViewZoneMappings[i];
+                if (row == null)
+                {
+                    continue;
+                }
+
+                string zoneName = (row.ZoneName ?? string.Empty).Trim();
+                bool hasData = !string.IsNullOrWhiteSpace(zoneName) ||
+                               row.SelectedSourceSheet != null ||
+                               row.SelectedViewportType != null ||
+                               row.SelectedTitleBlockType != null ||
+                               HasMultiViewZoneFloorData(row);
+                if (!hasData)
+                {
+                    continue;
+                }
+
+                MultiViewZoneMapping mapping = new MultiViewZoneMapping();
+                mapping.ZoneName = zoneName;
+                mapping.SourceSheetId = row.SelectedSourceSheet != null ? row.SelectedSourceSheet.Id : ElementId.InvalidElementId;
+                mapping.ViewportTypeId = row.SelectedViewportType != null ? row.SelectedViewportType.Id : ElementId.InvalidElementId;
+                mapping.TitleBlockTypeId = row.SelectedTitleBlockType != null ? row.SelectedTitleBlockType.Id : ElementId.InvalidElementId;
+                mapping.SheetBounds = row.SelectedSourceSheet != null ? row.SelectedSourceSheet.SheetBounds : null;
+
+                for (int j = 0; j < row.Floors.Count; j++)
+                {
+                    MultiViewZoneFloorRowViewModel floorRow = row.Floors[j];
+                    if (floorRow == null)
+                    {
+                        continue;
+                    }
+
+                    string floorName = (floorRow.FloorName ?? string.Empty).Trim();
+                    bool hasFloorData = !string.IsNullOrWhiteSpace(floorName) || floorRow.SelectedSourceView != null;
+                    if (!hasFloorData)
+                    {
+                        continue;
+                    }
+
+                    MultiViewZoneFloorMapping floorMapping = new MultiViewZoneFloorMapping();
+                    floorMapping.FloorName = floorName;
+                    floorMapping.SourceViewId = floorRow.SelectedSourceView != null ? floorRow.SelectedSourceView.Id : ElementId.InvalidElementId;
+                    mapping.Floors.Add(floorMapping);
+                }
+
+                result.Add(mapping);
+            }
+
+            return result;
+        }
+
+        private bool HasMultiViewZoneFloorData(MultiViewZoneRowViewModel zone)
+        {
+            if (zone == null || zone.Floors == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < zone.Floors.Count; i++)
+            {
+                MultiViewZoneFloorRowViewModel floor = zone.Floors[i];
+                if (floor != null &&
+                    (!string.IsNullOrWhiteSpace(floor.FloorName) || floor.SelectedSourceView != null))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private FloorSourceMappingRowViewModel FindFloorMappingForName(string floorName)
         {
             string cleanFloorName = (floorName ?? string.Empty).Trim();
@@ -1589,6 +2124,74 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             RefreshValidation();
         }
 
+        private void ToggleDeletionMode()
+        {
+            IsDeletionMode = !IsDeletionMode;
+        }
+
+        public bool TryBuildDeleteRequest(out List<SheetDeletionItem> items, out string validationMessage)
+        {
+            items = null;
+            validationMessage = string.Empty;
+
+            if (!IsDeletionMode)
+            {
+                validationMessage = "Окно не находится в режиме удаления.";
+                return false;
+            }
+
+            ValidationState validationState = ValidateAllRows();
+            ApplyValidationState(validationState);
+            if (validationState.Errors.Count > 0)
+            {
+                validationMessage = BuildValidationText(validationState.Errors, validationState.Warnings);
+                return false;
+            }
+
+            items = BuildDeletionItems();
+            if (items.Count == 0)
+            {
+                validationMessage = "Не выбраны листы для удаления.";
+                return false;
+            }
+
+            return true;
+        }
+
+        private List<SheetDeletionItem> BuildDeletionItems()
+        {
+            List<SheetDeletionItem> result = new List<SheetDeletionItem>();
+            for (int i = 0; i < DeletionRows.Count; i++)
+            {
+                SheetCreationRowViewModel row = DeletionRows[i];
+                if (row == null || !row.IsSelectedForDeletion)
+                {
+                    continue;
+                }
+
+                SheetDeletionItem item = new SheetDeletionItem();
+                item.RowNumber = row.RowNumber;
+                item.SheetId = row.ExistingSheetId;
+                item.SheetNumber = row.SheetNumber ?? string.Empty;
+                item.SheetName = row.SheetName ?? string.Empty;
+                item.SheetBrowserParameterValue = row.SheetBrowserParameterValue ?? string.Empty;
+                item.SheetBrowserParameterValues = BuildSheetBrowserParameterValues(row);
+                for (int j = 0; j < row.ExistingPlacedViewIds.Count; j++)
+                {
+                    item.PlacedViewIds.Add(row.ExistingPlacedViewIds[j]);
+                }
+
+                for (int j = 0; j < row.ExistingPlacedViewNames.Count; j++)
+                {
+                    item.PlacedViewNames.Add(row.ExistingPlacedViewNames[j]);
+                }
+
+                result.Add(item);
+            }
+
+            return result;
+        }
+
         public void CopySheetNamesToViewNames()
         {
             if (Rows == null)
@@ -1609,6 +2212,42 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 {
                     row.ViewName = sheetName;
                 }
+            }
+
+            RefreshValidation();
+        }
+
+        private void MultiViewZoneRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (_isRefreshingValidation)
+            {
+                return;
+            }
+
+            if (e != null && string.Equals(e.PropertyName, "ZoneName", StringComparison.Ordinal))
+            {
+                RefreshFloorNames();
+            }
+
+            if (e != null && string.Equals(e.PropertyName, "SelectedSourceSheet", StringComparison.Ordinal))
+            {
+                RefreshValidation();
+                return;
+            }
+
+            RefreshValidation();
+        }
+
+        private void MultiViewZoneFloorRow_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (_isRefreshingValidation)
+            {
+                return;
+            }
+
+            if (e != null && string.Equals(e.PropertyName, "SelectedSourceView", StringComparison.Ordinal))
+            {
+                EnsureRowsHaveValidTemplateSelection();
             }
 
             RefreshValidation();
@@ -1976,9 +2615,35 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             return null;
         }
 
+        private MultiViewZoneRowViewModel FindMultiViewZoneForName(string zoneName)
+        {
+            string cleanZoneName = (zoneName ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(cleanZoneName))
+            {
+                return null;
+            }
+
+            for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneRowViewModel mapping = MultiViewZoneMappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string mappingZoneName = (mapping.ZoneName ?? string.Empty).Trim();
+                if (string.Equals(mappingZoneName, cleanZoneName, StringComparison.Ordinal))
+                {
+                    return mapping;
+                }
+            }
+
+            return null;
+        }
+
         private void AssignDefaultFloorName(SheetCreationRowViewModel row)
         {
-            if (row == null || !IsMultiStoryStructure || !string.IsNullOrWhiteSpace(row.FloorName) || FloorNames.Count == 0)
+            if (row == null || (!IsMultiStoryStructure && !IsMultiViewStructure) || !string.IsNullOrWhiteSpace(row.FloorName) || FloorNames.Count == 0)
             {
                 return;
             }
@@ -1988,7 +2653,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         private void EnsureRowsHaveDefaultFloorName()
         {
-            if (!IsMultiStoryStructure || Rows == null || FloorNames.Count == 0)
+            if ((!IsMultiStoryStructure && !IsMultiViewStructure) || Rows == null || FloorNames.Count == 0)
             {
                 return;
             }
@@ -2030,9 +2695,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 return;
             }
 
-            RevitElementItem sourceView = GetTemplateSourceView(row);
-            if (!IsTemplateAvailable(row.SelectedViewTemplate) ||
-                !IsTemplateCompatibleWithSource(row.SelectedViewTemplate, sourceView))
+            if (!IsTemplateAvailable(row.SelectedViewTemplate))
             {
                 AssignDefaultTemplate(row);
             }
@@ -2040,6 +2703,26 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
         private RevitElementItem GetTemplateSourceView(SheetCreationRowViewModel row)
         {
+            if (IsMultiViewStructure)
+            {
+                MultiViewZoneRowViewModel zone = FindMultiViewZoneForName(row != null ? row.FloorName : string.Empty);
+                if (zone == null)
+                {
+                    return null;
+                }
+
+                for (int i = 0; i < zone.Floors.Count; i++)
+                {
+                    MultiViewZoneFloorRowViewModel floor = zone.Floors[i];
+                    if (floor != null && floor.SelectedSourceView != null)
+                    {
+                        return floor.SelectedSourceView;
+                    }
+                }
+
+                return null;
+            }
+
             if (!IsMultiStoryStructure)
             {
                 return row != null && row.PlanKind == SheetPlanKind.CeilingPlan
@@ -2079,6 +2762,12 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             SheetCreationRowViewModel row = sender as SheetCreationRowViewModel;
+            if (row != null && row.IsDeletionRow)
+            {
+                RefreshValidation();
+                return;
+            }
+
             if (e != null &&
                 (string.Equals(e.PropertyName, "FloorName", StringComparison.Ordinal) ||
                  string.Equals(e.PropertyName, "PlanKind", StringComparison.Ordinal)))
@@ -2097,6 +2786,17 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             RaiseRowCommandCanExecuteChanged();
+        }
+
+        private void RenumberDeletionRows()
+        {
+            for (int i = 0; i < DeletionRows.Count; i++)
+            {
+                if (DeletionRows[i] != null)
+                {
+                    DeletionRows[i].RowNumber = i + 1;
+                }
+            }
         }
 
         private void RaiseRowCommandCanExecuteChanged()
@@ -2168,6 +2868,13 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ValidationState state = new ValidationState();
             ClearRowErrors();
 
+            if (IsDeletionMode)
+            {
+                ValidateDeletionRows(state);
+                UpdateStatusText(state);
+                return state;
+            }
+
             bool hasStandardRows = HasFilledRowsForPlanKind(SheetPlanKind.StandardPlan);
             bool hasCeilingRows = HasFilledRowsForPlanKind(SheetPlanKind.CeilingPlan);
 
@@ -2191,25 +2898,26 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 state.Errors.Add("Не выбран лист-образец плана потолков.");
             }
 
-            if (!UseSourceSheetViewportPlacement && SelectedViewportType == null)
+            if (!IsMultiViewStructure && !UseSourceSheetViewportPlacement && SelectedViewportType == null)
             {
                 state.Errors.Add("Не выбран тип видового экрана.");
             }
 
-            if (SelectedTitleBlockType == null)
+            if (!IsMultiViewStructure && SelectedTitleBlockType == null)
             {
                 state.Errors.Add("Не выбрана основная надпись.");
             }
 
             ValidateFloorMappings(state);
+            ValidateMultiViewZoneMappings(state);
 
             SheetBounds bounds = ResolveCurrentSheetBounds();
-            if (!UseSourceSheetViewportPlacement && bounds == null)
+            if (!IsMultiViewStructure && !UseSourceSheetViewportPlacement && bounds == null)
             {
                 state.Errors.Add("Не удалось определить габарит листа по выбранной основной надписи или листу-образцу.");
             }
 
-            if (!UseSourceSheetViewportPlacement)
+            if (!IsMultiViewStructure && !UseSourceSheetViewportPlacement)
             {
                 ValidatePlacementValues(bounds, state);
             }
@@ -2217,6 +2925,43 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ValidateRows(state);
             UpdateStatusText(state);
             return state;
+        }
+
+        private void ValidateDeletionRows(ValidationState state)
+        {
+            if (DeletionRows == null || DeletionRows.Count == 0)
+            {
+                state.Errors.Add("В проекте не найдены листы для удаления.");
+                return;
+            }
+
+            int selectedCount = 0;
+            for (int i = 0; i < DeletionRows.Count; i++)
+            {
+                SheetCreationRowViewModel row = DeletionRows[i];
+                if (row == null || !row.IsSelectedForDeletion)
+                {
+                    continue;
+                }
+
+                selectedCount++;
+                if (row.ExistingSheetId == null || row.ExistingSheetId == ElementId.InvalidElementId)
+                {
+                    string rowError = "Строка " + row.RowNumber + ": лист недоступен для удаления.";
+                    row.RowError = rowError;
+                    state.Errors.Add(rowError);
+                }
+
+                if (row.ExistingPlacedViewIds.Count == 0)
+                {
+                    state.Warnings.Add("Строка " + row.RowNumber + ": на листе нет размещенных видов, будет удален только лист.");
+                }
+            }
+
+            if (selectedCount == 0)
+            {
+                state.Errors.Add("Отметьте галочками листы для удаления.");
+            }
         }
 
         private void ValidateFloorMappings(ValidationState state)
@@ -2295,6 +3040,116 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        private void ValidateMultiViewZoneMappings(ValidationState state)
+        {
+            if (!IsMultiViewStructure)
+            {
+                return;
+            }
+
+            int completeCount = 0;
+            HashSet<string> zoneNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            for (int i = 0; i < MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneRowViewModel zone = MultiViewZoneMappings[i];
+                if (zone == null)
+                {
+                    continue;
+                }
+
+                string zoneName = (zone.ZoneName ?? string.Empty).Trim();
+                bool hasAnyData = !string.IsNullOrWhiteSpace(zoneName) ||
+                                  zone.SelectedSourceSheet != null ||
+                                  zone.SelectedViewportType != null ||
+                                  zone.SelectedTitleBlockType != null ||
+                                  HasMultiViewZoneFloorData(zone);
+                if (!hasAnyData)
+                {
+                    continue;
+                }
+
+                string rowPrefix = "Зона " + (i + 1) + ": ";
+                if (string.IsNullOrWhiteSpace(zoneName))
+                {
+                    state.Errors.Add(rowPrefix + "не заполнено название зоны.");
+                }
+                else if (!zoneNames.Add(zoneName))
+                {
+                    state.Errors.Add(rowPrefix + "зона повторяется.");
+                }
+
+                if (zone.SelectedSourceSheet == null)
+                {
+                    state.Errors.Add(rowPrefix + "не выбран лист-образец зоны.");
+                }
+
+                if (zone.SelectedViewportType == null)
+                {
+                    state.Errors.Add(rowPrefix + "не выбран тип Viewport.");
+                }
+
+                if (zone.SelectedTitleBlockType == null)
+                {
+                    state.Errors.Add(rowPrefix + "не выбрана основная надпись.");
+                }
+
+                int completeFloorCount = 0;
+                HashSet<string> floorNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int j = 0; j < zone.Floors.Count; j++)
+                {
+                    MultiViewZoneFloorRowViewModel floor = zone.Floors[j];
+                    if (floor == null)
+                    {
+                        continue;
+                    }
+
+                    string floorName = (floor.FloorName ?? string.Empty).Trim();
+                    bool hasFloorData = !string.IsNullOrWhiteSpace(floorName) || floor.SelectedSourceView != null;
+                    if (!hasFloorData)
+                    {
+                        continue;
+                    }
+
+                    string floorPrefix = rowPrefix + "этаж " + (j + 1) + ": ";
+                    if (string.IsNullOrWhiteSpace(floorName))
+                    {
+                        state.Errors.Add(floorPrefix + "не заполнено название этажа.");
+                    }
+                    else if (!floorNames.Add(floorName))
+                    {
+                        state.Errors.Add(floorPrefix + "этаж повторяется внутри зоны.");
+                    }
+
+                    if (floor.SelectedSourceView == null)
+                    {
+                        state.Errors.Add(floorPrefix + "не выбран вид-образец.");
+                    }
+                    else if (!string.IsNullOrWhiteSpace(floorName))
+                    {
+                        completeFloorCount++;
+                    }
+                }
+
+                if (completeFloorCount == 0)
+                {
+                    state.Errors.Add(rowPrefix + "добавьте хотя бы один этаж с видом-образцом.");
+                }
+                else if (!string.IsNullOrWhiteSpace(zoneName) &&
+                         zone.SelectedSourceSheet != null &&
+                         zone.SelectedViewportType != null &&
+                         zone.SelectedTitleBlockType != null)
+                {
+                    completeCount++;
+                }
+            }
+
+            if (completeCount == 0)
+            {
+                state.Errors.Add("Для многовидовой структуры добавьте хотя бы одну заполненную зону.");
+            }
+        }
+
         private void ValidatePlacementValues(SheetBounds bounds, ValidationState state)
         {
             double centerX;
@@ -2369,7 +3224,101 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 RevitElementItem templateSourceView = isCeilingPlan ? SelectedCeilingSourceView : SelectedSourceView;
                 RevitElementItem templateSourceSheet = null;
 
-                if (IsMultiStoryStructure)
+                if (IsMultiViewStructure)
+                {
+                    if (string.IsNullOrWhiteSpace(floorName))
+                    {
+                        rowErrors.Add("зона не заполнена");
+                    }
+                    else
+                    {
+                        MultiViewZoneRowViewModel zone = FindMultiViewZoneForName(floorName);
+                        if (zone == null)
+                        {
+                            rowErrors.Add("зона не найдена в сопоставлении");
+                        }
+                        else
+                        {
+                            templateSourceSheet = zone.SelectedSourceSheet;
+                            if (zone.SelectedSourceSheet == null)
+                            {
+                                rowErrors.Add("для зоны не выбран лист-образец");
+                            }
+
+                            if (zone.SelectedViewportType == null)
+                            {
+                                rowErrors.Add("для зоны не выбран тип Viewport");
+                            }
+
+                            if (zone.SelectedTitleBlockType == null)
+                            {
+                                rowErrors.Add("для зоны не выбрана основная надпись");
+                            }
+
+                            bool hasCompleteFloor = false;
+                            for (int zoneFloorIndex = 0; zoneFloorIndex < zone.Floors.Count; zoneFloorIndex++)
+                            {
+                                MultiViewZoneFloorRowViewModel zoneFloor = zone.Floors[zoneFloorIndex];
+                                if (zoneFloor == null)
+                                {
+                                    continue;
+                                }
+
+                                string zoneFloorName = (zoneFloor.FloorName ?? string.Empty).Trim();
+                                if (string.IsNullOrWhiteSpace(zoneFloorName) && zoneFloor.SelectedSourceView == null)
+                                {
+                                    continue;
+                                }
+
+                                if (string.IsNullOrWhiteSpace(zoneFloorName))
+                                {
+                                    rowErrors.Add("в зоне есть этаж без названия");
+                                    continue;
+                                }
+
+                                if (zoneFloor.SelectedSourceView == null)
+                                {
+                                    rowErrors.Add("для этажа \"" + zoneFloorName + "\" не выбран вид-образец");
+                                    continue;
+                                }
+
+                                if (templateSourceView == null)
+                                {
+                                    templateSourceView = zoneFloor.SelectedSourceView;
+                                }
+
+                                hasCompleteFloor = true;
+                                if (UseSourceSheetViewportPlacement &&
+                                    zone.SelectedSourceSheet != null &&
+                                    !IsSourceViewPlacedOnSheet(zone.SelectedSourceSheet, zoneFloor.SelectedSourceView))
+                                {
+                                    state.Warnings.Add(WarningMessageSeverity.MarkCritical(
+                                        BuildMissingSourceViewportWarning(row.RowNumber, zone.SelectedSourceSheet, zoneFloor.SelectedSourceView)));
+                                }
+
+                                string generatedViewName = BuildMultiViewGeneratedViewName(viewName, zone.ZoneName, zoneFloorName);
+                                if (!string.IsNullOrWhiteSpace(generatedViewName))
+                                {
+                                    if (!tableViewNames.Add(generatedViewName))
+                                    {
+                                        rowErrors.Add("имя вида \"" + generatedViewName + "\" повторяется в таблице");
+                                    }
+
+                                    if (_existingViewNames.Contains(generatedViewName))
+                                    {
+                                        rowErrors.Add("вид \"" + generatedViewName + "\" уже существует в документе");
+                                    }
+                                }
+                            }
+
+                            if (!hasCompleteFloor)
+                            {
+                                rowErrors.Add("в зоне нет этажей с видами-образцами");
+                            }
+                        }
+                    }
+                }
+                else if (IsMultiStoryStructure)
                 {
                     if (string.IsNullOrWhiteSpace(floorName))
                     {
@@ -2427,7 +3376,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     }
                 }
 
-                if (UseSourceSheetViewportPlacement &&
+                if (!IsMultiViewStructure &&
+                    UseSourceSheetViewportPlacement &&
                     templateSourceView != null &&
                     templateSourceSheet != null &&
                     !IsSourceViewPlacedOnSheet(templateSourceSheet, templateSourceView))
@@ -2437,7 +3387,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
                 if (string.IsNullOrWhiteSpace(viewName))
                 {
-                    rowErrors.Add("имя вида не заполнено");
+                    rowErrors.Add(IsMultiViewStructure ? "часть имени вида не заполнена" : "имя вида не заполнено");
                 }
 
                 if (string.IsNullOrWhiteSpace(sheetNumber))
@@ -2460,13 +3410,13 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     row.SelectedViewTemplate.Id != ElementId.InvalidElementId &&
                     !IsTemplateAvailable(row.SelectedViewTemplate))
                 {
-                    rowErrors.Add("шаблон вида несовместим с видом-образцом");
+                    rowErrors.Add("выбранный шаблон вида не найден в списке шаблонов");
                 }
                 else if (row.SelectedViewTemplate != null &&
                          row.SelectedViewTemplate.Id != ElementId.InvalidElementId &&
                          !IsTemplateCompatibleWithSource(row.SelectedViewTemplate, templateSourceView))
                 {
-                    rowErrors.Add("шаблон вида не совместим с выбранным видом-образцом");
+                    state.Warnings.Add("Строка " + row.RowNumber + ": шаблон вида не совместим с выбранным видом-образцом.");
                 }
                 else if (row.SelectedViewTemplate != null &&
                          row.SelectedViewTemplate.Id != ElementId.InvalidElementId &&
@@ -2475,7 +3425,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     state.Warnings.Add("Строка " + row.RowNumber + ": масштаб будет задан выбранным шаблоном вида.");
                 }
 
-                if (!string.IsNullOrWhiteSpace(viewName))
+                if (!IsMultiViewStructure && !string.IsNullOrWhiteSpace(viewName))
                 {
                     if (!tableViewNames.Add(viewName))
                     {
@@ -2541,6 +3491,30 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                    "Лист будет создан без размещенного вида.";
         }
 
+        private string BuildMultiViewGeneratedViewName(string sectionName, string zoneName, string floorName)
+        {
+            string cleanSectionName = (sectionName ?? string.Empty).Trim();
+            string cleanZoneName = (zoneName ?? string.Empty).Trim();
+            string cleanFloorName = (floorName ?? string.Empty).Trim();
+            List<string> parts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(cleanSectionName))
+            {
+                parts.Add(cleanSectionName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(cleanZoneName))
+            {
+                parts.Add(cleanZoneName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(cleanFloorName))
+            {
+                parts.Add(cleanFloorName);
+            }
+
+            return string.Join(" ", parts);
+        }
+
         private string GetElementDisplayName(RevitElementItem item)
         {
             return item != null ? (item.Name ?? string.Empty).Trim() : string.Empty;
@@ -2594,47 +3568,61 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             {
                 ValidationBorderBrush = ValidationBorderOkBrush;
                 ValidationSummaryForeground = ValidationTextBrush;
+                ValidationIconText = "✓";
+                ValidationIconBackground = ValidationBorderOkBrush;
+                ValidationIconForeground = ValidationIconForegroundBrush;
                 return;
             }
 
             if (state.Errors.Count > 0)
             {
                 ValidationBorderBrush = ValidationBorderErrorBrush;
+                ValidationIconText = "!";
+                ValidationIconBackground = ValidationBorderErrorBrush;
+                ValidationIconForeground = ValidationIconForegroundBrush;
             }
             else if (state.Warnings.Count > 0)
             {
                 ValidationBorderBrush = ValidationBorderWarningBrush;
+                ValidationIconText = "i";
+                ValidationIconBackground = ValidationBorderWarningBrush;
+                ValidationIconForeground = ValidationWarningIconForegroundBrush;
             }
             else
             {
                 ValidationBorderBrush = ValidationBorderOkBrush;
+                ValidationIconText = "✓";
+                ValidationIconBackground = ValidationBorderOkBrush;
+                ValidationIconForeground = ValidationIconForegroundBrush;
             }
 
-            ValidationSummaryForeground = HasCriticalWarnings(state.Warnings)
-                ? ValidationCriticalWarningBrush
-                : ValidationTextBrush;
-        }
-
-        private bool HasCriticalWarnings(IList<string> warnings)
-        {
-            if (warnings == null)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < warnings.Count; i++)
-            {
-                if (WarningMessageSeverity.IsCritical(warnings[i]))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            ValidationSummaryForeground = ValidationTextBrush;
         }
 
         private void UpdateStatusText(ValidationState state)
         {
+            if (IsDeletionMode)
+            {
+                int selectedCount = 0;
+                for (int i = 0; i < DeletionRows.Count; i++)
+                {
+                    if (DeletionRows[i] != null && DeletionRows[i].IsSelectedForDeletion)
+                    {
+                        selectedCount++;
+                    }
+                }
+
+                StatusText = "Листов: " + DeletionRows.Count +
+                             " | Выбрано: " + selectedCount +
+                             " | Ошибок: " + state.Errors.Count;
+
+                StatusRowsText = "Листов: " + DeletionRows.Count;
+                StatusFilledText = "Выбрано: " + selectedCount;
+                StatusWarningsText = "Предупреждений: " + state.Warnings.Count;
+                StatusErrorsText = "Ошибок: " + state.Errors.Count;
+                return;
+            }
+
             int filledCount = 0;
             for (int i = 0; i < Rows.Count; i++)
             {
@@ -2764,6 +3752,14 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     Rows[i].RowError = string.Empty;
                 }
             }
+
+            for (int i = 0; i < DeletionRows.Count; i++)
+            {
+                if (DeletionRows[i] != null)
+                {
+                    DeletionRows[i].RowError = string.Empty;
+                }
+            }
         }
 
         private bool IsTemplateAvailable(RevitElementItem template)
@@ -2854,6 +3850,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         {
             StandardSourceViews.Clear();
             CeilingSourceViews.Clear();
+            MultiViewSourceViews.Clear();
 
             if (source == null)
             {
@@ -2871,12 +3868,14 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 if (IsCeilingPlanSourceView(item))
                 {
                     CeilingSourceViews.Add(item);
+                    MultiViewSourceViews.Add(item);
                     continue;
                 }
 
                 if (IsLevelBasedStandardSourceView(item))
                 {
                     StandardSourceViews.Add(item);
+                    MultiViewSourceViews.Add(item);
                 }
             }
         }

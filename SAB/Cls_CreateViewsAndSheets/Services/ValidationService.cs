@@ -59,21 +59,30 @@ namespace SAB.CreateViewsAndSheets.Services
 
             View sourceView = null;
             Dictionary<string, FloorSourceValidationData> sourceDataByFloorName = null;
+            Dictionary<string, MultiViewZoneValidationData> sourceDataByZoneName = null;
             if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiStory)
             {
                 sourceDataByFloorName = ValidateFloorMappings(document, settings, result);
             }
+            else if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView)
+            {
+                sourceDataByZoneName = ValidateMultiViewZoneMappings(document, settings, result);
+            }
 
             bool useSourceSheetViewportPlacement = settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement;
-            if (!useSourceSheetViewportPlacement)
+            if (settings.StructureMode != CreateViewsAndSheetsStructureMode.MultiView && !useSourceSheetViewportPlacement)
             {
                 ValidateViewportType(document, settings.ViewportTypeId, result);
             }
 
-            ValidateTitleBlockType(document, settings.TitleBlockTypeId, result);
+            if (settings.StructureMode != CreateViewsAndSheetsStructureMode.MultiView)
+            {
+                ValidateTitleBlockType(document, settings.TitleBlockTypeId, result);
+            }
+
             ValidateSheetBrowserParameters(document, settings.SheetBrowserParameterIds, result);
             ValidatePlacement(settings, result);
-            ValidateRows(document, settings, sourceView, sourceDataByFloorName, items, result);
+            ValidateRows(document, settings, sourceView, sourceDataByFloorName, sourceDataByZoneName, items, result);
 
             return result;
         }
@@ -195,6 +204,94 @@ namespace SAB.CreateViewsAndSheets.Services
             }
 
             return sourceDataByFloorName;
+        }
+
+        private Dictionary<string, MultiViewZoneValidationData> ValidateMultiViewZoneMappings(
+            Document document,
+            CreateViewsAndSheetsSettings settings,
+            CreateViewsAndSheetsValidationResult result)
+        {
+            Dictionary<string, MultiViewZoneValidationData> sourceDataByZoneName = new Dictionary<string, MultiViewZoneValidationData>(StringComparer.Ordinal);
+            if (settings.MultiViewZoneMappings == null || settings.MultiViewZoneMappings.Count == 0)
+            {
+                result.Errors.Add("Для многовидовой структуры не заполнены зоны.");
+                return sourceDataByZoneName;
+            }
+
+            for (int i = 0; i < settings.MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneMapping mapping = settings.MultiViewZoneMappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string zoneName = (mapping.ZoneName ?? string.Empty).Trim();
+                string rowPrefix = "Зона " + (i + 1) + ": ";
+                if (string.IsNullOrWhiteSpace(zoneName))
+                {
+                    result.Errors.Add(rowPrefix + "не заполнено название зоны.");
+                    continue;
+                }
+
+                if (sourceDataByZoneName.ContainsKey(zoneName))
+                {
+                    result.Errors.Add(rowPrefix + "зона повторяется.");
+                    continue;
+                }
+
+                MultiViewZoneValidationData sourceData = new MultiViewZoneValidationData();
+                sourceData.ZoneName = zoneName;
+                sourceData.SourceSheet = ValidateSourceSheet(document, mapping.SourceSheetId, result);
+                ValidateViewportType(document, mapping.ViewportTypeId, result);
+                ValidateTitleBlockType(document, mapping.TitleBlockTypeId, result);
+
+                if (mapping.Floors == null || mapping.Floors.Count == 0)
+                {
+                    result.Errors.Add(rowPrefix + "не добавлены этажи.");
+                }
+                else
+                {
+                    HashSet<string> floorNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    for (int j = 0; j < mapping.Floors.Count; j++)
+                    {
+                        MultiViewZoneFloorMapping floorMapping = mapping.Floors[j];
+                        if (floorMapping == null)
+                        {
+                            continue;
+                        }
+
+                        string floorName = (floorMapping.FloorName ?? string.Empty).Trim();
+                        string floorPrefix = rowPrefix + "этаж " + (j + 1) + ": ";
+                        if (string.IsNullOrWhiteSpace(floorName))
+                        {
+                            result.Errors.Add(floorPrefix + "не заполнено название этажа.");
+                            continue;
+                        }
+
+                        if (!floorNames.Add(floorName))
+                        {
+                            result.Errors.Add(floorPrefix + "этаж повторяется внутри зоны.");
+                            continue;
+                        }
+
+                        View sourceView = ValidateSourceView(document, floorMapping.SourceViewId, result);
+                        if (sourceView != null)
+                        {
+                            sourceData.SourceViewsByFloorName[floorName] = sourceView;
+                        }
+                    }
+                }
+
+                sourceDataByZoneName[zoneName] = sourceData;
+            }
+
+            if (sourceDataByZoneName.Count == 0)
+            {
+                result.Errors.Add("Для многовидовой структуры нет ни одной корректной зоны.");
+            }
+
+            return sourceDataByZoneName;
         }
 
         private void ValidateViewportType(Document document, ElementId viewportTypeId, CreateViewsAndSheetsValidationResult result)
@@ -360,6 +457,7 @@ namespace SAB.CreateViewsAndSheets.Services
             CreateViewsAndSheetsSettings settings,
             View sourceView,
             Dictionary<string, FloorSourceValidationData> sourceDataByFloorName,
+            Dictionary<string, MultiViewZoneValidationData> sourceDataByZoneName,
             IList<SheetCreationItem> items,
             CreateViewsAndSheetsValidationResult result)
         {
@@ -404,6 +502,57 @@ namespace SAB.CreateViewsAndSheets.Services
                         result.Errors.Add(rowPrefix + "не выбран корректный вид-образец " + planName + ".");
                     }
                 }
+                else if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView)
+                {
+                    string zoneName = (item.FloorName ?? string.Empty).Trim();
+                    if (string.IsNullOrWhiteSpace(zoneName))
+                    {
+                        result.Errors.Add(rowPrefix + "не заполнена зона.");
+                    }
+                    else
+                    {
+                        MultiViewZoneValidationData sourceData;
+                        if (sourceDataByZoneName == null || !sourceDataByZoneName.TryGetValue(zoneName, out sourceData))
+                        {
+                            result.Errors.Add(rowPrefix + "для зоны \"" + zoneName + "\" нет корректного сопоставления.");
+                        }
+                        else
+                        {
+                            templateSourceSheet = sourceData.SourceSheet;
+                            foreach (KeyValuePair<string, View> pair in sourceData.SourceViewsByFloorName)
+                            {
+                                if (templateSourceView == null)
+                                {
+                                    templateSourceView = pair.Value;
+                                }
+
+                                string generatedViewName = BuildMultiViewGeneratedViewName(viewName, sourceData.ZoneName, pair.Key);
+                                if (!string.IsNullOrWhiteSpace(generatedViewName))
+                                {
+                                    if (!tableViewNames.Add(generatedViewName))
+                                    {
+                                        result.Errors.Add(rowPrefix + "имя вида \"" + generatedViewName + "\" повторяется в таблице.");
+                                    }
+
+                                    if (existingViewNames.Contains(generatedViewName))
+                                    {
+                                        result.Errors.Add(rowPrefix + "вид \"" + generatedViewName + "\" уже существует в документе.");
+                                    }
+                                }
+
+                                if (settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement)
+                                {
+                                    ValidateSourceViewportPlacement(document, templateSourceSheet, pair.Value, rowPrefix, result);
+                                }
+                            }
+
+                            if (sourceData.SourceViewsByFloorName.Count == 0)
+                            {
+                                result.Errors.Add(rowPrefix + "в зоне \"" + zoneName + "\" нет этажей с видами-образцами.");
+                            }
+                        }
+                    }
+                }
                 else if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiStory)
                 {
                     string floorName = (item.FloorName ?? string.Empty).Trim();
@@ -433,7 +582,9 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 if (string.IsNullOrWhiteSpace(viewName))
                 {
-                    result.Errors.Add(rowPrefix + "не заполнено имя вида.");
+                    result.Errors.Add(rowPrefix + (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView
+                        ? "не заполнена часть имени вида."
+                        : "не заполнено имя вида."));
                 }
 
                 if (string.IsNullOrWhiteSpace(sheetNumber))
@@ -451,7 +602,7 @@ namespace SAB.CreateViewsAndSheets.Services
                     result.Errors.Add(rowPrefix + "масштаб должен быть положительным целым числом.");
                 }
 
-                if (!string.IsNullOrWhiteSpace(viewName))
+                if (settings.StructureMode != CreateViewsAndSheetsStructureMode.MultiView && !string.IsNullOrWhiteSpace(viewName))
                 {
                     if (!tableViewNames.Add(viewName))
                     {
@@ -479,7 +630,8 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 ValidateTemplate(document, templateSourceView, item, rowPrefix, result);
 
-                if (settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement)
+                if (settings.StructureMode != CreateViewsAndSheetsStructureMode.MultiView &&
+                    settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement)
                 {
                     ValidateSourceViewportPlacement(document, templateSourceSheet, templateSourceView, rowPrefix, result);
                 }
@@ -507,8 +659,32 @@ namespace SAB.CreateViewsAndSheets.Services
 
             if (sourceView != null && templateView.ViewType != sourceView.ViewType)
             {
-                result.Errors.Add(rowPrefix + "шаблон вида несовместим с типом вида-образца.");
+                result.Warnings.Add(rowPrefix + "шаблон вида не совместим с типом вида-образца.");
             }
+        }
+
+        private string BuildMultiViewGeneratedViewName(string sectionName, string zoneName, string floorName)
+        {
+            string cleanSectionName = (sectionName ?? string.Empty).Trim();
+            string cleanZoneName = (zoneName ?? string.Empty).Trim();
+            string cleanFloorName = (floorName ?? string.Empty).Trim();
+            List<string> parts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(cleanSectionName))
+            {
+                parts.Add(cleanSectionName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(cleanZoneName))
+            {
+                parts.Add(cleanZoneName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(cleanFloorName))
+            {
+                parts.Add(cleanFloorName);
+            }
+
+            return string.Join(" ", parts);
         }
 
         private void ValidateSourceViewportPlacement(
@@ -587,6 +763,21 @@ namespace SAB.CreateViewsAndSheets.Services
             public ViewSheet StandardSourceSheet { get; set; }
 
             public ViewSheet CeilingSourceSheet { get; set; }
+        }
+
+        private class MultiViewZoneValidationData
+        {
+            public MultiViewZoneValidationData()
+            {
+                ZoneName = string.Empty;
+                SourceViewsByFloorName = new Dictionary<string, View>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            public string ZoneName { get; set; }
+
+            public ViewSheet SourceSheet { get; set; }
+
+            public Dictionary<string, View> SourceViewsByFloorName { get; private set; }
         }
     }
 }

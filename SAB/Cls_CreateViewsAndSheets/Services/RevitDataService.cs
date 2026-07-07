@@ -129,6 +129,61 @@ namespace SAB.CreateViewsAndSheets.Services
             return result;
         }
 
+        public List<SheetDeletionItem> GetSheetDeletionItems(Document document, IList<RevitElementItem> sheetBrowserParameters)
+        {
+            List<SheetDeletionItem> result = new List<SheetDeletionItem>();
+            if (document == null)
+            {
+                return result;
+            }
+
+            FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(ViewSheet));
+            foreach (Element element in collector)
+            {
+                ViewSheet sheet = element as ViewSheet;
+                if (sheet == null || sheet.IsTemplate)
+                {
+                    continue;
+                }
+
+                SheetDeletionItem item = new SheetDeletionItem();
+                item.SheetId = sheet.Id;
+                item.SheetNumber = sheet.SheetNumber ?? string.Empty;
+                item.SheetName = sheet.Name ?? string.Empty;
+                item.SheetBrowserParameterValues = BuildSheetBrowserParameterValues(sheet, sheetBrowserParameters);
+                if (item.SheetBrowserParameterValues.Count > 0 && item.SheetBrowserParameterValues[0] != null)
+                {
+                    item.SheetBrowserParameterValue = item.SheetBrowserParameterValues[0].Value ?? string.Empty;
+                }
+
+                CollectPlacedViewsFromSheet(document, sheet, item.PlacedViewIds, item.PlacedViewNames);
+                result.Add(item);
+            }
+
+            result.Sort(delegate(SheetDeletionItem left, SheetDeletionItem right)
+            {
+                string leftNumber = left != null ? left.SheetNumber : string.Empty;
+                string rightNumber = right != null ? right.SheetNumber : string.Empty;
+                int numberComparison = string.Compare(leftNumber, rightNumber, StringComparison.OrdinalIgnoreCase);
+                if (numberComparison != 0)
+                {
+                    return numberComparison;
+                }
+
+                return string.Compare(
+                    left != null ? left.SheetName : string.Empty,
+                    right != null ? right.SheetName : string.Empty,
+                    StringComparison.OrdinalIgnoreCase);
+            });
+
+            for (int i = 0; i < result.Count; i++)
+            {
+                result[i].RowNumber = i + 1;
+            }
+
+            return result;
+        }
+
         public Dictionary<long, HashSet<long>> GetPlacedViewIdsBySheetId(Document document)
         {
             Dictionary<long, HashSet<long>> result = new Dictionary<long, HashSet<long>>();
@@ -212,6 +267,65 @@ namespace SAB.CreateViewsAndSheets.Services
                     placedViewIds.Add(RevitElementIdUtils.GetElementIdValue(viewport.ViewId));
                 }
             }
+        }
+
+        private void CollectPlacedViewsFromSheet(
+            Document document,
+            ViewSheet sheet,
+            IList<ElementId> placedViewIds,
+            IList<string> placedViewNames)
+        {
+            if (document == null || sheet == null || placedViewIds == null || placedViewNames == null)
+            {
+                return;
+            }
+
+            HashSet<long> addedViewIds = new HashSet<long>();
+            try
+            {
+                ICollection<ElementId> viewportIds = sheet.GetAllViewports();
+                if (viewportIds != null)
+                {
+                    foreach (ElementId viewportId in viewportIds)
+                    {
+                        Viewport viewport = document.GetElement(viewportId) as Viewport;
+                        AddPlacedViewFromViewport(document, viewport, placedViewIds, placedViewNames, addedViewIds);
+                    }
+                }
+            }
+            catch
+            {
+                // Резервный поиск ниже нужен для листов, где GetAllViewports недоступен.
+            }
+
+            FilteredElementCollector viewportCollector = new FilteredElementCollector(document, sheet.Id).OfClass(typeof(Viewport));
+            foreach (Element viewportElement in viewportCollector)
+            {
+                AddPlacedViewFromViewport(document, viewportElement as Viewport, placedViewIds, placedViewNames, addedViewIds);
+            }
+        }
+
+        private void AddPlacedViewFromViewport(
+            Document document,
+            Viewport viewport,
+            IList<ElementId> placedViewIds,
+            IList<string> placedViewNames,
+            HashSet<long> addedViewIds)
+        {
+            if (document == null || viewport == null || viewport.ViewId == null || viewport.ViewId == ElementId.InvalidElementId)
+            {
+                return;
+            }
+
+            long key = RevitElementIdUtils.GetElementIdValue(viewport.ViewId);
+            if (!addedViewIds.Add(key))
+            {
+                return;
+            }
+
+            View view = document.GetElement(viewport.ViewId) as View;
+            placedViewIds.Add(viewport.ViewId);
+            placedViewNames.Add(view != null ? view.Name : "Вид " + key);
         }
 
         public List<RevitElementItem> GetTitleBlockTypes(Document document)
@@ -602,6 +716,33 @@ namespace SAB.CreateViewsAndSheets.Services
             }
 
             result.Sort(StringComparer.OrdinalIgnoreCase);
+            return result;
+        }
+
+        private List<SheetBrowserParameterValueItem> BuildSheetBrowserParameterValues(ViewSheet sheet, IList<RevitElementItem> sheetBrowserParameters)
+        {
+            List<SheetBrowserParameterValueItem> result = new List<SheetBrowserParameterValueItem>();
+            if (sheet == null || sheetBrowserParameters == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < sheetBrowserParameters.Count; i++)
+            {
+                RevitElementItem parameterItem = sheetBrowserParameters[i];
+                if (parameterItem == null || parameterItem.Id == null || parameterItem.Id == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                Parameter parameter = FindSheetParameterById(sheet, parameterItem.Id);
+                SheetBrowserParameterValueItem valueItem = new SheetBrowserParameterValueItem();
+                valueItem.ParameterId = parameterItem.Id;
+                valueItem.ParameterName = parameterItem.Name ?? string.Empty;
+                valueItem.Value = GetParameterValueText(parameter);
+                result.Add(valueItem);
+            }
+
             return result;
         }
 

@@ -83,8 +83,15 @@ namespace SAB.CreateViewsAndSheets.Services
                     for (int i = 0; i < items.Count; i++)
                     {
                         SheetCreationItem item = items[i];
-                        RowSourceSelection rowSource = ResolveRowSource(document, settings, item, sourceView);
-                        ProcessSingleRow(document, rowSource.SourceView, rowSource.SourceSheetId, settings, item, result);
+                        if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView)
+                        {
+                            ProcessMultiViewRow(document, settings, item, result);
+                        }
+                        else
+                        {
+                            RowSourceSelection rowSource = ResolveRowSource(document, settings, item, sourceView);
+                            ProcessSingleRow(document, rowSource.SourceView, rowSource.SourceSheetId, settings, item, result);
+                        }
                     }
 
                     transactionGroup.Assimilate();
@@ -180,6 +187,37 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 string mappingFloorName = (mapping.FloorName ?? string.Empty).Trim();
                 if (string.Equals(mappingFloorName, cleanFloorName, StringComparison.Ordinal))
+                {
+                    return mapping;
+                }
+            }
+
+            return null;
+        }
+
+        private MultiViewZoneMapping FindMultiViewZoneMapping(IList<MultiViewZoneMapping> mappings, string zoneName)
+        {
+            if (mappings == null)
+            {
+                return null;
+            }
+
+            string cleanZoneName = (zoneName ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(cleanZoneName))
+            {
+                return null;
+            }
+
+            for (int i = 0; i < mappings.Count; i++)
+            {
+                MultiViewZoneMapping mapping = mappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string mappingZoneName = (mapping.ZoneName ?? string.Empty).Trim();
+                if (string.Equals(mappingZoneName, cleanZoneName, StringComparison.Ordinal))
                 {
                     return mapping;
                 }
@@ -291,6 +329,161 @@ namespace SAB.CreateViewsAndSheets.Services
             }
         }
 
+        private void ProcessMultiViewRow(
+            Document document,
+            CreateViewsAndSheetsSettings settings,
+            SheetCreationItem item,
+            CreateViewsAndSheetsResult result)
+        {
+            Transaction transaction = null;
+
+            try
+            {
+                MultiViewZoneMapping zoneMapping = FindMultiViewZoneMapping(settings.MultiViewZoneMappings, item != null ? item.FloorName : string.Empty);
+                if (zoneMapping == null)
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": зона \"" + item.FloorName + "\" не найдена.");
+                }
+
+                ViewSheet sourceSheet = document.GetElement(zoneMapping.SourceSheetId) as ViewSheet;
+                if (sourceSheet == null)
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": лист-образец зоны \"" + zoneMapping.ZoneName + "\" не найден.");
+                }
+
+                ElementId titleBlockTypeId = zoneMapping.TitleBlockTypeId != null && zoneMapping.TitleBlockTypeId != ElementId.InvalidElementId
+                    ? zoneMapping.TitleBlockTypeId
+                    : settings.TitleBlockTypeId;
+                ElementId viewportTypeId = zoneMapping.ViewportTypeId != null && zoneMapping.ViewportTypeId != ElementId.InvalidElementId
+                    ? zoneMapping.ViewportTypeId
+                    : settings.ViewportTypeId;
+
+                transaction = new Transaction(document, "Создать многовидовой лист: строка " + item.RowNumber);
+                transaction.Start();
+
+                ViewSheet createdSheet = _sheetCreationService.CreateSheet(
+                    document,
+                    titleBlockTypeId,
+                    zoneMapping.SourceSheetId,
+                    item.SheetBrowserParameterValues,
+                    item.SheetNumber,
+                    item.SheetName,
+                    result.Warnings);
+
+                document.Regenerate();
+
+                _sheetDetailCopyService.CopyFromSourceSheet(
+                    document,
+                    zoneMapping.SourceSheetId,
+                    createdSheet,
+                    settings.DetailCopy,
+                    result.Warnings);
+
+                document.Regenerate();
+
+                for (int i = 0; i < zoneMapping.Floors.Count; i++)
+                {
+                    MultiViewZoneFloorMapping floorMapping = zoneMapping.Floors[i];
+                    if (floorMapping == null)
+                    {
+                        continue;
+                    }
+
+                    View sourceView = document.GetElement(floorMapping.SourceViewId) as View;
+                    if (sourceView == null)
+                    {
+                        throw new InvalidOperationException("Строка " + item.RowNumber + ": вид-образец этажа \"" + floorMapping.FloorName + "\" не найден.");
+                    }
+
+                    SheetCreationItem viewItem = CloneItemForMultiViewFloor(item, zoneMapping.ZoneName, floorMapping.FloorName);
+                    View duplicatedView = _viewDuplicationService.DuplicateView(
+                        document,
+                        sourceView,
+                        viewItem,
+                        result.Warnings);
+
+                    document.Regenerate();
+
+                    _viewportPlacementService.PlaceViewOnSheetBySourceViewport(
+                        document,
+                        sourceSheet,
+                        sourceView,
+                        createdSheet,
+                        duplicatedView,
+                        viewportTypeId,
+                        result.Warnings);
+
+                    CreatedViewSheetInfo info = new CreatedViewSheetInfo();
+                    info.RowNumber = item.RowNumber;
+                    info.ViewId = duplicatedView.Id;
+                    info.ViewName = duplicatedView.Name;
+                    info.SheetId = createdSheet.Id;
+                    info.SheetNumber = createdSheet.SheetNumber;
+                    info.SheetName = createdSheet.Name;
+                    result.CreatedItems.Add(info);
+                }
+
+                transaction.Commit();
+            }
+            catch (Exception exception)
+            {
+                if (transaction != null && transaction.GetStatus() == TransactionStatus.Started)
+                {
+                    transaction.RollBack();
+                }
+
+                throw new RowProcessingException(item, exception);
+            }
+            finally
+            {
+                if (transaction != null)
+                {
+                    transaction.Dispose();
+                }
+            }
+        }
+
+        private SheetCreationItem CloneItemForMultiViewFloor(SheetCreationItem sourceItem, string zoneName, string floorName)
+        {
+            SheetCreationItem item = new SheetCreationItem();
+            item.RowNumber = sourceItem.RowNumber;
+            item.PlanKind = sourceItem.PlanKind;
+            item.FloorId = sourceItem.FloorId;
+            item.FloorName = sourceItem.FloorName;
+            item.ViewName = BuildMultiViewGeneratedViewName(sourceItem.ViewName, zoneName, floorName);
+            item.ViewScale = sourceItem.ViewScale;
+            item.ViewTemplateId = sourceItem.ViewTemplateId;
+            item.SheetNumber = sourceItem.SheetNumber;
+            item.SheetName = sourceItem.SheetName;
+            item.SheetBrowserParameterValue = sourceItem.SheetBrowserParameterValue;
+            item.SheetBrowserParameterValues = sourceItem.SheetBrowserParameterValues;
+            return item;
+        }
+
+        private string BuildMultiViewGeneratedViewName(string sectionName, string zoneName, string floorName)
+        {
+            string cleanSectionName = (sectionName ?? string.Empty).Trim();
+            string cleanZoneName = (zoneName ?? string.Empty).Trim();
+            string cleanFloorName = (floorName ?? string.Empty).Trim();
+            List<string> parts = new List<string>();
+            if (!string.IsNullOrWhiteSpace(cleanSectionName))
+            {
+                parts.Add(cleanSectionName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(cleanZoneName))
+            {
+                parts.Add(cleanZoneName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(cleanFloorName))
+            {
+                parts.Add(cleanFloorName);
+            }
+
+            return string.Join(" ", parts);
+        }
+
         private void ValidateSettingsBeforeTransaction(CreateViewsAndSheetsSettings settings, IList<SheetCreationItem> items)
         {
             if (settings == null)
@@ -323,7 +516,10 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 if (string.IsNullOrWhiteSpace(item.ViewName))
                 {
-                    throw new InvalidOperationException("Строка " + item.RowNumber + ": не заполнено имя вида.");
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": " +
+                                                        (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView
+                                                            ? "не заполнена часть имени вида."
+                                                            : "не заполнено имя вида."));
                 }
 
                 if (string.IsNullOrWhiteSpace(item.SheetNumber))
@@ -345,6 +541,12 @@ namespace SAB.CreateViewsAndSheets.Services
 
         private void ValidateSourceMappingsBeforeTransaction(CreateViewsAndSheetsSettings settings, IList<SheetCreationItem> items)
         {
+            if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView)
+            {
+                ValidateMultiViewSourceMappingsBeforeTransaction(settings, items);
+                return;
+            }
+
             if (settings.StructureMode == CreateViewsAndSheetsStructureMode.SingleStory)
             {
                 for (int i = 0; i < items.Count; i++)
@@ -426,6 +628,100 @@ namespace SAB.CreateViewsAndSheets.Services
                 if (sourceSheetId == null || sourceSheetId == ElementId.InvalidElementId)
                 {
                     throw new InvalidOperationException("Строка " + item.RowNumber + ": для этажа \"" + floorName + "\" не выбран лист-образец " + planName + ".");
+                }
+            }
+        }
+
+        private void ValidateMultiViewSourceMappingsBeforeTransaction(CreateViewsAndSheetsSettings settings, IList<SheetCreationItem> items)
+        {
+            if (settings.MultiViewZoneMappings == null || settings.MultiViewZoneMappings.Count == 0)
+            {
+                throw new InvalidOperationException("Для многовидовой структуры не заполнены зоны.");
+            }
+
+            Dictionary<string, MultiViewZoneMapping> mappingsByZoneName = new Dictionary<string, MultiViewZoneMapping>(StringComparer.Ordinal);
+            for (int i = 0; i < settings.MultiViewZoneMappings.Count; i++)
+            {
+                MultiViewZoneMapping mapping = settings.MultiViewZoneMappings[i];
+                if (mapping == null)
+                {
+                    continue;
+                }
+
+                string zoneName = (mapping.ZoneName ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(zoneName))
+                {
+                    throw new InvalidOperationException("В сопоставлении зон есть строка без названия зоны.");
+                }
+
+                if (mappingsByZoneName.ContainsKey(zoneName))
+                {
+                    throw new InvalidOperationException("Зона \"" + zoneName + "\" повторяется в сопоставлении зон.");
+                }
+
+                if (mapping.SourceSheetId == null || mapping.SourceSheetId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Для зоны \"" + zoneName + "\" не выбран лист-образец.");
+                }
+
+                if (mapping.ViewportTypeId == null || mapping.ViewportTypeId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Для зоны \"" + zoneName + "\" не выбран тип Viewport.");
+                }
+
+                if (mapping.TitleBlockTypeId == null || mapping.TitleBlockTypeId == ElementId.InvalidElementId)
+                {
+                    throw new InvalidOperationException("Для зоны \"" + zoneName + "\" не выбрана основная надпись.");
+                }
+
+                if (mapping.Floors == null || mapping.Floors.Count == 0)
+                {
+                    throw new InvalidOperationException("Для зоны \"" + zoneName + "\" не добавлены этажи.");
+                }
+
+                mappingsByZoneName[zoneName] = mapping;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                SheetCreationItem item = items[i];
+                string zoneName = item != null ? (item.FloorName ?? string.Empty).Trim() : string.Empty;
+                if (string.IsNullOrWhiteSpace(zoneName))
+                {
+                    throw new InvalidOperationException("Строка " + (item != null ? item.RowNumber : i + 1) + ": не заполнена зона.");
+                }
+
+                MultiViewZoneMapping mapping;
+                if (!mappingsByZoneName.TryGetValue(zoneName, out mapping))
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": для зоны \"" + zoneName + "\" нет сопоставления.");
+                }
+
+                int completeFloorCount = 0;
+                for (int j = 0; j < mapping.Floors.Count; j++)
+                {
+                    MultiViewZoneFloorMapping floor = mapping.Floors[j];
+                    if (floor == null)
+                    {
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(floor.FloorName))
+                    {
+                        throw new InvalidOperationException("Зона \"" + zoneName + "\": один из этажей без названия.");
+                    }
+
+                    if (floor.SourceViewId == null || floor.SourceViewId == ElementId.InvalidElementId)
+                    {
+                        throw new InvalidOperationException("Зона \"" + zoneName + "\": для этажа \"" + floor.FloorName + "\" не выбран вид-образец.");
+                    }
+
+                    completeFloorCount++;
+                }
+
+                if (completeFloorCount == 0)
+                {
+                    throw new InvalidOperationException("Строка " + item.RowNumber + ": в зоне \"" + zoneName + "\" нет этажей с видами-образцами.");
                 }
             }
         }

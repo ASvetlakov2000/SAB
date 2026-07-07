@@ -90,7 +90,12 @@
                                           GroupName="StructureMode"
                                           IsChecked="{Binding IsMultiStoryStructure, Mode=TwoWay}"
                                           Style="{StaticResource SabStructureModeRadioButtonStyle}"
-                                          Margin="0" />
+                                          Margin="0,0,0,8" />
+                            <RadioButton Content="Многовидовая структура"
+                                         GroupName="StructureMode"
+                                         IsChecked="{Binding IsMultiViewStructure, Mode=TwoWay}"
+                                         Style="{StaticResource SabStructureModeRadioButtonStyle}"
+                                         Margin="0" />
 
                             <TextBlock Text="Группирование и сортировка листов"
                                        Style="{StaticResource SabFieldLabelTextStyle}"
@@ -259,6 +264,133 @@
                         </StackPanel>
                     </Expander>
 
+                    <Expander IsExpanded="True"
+                              Margin="0,0,0,10">
+                        <Expander.Style>
+                            <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource SabPanelExpanderStyle}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMultiViewStructure}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Expander.Style>
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                    <TextBlock Text="▦" Style="{StaticResource SabPanelIconTextStyle}" />
+                                </Border>
+                                <TextBlock Text="Зоны" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                            </StackPanel>
+                        </Expander.Header>
+
+                        <StackPanel>
+                            <ItemsControl ItemsSource="{Binding MultiViewZoneMappings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SabSettingRowBorderStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Зона" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                <TextBox Text="{Binding ZoneName, UpdateSourceTrigger=PropertyChanged}"
+                                                         Style="{StaticResource SabTextBoxStyle}"
+                                                         Margin="0,0,0,10" />
+
+                                                <TextBlock Text="Лист-образец зоны" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                <ComboBox ItemsSource="{Binding DataContext.SourceSheets, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                          SelectedItem="{Binding SelectedSourceSheet}"
+                                                          DisplayMemberPath="Name"
+                                                          ToolTip="{Binding SelectedSourceSheet.Name}"
+                                                          Style="{StaticResource SabComboBoxStyle}"
+                                                          Margin="0,0,0,10" />
+
+                                                <TextBlock Text="Тип видового экрана" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                <ComboBox ItemsSource="{Binding DataContext.ViewportTypes, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                          SelectedItem="{Binding SelectedViewportType}"
+                                                          DisplayMemberPath="Name"
+                                                          ToolTip="{Binding SelectedViewportType.Name}"
+                                                          Style="{StaticResource SabComboBoxStyle}"
+                                                          Margin="0,0,0,10" />
+
+                                                <TextBlock Text="Основная надпись" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                <ComboBox ItemsSource="{Binding DataContext.TitleBlockTypes, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                          SelectedItem="{Binding SelectedTitleBlockType}"
+                                                          DisplayMemberPath="Name"
+                                                          ToolTip="{Binding SelectedTitleBlockType.Name}"
+                                                          Style="{StaticResource SabComboBoxStyle}"
+                                                          Margin="0,0,0,12" />
+
+                                                <TextBlock Text="Этажи зоны" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                                <ItemsControl ItemsSource="{Binding Floors}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border BorderBrush="{StaticResource SabBrush.BorderWeak}"
+                                                                    BorderThickness="1"
+                                                                    CornerRadius="5"
+                                                                    Padding="8"
+                                                                    Margin="0,0,0,8">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="8" />
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="36" />
+                                                                        <ColumnDefinition Width="36" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <StackPanel Grid.Column="0">
+                                                                        <TextBlock Text="Этаж" Style="{StaticResource SabFieldHintTextStyle}" />
+                                                                        <TextBox Text="{Binding FloorName, UpdateSourceTrigger=PropertyChanged}"
+                                                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                                                    </StackPanel>
+                                                                    <StackPanel Grid.Column="2">
+                                                                        <TextBlock Text="Вид-образец" Style="{StaticResource SabFieldHintTextStyle}" />
+                                                                        <ComboBox ItemsSource="{Binding DataContext.MultiViewSourceViews, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                                  SelectedItem="{Binding SelectedSourceView}"
+                                                                                  DisplayMemberPath="Name"
+                                                                                  ToolTip="{Binding SelectedSourceView.Name}"
+                                                                                  Style="{StaticResource SabComboBoxStyle}" />
+                                                                    </StackPanel>
+                                                                    <Button Grid.Column="3"
+                                                                            Content="+"
+                                                                            ToolTip="Добавить этаж ниже"
+                                                                            Command="{Binding DataContext.AddMultiViewZoneFloorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Style="{StaticResource SabRowAddButtonStyle}"
+                                                                            VerticalAlignment="Bottom"
+                                                                            Margin="6,0,0,0" />
+                                                                    <Button Grid.Column="4"
+                                                                            Content="X"
+                                                                            ToolTip="Удалить этаж зоны"
+                                                                            Command="{Binding DataContext.DeleteMultiViewZoneFloorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                                            CommandParameter="{Binding}"
+                                                                            Style="{StaticResource SabRowDeleteButtonStyle}"
+                                                                            VerticalAlignment="Bottom"
+                                                                            Margin="6,0,0,0" />
+                                                                </Grid>
+                                                            </Border>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                    <Button Content="+"
+                                                            ToolTip="Добавить зону"
+                                                            Command="{Binding DataContext.AddMultiViewZoneCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            Style="{StaticResource SabRowAddButtonStyle}" />
+                                                    <Button Content="X"
+                                                            ToolTip="Удалить зону"
+                                                            Command="{Binding DataContext.DeleteMultiViewZoneCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            Style="{StaticResource SabRowDeleteButtonStyle}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Expander>
+
                     <Expander Style="{StaticResource SabPanelExpanderStyle}"
                               IsExpanded="True"
                               Margin="0,0,0,10">
@@ -281,8 +413,18 @@
                                          Content="Размещать вид по точкам"
                                          GroupName="ViewportPlacementMode"
                                          IsChecked="{Binding IsPointViewportPlacementMode, Mode=TwoWay}"
-                                         Style="{StaticResource SabStructureModeRadioButtonStyle}"
-                                         Margin="0,0,0,12" />
+                                         Margin="0,0,0,12">
+                                <RadioButton.Style>
+                                    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource SabStructureModeRadioButtonStyle}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMultiViewStructure}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </RadioButton.Style>
+                            </RadioButton>
 
                             <StackPanel x:Name="ManualViewportPlacementPanel">
                             <TextBlock Text="Размещение вида" Style="{StaticResource SabFieldLabelTextStyle}" />
@@ -513,10 +655,81 @@
                                   ItemsSource="{Binding Rows}"
                                   Style="{StaticResource SabDataGridStyle}"
                                   BorderThickness="0"
+                                  CanUserResizeColumns="True"
                                   SelectionMode="Extended"
                                   SelectionUnit="FullRow"
                                   VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
+                                  HorizontalScrollBarVisibility="Auto">
+                            <DataGrid.GroupStyle>
+                                <GroupStyle>
+                                    <GroupStyle.ContainerStyle>
+                                        <Style TargetType="{x:Type GroupItem}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                        <StackPanel>
+                                                            <ToggleButton x:Name="GroupToggle"
+                                                                          IsChecked="True"
+                                                                          Focusable="False"
+                                                                          BorderThickness="0"
+                                                                          Background="Transparent"
+                                                                          Cursor="Hand">
+                                                                <ToggleButton.Template>
+                                                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                                                        <Border Background="{StaticResource SabBrush.TableHeaderBackground}"
+                                                                                BorderBrush="{StaticResource SabBrush.Border}"
+                                                                                BorderThickness="0,0,0,1"
+                                                                                Padding="0"
+                                                                                Height="36">
+                                                                            <Grid>
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="34" />
+                                                                                    <ColumnDefinition Width="*" />
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <TextBlock Grid.Column="0"
+                                                                                           HorizontalAlignment="Center"
+                                                                                           VerticalAlignment="Center"
+                                                                                           FontSize="16"
+                                                                                           FontWeight="SemiBold"
+                                                                                           Foreground="{StaticResource SabBrush.Accent}">
+                                                                                    <TextBlock.Style>
+                                                                                        <Style TargetType="{x:Type TextBlock}">
+                                                                                            <Setter Property="Text" Value="-" />
+                                                                                            <Style.Triggers>
+                                                                                                <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="False">
+                                                                                                    <Setter Property="Text" Value="+" />
+                                                                                                </DataTrigger>
+                                                                                            </Style.Triggers>
+                                                                                        </Style>
+                                                                                    </TextBlock.Style>
+                                                                                </TextBlock>
+                                                                                <ContentPresenter Grid.Column="1"
+                                                                                                  VerticalAlignment="Center"
+                                                                                                  Content="{TemplateBinding Content}" />
+                                                                            </Grid>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </ToggleButton.Template>
+                                                                <TextBlock Text="{Binding Name}"
+                                                                           FontSize="13"
+                                                                           FontWeight="SemiBold"
+                                                                           Foreground="{StaticResource SabBrush.Text}"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                            </ToggleButton>
+                                                            <ItemsPresenter x:Name="GroupItems" />
+                                                        </StackPanel>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger SourceName="GroupToggle" Property="IsChecked" Value="False">
+                                                                <Setter TargetName="GroupItems" Property="Visibility" Value="Collapsed" />
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </GroupStyle.ContainerStyle>
+                                </GroupStyle>
+                            </DataGrid.GroupStyle>
                             <DataGrid.Columns>
                             <DataGridTemplateColumn Header=""
                                                     Width="34"
@@ -745,13 +958,22 @@
                                     Background="{StaticResource SabBrush.Border}"
                                     Margin="0,0,14,0" />
 
-                            <TextBlock Grid.Column="2"
-                                       Text="!"
-                                       FontSize="15"
-                                       FontWeight="SemiBold"
-                                       Foreground="{StaticResource SabBrush.Error}"
-                                       Margin="0,0,10,0"
-                                       VerticalAlignment="Top" />
+                            <Border Grid.Column="2"
+                                    Width="22"
+                                    Height="22"
+                                    CornerRadius="11"
+                                    Background="{Binding ValidationIconBackground}"
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Top">
+                                <TextBlock Text="{Binding ValidationIconText}"
+                                           FontFamily="Segoe UI Symbol"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="{Binding ValidationIconForeground}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           TextAlignment="Center" />
+                            </Border>
 
                             <ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Auto">
                                 <TextBlock Text="{Binding ValidationSummary}"
