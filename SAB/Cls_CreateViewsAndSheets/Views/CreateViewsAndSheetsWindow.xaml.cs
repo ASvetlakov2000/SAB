@@ -23,13 +23,14 @@ namespace SAB.CreateViewsAndSheets.Views
     public partial class CreateViewsAndSheetsWindow : Window
     {
         private static readonly bool ShowBatchEditDebugDialogs = false;
-        private const string ColumnLayoutKeyPrefix = "ManualColumnsV4";
+        private const string ColumnLayoutKeyPrefix = "ClassicColumnsV1";
 
         private readonly CreateViewsAndSheetsViewModel _viewModel;
         private readonly CreateViewsAndSheetsWindowLayoutService _layoutService;
         private readonly bool _openSettingsWindowAfterLoaded;
 
         private DataGrid _rowsDataGrid;
+        private readonly List<DataGridColumn> _observedWidthColumns;
         private readonly List<DataGridColumn> _sheetBrowserParameterColumns;
         private ToggleButton _settingsDrawerToggle;
         private ButtonBase _sourceSheetPlacementToggle;
@@ -63,6 +64,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             _layoutService = new CreateViewsAndSheetsWindowLayoutService();
             _openSettingsWindowAfterLoaded = openSettingsWindowAfterLoaded;
+            _observedWidthColumns = new List<DataGridColumn>();
             _sheetBrowserParameterColumns = new List<DataGridColumn>();
 
             InitializeWindowFromXamlFile();
@@ -542,6 +544,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.AddHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(RowsDataGrid_EditorSelectionChanged), true);
             ConfigureRowsGrouping();
             RebuildSheetBrowserParameterColumns();
+            AttachRowsDataGridColumnWidthObservers();
             UpdateFloorColumnVisibility();
             _gridHandlersAttached = true;
         }
@@ -562,6 +565,7 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.Drop -= RowsDataGrid_Drop;
             _rowsDataGrid.RemoveHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler(RowsDataGrid_EditorTextChanged));
             _rowsDataGrid.RemoveHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(RowsDataGrid_EditorSelectionChanged));
+            DetachRowsDataGridColumnWidthObservers();
             _batchEditRowsSnapshot = null;
             _batchEditSourceRow = null;
             _lastMultiSelectedRowsSnapshot = null;
@@ -699,8 +703,7 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             _columnResizeStarted = false;
-            SetColumnWidthToActualPixel(_resizedColumn);
-            StretchRowsDataGridRightSideIfNeeded();
+            NormalizeRowsDataGridColumnWidths();
             _resizedColumn = null;
         }
 
@@ -1238,13 +1241,14 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void RowsDataGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ScheduleStretchRowsDataGridRightSide();
+            ScheduleNormalizeRowsDataGridColumnWidths();
         }
 
         private void RowsDataGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (_columnResizeStarted)
             {
+                NormalizeRowsDataGridColumnWidths();
                 return;
             }
 
@@ -1450,6 +1454,63 @@ namespace SAB.CreateViewsAndSheets.Views
             }
         }
 
+        private void AttachRowsDataGridColumnWidthObservers()
+        {
+            DetachRowsDataGridColumnWidthObservers();
+
+            if (_rowsDataGrid == null)
+            {
+                return;
+            }
+
+            DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(
+                DataGridColumn.WidthProperty,
+                typeof(DataGridColumn));
+            if (descriptor == null)
+            {
+                return;
+            }
+
+            DataGridColumn fillColumn = GetRowsDataGridFillColumn();
+            for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
+            {
+                DataGridColumn column = _rowsDataGrid.Columns[i];
+                if (column == null || column == fillColumn)
+                {
+                    continue;
+                }
+
+                descriptor.AddValueChanged(column, RowsDataGridColumnWidthChanged);
+                _observedWidthColumns.Add(column);
+            }
+        }
+
+        private void DetachRowsDataGridColumnWidthObservers()
+        {
+            if (_observedWidthColumns.Count == 0)
+            {
+                return;
+            }
+
+            DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(
+                DataGridColumn.WidthProperty,
+                typeof(DataGridColumn));
+            if (descriptor != null)
+            {
+                for (int i = 0; i < _observedWidthColumns.Count; i++)
+                {
+                    descriptor.RemoveValueChanged(_observedWidthColumns[i], RowsDataGridColumnWidthChanged);
+                }
+            }
+
+            _observedWidthColumns.Clear();
+        }
+
+        private void RowsDataGridColumnWidthChanged(object sender, EventArgs e)
+        {
+            NormalizeRowsDataGridColumnWidths();
+        }
+
         private bool IsLastGridColumn(DataGridColumn column)
         {
             if (_rowsDataGrid == null || column == null || _rowsDataGrid.Columns.Count == 0)
@@ -1507,7 +1568,7 @@ namespace SAB.CreateViewsAndSheets.Views
                 actionsColumn.Header = isDeletionMode ? "Удалить" : "Действия";
             }
 
-            ScheduleFreezeRowsDataGridColumnWidths();
+            ScheduleNormalizeRowsDataGridColumnWidths();
         }
 
         private void SetColumnVisibility(DataGridColumn column, Visibility visibility)
@@ -1685,41 +1746,25 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void ScheduleNormalizeRowsDataGridColumnWidths()
         {
-            ScheduleFreezeRowsDataGridColumnWidths();
-        }
-
-        private void ScheduleFreezeRowsDataGridColumnWidths()
-        {
             if (_rowsDataGrid == null)
             {
                 return;
             }
 
             _rowsDataGrid.Dispatcher.BeginInvoke(
-                new Action(FreezeRowsDataGridColumnWidthsToPixels),
-                DispatcherPriority.Background);
-        }
-
-        private void ScheduleStretchRowsDataGridRightSide()
-        {
-            if (_rowsDataGrid == null)
-            {
-                return;
-            }
-
-            _rowsDataGrid.Dispatcher.BeginInvoke(
-                new Action(StretchRowsDataGridRightSideIfNeeded),
+                new Action(NormalizeRowsDataGridColumnWidths),
                 DispatcherPriority.Background);
         }
 
         private void NormalizeRowsDataGridColumnWidths()
         {
-            FreezeRowsDataGridColumnWidthsToPixels();
-        }
+            if (_normalizingColumnWidths || _rowsDataGrid == null || _rowsDataGrid.Columns.Count < 2 || _rowsDataGrid.ActualWidth <= 0)
+            {
+                return;
+            }
 
-        private void FreezeRowsDataGridColumnWidthsToPixels()
-        {
-            if (_normalizingColumnWidths || _columnResizeStarted || _rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
+            DataGridColumn fillColumn = GetRowsDataGridFillColumn();
+            if (fillColumn == null)
             {
                 return;
             }
@@ -1728,147 +1773,103 @@ namespace SAB.CreateViewsAndSheets.Views
             {
                 _normalizingColumnWidths = true;
 
-                // Block responsible for switching the table from star widths to manual pixel widths.
+                double availableWidth = _rowsDataGrid.ActualWidth - 2.0;
+                ScrollViewer scrollViewer = FindVisualChild<ScrollViewer>(_rowsDataGrid);
+                if (scrollViewer != null && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
+                {
+                    availableWidth -= SystemParameters.VerticalScrollBarWidth;
+                }
+
+                double fixedWidth = 0.0;
                 for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
                 {
-                    SetColumnWidthToActualPixel(_rowsDataGrid.Columns[i]);
+                    DataGridColumn column = _rowsDataGrid.Columns[i];
+                    if (column == fillColumn || column.Visibility != Visibility.Visible)
+                    {
+                        continue;
+                    }
+
+                    fixedWidth += GetColumnActualWidth(column);
+                }
+
+                double minimumWidth = fillColumn.MinWidth > 0 ? fillColumn.MinWidth : 20.0;
+                double targetWidth = availableWidth - fixedWidth;
+                if (targetWidth < minimumWidth)
+                {
+                    targetWidth = TryLimitResizedColumnWidth(fillColumn, availableWidth, fixedWidth, minimumWidth);
+                }
+
+                if (targetWidth < minimumWidth)
+                {
+                    targetWidth = minimumWidth;
+                }
+
+                if (!double.IsInfinity(fillColumn.MaxWidth) && targetWidth > fillColumn.MaxWidth)
+                {
+                    targetWidth = fillColumn.MaxWidth;
+                }
+
+                if (targetWidth > 0 && Math.Abs(GetColumnActualWidth(fillColumn) - targetWidth) > 0.5)
+                {
+                    fillColumn.Width = new DataGridLength(targetWidth, DataGridLengthUnitType.Pixel);
                 }
             }
             finally
             {
                 _normalizingColumnWidths = false;
             }
-
-            StretchRowsDataGridRightSideIfNeeded();
         }
 
-        private void SetColumnWidthToActualPixel(DataGridColumn column)
+        private DataGridColumn GetRowsDataGridFillColumn()
         {
-            if (column == null || column.Visibility != Visibility.Visible)
+            if (_rowsDataGrid == null || _rowsDataGrid.Columns.Count < 2)
             {
-                return;
+                return null;
             }
 
-            if (column.Width.UnitType == DataGridLengthUnitType.Pixel &&
-                !double.IsNaN(column.Width.Value) &&
-                column.Width.Value > 0)
-            {
-                return;
-            }
-
-            double width = column.ActualWidth;
-            if (width <= 0 && !double.IsNaN(column.Width.DisplayValue))
-            {
-                width = column.Width.DisplayValue;
-            }
-
-            if (width <= 20.0)
-            {
-                return;
-            }
-
-            double minimumWidth = column.MinWidth > 0 ? column.MinWidth : 20.0;
-            if (width < minimumWidth)
-            {
-                width = minimumWidth;
-            }
-
-            if (!double.IsInfinity(column.MaxWidth) && width > column.MaxWidth)
-            {
-                width = column.MaxWidth;
-            }
-
-            if (width > 0)
-            {
-                column.Width = new DataGridLength(width, DataGridLengthUnitType.Pixel);
-            }
-        }
-
-        private void StretchRowsDataGridRightSideIfNeeded()
-        {
-            if (_normalizingColumnWidths || _columnResizeStarted || _rowsDataGrid == null || _rowsDataGrid.Columns.Count == 0)
-            {
-                return;
-            }
-
-            double availableWidth = GetRowsDataGridViewportWidth();
-            if (availableWidth <= 0)
-            {
-                return;
-            }
-
-            double visibleColumnsWidth = 0.0;
             for (int i = 0; i < _rowsDataGrid.Columns.Count; i++)
             {
                 DataGridColumn column = _rowsDataGrid.Columns[i];
-                if (column == null || column.Visibility != Visibility.Visible)
+                if (column != null && string.Equals(column.SortMemberPath, "SheetName", StringComparison.Ordinal))
                 {
-                    continue;
+                    return column;
                 }
-
-                visibleColumnsWidth += GetColumnWidthForStretch(column);
             }
 
-            double missingWidth = availableWidth - visibleColumnsWidth;
-            if (missingWidth <= 0.5)
-            {
-                return;
-            }
-
-            DataGridColumn stretchColumn = GetRowsDataGridRightStretchColumn();
-            if (stretchColumn == null)
-            {
-                return;
-            }
-
-            double currentWidth = GetColumnWidthForStretch(stretchColumn);
-            double targetWidth = currentWidth + missingWidth;
-            if (!double.IsInfinity(stretchColumn.MaxWidth) && targetWidth > stretchColumn.MaxWidth)
-            {
-                targetWidth = stretchColumn.MaxWidth;
-            }
-
-            if (targetWidth > currentWidth + 0.5)
-            {
-                stretchColumn.Width = new DataGridLength(targetWidth, DataGridLengthUnitType.Pixel);
-            }
+            return _rowsDataGrid.Columns[_rowsDataGrid.Columns.Count - 2];
         }
 
-        private double GetRowsDataGridViewportWidth()
+        private double TryLimitResizedColumnWidth(DataGridColumn fillColumn, double availableWidth, double fixedWidth, double fillColumnMinimumWidth)
         {
-            if (_rowsDataGrid == null || _rowsDataGrid.ActualWidth <= 0)
+            if (_resizedColumn == null || _resizedColumn == fillColumn || _resizedColumn.Visibility != Visibility.Visible)
             {
-                return 0.0;
+                return availableWidth - fixedWidth;
             }
 
-            double width = _rowsDataGrid.ActualWidth - 2.0;
-            ScrollViewer scrollViewer = FindVisualChild<ScrollViewer>(_rowsDataGrid);
-            if (scrollViewer != null && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
+            double deficit = fillColumnMinimumWidth - (availableWidth - fixedWidth);
+            if (deficit <= 0.5)
             {
-                width -= SystemParameters.VerticalScrollBarWidth;
+                return availableWidth - fixedWidth;
             }
 
-            return width > 0 ? width : 0.0;
+            double currentWidth = GetColumnActualWidth(_resizedColumn);
+            double resizedColumnMinimumWidth = _resizedColumn.MinWidth > 0 ? _resizedColumn.MinWidth : 20.0;
+            double limitedWidth = currentWidth - deficit;
+            if (limitedWidth < resizedColumnMinimumWidth)
+            {
+                limitedWidth = resizedColumnMinimumWidth;
+            }
+
+            if (limitedWidth < currentWidth)
+            {
+                _resizedColumn.Width = new DataGridLength(limitedWidth, DataGridLengthUnitType.Pixel);
+                fixedWidth -= currentWidth - limitedWidth;
+            }
+
+            return availableWidth - fixedWidth;
         }
 
-        private DataGridColumn GetRowsDataGridRightStretchColumn()
-        {
-            DataGridColumn sheetNameColumn = GetColumnBySortMemberPath("SheetName");
-            if (sheetNameColumn != null && sheetNameColumn.Visibility == Visibility.Visible)
-            {
-                return sheetNameColumn;
-            }
-
-            DataGridColumn viewNameColumn = GetColumnBySortMemberPath("ViewName");
-            if (viewNameColumn != null && viewNameColumn.Visibility == Visibility.Visible)
-            {
-                return viewNameColumn;
-            }
-
-            return null;
-        }
-
-        private double GetColumnWidthForStretch(DataGridColumn column)
+        private double GetColumnActualWidth(DataGridColumn column)
         {
             if (column == null)
             {

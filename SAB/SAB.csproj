@@ -429,6 +429,8 @@
     </Content>
     <EmbeddedResource Include="Resources\CreateViewsAndSheets_16.png" />
     <EmbeddedResource Include="Resources\CreateViewsAndSheets_32.png" />
+    <EmbeddedResource Include="Resources\DeleteViewsAndSheets_16.png" />
+    <EmbeddedResource Include="Resources\DeleteViewsAndSheets_32.png" />
     <Content Include="UI\Styles\SABWindowStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

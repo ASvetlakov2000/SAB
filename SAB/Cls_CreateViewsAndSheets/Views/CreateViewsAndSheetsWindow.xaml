@@ -655,11 +655,10 @@
                                   ItemsSource="{Binding Rows}"
                                   Style="{StaticResource SabDataGridStyle}"
                                   BorderThickness="0"
-                                  CanUserResizeColumns="True"
                                   SelectionMode="Extended"
                                   SelectionUnit="FullRow"
                                   VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Auto">
+                                  HorizontalScrollBarVisibility="Disabled">
                             <DataGrid.GroupStyle>
                                 <GroupStyle>
                                     <GroupStyle.ContainerStyle>
