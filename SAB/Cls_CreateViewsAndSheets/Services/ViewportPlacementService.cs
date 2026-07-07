@@ -116,18 +116,35 @@ namespace SAB.CreateViewsAndSheets.Services
             Viewport sourceViewport = FindViewportOnSheet(document, sourceSheet, sourceView);
             if (sourceViewport == null)
             {
-                throw new InvalidOperationException(
+                AddWarning(warnings, WarningMessageSeverity.MarkCritical(
                     "На листе-образце " + sourceSheet.SheetNumber +
-                    " не найден размещенный вид \"" + sourceView.Name + "\".");
+                    " не найден размещенный вид \"" + sourceView.Name + "\". " +
+                    "Созданный лист оставлен без размещенного вида."));
+                return null;
             }
 
-            SourceViewportPlacementData sourcePlacement = BuildSourceViewportPlacementData(sourceViewport);
+            SheetBoundsService sheetBoundsService = new SheetBoundsService();
+            SheetBounds sourceSheetBounds;
+            SheetBounds targetSheetBounds;
+            bool hasSourceSheetBounds = sheetBoundsService.TryGetSheetBounds(document, sourceSheet, out sourceSheetBounds);
+            bool hasTargetSheetBounds = sheetBoundsService.TryGetSheetBounds(document, targetSheet, out targetSheetBounds);
+            if (!hasSourceSheetBounds || !hasTargetSheetBounds)
+            {
+                AddWarning(warnings, "Не удалось определить габариты основной надписи для точного копирования размещения. Использованы абсолютные координаты листа-образца.");
+            }
+
+            SourceViewportPlacementData sourcePlacement = BuildSourceViewportPlacementData(sourceViewport, hasSourceSheetBounds ? sourceSheetBounds : null);
+            XYZ targetCenter = ResolveTargetSheetPoint(
+                sourcePlacement.Center,
+                sourcePlacement.CenterOffsetFromSheetMin,
+                sourcePlacement.HasCenterOffsetFromSheetMin,
+                hasTargetSheetBounds ? targetSheetBounds : null);
             ElementId viewportTypeId = sourcePlacement.ViewportTypeId != null &&
                                        sourcePlacement.ViewportTypeId != ElementId.InvalidElementId
                 ? sourcePlacement.ViewportTypeId
                 : fallbackViewportTypeId;
 
-            Viewport targetViewport = Viewport.Create(document, targetSheet.Id, targetView.Id, sourcePlacement.Center);
+            Viewport targetViewport = Viewport.Create(document, targetSheet.Id, targetView.Id, targetCenter);
             if (targetViewport == null)
             {
                 throw new InvalidOperationException("Revit API не создал Viewport для вида \"" + targetView.Name + "\".");
@@ -136,10 +153,10 @@ namespace SAB.CreateViewsAndSheets.Services
             TryApplyViewportType(targetViewport, viewportTypeId, warnings);
             document.Regenerate();
 
-            MoveViewportToCenter(document, targetViewport, sourcePlacement.Center);
+            MoveViewportToCenter(document, targetViewport, targetCenter);
 
             document.Regenerate();
-            TryPlaceViewportLabelBySource(targetViewport, sourcePlacement, warnings);
+            TryPlaceViewportLabelBySource(targetViewport, sourcePlacement, hasTargetSheetBounds ? targetSheetBounds : null, warnings);
             return targetViewport;
         }
 
@@ -220,6 +237,7 @@ namespace SAB.CreateViewsAndSheets.Services
         private void TryPlaceViewportLabelBySource(
             Viewport viewport,
             SourceViewportPlacementData sourcePlacement,
+            SheetBounds targetSheetBounds,
             System.Collections.Generic.IList<string> warnings)
         {
             if (viewport == null || sourcePlacement == null)
@@ -248,16 +266,22 @@ namespace SAB.CreateViewsAndSheets.Services
                     return;
                 }
 
+                XYZ targetTitlePoint = ResolveTargetSheetPoint(
+                    sourcePlacement.TitlePoint,
+                    sourcePlacement.TitlePointOffsetFromSheetMin,
+                    sourcePlacement.HasTitlePointOffsetFromSheetMin,
+                    targetSheetBounds);
+
                 XYZ targetBottomLeft = outline.MinimumPoint;
                 XYZ labelOffset = new XYZ(
-                    sourcePlacement.TitlePoint.X - targetBottomLeft.X,
-                    sourcePlacement.TitlePoint.Y - targetBottomLeft.Y,
+                    targetTitlePoint.X - targetBottomLeft.X,
+                    targetTitlePoint.Y - targetBottomLeft.Y,
                     0.0);
 
                 ValidatePoint(labelOffset, "смещение заголовка Viewport с листа-образца");
 
-                // Блок копирования положения заголовка с листа-образца.
-                // Копируется абсолютная точка заголовка на листе, чтобы заголовок остался на том же месте.
+                // Блок копирования положения заголовка с листа-образца относительно рамки основной надписи.
+                // Если габарит рамки недоступен, используется абсолютная точка листа-образца.
                 TryApplySourceLabelLineLength(viewport, sourcePlacement, warnings);
                 viewport.LabelOffset = labelOffset;
             }
@@ -267,7 +291,7 @@ namespace SAB.CreateViewsAndSheets.Services
             }
         }
 
-        private SourceViewportPlacementData BuildSourceViewportPlacementData(Viewport sourceViewport)
+        private SourceViewportPlacementData BuildSourceViewportPlacementData(Viewport sourceViewport, SheetBounds sourceSheetBounds)
         {
             if (sourceViewport == null)
             {
@@ -278,6 +302,15 @@ namespace SAB.CreateViewsAndSheets.Services
             data.Center = sourceViewport.GetBoxCenter();
             data.ViewportTypeId = sourceViewport.GetTypeId();
             ValidatePoint(data.Center, "центр Viewport на листе-образце");
+            if (sourceSheetBounds != null)
+            {
+                data.CenterOffsetFromSheetMin = new XYZ(
+                    data.Center.X - sourceSheetBounds.MinXFeet,
+                    data.Center.Y - sourceSheetBounds.MinYFeet,
+                    0.0);
+                ValidatePoint(data.CenterOffsetFromSheetMin, "смещение центра Viewport от основной надписи листа-образца");
+                data.HasCenterOffsetFromSheetMin = true;
+            }
 
             if (IsViewportTitleHidden(sourceViewport))
             {
@@ -302,6 +335,16 @@ namespace SAB.CreateViewsAndSheets.Services
                 sourceBottomLeft.Y + labelOffset.Y,
                 0.0);
             ValidatePoint(data.TitlePoint, "точка заголовка Viewport на листе-образце");
+            if (sourceSheetBounds != null)
+            {
+                data.TitlePointOffsetFromSheetMin = new XYZ(
+                    data.TitlePoint.X - sourceSheetBounds.MinXFeet,
+                    data.TitlePoint.Y - sourceSheetBounds.MinYFeet,
+                    0.0);
+                ValidatePoint(data.TitlePointOffsetFromSheetMin, "смещение заголовка Viewport от основной надписи листа-образца");
+                data.HasTitlePointOffsetFromSheetMin = true;
+            }
+
             data.HasTitlePoint = true;
             return data;
         }
@@ -409,6 +452,26 @@ namespace SAB.CreateViewsAndSheets.Services
                     ElementTransformUtils.MoveElement(document, viewport.Id, moveVector);
                 }
             }
+        }
+
+        private XYZ ResolveTargetSheetPoint(
+            XYZ sourceAbsolutePoint,
+            XYZ sourceOffsetFromSheetMin,
+            bool hasSourceOffsetFromSheetMin,
+            SheetBounds targetSheetBounds)
+        {
+            if (hasSourceOffsetFromSheetMin && sourceOffsetFromSheetMin != null && targetSheetBounds != null)
+            {
+                XYZ targetPoint = new XYZ(
+                    targetSheetBounds.MinXFeet + sourceOffsetFromSheetMin.X,
+                    targetSheetBounds.MinYFeet + sourceOffsetFromSheetMin.Y,
+                    0.0);
+                ValidatePoint(targetPoint, "точка Viewport относительно основной надписи нового листа");
+                return targetPoint;
+            }
+
+            ValidatePoint(sourceAbsolutePoint, "абсолютная точка Viewport с листа-образца");
+            return sourceAbsolutePoint;
         }
 
         private XYZ BuildSheetPoint(SheetBounds sheetBounds, double xMm, double yMm)
@@ -579,7 +642,15 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             public XYZ Center { get; set; }
 
+            public XYZ CenterOffsetFromSheetMin { get; set; }
+
+            public bool HasCenterOffsetFromSheetMin { get; set; }
+
             public XYZ TitlePoint { get; set; }
+
+            public XYZ TitlePointOffsetFromSheetMin { get; set; }
+
+            public bool HasTitlePointOffsetFromSheetMin { get; set; }
 
             public ElementId ViewportTypeId { get; set; }
 

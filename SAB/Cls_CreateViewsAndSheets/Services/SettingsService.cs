@@ -77,6 +77,61 @@ namespace SAB.CreateViewsAndSheets.Services
             }
         }
 
+        public void ExportSettingsToFile(CreateViewsAndSheetsSettings settings, string filePath)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("Путь к файлу настроек не задан.");
+            }
+
+            PersistedSettings persisted = ConvertFromSettings(settings);
+            string directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            string json = JsonConvert.SerializeObject(persisted, Formatting.Indented);
+            File.WriteAllText(filePath, json);
+        }
+
+        public CreateViewsAndSheetsSettings ImportSettingsFromFile(string filePath, IList<string> warnings)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("Путь к файлу настроек не задан.");
+            }
+
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("Файл настроек не найден.", filePath);
+            }
+
+            string json = File.ReadAllText(filePath);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                throw new InvalidDataException("Файл настроек пустой.");
+            }
+
+            PersistedSettings persisted = JsonConvert.DeserializeObject<PersistedSettings>(json);
+            if (persisted == null)
+            {
+                throw new InvalidDataException("Не удалось прочитать файл настроек.");
+            }
+
+            if (persisted.SchemaVersion != CurrentSchemaVersion)
+            {
+                throw new InvalidDataException("Версия файла настроек не поддерживается.");
+            }
+
+            return ConvertToSettings(null, persisted, warnings);
+        }
+
         private CreateViewsAndSheetsSettings ConvertToSettings(Document document, PersistedSettings persisted, IList<string> warnings)
         {
             CreateViewsAndSheetsSettings settings = new CreateViewsAndSheetsSettings();
@@ -424,7 +479,7 @@ namespace SAB.CreateViewsAndSheets.Services
             ElementId elementId = RevitElementIdUtils.CreateElementIdFromLong(value);
             if (document == null || elementId == null || elementId == ElementId.InvalidElementId)
             {
-                return ElementId.InvalidElementId;
+                return document == null && elementId != null ? elementId : ElementId.InvalidElementId;
             }
 
             Element element = document.GetElement(elementId);

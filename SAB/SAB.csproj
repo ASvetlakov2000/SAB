@@ -135,6 +135,7 @@
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetCreationSessionRow.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetPlanKind.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Models\SheetTableImportRow.cs" />
+    <Compile Include="Cls_CreateViewsAndSheets\Models\WarningMessageSeverity.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsOperationService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\CreateViewsAndSheetsWindowLayoutService.cs" />
     <Compile Include="Cls_CreateViewsAndSheets\Services\RevitDataService.cs" />

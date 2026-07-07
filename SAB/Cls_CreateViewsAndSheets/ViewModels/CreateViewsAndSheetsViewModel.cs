@@ -15,9 +15,15 @@ namespace SAB.CreateViewsAndSheets.ViewModels
     public class CreateViewsAndSheetsViewModel : INotifyPropertyChanged
     {
         private const double DefaultTitleLineLengthMm = 80.0;
+        private const string ValidationBorderOkBrush = "#0F6CBD";
+        private const string ValidationBorderWarningBrush = "#B54708";
+        private const string ValidationBorderErrorBrush = "#D92D20";
+        private const string ValidationTextBrush = "#1F2937";
+        private const string ValidationCriticalWarningBrush = "#D92D20";
 
         private readonly List<RevitElementItem> _allViewTemplates;
         private readonly Dictionary<long, List<string>> _sheetBrowserParameterValuesById;
+        private readonly Dictionary<long, HashSet<long>> _placedViewIdsBySheetId;
         private readonly HashSet<string> _existingViewNames;
         private readonly HashSet<string> _existingSheetNumbers;
 
@@ -37,6 +43,12 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         private string _titleLineLengthText;
         private string _validationSummary;
         private string _statusText;
+        private string _statusRowsText;
+        private string _statusFilledText;
+        private string _statusWarningsText;
+        private string _statusErrorsText;
+        private string _validationBorderBrush;
+        private string _validationSummaryForeground;
         private bool _saveSettings;
         private bool _isAccepted;
         private bool _canCreate;
@@ -61,6 +73,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             IList<RevitElementItem> titleBlockTypes,
             IList<RevitElementItem> sheetBrowserParameters,
             Dictionary<long, List<string>> sheetBrowserParameterValuesById,
+            Dictionary<long, HashSet<long>> placedViewIdsBySheetId,
             IList<RevitElementItem> viewTemplates,
             HashSet<string> existingViewNames,
             HashSet<string> existingSheetNumbers,
@@ -84,6 +97,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
             _allViewTemplates = new List<RevitElementItem>();
             _sheetBrowserParameterValuesById = new Dictionary<long, List<string>>();
+            _placedViewIdsBySheetId = new Dictionary<long, HashSet<long>>();
             _existingViewNames = existingViewNames ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             _existingSheetNumbers = existingSheetNumbers ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -94,8 +108,11 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             FillCollection(TitleBlockTypes, titleBlockTypes);
             FillCollection(SheetBrowserParameters, sheetBrowserParameters);
             FillParameterValuesMap(_sheetBrowserParameterValuesById, sheetBrowserParameterValuesById);
+            FillPlacedViewIdsMap(_placedViewIdsBySheetId, placedViewIdsBySheetId);
             InitializeSheetBrowserParameterLevels(sheetBrowserParameters);
             FillList(_allViewTemplates, viewTemplates);
+            _validationBorderBrush = ValidationBorderOkBrush;
+            _validationSummaryForeground = ValidationTextBrush;
 
             ScaleOptions.Add("20");
             ScaleOptions.Add("25");
@@ -140,6 +157,8 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             ValidateCommand = new RelayCommand(delegate { RefreshValidation(); });
             OpenSettingsWindowCommand = new RelayCommand(delegate { RequestSettingsWindowInternal(); });
             ImportSheetTableCommand = new RelayCommand(delegate { RequestSheetTableImportInternal(); });
+            ExportSettingsCommand = new RelayCommand(delegate { RequestSettingsExportInternal(); });
+            ImportSettingsCommand = new RelayCommand(delegate { RequestSettingsImportInternal(); });
             ClearRowsCommand = new RelayCommand(delegate { ClearAllRows(); }, delegate { return Rows != null && Rows.Count > 0; });
             CopySheetNamesToViewNamesCommand = new RelayCommand(delegate { CopySheetNamesToViewNames(); }, delegate { return Rows != null && Rows.Count > 0; });
             PickViewCenterPointCommand = new RelayCommand(delegate { RequestPointSelectionInternal(PlacementPointTarget.ViewCenter); });
@@ -169,6 +188,10 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public event EventHandler RequestSettingsWindow;
 
         public event EventHandler RequestSheetTableImport;
+
+        public event EventHandler RequestSettingsExport;
+
+        public event EventHandler RequestSettingsImport;
 
         public event EventHandler<PlacementPointSelectionRequestEventArgs> RequestPointSelection;
 
@@ -207,6 +230,10 @@ namespace SAB.CreateViewsAndSheets.ViewModels
         public ICommand OpenSettingsWindowCommand { get; private set; }
 
         public ICommand ImportSheetTableCommand { get; private set; }
+
+        public ICommand ExportSettingsCommand { get; private set; }
+
+        public ICommand ImportSettingsCommand { get; private set; }
 
         public ICommand ClearRowsCommand { get; private set; }
 
@@ -692,6 +719,66 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        public string StatusRowsText
+        {
+            get { return _statusRowsText; }
+            private set
+            {
+                _statusRowsText = value ?? string.Empty;
+                OnPropertyChanged("StatusRowsText");
+            }
+        }
+
+        public string StatusFilledText
+        {
+            get { return _statusFilledText; }
+            private set
+            {
+                _statusFilledText = value ?? string.Empty;
+                OnPropertyChanged("StatusFilledText");
+            }
+        }
+
+        public string StatusWarningsText
+        {
+            get { return _statusWarningsText; }
+            private set
+            {
+                _statusWarningsText = value ?? string.Empty;
+                OnPropertyChanged("StatusWarningsText");
+            }
+        }
+
+        public string StatusErrorsText
+        {
+            get { return _statusErrorsText; }
+            private set
+            {
+                _statusErrorsText = value ?? string.Empty;
+                OnPropertyChanged("StatusErrorsText");
+            }
+        }
+
+        public string ValidationBorderBrush
+        {
+            get { return _validationBorderBrush; }
+            private set
+            {
+                _validationBorderBrush = string.IsNullOrWhiteSpace(value) ? ValidationBorderOkBrush : value;
+                OnPropertyChanged("ValidationBorderBrush");
+            }
+        }
+
+        public string ValidationSummaryForeground
+        {
+            get { return _validationSummaryForeground; }
+            private set
+            {
+                _validationSummaryForeground = string.IsNullOrWhiteSpace(value) ? ValidationTextBrush : value;
+                OnPropertyChanged("ValidationSummaryForeground");
+            }
+        }
+
         public bool CanCreate
         {
             get { return _canCreate; }
@@ -943,6 +1030,119 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void RequestSettingsExportInternal()
+        {
+            EventHandler handler = RequestSettingsExport;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void RequestSettingsImportInternal()
+        {
+            EventHandler handler = RequestSettingsImport;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public void ApplyImportedSettings(CreateViewsAndSheetsSettings importedSettings)
+        {
+            if (importedSettings == null)
+            {
+                return;
+            }
+
+            ApplyPlacementAndCopySettings(importedSettings);
+            SetStructureMode(importedSettings.StructureMode);
+            ApplyInitialSelections(importedSettings);
+            ReplaceFloorMappings(importedSettings.FloorMappings);
+            ReplaceRows(importedSettings.SessionRows);
+            ReloadCompatibleViewTemplates();
+            EnsureRowsHaveValidTemplateSelection();
+            EnsureRowsHaveDefaultFloorName();
+            RenumberRows();
+            RefreshValidation();
+        }
+
+        private void ApplyPlacementAndCopySettings(CreateViewsAndSheetsSettings settings)
+        {
+            PlacementSettings placement = settings != null && settings.Placement != null
+                ? settings.Placement
+                : new PlacementSettings();
+
+            ViewCenterXText = FormatDouble(placement.ViewCenterXmm);
+            ViewCenterYText = FormatDouble(placement.ViewCenterYmm);
+            ViewTitleXText = FormatDouble(placement.ViewTitleXmm);
+            ViewTitleYText = FormatDouble(placement.ViewTitleYmm);
+            TitleLineLengthText = FormatDouble(placement.TitleLineLengthMm > 0 ? placement.TitleLineLengthMm : DefaultTitleLineLengthMm);
+            UseSourceSheetViewportPlacement = placement.UseSourceSheetViewportPlacement;
+            IsViewCenterManualMode = !placement.UsePointSelectionForViewCenter;
+            IsViewTitleManualMode = !placement.UsePointSelectionForViewTitle;
+            SaveSettings = placement.SaveSettings;
+
+            SheetDetailCopySettings detailCopy = settings != null && settings.DetailCopy != null
+                ? settings.DetailCopy
+                : new SheetDetailCopySettings();
+
+            CopySheetWithDetailing = detailCopy.CopySheetWithDetailing;
+            CopySchedules = detailCopy.CopySchedules;
+            CopyLegends = detailCopy.CopyLegends;
+            CopyDraftingViews = detailCopy.CopyDraftingViews;
+            CopyDetailLines = detailCopy.CopyDetailLines;
+            CopyFilledRegions = detailCopy.CopyFilledRegions;
+            CopyTextNotes = detailCopy.CopyTextNotes;
+            CopyGenericAnnotations = detailCopy.CopyGenericAnnotations;
+            CopyImages = detailCopy.CopyImages;
+        }
+
+        private void ReplaceFloorMappings(IList<FloorSourceMapping> floorMappings)
+        {
+            for (int i = 0; i < FloorMappings.Count; i++)
+            {
+                FloorSourceMappingRowViewModel row = FloorMappings[i];
+                if (row != null)
+                {
+                    row.PropertyChanged -= FloorMappingRow_PropertyChanged;
+                }
+            }
+
+            FloorMappings.Clear();
+            if (floorMappings != null)
+            {
+                for (int i = 0; i < floorMappings.Count; i++)
+                {
+                    AddFloorMapping(floorMappings[i]);
+                }
+            }
+
+            if (FloorMappings.Count == 0)
+            {
+                AddFloorMapping(null);
+            }
+
+            RefreshFloorNames();
+        }
+
+        private void ReplaceRows(IList<SheetCreationSessionRow> sessionRows)
+        {
+            ClearRowsWithoutDefaultRow();
+            if (sessionRows != null)
+            {
+                for (int i = 0; i < sessionRows.Count; i++)
+                {
+                    AddSessionRow(sessionRows[i]);
+                }
+            }
+
+            if (Rows.Count == 0)
+            {
+                AddRowInternal(null);
             }
         }
 
@@ -1342,7 +1542,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 }
 
                 string mappingFloorName = (mapping.FloorName ?? string.Empty).Trim();
-                if (string.Equals(mappingFloorName, cleanFloorName, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(mappingFloorName, cleanFloorName, StringComparison.Ordinal))
                 {
                     return mapping;
                 }
@@ -1414,13 +1614,156 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             RefreshValidation();
         }
 
+        public void ApplyBatchCellValue(
+            SheetCreationRowViewModel sourceRow,
+            IList<SheetCreationRowViewModel> targetRows,
+            string propertyPath)
+        {
+            if (sourceRow == null || targetRows == null || string.IsNullOrWhiteSpace(propertyPath))
+            {
+                return;
+            }
+
+            bool hasAppliedValue = false;
+            try
+            {
+                _isRefreshingValidation = true;
+
+                for (int i = 0; i < targetRows.Count; i++)
+                {
+                    SheetCreationRowViewModel targetRow = targetRows[i];
+                    if (targetRow == null || ReferenceEquals(targetRow, sourceRow) || Rows == null || !Rows.Contains(targetRow))
+                    {
+                        continue;
+                    }
+
+                    if (ApplyBatchCellValueToRow(sourceRow, targetRow, propertyPath))
+                    {
+                        hasAppliedValue = true;
+                    }
+                }
+            }
+            finally
+            {
+                _isRefreshingValidation = false;
+            }
+
+            if (hasAppliedValue)
+            {
+                RefreshValidation();
+            }
+        }
+
+        private bool ApplyBatchCellValueToRow(
+            SheetCreationRowViewModel sourceRow,
+            SheetCreationRowViewModel targetRow,
+            string propertyPath)
+        {
+            if (string.Equals(propertyPath, "FloorName", StringComparison.Ordinal))
+            {
+                targetRow.FloorName = sourceRow.FloorName;
+                return true;
+            }
+
+            if (string.Equals(propertyPath, "PlanKind", StringComparison.Ordinal))
+            {
+                targetRow.PlanKind = sourceRow.PlanKind;
+                return true;
+            }
+
+            if (string.Equals(propertyPath, "ViewName", StringComparison.Ordinal))
+            {
+                targetRow.ViewName = sourceRow.ViewName;
+                return true;
+            }
+
+            if (string.Equals(propertyPath, "ViewScaleText", StringComparison.Ordinal))
+            {
+                targetRow.ViewScaleText = sourceRow.ViewScaleText;
+                return true;
+            }
+
+            if (string.Equals(propertyPath, "SelectedViewTemplate.Name", StringComparison.Ordinal))
+            {
+                targetRow.SelectedViewTemplate = sourceRow.SelectedViewTemplate;
+                return true;
+            }
+
+            if (string.Equals(propertyPath, "SheetNumber", StringComparison.Ordinal))
+            {
+                targetRow.SheetNumber = sourceRow.SheetNumber;
+                return true;
+            }
+
+            if (string.Equals(propertyPath, "SheetName", StringComparison.Ordinal))
+            {
+                targetRow.SheetName = sourceRow.SheetName;
+                return true;
+            }
+
+            int parameterIndex;
+            if (TryGetSheetBrowserParameterValueIndex(propertyPath, out parameterIndex))
+            {
+                return ApplyBatchSheetBrowserParameterValue(sourceRow, targetRow, parameterIndex);
+            }
+
+            return false;
+        }
+
+        private bool TryGetSheetBrowserParameterValueIndex(string propertyPath, out int parameterIndex)
+        {
+            parameterIndex = -1;
+            string prefix = "SheetBrowserParameterValues[";
+            string suffix = "].Value";
+            if (string.IsNullOrWhiteSpace(propertyPath) ||
+                !propertyPath.StartsWith(prefix, StringComparison.Ordinal) ||
+                !propertyPath.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            string indexText = propertyPath.Substring(prefix.Length, propertyPath.Length - prefix.Length - suffix.Length);
+            return int.TryParse(indexText, NumberStyles.Integer, CultureInfo.InvariantCulture, out parameterIndex) &&
+                   parameterIndex >= 0;
+        }
+
+        private bool ApplyBatchSheetBrowserParameterValue(
+            SheetCreationRowViewModel sourceRow,
+            SheetCreationRowViewModel targetRow,
+            int parameterIndex)
+        {
+            sourceRow.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+            targetRow.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+
+            if (parameterIndex >= sourceRow.SheetBrowserParameterValues.Count ||
+                parameterIndex >= targetRow.SheetBrowserParameterValues.Count)
+            {
+                return false;
+            }
+
+            SheetBrowserParameterValueViewModel sourceValue = sourceRow.SheetBrowserParameterValues[parameterIndex];
+            SheetBrowserParameterValueViewModel targetValue = targetRow.SheetBrowserParameterValues[parameterIndex];
+            if (sourceValue == null || targetValue == null)
+            {
+                return false;
+            }
+
+            targetValue.Value = sourceValue.Value;
+            if (parameterIndex == 0)
+            {
+                targetRow.SheetBrowserParameterValue = sourceValue.Value;
+            }
+
+            return true;
+        }
+
         private SheetCreationRowViewModel CreateImportedSheetTableRow(SheetTableImportRow importedRow)
         {
             SheetCreationRowViewModel row = CreateRow();
             row.PropertyChanged -= Row_PropertyChanged;
 
             // Блок импорта Excel: заполняем только данные из таблицы, остальные рабочие поля остаются пустыми.
-            row.FloorName = string.Empty;
+            row.FloorName = GetImportedFloorName(importedRow);
             row.ViewName = string.Empty;
             row.ViewScaleText = string.Empty;
             row.SelectedViewTemplate = null;
@@ -1430,6 +1773,24 @@ namespace SAB.CreateViewsAndSheets.ViewModels
 
             row.PropertyChanged += Row_PropertyChanged;
             return row;
+        }
+
+        private string GetImportedFloorName(SheetTableImportRow importedRow)
+        {
+            string importedFloorName = importedRow != null ? (importedRow.FloorName ?? string.Empty).Trim() : string.Empty;
+            if (string.IsNullOrWhiteSpace(importedFloorName))
+            {
+                return string.Empty;
+            }
+
+            // Excel floor values must match the floor names from the plugin exactly.
+            FloorSourceMappingRowViewModel mapping = FindFloorMappingForName(importedFloorName);
+            if (mapping == null)
+            {
+                return importedFloorName;
+            }
+
+            return (mapping.FloorName ?? string.Empty).Trim();
         }
 
         private void ApplyImportedSheetSection(SheetCreationRowViewModel row, string sectionName)
@@ -1598,27 +1959,21 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 return;
             }
 
-            RevitElementItem sourceView = GetTemplateSourceView(row);
-            RevitElementItem firstRealTemplate = null;
+            row.SelectedViewTemplate = FindEmptyViewTemplate();
+        }
+
+        private RevitElementItem FindEmptyViewTemplate()
+        {
             for (int i = 0; i < ViewTemplates.Count; i++)
             {
                 RevitElementItem item = ViewTemplates[i];
-                if (item != null && item.Id != ElementId.InvalidElementId)
+                if (item != null && item.Id == ElementId.InvalidElementId)
                 {
-                    if (firstRealTemplate == null)
-                    {
-                        firstRealTemplate = item;
-                    }
-
-                    if (sourceView == null || item.ViewType == sourceView.ViewType)
-                    {
-                        row.SelectedViewTemplate = item;
-                        return;
-                    }
+                    return item;
                 }
             }
 
-            row.SelectedViewTemplate = firstRealTemplate;
+            return null;
         }
 
         private void AssignDefaultFloorName(SheetCreationRowViewModel row)
@@ -1664,10 +2019,19 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 return;
             }
 
+            if (row.SelectedViewTemplate == null)
+            {
+                row.SelectedViewTemplate = FindEmptyViewTemplate();
+                return;
+            }
+
+            if (row.SelectedViewTemplate.Id == ElementId.InvalidElementId)
+            {
+                return;
+            }
+
             RevitElementItem sourceView = GetTemplateSourceView(row);
-            if (row.SelectedViewTemplate == null ||
-                row.SelectedViewTemplate.Id == ElementId.InvalidElementId ||
-                !IsTemplateAvailable(row.SelectedViewTemplate) ||
+            if (!IsTemplateAvailable(row.SelectedViewTemplate) ||
                 !IsTemplateCompatibleWithSource(row.SelectedViewTemplate, sourceView))
             {
                 AssignDefaultTemplate(row);
@@ -2003,6 +2367,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 FloorSourceMappingRowViewModel rowFloorMapping = null;
                 bool isCeilingPlan = row.PlanKind == SheetPlanKind.CeilingPlan;
                 RevitElementItem templateSourceView = isCeilingPlan ? SelectedCeilingSourceView : SelectedSourceView;
+                RevitElementItem templateSourceSheet = null;
 
                 if (IsMultiStoryStructure)
                 {
@@ -2033,6 +2398,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                             RevitElementItem sourceSheet = isCeilingPlan
                                 ? rowFloorMapping.SelectedCeilingSourceSheet
                                 : rowFloorMapping.SelectedSourceSheet;
+                            templateSourceSheet = sourceSheet;
                             if (sourceSheet == null)
                             {
                                 rowErrors.Add(isCeilingPlan
@@ -2052,12 +2418,21 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     }
 
                     RevitElementItem sourceSheet = isCeilingPlan ? SelectedCeilingSourceSheet : SelectedSourceSheet;
+                    templateSourceSheet = sourceSheet;
                     if (sourceSheet == null)
                     {
                         rowErrors.Add(isCeilingPlan
                             ? "не выбран лист-образец плана потолков"
                             : "не выбран лист-образец стандартного плана");
                     }
+                }
+
+                if (UseSourceSheetViewportPlacement &&
+                    templateSourceView != null &&
+                    templateSourceSheet != null &&
+                    !IsSourceViewPlacedOnSheet(templateSourceSheet, templateSourceView))
+                {
+                    state.Warnings.Add(WarningMessageSeverity.MarkCritical(BuildMissingSourceViewportWarning(row.RowNumber, templateSourceSheet, templateSourceView)));
                 }
 
                 if (string.IsNullOrWhiteSpace(viewName))
@@ -2081,19 +2456,21 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                     rowErrors.Add("масштаб должен быть положительным целым числом");
                 }
 
-                if (row.SelectedViewTemplate == null || row.SelectedViewTemplate.Id == ElementId.InvalidElementId)
-                {
-                    rowErrors.Add("шаблон вида не выбран");
-                }
-                else if (!IsTemplateAvailable(row.SelectedViewTemplate))
+                if (row.SelectedViewTemplate != null &&
+                    row.SelectedViewTemplate.Id != ElementId.InvalidElementId &&
+                    !IsTemplateAvailable(row.SelectedViewTemplate))
                 {
                     rowErrors.Add("шаблон вида несовместим с видом-образцом");
                 }
-                else if (!IsTemplateCompatibleWithSource(row.SelectedViewTemplate, templateSourceView))
+                else if (row.SelectedViewTemplate != null &&
+                         row.SelectedViewTemplate.Id != ElementId.InvalidElementId &&
+                         !IsTemplateCompatibleWithSource(row.SelectedViewTemplate, templateSourceView))
                 {
                     rowErrors.Add("шаблон вида не совместим с выбранным видом-образцом");
                 }
-                else if (row.SelectedViewTemplate.ControlsScale)
+                else if (row.SelectedViewTemplate != null &&
+                         row.SelectedViewTemplate.Id != ElementId.InvalidElementId &&
+                         row.SelectedViewTemplate.ControlsScale)
                 {
                     state.Warnings.Add("Строка " + row.RowNumber + ": масштаб будет задан выбранным шаблоном вида.");
                 }
@@ -2138,9 +2515,41 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
         }
 
+        private bool IsSourceViewPlacedOnSheet(RevitElementItem sourceSheet, RevitElementItem sourceView)
+        {
+            if (sourceSheet == null || sourceSheet.Id == null || sourceView == null || sourceView.Id == null)
+            {
+                return true;
+            }
+
+            long sheetKey = RevitElementIdUtils.GetElementIdValue(sourceSheet.Id);
+            long viewKey = RevitElementIdUtils.GetElementIdValue(sourceView.Id);
+            HashSet<long> placedViewIds;
+            if (!_placedViewIdsBySheetId.TryGetValue(sheetKey, out placedViewIds))
+            {
+                return true;
+            }
+
+            return placedViewIds != null && placedViewIds.Contains(viewKey);
+        }
+
+        private string BuildMissingSourceViewportWarning(int rowNumber, RevitElementItem sourceSheet, RevitElementItem sourceView)
+        {
+            return "Строка " + rowNumber +
+                   ": на листе-образце " + GetElementDisplayName(sourceSheet) +
+                   " не найден размещенный вид-образец \"" + GetElementDisplayName(sourceView) + "\". " +
+                   "Лист будет создан без размещенного вида.";
+        }
+
+        private string GetElementDisplayName(RevitElementItem item)
+        {
+            return item != null ? (item.Name ?? string.Empty).Trim() : string.Empty;
+        }
+
         private void ApplyValidationState(ValidationState state)
         {
             ValidationSummary = BuildValidationText(state.Errors, state.Warnings);
+            UpdateValidationAppearance(state);
             CanCreate = state.Errors.Count == 0;
         }
 
@@ -2167,7 +2576,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 builder.AppendLine("Предупреждения:");
                 for (int i = 0; i < warnings.Count; i++)
                 {
-                    builder.AppendLine("- " + warnings[i]);
+                    builder.AppendLine("- " + WarningMessageSeverity.Clean(warnings[i]));
                 }
             }
 
@@ -2177,6 +2586,51 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             }
 
             return builder.ToString().Trim();
+        }
+
+        private void UpdateValidationAppearance(ValidationState state)
+        {
+            if (state == null)
+            {
+                ValidationBorderBrush = ValidationBorderOkBrush;
+                ValidationSummaryForeground = ValidationTextBrush;
+                return;
+            }
+
+            if (state.Errors.Count > 0)
+            {
+                ValidationBorderBrush = ValidationBorderErrorBrush;
+            }
+            else if (state.Warnings.Count > 0)
+            {
+                ValidationBorderBrush = ValidationBorderWarningBrush;
+            }
+            else
+            {
+                ValidationBorderBrush = ValidationBorderOkBrush;
+            }
+
+            ValidationSummaryForeground = HasCriticalWarnings(state.Warnings)
+                ? ValidationCriticalWarningBrush
+                : ValidationTextBrush;
+        }
+
+        private bool HasCriticalWarnings(IList<string> warnings)
+        {
+            if (warnings == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < warnings.Count; i++)
+            {
+                if (WarningMessageSeverity.IsCritical(warnings[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void UpdateStatusText(ValidationState state)
@@ -2193,6 +2647,11 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             StatusText = "Строк: " + Rows.Count +
                          " | Заполнено: " + filledCount +
                          " | Ошибок: " + state.Errors.Count;
+
+            StatusRowsText = "Строк: " + Rows.Count;
+            StatusFilledText = "Заполнено: " + filledCount;
+            StatusWarningsText = "Предупреждений: " + state.Warnings.Count;
+            StatusErrorsText = "Ошибок: " + state.Errors.Count;
         }
 
         private List<SheetCreationItem> BuildItems()
@@ -2462,6 +2921,30 @@ namespace SAB.CreateViewsAndSheets.ViewModels
                 }
 
                 target[pair.Key] = values;
+            }
+        }
+
+        private void FillPlacedViewIdsMap(
+            Dictionary<long, HashSet<long>> target,
+            Dictionary<long, HashSet<long>> source)
+        {
+            if (target == null || source == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<long, HashSet<long>> pair in source)
+            {
+                HashSet<long> viewIds = new HashSet<long>();
+                if (pair.Value != null)
+                {
+                    foreach (long viewId in pair.Value)
+                    {
+                        viewIds.Add(viewId);
+                    }
+                }
+
+                target[pair.Key] = viewIds;
             }
         }
 

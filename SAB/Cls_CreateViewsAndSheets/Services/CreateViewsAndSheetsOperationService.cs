@@ -179,7 +179,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 }
 
                 string mappingFloorName = (mapping.FloorName ?? string.Empty).Trim();
-                if (string.Equals(mappingFloorName, cleanFloorName, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(mappingFloorName, cleanFloorName, StringComparison.Ordinal))
                 {
                     return mapping;
                 }
@@ -375,7 +375,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Для многоэтажной структуры не заполнено сопоставление этажей.");
             }
 
-            Dictionary<string, FloorSourceMapping> mappingsByFloorName = new Dictionary<string, FloorSourceMapping>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FloorSourceMapping> mappingsByFloorName = new Dictionary<string, FloorSourceMapping>(StringComparer.Ordinal);
             for (int i = 0; i < settings.FloorMappings.Count; i++)
             {
                 FloorSourceMapping mapping = settings.FloorMappings[i];

@@ -496,38 +496,15 @@
                         <RowDefinition Height="128" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Margin="0,0,0,14">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0"
-                                    Orientation="Horizontal"
-                                    VerticalAlignment="Center">
+                    <StackPanel Grid.Row="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,0,14">
                             <Border Style="{StaticResource SabPanelIconBorderStyle}">
                                 <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
                             </Border>
                             <TextBlock Text="Создаваемые виды и листы" Style="{StaticResource SabPanelHeaderTextStyle}" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1"
-                                    Orientation="Horizontal"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center">
-                            <Button Content="Загрузить таблицу"
-                                    Command="{Binding ImportSheetTableCommand}"
-                                    Style="{StaticResource SabOutlineButtonStyle}"
-                                    Margin="0,0,8,0" />
-                            <Button Content="Удалить все строки"
-                                    Command="{Binding ClearRowsCommand}"
-                                    Style="{StaticResource SabNeutralButtonStyle}"
-                                    Margin="0,0,8,0" />
-                            <Button Content="Имя листа → Имя вида"
-                                    Command="{Binding CopySheetNamesToViewNamesCommand}"
-                                    Style="{StaticResource SabOutlineButtonStyle}" />
-                        </StackPanel>
-                    </Grid>
+                    </StackPanel>
 
                     <Border Grid.Row="1"
                             Style="{StaticResource SabDataGridContainerBorderStyle}"
@@ -536,6 +513,8 @@
                                   ItemsSource="{Binding Rows}"
                                   Style="{StaticResource SabDataGridStyle}"
                                   BorderThickness="0"
+                                  SelectionMode="Extended"
+                                  SelectionUnit="FullRow"
                                   VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                             <DataGrid.Columns>
@@ -734,14 +713,39 @@
 
                     <Border x:Name="ValidationPanelBorder"
                             Grid.Row="2"
-                            Style="{StaticResource SabValidationPanelStyle}">
+                            Style="{StaticResource SabValidationPanelStyle}"
+                            BorderBrush="{Binding ValidationBorderBrush}"
+                            BorderThickness="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="170" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0"
+                            <StackPanel Grid.Column="0"
+                                        VerticalAlignment="Top"
+                                        Margin="0,0,14,0">
+                                <TextBlock Text="{Binding StatusRowsText}"
+                                           Style="{StaticResource SabStatusTextStyle}"
+                                           Margin="0,0,0,7" />
+                                <TextBlock Text="{Binding StatusFilledText}"
+                                           Style="{StaticResource SabStatusTextStyle}"
+                                           Margin="0,0,0,7" />
+                                <TextBlock Text="{Binding StatusWarningsText}"
+                                           Style="{StaticResource SabStatusTextStyle}"
+                                           Margin="0,0,0,7" />
+                                <TextBlock Text="{Binding StatusErrorsText}"
+                                           Style="{StaticResource SabStatusTextStyle}" />
+                            </StackPanel>
+
+                            <Border Grid.Column="1"
+                                    Width="1"
+                                    Background="{StaticResource SabBrush.Border}"
+                                    Margin="0,0,14,0" />
+
+                            <TextBlock Grid.Column="2"
                                        Text="!"
                                        FontSize="15"
                                        FontWeight="SemiBold"
@@ -749,9 +753,9 @@
                                        Margin="0,0,10,0"
                                        VerticalAlignment="Top" />
 
-                            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Auto">
                                 <TextBlock Text="{Binding ValidationSummary}"
-                                           Foreground="{StaticResource SabBrush.Text}"
+                                           Foreground="{Binding ValidationSummaryForeground}"
                                            FontSize="13"
                                            TextWrapping="Wrap" />
                             </ScrollViewer>
@@ -772,10 +776,34 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="StatusTextBlock"
-                           Grid.Column="0"
-                           Text="{Binding StatusText}"
-                           Style="{StaticResource SabStatusTextStyle}" />
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
+                    <Button Content="Импорт настроек"
+                            Command="{Binding ImportSettingsCommand}"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,8,0" />
+                    <Button Content="Экспорт настроек"
+                            Command="{Binding ExportSettingsCommand}"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,12,0" />
+                    <Border Width="1"
+                            Height="28"
+                            Background="{StaticResource SabBrush.Border}"
+                            Margin="0,0,12,0" />
+                    <Button Content="Загрузить таблицу"
+                            Command="{Binding ImportSheetTableCommand}"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,8,0" />
+                    <Button Content="Имя листа → Имя вида"
+                            Command="{Binding CopySheetNamesToViewNamesCommand}"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,8,0" />
+                    <Button Content="Удалить все строки"
+                            Command="{Binding ClearRowsCommand}"
+                            Style="{StaticResource SabNeutralButtonStyle}" />
+                </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Отмена"

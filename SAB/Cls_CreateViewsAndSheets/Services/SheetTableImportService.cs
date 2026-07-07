@@ -189,6 +189,7 @@ namespace SAB.CreateViewsAndSheets.Services
             Dictionary<int, string> headerRow = worksheetRows[headerRowIndex];
             int sheetNumberColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.SheetNumber);
             int sheetNameColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.SheetName);
+            int floorColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.Floor);
             int sectionColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.Section);
             ValidateRequiredColumns(sheetNumberColumnIndex, sheetNameColumnIndex, sectionColumnIndex);
 
@@ -199,6 +200,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 SheetTableImportRow importRow = new SheetTableImportRow();
                 importRow.SheetNumber = GetCellValue(worksheetRow, sheetNumberColumnIndex);
                 importRow.SheetName = GetCellValue(worksheetRow, sheetNameColumnIndex);
+                importRow.FloorName = GetCellValue(worksheetRow, floorColumnIndex);
                 importRow.SectionName = GetCellValue(worksheetRow, sectionColumnIndex);
 
                 if (IsImportRowEmpty(importRow))
@@ -282,6 +284,13 @@ namespace SAB.CreateViewsAndSheets.Services
                        normalizedHeader == "name";
             }
 
+            if (headerKind == SheetTableHeaderKind.Floor)
+            {
+                return normalizedHeader == "этаж" ||
+                       normalizedHeader == "floor" ||
+                       normalizedHeader == "level";
+            }
+
             return normalizedHeader == "раздел" ||
                    normalizedHeader == "разделлиста" ||
                    normalizedHeader == "sheetsection" ||
@@ -354,6 +363,7 @@ namespace SAB.CreateViewsAndSheets.Services
 
             return string.IsNullOrWhiteSpace(importRow.SheetNumber) &&
                    string.IsNullOrWhiteSpace(importRow.SheetName) &&
+                   string.IsNullOrWhiteSpace(importRow.FloorName) &&
                    string.IsNullOrWhiteSpace(importRow.SectionName);
         }
 
@@ -445,6 +455,7 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             SheetNumber,
             SheetName,
+            Floor,
             Section
         }
     }

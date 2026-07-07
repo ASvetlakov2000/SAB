@@ -58,6 +58,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                 List<RevitElementItem> titleBlockTypes = dataService.GetTitleBlockTypes(document);
                 List<RevitElementItem> sheetBrowserParameters = dataService.GetSheetBrowserParameters(document);
                 Dictionary<long, List<string>> sheetBrowserParameterValuesById = dataService.GetSheetBrowserParameterValues(document, sheetBrowserParameters);
+                Dictionary<long, HashSet<long>> placedViewIdsBySheetId = dataService.GetPlacedViewIdsBySheetId(document);
                 List<RevitElementItem> viewTemplates = dataService.GetViewTemplates(document);
 
                 string startupValidationMessage;
@@ -77,6 +78,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                     titleBlockTypes,
                     sheetBrowserParameters,
                     sheetBrowserParameterValuesById,
+                    placedViewIdsBySheetId,
                     viewTemplates,
                     dataService.CollectExistingViewNames(document),
                     dataService.CollectExistingSheetNumbers(document),
@@ -201,7 +203,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                 }
             }
 
-            if (warnings != null && warnings.Count > 0)
+            if (HasDialogWarnings(warnings))
             {
                 if (builder.Length > 0)
                 {
@@ -211,11 +213,35 @@ namespace SAB.CreateViewsAndSheets.Commands
                 builder.AppendLine("Предупреждения:");
                 for (int i = 0; i < warnings.Count; i++)
                 {
-                    builder.AppendLine("- " + warnings[i]);
+                    if (WarningMessageSeverity.IsCritical(warnings[i]))
+                    {
+                        continue;
+                    }
+
+                    builder.AppendLine("- " + WarningMessageSeverity.Clean(warnings[i]));
                 }
             }
 
             return builder.ToString().Trim();
+        }
+
+        private bool HasDialogWarnings(IList<string> warnings)
+        {
+            if (warnings == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < warnings.Count; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(warnings[i]) &&
+                    !WarningMessageSeverity.IsCritical(warnings[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void ShowFinalReport(CreateViewsAndSheetsResult result)

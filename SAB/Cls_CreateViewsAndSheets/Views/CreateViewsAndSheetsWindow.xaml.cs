@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Helpers.Notifications.ToastNotifications;
 using Microsoft.Win32;
 using SAB.CreateViewsAndSheets.Models;
 using SAB.CreateViewsAndSheets.Services;
@@ -21,6 +22,8 @@ namespace SAB.CreateViewsAndSheets.Views
 {
     public partial class CreateViewsAndSheetsWindow : Window
     {
+        private static readonly bool ShowBatchEditDebugDialogs = false;
+
         private readonly CreateViewsAndSheetsViewModel _viewModel;
         private readonly CreateViewsAndSheetsWindowLayoutService _layoutService;
         private readonly bool _openSettingsWindowAfterLoaded;
@@ -34,15 +37,20 @@ namespace SAB.CreateViewsAndSheets.Views
         private FrameworkElement _settingsDrawerPanel;
         private FrameworkElement _manualViewportPlacementPanel;
         private Border _validationPanelBorder;
-        private TextBlock _statusTextBlock;
         private Button _createButton;
         private Point _dragStartPoint;
         private SheetCreationRowViewModel _draggedRow;
+        private SheetCreationRowViewModel _selectionAnchorRow;
+        private SheetCreationRowViewModel _batchEditSourceRow;
+        private List<SheetCreationRowViewModel> _batchEditRowsSnapshot;
+        private List<SheetCreationRowViewModel> _lastMultiSelectedRowsSnapshot;
+        private string _batchEditPropertyPath;
         private DataGridColumn _resizedColumn;
         private bool _gridHandlersAttached;
         private bool _layoutRestored;
         private bool _columnResizeStarted;
         private bool _normalizingColumnWidths;
+        private bool _isApplyingBatchCellValue;
 
         public CreateViewsAndSheetsWindow(CreateViewsAndSheetsViewModel viewModel)
             : this(viewModel, false)
@@ -63,6 +71,8 @@ namespace SAB.CreateViewsAndSheets.Views
             _viewModel.RequestClose += ViewModel_RequestClose;
             _viewModel.RequestSettingsWindow += ViewModel_RequestSettingsWindow;
             _viewModel.RequestSheetTableImport += ViewModel_RequestSheetTableImport;
+            _viewModel.RequestSettingsExport += ViewModel_RequestSettingsExport;
+            _viewModel.RequestSettingsImport += ViewModel_RequestSettingsImport;
             _viewModel.RequestPointSelection += ViewModel_RequestPointSelection;
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             Loaded += CreateViewsAndSheetsWindow_Loaded;
@@ -183,6 +193,133 @@ namespace SAB.CreateViewsAndSheets.Views
             }
         }
 
+        private void ViewModel_RequestSettingsExport(object sender, EventArgs e)
+        {
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Title = "Сохранить настройки создания видов и листов";
+            dialog.Filter = "SAB настройки (*.json)|*.json|Все файлы (*.*)|*.*";
+            dialog.FileName = "SAB_CreateViewsAndSheets_Settings.json";
+            dialog.OverwritePrompt = true;
+
+            bool? result = dialog.ShowDialog(this);
+            if (result != true)
+            {
+                return;
+            }
+
+            try
+            {
+                SettingsService settingsService = new SettingsService();
+                settingsService.ExportSettingsToFile(_viewModel.BuildSessionSettings(), dialog.FileName);
+                ShowSettingsFolderSuccessNotification(
+                    "Экспорт настроек",
+                    "Файл настроек сохранен:\n" + Path.GetFileName(dialog.FileName) + "\nПапка:",
+                    Path.GetDirectoryName(dialog.FileName));
+            }
+            catch (Exception exception)
+            {
+                ShowSettingsErrorNotification(
+                    "Экспорт настроек",
+                    "Не удалось сохранить настройки в файл.\n\n" + exception.Message);
+            }
+        }
+
+        private void ViewModel_RequestSettingsImport(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Title = "Выберите файл настроек создания видов и листов";
+            dialog.Filter = "SAB настройки (*.json)|*.json|Все файлы (*.*)|*.*";
+            dialog.CheckFileExists = true;
+            dialog.Multiselect = false;
+
+            bool? result = dialog.ShowDialog(this);
+            if (result != true)
+            {
+                return;
+            }
+
+            try
+            {
+                List<string> warnings = new List<string>();
+                SettingsService settingsService = new SettingsService();
+                CreateViewsAndSheetsSettings importedSettings = settingsService.ImportSettingsFromFile(dialog.FileName, warnings);
+                _viewModel.ApplyImportedSettings(importedSettings);
+                ScheduleNormalizeRowsDataGridColumnWidths();
+
+                string message = "Настройки загружены из файла.";
+                if (warnings.Count > 0)
+                {
+                    message += "\n\nПредупреждения:\n" + string.Join("\n", warnings);
+                    ShowSettingsWarningNotification("Импорт настроек", message);
+                }
+                else
+                {
+                    ShowSettingsSuccessNotification("Импорт настроек", message);
+                }
+            }
+            catch (Exception exception)
+            {
+                ShowSettingsErrorNotification(
+                    "Импорт настроек",
+                    "Не удалось загрузить настройки из файла.\n\n" + exception.Message);
+            }
+        }
+
+        private static void ShowSettingsSuccessNotification(string title, string message)
+        {
+            try
+            {
+                ToastNotifier.ShowSuccess(title, message, 8);
+            }
+            catch
+            {
+                RevitTaskDialog.Show(title, message);
+            }
+        }
+
+        private static void ShowSettingsWarningNotification(string title, string message)
+        {
+            try
+            {
+                ToastNotifier.ShowWarning(title, message, 12);
+            }
+            catch
+            {
+                RevitTaskDialog.Show(title, message);
+            }
+        }
+
+        private static void ShowSettingsErrorNotification(string title, string message)
+        {
+            try
+            {
+                ToastNotifier.ShowError(title, message, 12);
+            }
+            catch
+            {
+                RevitTaskDialog.Show(title, message);
+            }
+        }
+
+        private static void ShowSettingsFolderSuccessNotification(string title, string message, string folderPath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(folderPath))
+                {
+                    ToastNotifier.ShowSuccess(title, message, 8);
+                }
+                else
+                {
+                    ToastNotifier.ShowFolderLinkSuccess(title, message, folderPath, 10);
+                }
+            }
+            catch
+            {
+                RevitTaskDialog.Show(title, string.IsNullOrWhiteSpace(folderPath) ? message : message + "\n" + folderPath);
+            }
+        }
+
         private void OpenSettingsWindowAfterLoadedIfNeeded()
         {
             if (!_openSettingsWindowAfterLoaded)
@@ -246,7 +383,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
             if (string.Equals(e.PropertyName, "StatusText", StringComparison.Ordinal))
             {
-                SabWindowAnimationService.PulseElement(_statusTextBlock);
+                SabWindowAnimationService.PulseElement(_validationPanelBorder);
             }
 
             if (string.Equals(e.PropertyName, "CanCreate", StringComparison.Ordinal))
@@ -265,7 +402,6 @@ namespace SAB.CreateViewsAndSheets.Views
             DetachRowsDataGridHandlers();
             DetachSettingsDrawerHandlers();
             _validationPanelBorder = null;
-            _statusTextBlock = null;
             _createButton = null;
             _manualViewportPlacementPanel = null;
             _sourceSheetPlacementToggle = null;
@@ -273,6 +409,8 @@ namespace SAB.CreateViewsAndSheets.Views
             _viewModel.RequestClose -= ViewModel_RequestClose;
             _viewModel.RequestSettingsWindow -= ViewModel_RequestSettingsWindow;
             _viewModel.RequestSheetTableImport -= ViewModel_RequestSheetTableImport;
+            _viewModel.RequestSettingsExport -= ViewModel_RequestSettingsExport;
+            _viewModel.RequestSettingsImport -= ViewModel_RequestSettingsImport;
             _viewModel.RequestPointSelection -= ViewModel_RequestPointSelection;
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
             Loaded -= CreateViewsAndSheetsWindow_Loaded;
@@ -283,7 +421,6 @@ namespace SAB.CreateViewsAndSheets.Views
         private void AttachAnimatedFeedbackTargets()
         {
             _validationPanelBorder = FindVisualChildByName<Border>(this, "ValidationPanelBorder");
-            _statusTextBlock = FindVisualChildByName<TextBlock>(this, "StatusTextBlock");
             _createButton = FindVisualChildByName<Button>(this, "CreateButton");
             _manualViewportPlacementPanel = FindVisualChildByName<FrameworkElement>(this, "ManualViewportPlacementPanel");
             _sourceSheetPlacementToggle = FindVisualChildByName<ButtonBase>(this, "SourceSheetPlacementToggle");
@@ -395,6 +532,8 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.SizeChanged += RowsDataGrid_SizeChanged;
             _rowsDataGrid.DragOver += RowsDataGrid_DragOver;
             _rowsDataGrid.Drop += RowsDataGrid_Drop;
+            _rowsDataGrid.AddHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler(RowsDataGrid_EditorTextChanged), true);
+            _rowsDataGrid.AddHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(RowsDataGrid_EditorSelectionChanged), true);
             RebuildSheetBrowserParameterColumns();
             AttachRowsDataGridColumnWidthObservers();
             UpdateFloorColumnVisibility();
@@ -414,7 +553,14 @@ namespace SAB.CreateViewsAndSheets.Views
             _rowsDataGrid.SizeChanged -= RowsDataGrid_SizeChanged;
             _rowsDataGrid.DragOver -= RowsDataGrid_DragOver;
             _rowsDataGrid.Drop -= RowsDataGrid_Drop;
+            _rowsDataGrid.RemoveHandler(TextBoxBase.TextChangedEvent, new TextChangedEventHandler(RowsDataGrid_EditorTextChanged));
+            _rowsDataGrid.RemoveHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(RowsDataGrid_EditorSelectionChanged));
             DetachRowsDataGridColumnWidthObservers();
+            _batchEditRowsSnapshot = null;
+            _batchEditSourceRow = null;
+            _lastMultiSelectedRowsSnapshot = null;
+            _batchEditPropertyPath = null;
+            _selectionAnchorRow = null;
             _gridHandlersAttached = false;
         }
 
@@ -426,6 +572,22 @@ namespace SAB.CreateViewsAndSheets.Views
             _columnResizeStarted = false;
 
             DependencyObject source = e.OriginalSource as DependencyObject;
+            DataGridRow clickedRow = FindParent<DataGridRow>(source);
+            SheetCreationRowViewModel clickedRowViewModel = clickedRow != null ? clickedRow.Item as SheetCreationRowViewModel : null;
+            if (TrySelectRowsByShift(clickedRowViewModel))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (!IsBatchEditableGridChild(source))
+            {
+                _lastMultiSelectedRowsSnapshot = null;
+            }
+
+            RememberBatchEditSelection(clickedRowViewModel, source);
+            RememberSelectionAnchor(clickedRowViewModel);
+
             _resizedColumn = GetColumnResizeTarget(source);
             if (_resizedColumn != null)
             {
@@ -435,7 +597,7 @@ namespace SAB.CreateViewsAndSheets.Views
 
             if (IsRowDragHandle(source))
             {
-                DataGridRow row = FindParent<DataGridRow>(source);
+                DataGridRow row = clickedRow;
                 if (row != null)
                 {
                     _draggedRow = row.Item as SheetCreationRowViewModel;
@@ -467,6 +629,421 @@ namespace SAB.CreateViewsAndSheets.Views
             _columnResizeStarted = false;
             NormalizeRowsDataGridColumnWidths();
             _resizedColumn = null;
+        }
+
+        private bool TrySelectRowsByShift(SheetCreationRowViewModel clickedRow)
+        {
+            if (_rowsDataGrid == null || _viewModel == null || _viewModel.Rows == null || clickedRow == null)
+            {
+                return false;
+            }
+
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
+            {
+                return false;
+            }
+
+            SheetCreationRowViewModel anchorRow = _selectionAnchorRow;
+            if (anchorRow == null || !_viewModel.Rows.Contains(anchorRow))
+            {
+                anchorRow = _rowsDataGrid.SelectedItem as SheetCreationRowViewModel;
+            }
+
+            if (anchorRow == null || !_viewModel.Rows.Contains(anchorRow))
+            {
+                anchorRow = clickedRow;
+            }
+
+            int anchorIndex = _viewModel.Rows.IndexOf(anchorRow);
+            int clickedIndex = _viewModel.Rows.IndexOf(clickedRow);
+            if (anchorIndex < 0 || clickedIndex < 0)
+            {
+                return false;
+            }
+
+            int startIndex = Math.Min(anchorIndex, clickedIndex);
+            int endIndex = Math.Max(anchorIndex, clickedIndex);
+
+            _rowsDataGrid.SelectedItems.Clear();
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                SheetCreationRowViewModel row = _viewModel.Rows[i];
+                if (row != null)
+                {
+                    _rowsDataGrid.SelectedItems.Add(row);
+                }
+            }
+
+            _rowsDataGrid.CurrentItem = clickedRow;
+            _selectionAnchorRow = anchorRow;
+            _batchEditSourceRow = null;
+            _batchEditRowsSnapshot = null;
+            _batchEditPropertyPath = null;
+            _lastMultiSelectedRowsSnapshot = GetSelectedRowsSnapshot();
+            return true;
+        }
+
+        private void RememberSelectionAnchor(SheetCreationRowViewModel clickedRow)
+        {
+            if (clickedRow == null)
+            {
+                return;
+            }
+
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+            {
+                return;
+            }
+
+            _selectionAnchorRow = clickedRow;
+        }
+
+        private void RememberBatchEditSelection(SheetCreationRowViewModel clickedRow, DependencyObject source)
+        {
+            _batchEditSourceRow = null;
+            _batchEditRowsSnapshot = null;
+            _batchEditPropertyPath = null;
+
+            if (_rowsDataGrid == null || clickedRow == null || !IsBatchEditableGridChild(source))
+            {
+                return;
+            }
+
+            string propertyPath = GetBatchEditablePropertyPath(source);
+            if (string.IsNullOrWhiteSpace(propertyPath))
+            {
+                return;
+            }
+
+            List<SheetCreationRowViewModel> selectedRows = GetSelectedRowsSnapshot();
+            if (selectedRows.Count > 1)
+            {
+                _lastMultiSelectedRowsSnapshot = selectedRows;
+            }
+
+            if ((selectedRows.Count <= 1 || !selectedRows.Contains(clickedRow)) &&
+                _lastMultiSelectedRowsSnapshot != null &&
+                _lastMultiSelectedRowsSnapshot.Count > 1 &&
+                _lastMultiSelectedRowsSnapshot.Contains(clickedRow))
+            {
+                selectedRows = new List<SheetCreationRowViewModel>(_lastMultiSelectedRowsSnapshot);
+            }
+
+            if (selectedRows.Count <= 1 || !selectedRows.Contains(clickedRow))
+            {
+                return;
+            }
+
+            _batchEditSourceRow = clickedRow;
+            _batchEditRowsSnapshot = selectedRows;
+            _batchEditPropertyPath = propertyPath;
+        }
+
+        private List<SheetCreationRowViewModel> GetSelectedRowsSnapshot()
+        {
+            List<SheetCreationRowViewModel> result = new List<SheetCreationRowViewModel>();
+            if (_rowsDataGrid == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < _rowsDataGrid.SelectedItems.Count; i++)
+            {
+                SheetCreationRowViewModel row = _rowsDataGrid.SelectedItems[i] as SheetCreationRowViewModel;
+                if (row != null && !result.Contains(row))
+                {
+                    result.Add(row);
+                }
+            }
+
+            return result;
+        }
+
+        private bool IsBatchEditableGridChild(DependencyObject source)
+        {
+            DependencyObject current = source;
+            while (current != null)
+            {
+                if (current is DataGridRow)
+                {
+                    return false;
+                }
+
+                if (current is TextBoxBase || current is ComboBox)
+                {
+                    return true;
+                }
+
+                current = GetParentObject(current);
+            }
+
+            return false;
+        }
+
+        private void RowsDataGrid_EditorTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_isApplyingBatchCellValue)
+            {
+                return;
+            }
+
+            TextBoxBase textBox = e.OriginalSource as TextBoxBase;
+            if (textBox == null)
+            {
+                return;
+            }
+
+            ApplyBatchValueFromEditor(textBox);
+        }
+
+        private void RowsDataGrid_EditorSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isApplyingBatchCellValue)
+            {
+                return;
+            }
+
+            if (ReferenceEquals(e.OriginalSource, _rowsDataGrid))
+            {
+                RememberLastMultiRowSelection();
+                return;
+            }
+
+            ComboBox comboBox = e.OriginalSource as ComboBox;
+            if (comboBox == null)
+            {
+                return;
+            }
+
+            ApplyBatchValueFromEditor(comboBox);
+        }
+
+        private void ApplyBatchValueFromEditor(DependencyObject editor)
+        {
+            if (_viewModel == null || _rowsDataGrid == null)
+            {
+                return;
+            }
+
+            if (!IsEditorKeyboardFocusWithin(editor))
+            {
+                return;
+            }
+
+            if (_batchEditSourceRow == null || _batchEditRowsSnapshot == null)
+            {
+                TryRestoreBatchEditSelectionFromEditor(editor);
+            }
+
+            if (_batchEditSourceRow == null || _batchEditRowsSnapshot == null)
+            {
+                return;
+            }
+
+            if (_batchEditRowsSnapshot.Count <= 1 || !_batchEditRowsSnapshot.Contains(_batchEditSourceRow))
+            {
+                return;
+            }
+
+            DataGridCell cell = FindParent<DataGridCell>(editor);
+            if (cell == null || cell.Column == null)
+            {
+                return;
+            }
+
+            string propertyPath = cell.Column.SortMemberPath;
+            if (string.IsNullOrWhiteSpace(propertyPath))
+            {
+                return;
+            }
+
+            // Блок пакетного редактирования должен работать только с той колонкой,
+            // в которой пользователь начал изменение. Это защищает соседние поля
+            // от случайных TextChanged/SelectionChanged событий WPF.
+            if (!string.IsNullOrWhiteSpace(_batchEditPropertyPath) &&
+                !string.Equals(_batchEditPropertyPath, propertyPath, StringComparison.Ordinal))
+            {
+                ShowBatchEditDebugMessage(
+                    "Пропущено событие другой колонки",
+                    propertyPath,
+                    _batchEditSourceRow,
+                    _batchEditRowsSnapshot.Count);
+                return;
+            }
+
+            _batchEditPropertyPath = propertyPath;
+            UpdateEditorBindingSource(editor);
+            ShowBatchEditDebugMessage(
+                "Перед пакетным применением",
+                propertyPath,
+                _batchEditSourceRow,
+                _batchEditRowsSnapshot.Count);
+
+            try
+            {
+                _isApplyingBatchCellValue = true;
+                _viewModel.ApplyBatchCellValue(_batchEditSourceRow, _batchEditRowsSnapshot, propertyPath);
+            }
+            finally
+            {
+                _isApplyingBatchCellValue = false;
+            }
+        }
+
+        private void RememberLastMultiRowSelection()
+        {
+            List<SheetCreationRowViewModel> selectedRows = GetSelectedRowsSnapshot();
+            if (selectedRows.Count > 1)
+            {
+                _lastMultiSelectedRowsSnapshot = selectedRows;
+            }
+        }
+
+        private void TryRestoreBatchEditSelectionFromEditor(DependencyObject editor)
+        {
+            SheetCreationRowViewModel sourceRow = GetRowViewModelFromEditor(editor);
+            if (sourceRow == null)
+            {
+                return;
+            }
+
+            string propertyPath = GetBatchEditablePropertyPath(editor);
+            if (string.IsNullOrWhiteSpace(propertyPath))
+            {
+                return;
+            }
+
+            List<SheetCreationRowViewModel> selectedRows = GetSelectedRowsSnapshot();
+            if ((selectedRows.Count <= 1 || !selectedRows.Contains(sourceRow)) &&
+                _lastMultiSelectedRowsSnapshot != null &&
+                _lastMultiSelectedRowsSnapshot.Count > 1 &&
+                _lastMultiSelectedRowsSnapshot.Contains(sourceRow))
+            {
+                selectedRows = new List<SheetCreationRowViewModel>(_lastMultiSelectedRowsSnapshot);
+            }
+
+            if (selectedRows.Count <= 1 || !selectedRows.Contains(sourceRow))
+            {
+                return;
+            }
+
+            _batchEditSourceRow = sourceRow;
+            _batchEditRowsSnapshot = selectedRows;
+            _batchEditPropertyPath = propertyPath;
+        }
+
+        private string GetBatchEditablePropertyPath(DependencyObject source)
+        {
+            DataGridCell cell = FindParent<DataGridCell>(source);
+            if (cell == null || cell.Column == null)
+            {
+                return string.Empty;
+            }
+
+            return cell.Column.SortMemberPath ?? string.Empty;
+        }
+
+        private bool IsEditorKeyboardFocusWithin(DependencyObject editor)
+        {
+            FrameworkElement frameworkElement = editor as FrameworkElement;
+            if (frameworkElement == null)
+            {
+                return true;
+            }
+
+            if (frameworkElement.IsKeyboardFocusWithin)
+            {
+                return true;
+            }
+
+            ComboBox comboBox = editor as ComboBox;
+            if (comboBox == null)
+            {
+                comboBox = FindParent<ComboBox>(editor);
+            }
+
+            return comboBox != null && comboBox.IsKeyboardFocusWithin;
+        }
+
+        private SheetCreationRowViewModel GetRowViewModelFromEditor(DependencyObject editor)
+        {
+            DataGridRow row = FindParent<DataGridRow>(editor);
+            if (row != null)
+            {
+                return row.Item as SheetCreationRowViewModel;
+            }
+
+            FrameworkElement frameworkElement = editor as FrameworkElement;
+            if (frameworkElement != null)
+            {
+                return frameworkElement.DataContext as SheetCreationRowViewModel;
+            }
+
+            return null;
+        }
+
+        private void ShowBatchEditDebugMessage(
+            string step,
+            string propertyPath,
+            SheetCreationRowViewModel sourceRow,
+            int selectedRowsCount)
+        {
+            if (!ShowBatchEditDebugDialogs)
+            {
+                return;
+            }
+
+            string message =
+                "Шаг: " + (step ?? string.Empty) + "\n" +
+                "Поле: " + (propertyPath ?? string.Empty) + "\n" +
+                "Исходная строка: " + (sourceRow != null ? sourceRow.RowNumber.ToString() : "нет") + "\n" +
+                "Выбранных строк: " + selectedRowsCount + "\n" +
+                "Масштаб исходной строки: " + (sourceRow != null ? sourceRow.ViewScaleText : string.Empty);
+
+            RevitTaskDialog.Show("Отладка пакетного редактирования", message);
+        }
+
+        private void UpdateEditorBindingSource(DependencyObject editor)
+        {
+            TextBox textBox = editor as TextBox;
+            if (textBox != null)
+            {
+                BindingExpression bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
+                if (bindingExpression != null)
+                {
+                    bindingExpression.UpdateSource();
+                    return;
+                }
+            }
+
+            ComboBox comboBox = editor as ComboBox;
+            if (comboBox == null)
+            {
+                comboBox = FindParent<ComboBox>(editor);
+            }
+
+            if (comboBox == null)
+            {
+                return;
+            }
+
+            BindingExpression textBinding = comboBox.GetBindingExpression(ComboBox.TextProperty);
+            if (textBinding != null)
+            {
+                textBinding.UpdateSource();
+            }
+
+            BindingExpression selectedValueBinding = comboBox.GetBindingExpression(Selector.SelectedValueProperty);
+            if (selectedValueBinding != null)
+            {
+                selectedValueBinding.UpdateSource();
+            }
+
+            BindingExpression selectedItemBinding = comboBox.GetBindingExpression(Selector.SelectedItemProperty);
+            if (selectedItemBinding != null)
+            {
+                selectedItemBinding.UpdateSource();
+            }
         }
 
         private void RowsDataGrid_SizeChanged(object sender, SizeChangedEventArgs e)

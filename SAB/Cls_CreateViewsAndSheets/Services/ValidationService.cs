@@ -137,7 +137,7 @@ namespace SAB.CreateViewsAndSheets.Services
             CreateViewsAndSheetsSettings settings,
             CreateViewsAndSheetsValidationResult result)
         {
-            Dictionary<string, FloorSourceValidationData> sourceDataByFloorName = new Dictionary<string, FloorSourceValidationData>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FloorSourceValidationData> sourceDataByFloorName = new Dictionary<string, FloorSourceValidationData>(StringComparer.Ordinal);
             if (settings.FloorMappings == null || settings.FloorMappings.Count == 0)
             {
                 result.Errors.Add("Для многоэтажной структуры не заполнено сопоставление этажей.");
@@ -495,7 +495,6 @@ namespace SAB.CreateViewsAndSheets.Services
         {
             if (item.ViewTemplateId == null || item.ViewTemplateId == ElementId.InvalidElementId)
             {
-                result.Errors.Add(rowPrefix + "не выбран шаблон вида.");
                 return;
             }
 
@@ -530,10 +529,11 @@ namespace SAB.CreateViewsAndSheets.Services
                 return;
             }
 
-            result.Errors.Add(
+            result.Warnings.Add(WarningMessageSeverity.MarkCritical(
                 rowPrefix +
                 "на листе-образце " + sourceSheet.SheetNumber +
-                " не найден размещенный вид-образец \"" + sourceView.Name + "\".");
+                " не найден размещенный вид-образец \"" + sourceView.Name + "\". " +
+                "Лист будет создан без размещенного вида."));
         }
 
         private Viewport FindViewportOnSheet(Document document, ViewSheet sheet, View view)

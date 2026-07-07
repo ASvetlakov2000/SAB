@@ -129,6 +129,32 @@ namespace SAB.CreateViewsAndSheets.Services
             return result;
         }
 
+        public Dictionary<long, HashSet<long>> GetPlacedViewIdsBySheetId(Document document)
+        {
+            Dictionary<long, HashSet<long>> result = new Dictionary<long, HashSet<long>>();
+            if (document == null)
+            {
+                return result;
+            }
+
+            FilteredElementCollector sheetCollector = new FilteredElementCollector(document).OfClass(typeof(ViewSheet));
+            foreach (Element sheetElement in sheetCollector)
+            {
+                ViewSheet sheet = sheetElement as ViewSheet;
+                if (sheet == null || sheet.IsTemplate)
+                {
+                    continue;
+                }
+
+                long sheetKey = RevitElementIdUtils.GetElementIdValue(sheet.Id);
+                HashSet<long> placedViewIds = new HashSet<long>();
+                CollectPlacedViewIdsFromSheet(document, sheet, placedViewIds);
+                result[sheetKey] = placedViewIds;
+            }
+
+            return result;
+        }
+
         public List<RevitElementItem> GetViewportTypes(Document document)
         {
             List<RevitElementItem> result = new List<RevitElementItem>();
@@ -148,6 +174,44 @@ namespace SAB.CreateViewsAndSheets.Services
 
             SortByName(result);
             return result;
+        }
+
+        private void CollectPlacedViewIdsFromSheet(Document document, ViewSheet sheet, HashSet<long> placedViewIds)
+        {
+            if (document == null || sheet == null || placedViewIds == null)
+            {
+                return;
+            }
+
+            try
+            {
+                ICollection<ElementId> viewportIds = sheet.GetAllViewports();
+                if (viewportIds != null)
+                {
+                    foreach (ElementId viewportId in viewportIds)
+                    {
+                        Viewport viewport = document.GetElement(viewportId) as Viewport;
+                        if (viewport != null && viewport.ViewId != null && viewport.ViewId != ElementId.InvalidElementId)
+                        {
+                            placedViewIds.Add(RevitElementIdUtils.GetElementIdValue(viewport.ViewId));
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Резервный поиск ниже нужен для листов, где GetAllViewports недоступен.
+            }
+
+            FilteredElementCollector viewportCollector = new FilteredElementCollector(document, sheet.Id).OfClass(typeof(Viewport));
+            foreach (Element viewportElement in viewportCollector)
+            {
+                Viewport viewport = viewportElement as Viewport;
+                if (viewport != null && viewport.ViewId != null && viewport.ViewId != ElementId.InvalidElementId)
+                {
+                    placedViewIds.Add(RevitElementIdUtils.GetElementIdValue(viewport.ViewId));
+                }
+            }
         }
 
         public List<RevitElementItem> GetTitleBlockTypes(Document document)
