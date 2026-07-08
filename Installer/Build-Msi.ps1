@@ -1,6 +1,6 @@
 param(
     [string]$BinFolder = "..\SAB\bin\Debug",
-    [string]$SyncReminderBinFolder = "..\SyncReminderTest\bin\Debug",
+    [string]$SyncReminderBinFolder = "",
     [string]$OutputFolder = ".\output",
     [string]$InstallerVersion = ""
 )
@@ -109,8 +109,12 @@ $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot ".."))
 $installerProjectPath = Join-Path $scriptRoot "WixSharpInstaller\WixSharpInstaller.csproj"
 $syncReminderProjectPath = Join-Path $repositoryRoot "SyncReminderTest\SyncReminderTest.csproj"
 $binRootPath = Resolve-AbsolutePath -Path $BinFolder -BasePath $scriptRoot
-$syncReminderBinRootPath = Resolve-AbsolutePath -Path $SyncReminderBinFolder -BasePath $scriptRoot
-$syncReminderAssemblyPath = Join-Path $syncReminderBinRootPath "SyncReminderTest.dll"
+$syncReminderBinRootPath = ""
+$syncReminderAssemblyPath = ""
+if (-not [string]::IsNullOrWhiteSpace($SyncReminderBinFolder)) {
+    $syncReminderBinRootPath = Resolve-AbsolutePath -Path $SyncReminderBinFolder -BasePath $scriptRoot
+    $syncReminderAssemblyPath = Join-Path $syncReminderBinRootPath "SyncReminderTest.dll"
+}
 $outputRootPath = Resolve-AbsolutePath -Path $OutputFolder -BasePath $scriptRoot
 $toolsRootPath = Join-Path $scriptRoot ".tools"
 
@@ -122,7 +126,9 @@ if (-not (Test-Path -LiteralPath $binRootPath)) {
     throw "Bin folder was not found: $binRootPath"
 }
 
-if ((-not (Test-Path -LiteralPath $syncReminderAssemblyPath)) -and (Test-Path -LiteralPath $syncReminderProjectPath)) {
+if ((-not [string]::IsNullOrWhiteSpace($syncReminderAssemblyPath)) -and
+    (-not (Test-Path -LiteralPath $syncReminderAssemblyPath)) -and
+    (Test-Path -LiteralPath $syncReminderProjectPath)) {
     $revitApiReferenceFolder = Resolve-RevitApiReferenceFolder -RepositoryRoot $repositoryRoot -BinRootPath $binRootPath
     $revitApiDllPath = Join-Path $revitApiReferenceFolder "RevitAPI.dll"
     $revitApiUiDllPath = Join-Path $revitApiReferenceFolder "RevitAPIUI.dll"
@@ -158,14 +164,15 @@ $installerArguments = @(
     "--version", "$InstallerVersion"
 )
 
-if (Test-Path -LiteralPath $syncReminderBinRootPath) {
+if ((-not [string]::IsNullOrWhiteSpace($syncReminderBinRootPath)) -and
+    (Test-Path -LiteralPath $syncReminderBinRootPath)) {
     $installerArguments += @("--sync-reminder-bin", "$syncReminderBinRootPath")
     Write-Host "SyncReminderTest will be included:"
     Write-Host "  $syncReminderBinRootPath"
 }
 else {
-    Write-Host "SyncReminderTest bin folder was not found and will be skipped:"
-    Write-Host "  $syncReminderBinRootPath"
+    Write-Host "SyncReminderTest is not included as a separate add-in."
+    Write-Host "Sync reminder is now built into SAB.dll."
 }
 
 dotnet run --project $installerProjectPath -- @installerArguments

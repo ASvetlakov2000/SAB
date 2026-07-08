@@ -1,5 +1,7 @@
 ﻿using Autodesk.Revit.UI;
 using SAB.Helpers;
+using SAB.SyncReminder;
+using System;
 
 namespace SAB
 {
@@ -12,6 +14,10 @@ namespace SAB
         private const string RoomsPanelName = "Помещения";
         private const string InfoPanelName = "Инфо";
         private const string StructurePanelName = "Листы";
+
+        private SyncReminderController _syncReminderController;
+
+        internal static SyncReminderController CurrentSyncReminderController { get; private set; }
 
         public Result OnStartup(UIControlledApplication application)
         {
@@ -39,6 +45,14 @@ namespace SAB
                 "SAB_OpenPluginInstructionsHtml",
                 "Инструкции",
                 "RevitLibraryBuilder.Commands.Regulations.OpenPluginInstructionsHtmlCommand",
+                "SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png",
+                "SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png");
+
+            Ribbon.AddPushButtonSingle(
+                infoPanel,
+                "SAB_SyncReminderSettings",
+                "Таймер\nсинхронизации",
+                "SAB.SyncReminder.SyncReminderSettingsCommand",
                 "SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png",
                 "SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png");
 
@@ -310,12 +324,76 @@ namespace SAB
                 "SAB.Resources.DeleteViewsAndSheets_32.png",
                 "SAB.Resources.DeleteViewsAndSheets_16.png");
 
+            StartSyncReminder(application);
+
             return Result.Succeeded;
         }
 
         public Result OnShutdown(UIControlledApplication application)
         {
+            StopSyncReminder();
             return Result.Succeeded;
+        }
+
+        private void StartSyncReminder(UIControlledApplication application)
+        {
+            try
+            {
+                _syncReminderController = new SyncReminderController(application);
+                CurrentSyncReminderController = _syncReminderController;
+                _syncReminderController.Start();
+            }
+            catch (Exception exception)
+            {
+                CurrentSyncReminderController = null;
+                _syncReminderController = null;
+
+                TaskDialog.Show(
+                    "SAB Sync Reminder Startup Debug",
+                    "Step: start sync reminder inside SAB.MainPanel\n" +
+                    "Revit version: " + GetRevitVersionText(application) + "\n" +
+                    "Exception:\n" +
+                    exception);
+            }
+        }
+
+        private void StopSyncReminder()
+        {
+            try
+            {
+                if (_syncReminderController != null)
+                {
+                    _syncReminderController.Stop();
+                    _syncReminderController = null;
+                }
+
+                CurrentSyncReminderController = null;
+            }
+            catch (Exception exception)
+            {
+                TaskDialog.Show("SAB Sync Reminder Shutdown Debug", exception.ToString());
+            }
+        }
+
+        private static string GetRevitVersionText(UIControlledApplication application)
+        {
+            if (application == null || application.ControlledApplication == null)
+            {
+                return "unknown";
+            }
+
+            try
+            {
+                return application.ControlledApplication.VersionName +
+                       " / " +
+                       application.ControlledApplication.VersionNumber +
+                       " / " +
+                       application.ControlledApplication.VersionBuild;
+            }
+            catch
+            {
+                return "unknown";
+            }
         }
     }
 }

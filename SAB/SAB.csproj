@@ -347,6 +347,14 @@
     <Compile Include="Cls_RoomGeometryTools\Utils\PolygonUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
+    <Compile Include="SyncReminder\DuckReminderWindow.cs" />
+    <Compile Include="SyncReminder\SyncReminderController.cs" />
+    <Compile Include="SyncReminder\SyncReminderSettings.cs" />
+    <Compile Include="SyncReminder\SyncReminderSettingsCommand.cs" />
+    <Compile Include="SyncReminder\SyncReminderSettingsService.cs" />
+    <Compile Include="SyncReminder\SyncReminderSettingsWindow.cs" />
+    <Compile Include="SyncReminder\SyncReminderWindowUtils.cs" />
+    <Compile Include="SyncReminder\SyncSessionState.cs" />
     <Compile Include="Services\PluginResources\PluginFamilyResourceService.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -478,6 +486,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="BimDashboard\wwwroot\dashboard.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Duck\Idle 001.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Duck\Running 001.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Duck\Running 002.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
