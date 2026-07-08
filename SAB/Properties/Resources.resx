@@ -268,4 +268,10 @@
   <data name="PlaceLineStylesCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PlaceLineStylesCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="SyncReminderSettings_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SyncReminderSettings_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SyncReminderSettings_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SyncReminderSettings_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

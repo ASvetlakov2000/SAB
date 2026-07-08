@@ -348,6 +348,7 @@
     <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
     <Compile Include="SyncReminder\DuckReminderWindow.cs" />
+    <Compile Include="SyncReminder\SyncReminderAnimationMode.cs" />
     <Compile Include="SyncReminder\SyncReminderController.cs" />
     <Compile Include="SyncReminder\SyncReminderSettings.cs" />
     <Compile Include="SyncReminder\SyncReminderSettingsCommand.cs" />
@@ -446,6 +447,8 @@
     <EmbeddedResource Include="Resources\CreateViewsAndSheets_32.png" />
     <EmbeddedResource Include="Resources\DeleteViewsAndSheets_16.png" />
     <EmbeddedResource Include="Resources\DeleteViewsAndSheets_32.png" />
+    <EmbeddedResource Include="Resources\SyncReminderSettings_16.png" />
+    <EmbeddedResource Include="Resources\SyncReminderSettings_32.png" />
     <Content Include="UI\Styles\SABWindowStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -25,6 +25,8 @@ namespace SAB.SyncReminder
         private IntPtr _revitWindowHandle;
         private DuckReminderWindow _duckWindow;
         private string _activeDocumentKey;
+        private DateTime _previewUntil;
+        private bool _isPreviewVisible;
         private bool _isStarted;
         private bool _isReminderVisible;
 
@@ -85,10 +87,20 @@ namespace SAB.SyncReminder
                 }
 
                 SyncReminderSettingsWindow settingsWindow = new SyncReminderSettingsWindow(_settings);
+                settingsWindow.TestDuckRequested += OnSettingsWindowTestDuckRequested;
                 WindowInteropHelper helper = new WindowInteropHelper(settingsWindow);
                 helper.Owner = _revitWindowHandle;
 
-                bool? result = settingsWindow.ShowDialog();
+                bool? result;
+                try
+                {
+                    result = settingsWindow.ShowDialog();
+                }
+                finally
+                {
+                    settingsWindow.TestDuckRequested -= OnSettingsWindowTestDuckRequested;
+                }
+
                 if (result != true)
                 {
                     return;
@@ -101,6 +113,31 @@ namespace SAB.SyncReminder
             {
                 TaskDialog.Show("SAB Sync Reminder - Settings", ex.ToString());
             }
+        }
+
+        public void ShowTestDuck()
+        {
+            try
+            {
+                _previewUntil = DateTime.Now.AddSeconds(30);
+                _isPreviewVisible = true;
+                ShowDuckInRevitWindow();
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("SAB Sync Reminder - Test", ex.ToString());
+            }
+        }
+
+        private void OnSettingsWindowTestDuckRequested(object sender, EventArgs e)
+        {
+            SyncReminderSettingsWindow settingsWindow = sender as SyncReminderSettingsWindow;
+            if (settingsWindow != null)
+            {
+                ApplySettings(settingsWindow.Settings);
+            }
+
+            ShowTestDuck();
         }
 
         private void OnDocumentOpened(object sender, DocumentOpenedEventArgs e)
@@ -182,6 +219,18 @@ namespace SAB.SyncReminder
                 }
 
                 _lastIdlingCheck = now;
+
+                if (_isPreviewVisible)
+                {
+                    if (now < _previewUntil)
+                    {
+                        ShowDuckInRevitWindow();
+                        return;
+                    }
+
+                    _isPreviewVisible = false;
+                    HideReminder();
+                }
 
                 if (_settings == null || !_settings.IsEnabled)
                 {
@@ -368,6 +417,18 @@ namespace SAB.SyncReminder
 
         private void ShowReminder(SyncSessionState session, TimeSpan timeAfterSync)
         {
+            if (ShowDuckInRevitWindow())
+            {
+                if (!_isReminderVisible)
+                {
+                    _isReminderVisible = true;
+                    ShowDebugMessage("Reminder visible for " + session.DocumentTitle + ". Minutes: " + timeAfterSync.TotalMinutes.ToString("0.0"));
+                }
+            }
+        }
+
+        private bool ShowDuckInRevitWindow()
+        {
             if (_revitWindowHandle == IntPtr.Zero)
             {
                 _revitWindowHandle = SyncReminderWindowUtils.GetRevitMainWindowHandle();
@@ -377,28 +438,28 @@ namespace SAB.SyncReminder
             if (!SyncReminderWindowUtils.TryGetWindowBounds(_revitWindowHandle, out revitBounds))
             {
                 HideReminder();
-                return;
+                return false;
             }
 
             Rect duckArea = new Rect(
                 revitBounds.Left + 16,
                 revitBounds.Top + WorkspaceTopOffset,
-                Math.Max(300, revitBounds.Width - 32),
-                Math.Max(200, revitBounds.Height - WorkspaceTopOffset - 28));
+                Math.Max(430, revitBounds.Width - 32),
+                Math.Max(372, revitBounds.Height - WorkspaceTopOffset - 28));
 
             if (_duckWindow == null)
             {
                 _duckWindow = new DuckReminderWindow(_revitWindowHandle);
             }
 
+            SyncReminderAnimationMode animationMode = _settings == null
+                ? SyncReminderAnimationMode.DuckOnly
+                : _settings.AnimationMode;
+
+            _duckWindow.SetAnimationMode(animationMode);
             _duckWindow.SetAllowedArea(duckArea);
             _duckWindow.ShowDuck();
-
-            if (!_isReminderVisible)
-            {
-                _isReminderVisible = true;
-                ShowDebugMessage("Reminder visible for " + session.DocumentTitle + ". Minutes: " + timeAfterSync.TotalMinutes.ToString("0.0"));
-            }
+            return true;
         }
 
         private void HideReminder()
@@ -409,6 +470,7 @@ namespace SAB.SyncReminder
             }
 
             _isReminderVisible = false;
+            _isPreviewVisible = false;
         }
 
         private void ApplySettings(SyncReminderSettings settings)
@@ -419,6 +481,10 @@ namespace SAB.SyncReminder
             }
 
             _settings = settings.Clone();
+            if (!Enum.IsDefined(typeof(SyncReminderAnimationMode), _settings.AnimationMode))
+            {
+                _settings.AnimationMode = SyncReminderAnimationMode.DuckOnly;
+            }
 
             if (_settings.ReminderDelayMinutes < 1)
             {
@@ -447,6 +513,7 @@ namespace SAB.SyncReminder
             }
 
             _isReminderVisible = false;
+            _isPreviewVisible = false;
         }
 
         private void ShowDebugMessage(string message)

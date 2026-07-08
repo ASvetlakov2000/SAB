@@ -13,6 +13,7 @@ namespace SAB.SyncReminder
         private CheckBox _enabledCheckBox;
         private Slider _minutesSlider;
         private TextBox _minutesTextBox;
+        private ComboBox _animationModeComboBox;
         private bool _isUpdatingMinutes;
 
         public SyncReminderSettingsWindow(SyncReminderSettings settings)
@@ -22,9 +23,9 @@ namespace SAB.SyncReminder
 
             Title = "Настройки напоминания о синхронизации";
             Width = 500;
-            Height = 315;
+            Height = 365;
             MinWidth = 500;
-            MinHeight = 315;
+            MinHeight = 365;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             ResizeMode = ResizeMode.NoResize;
             ShowInTaskbar = false;
@@ -36,6 +37,8 @@ namespace SAB.SyncReminder
             Loaded += OnLoaded;
             SabWindowBehaviorService.Apply(this);
         }
+
+        public event EventHandler TestDuckRequested;
 
         public SyncReminderSettings Settings { get; private set; }
 
@@ -104,11 +107,9 @@ namespace SAB.SyncReminder
             Grid timerGrid = CreateTimerGrid();
             panel.Children.Add(timerGrid);
 
-            TextBlock modeText = new TextBlock();
-            modeText.Text = "Анимация: бегущая желтая утка";
-            modeText.Foreground = CreateBrush("#667085");
-            modeText.Margin = new Thickness(0, 16, 0, 0);
-            panel.Children.Add(modeText);
+            Grid modeGrid = CreateAnimationModeGrid();
+            modeGrid.Margin = new Thickness(0, 16, 0, 0);
+            panel.Children.Add(modeGrid);
 
             return panel;
         }
@@ -161,6 +162,34 @@ namespace SAB.SyncReminder
             return timerGrid;
         }
 
+        private Grid CreateAnimationModeGrid()
+        {
+            Grid modeGrid = new Grid();
+            modeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            modeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            TextBlock label = new TextBlock();
+            label.Text = "Режим анимации";
+            label.FontSize = 12;
+            label.FontWeight = FontWeights.SemiBold;
+            label.Foreground = CreateBrush("#1F2937");
+            label.Margin = new Thickness(0, 0, 0, 7);
+            Grid.SetRow(label, 0);
+            modeGrid.Children.Add(label);
+
+            _animationModeComboBox = new ComboBox();
+            _animationModeComboBox.Height = 30;
+            _animationModeComboBox.BorderBrush = CreateBrush("#D8DEE8");
+            _animationModeComboBox.Background = Brushes.White;
+            _animationModeComboBox.Foreground = CreateBrush("#1F2937");
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Только утка", SyncReminderAnimationMode.DuckOnly));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Утка и следы", SyncReminderAnimationMode.DuckWithPoop));
+            Grid.SetRow(_animationModeComboBox, 1);
+            modeGrid.Children.Add(_animationModeComboBox);
+
+            return modeGrid;
+        }
+
         private Border CreateFooter()
         {
             Border footer = new Border();
@@ -172,6 +201,13 @@ namespace SAB.SyncReminder
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            Button testButton = CreateButton("Показать утку", false);
+            testButton.Width = 128;
+            testButton.HorizontalAlignment = HorizontalAlignment.Left;
+            testButton.Click += OnTestDuckClick;
+            Grid.SetColumn(testButton, 0);
+            grid.Children.Add(testButton);
 
             StackPanel buttonsPanel = new StackPanel();
             buttonsPanel.Orientation = Orientation.Horizontal;
@@ -232,10 +268,19 @@ namespace SAB.SyncReminder
             return button;
         }
 
+        private ComboBoxItem CreateAnimationModeItem(string title, SyncReminderAnimationMode mode)
+        {
+            ComboBoxItem item = new ComboBoxItem();
+            item.Content = title;
+            item.Tag = mode;
+            return item;
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _enabledCheckBox.IsChecked = _initialSettings.IsEnabled;
             SetMinutes(_initialSettings.ReminderDelayMinutes);
+            SelectAnimationMode(_initialSettings.AnimationMode);
         }
 
         private void OnMinutesSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -284,6 +329,7 @@ namespace SAB.SyncReminder
 
             Settings.IsEnabled = _enabledCheckBox.IsChecked == true;
             Settings.ReminderDelayMinutes = minutes;
+            Settings.AnimationMode = GetSelectedAnimationMode();
 
             DialogResult = true;
             Close();
@@ -293,6 +339,26 @@ namespace SAB.SyncReminder
         {
             DialogResult = false;
             Close();
+        }
+
+        private void OnTestDuckClick(object sender, RoutedEventArgs e)
+        {
+            int minutes;
+            if (!TryReadMinutes(out minutes))
+            {
+                MessageBox.Show(this, "Укажите таймер от 1 до 720 минут.", "Настройки", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            Settings.IsEnabled = _enabledCheckBox.IsChecked == true;
+            Settings.ReminderDelayMinutes = minutes;
+            Settings.AnimationMode = GetSelectedAnimationMode();
+
+            EventHandler handler = TestDuckRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         private bool TryReadMinutes(out int minutes)
@@ -342,6 +408,40 @@ namespace SAB.SyncReminder
             }
 
             _isUpdatingMinutes = false;
+        }
+
+        private void SelectAnimationMode(SyncReminderAnimationMode mode)
+        {
+            if (_animationModeComboBox == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _animationModeComboBox.Items.Count; i++)
+            {
+                ComboBoxItem item = _animationModeComboBox.Items[i] as ComboBoxItem;
+                if (item != null && item.Tag is SyncReminderAnimationMode && (SyncReminderAnimationMode)item.Tag == mode)
+                {
+                    _animationModeComboBox.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            _animationModeComboBox.SelectedIndex = 0;
+        }
+
+        private SyncReminderAnimationMode GetSelectedAnimationMode()
+        {
+            if (_animationModeComboBox != null)
+            {
+                ComboBoxItem item = _animationModeComboBox.SelectedItem as ComboBoxItem;
+                if (item != null && item.Tag is SyncReminderAnimationMode)
+                {
+                    return (SyncReminderAnimationMode)item.Tag;
+                }
+            }
+
+            return SyncReminderAnimationMode.DuckOnly;
         }
 
         private static SolidColorBrush CreateBrush(string color)

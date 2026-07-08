@@ -53,8 +53,8 @@ namespace SAB
                 "SAB_SyncReminderSettings",
                 "Таймер\nсинхронизации",
                 "SAB.SyncReminder.SyncReminderSettingsCommand",
-                "SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png",
-                "SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png");
+                "SAB.Resources.SyncReminderSettings_32.png",
+                "SAB.Resources.SyncReminderSettings_16.png");
 
 
             // Блок кнопок экспорта

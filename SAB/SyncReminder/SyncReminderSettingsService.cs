@@ -30,6 +30,7 @@ namespace SAB.SyncReminder
                 settings.IsEnabled = ReadBool(root, "IsEnabled", settings.IsEnabled);
                 settings.ReminderDelayMinutes = ReadInt(root, "ReminderDelayMinutes", settings.ReminderDelayMinutes);
                 settings.ReminderDelayMinutes = Clamp(settings.ReminderDelayMinutes, MinimumMinutes, MaximumMinutes);
+                settings.AnimationMode = ReadAnimationMode(root, "AnimationMode", settings.AnimationMode);
                 return settings;
             }
             catch
@@ -58,7 +59,8 @@ namespace SAB.SyncReminder
                 new XElement(
                     "SyncReminderSettings",
                     new XElement("IsEnabled", normalizedSettings.IsEnabled),
-                    new XElement("ReminderDelayMinutes", normalizedSettings.ReminderDelayMinutes)));
+                    new XElement("ReminderDelayMinutes", normalizedSettings.ReminderDelayMinutes),
+                    new XElement("AnimationMode", normalizedSettings.AnimationMode.ToString())));
 
             document.Save(GetSettingsFilePath());
         }
@@ -101,6 +103,31 @@ namespace SAB.SyncReminder
 
             int value;
             if (!int.TryParse(element.Value, out value))
+            {
+                return defaultValue;
+            }
+
+            return value;
+        }
+
+        private static SyncReminderAnimationMode ReadAnimationMode(
+            XElement root,
+            string elementName,
+            SyncReminderAnimationMode defaultValue)
+        {
+            XElement element = root.Element(elementName);
+            if (element == null)
+            {
+                return defaultValue;
+            }
+
+            SyncReminderAnimationMode value;
+            if (!Enum.TryParse(element.Value, true, out value))
+            {
+                return defaultValue;
+            }
+
+            if (!Enum.IsDefined(typeof(SyncReminderAnimationMode), value))
             {
                 return defaultValue;
             }

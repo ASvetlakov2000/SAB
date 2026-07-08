@@ -559,5 +559,25 @@ namespace SAB.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] SyncReminderSettings_16 {
+            get {
+                object obj = ResourceManager.GetObject("SyncReminderSettings_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] SyncReminderSettings_32 {
+            get {
+                object obj = ResourceManager.GetObject("SyncReminderSettings_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
