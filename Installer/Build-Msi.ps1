@@ -23,6 +23,57 @@ function Resolve-AbsolutePath {
     return [System.IO.Path]::GetFullPath((Join-Path $BasePath $Path))
 }
 
+function Test-RevitApiReferenceFolder {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FolderPath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($FolderPath)) {
+        return $false
+    }
+
+    $revitApiPath = Join-Path $FolderPath "RevitAPI.dll"
+    $revitApiUiPath = Join-Path $FolderPath "RevitAPIUI.dll"
+
+    return (Test-Path -LiteralPath $revitApiPath) -and (Test-Path -LiteralPath $revitApiUiPath)
+}
+
+function Resolve-RevitApiReferenceFolder {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)]
+        [string]$BinRootPath
+    )
+
+    $candidateFolders = New-Object System.Collections.Generic.List[string]
+    $candidateFolders.Add((Resolve-AbsolutePath -Path "..\..\lib" -BasePath $RepositoryRoot))
+    $candidateFolders.Add((Resolve-AbsolutePath -Path "..\lib" -BasePath $RepositoryRoot))
+    $candidateFolders.Add((Resolve-AbsolutePath -Path ".\lib" -BasePath $RepositoryRoot))
+    $candidateFolders.Add($BinRootPath)
+    $candidateFolders.Add((Resolve-AbsolutePath -Path ".\SAB\bin\Debug" -BasePath $RepositoryRoot))
+    $candidateFolders.Add((Resolve-AbsolutePath -Path ".\SAB\bin\Release" -BasePath $RepositoryRoot))
+
+    $autodeskFolder = Join-Path $env:ProgramFiles "Autodesk"
+    if (Test-Path -LiteralPath $autodeskFolder) {
+        $revitFolders = Get-ChildItem -LiteralPath $autodeskFolder -Directory -Filter "Revit *" -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending
+
+        foreach ($revitFolder in $revitFolders) {
+            $candidateFolders.Add($revitFolder.FullName)
+        }
+    }
+
+    foreach ($candidateFolder in $candidateFolders) {
+        if (Test-RevitApiReferenceFolder -FolderPath $candidateFolder) {
+            return [System.IO.Path]::GetFullPath($candidateFolder)
+        }
+    }
+
+    throw "RevitAPI.dll and RevitAPIUI.dll were not found. Put them in a shared lib folder, near SAB bin, or install Revit on this machine."
+}
+
 function Ensure-LocalWixTool {
     param(
         [Parameter(Mandatory = $true)]
@@ -72,10 +123,20 @@ if (-not (Test-Path -LiteralPath $binRootPath)) {
 }
 
 if ((-not (Test-Path -LiteralPath $syncReminderAssemblyPath)) -and (Test-Path -LiteralPath $syncReminderProjectPath)) {
+    $revitApiReferenceFolder = Resolve-RevitApiReferenceFolder -RepositoryRoot $repositoryRoot -BinRootPath $binRootPath
+    $revitApiDllPath = Join-Path $revitApiReferenceFolder "RevitAPI.dll"
+    $revitApiUiDllPath = Join-Path $revitApiReferenceFolder "RevitAPIUI.dll"
+
     Write-Host "SyncReminderTest DLL was not found. Building test plugin:"
     Write-Host "  $syncReminderProjectPath"
+    Write-Host "Using Revit API references:"
+    Write-Host "  $revitApiReferenceFolder"
 
-    dotnet build "$syncReminderProjectPath" --configuration Debug --property:Platform=AnyCPU | Out-Host
+    dotnet build "$syncReminderProjectPath" `
+        --configuration Debug `
+        --property:Platform=AnyCPU `
+        --property:RevitApiDll="$revitApiDllPath" `
+        --property:RevitApiUiDll="$revitApiUiDllPath" | Out-Host
 
     if ($LASTEXITCODE -ne 0) {
         throw "SyncReminderTest build failed."

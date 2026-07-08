@@ -13,6 +13,10 @@
     <Deterministic>true</Deterministic>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <RevitApiDll Condition=" '$(RevitApiDll)' == '' ">..\..\..\lib\RevitAPI.dll</RevitApiDll>
+    <RevitApiUiDll Condition=" '$(RevitApiUiDll)' == '' ">..\..\..\lib\RevitAPIUI.dll</RevitApiUiDll>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -38,11 +42,11 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
-      <HintPath>..\..\..\lib\RevitAPI.dll</HintPath>
+      <HintPath>$(RevitApiDll)</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\lib\RevitAPIUI.dll</HintPath>
+      <HintPath>$(RevitApiUiDll)</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

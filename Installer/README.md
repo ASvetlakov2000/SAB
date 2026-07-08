@@ -41,3 +41,4 @@ Generated files:
 - Files from `bin` are included recursively into `...\Addins\<Year>\SAB`.
 - `.addin` file is installed as `SAB.addin` into `...\Addins\<Year>`.
 - Test plugin `SyncReminderTest` is built from `SyncReminderTest\SyncReminderTest.csproj` when needed and installed into `...\Addins\<Year>\SyncReminderTest`.
+- If `SyncReminderTest` needs to be built, `Build-Msi.ps1` searches for `RevitAPI.dll` and `RevitAPIUI.dll` in shared `lib` folders, SAB bin folders, and installed `Program Files\Autodesk\Revit *` folders.
