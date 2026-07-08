@@ -650,6 +650,12 @@ namespace SAB.CreateViewsAndSheets.Views
                 return;
             }
 
+            if (TryToggleRowByControl(clickedRowViewModel, source))
+            {
+                e.Handled = true;
+                return;
+            }
+
             if (_viewModel != null && _viewModel.IsDeletionMode)
             {
                 return;
@@ -785,6 +791,41 @@ namespace SAB.CreateViewsAndSheets.Views
 
             _rowsDataGrid.CurrentItem = clickedRow;
             _selectionAnchorRow = anchorRow;
+            _batchEditSourceRow = null;
+            _batchEditRowsSnapshot = null;
+            _batchEditPropertyPath = null;
+            _lastMultiSelectedRowsSnapshot = GetSelectedRowsSnapshot();
+            return true;
+        }
+
+        private bool TryToggleRowByControl(SheetCreationRowViewModel clickedRow, DependencyObject source)
+        {
+            if (_rowsDataGrid == null || clickedRow == null)
+            {
+                return false;
+            }
+
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.Control)
+            {
+                return false;
+            }
+
+            if (IsRowDragHandle(source) || GetColumnResizeTarget(source) != null || IsGridCommandButton(source))
+            {
+                return false;
+            }
+
+            if (_rowsDataGrid.SelectedItems.Contains(clickedRow))
+            {
+                _rowsDataGrid.SelectedItems.Remove(clickedRow);
+            }
+            else
+            {
+                _rowsDataGrid.SelectedItems.Add(clickedRow);
+            }
+
+            _rowsDataGrid.CurrentItem = clickedRow;
+            _selectionAnchorRow = clickedRow;
             _batchEditSourceRow = null;
             _batchEditRowsSnapshot = null;
             _batchEditPropertyPath = null;
@@ -1387,6 +1428,12 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             return false;
+        }
+
+        private bool IsGridCommandButton(DependencyObject source)
+        {
+            ButtonBase button = FindParent<ButtonBase>(source);
+            return button != null;
         }
 
         private bool IsRowDragHandle(DependencyObject source)

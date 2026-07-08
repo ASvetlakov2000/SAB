@@ -25,6 +25,7 @@ namespace SAB.CreateViewsAndSheets.Commands
         {
             string debugStep = "Старт команды";
             Stopwatch stopwatch = Stopwatch.StartNew();
+            CreateViewsAndSheetsProgressWindow openingProgressWindow = null;
 
             try
             {
@@ -53,29 +54,100 @@ namespace SAB.CreateViewsAndSheets.Commands
                     return Result.Failed;
                 }
 
+                debugStep = "Открытие окна прогресса загрузки";
+                openingProgressWindow = ShowOpeningProgressWindow();
+
                 List<string> warnings = new List<string>();
                 RevitDataService dataService = new RevitDataService();
 
                 debugStep = "Сбор данных для окна создания";
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    1,
+                    11,
+                    "Сбор данных",
+                    "Ищем виды, которые можно дублировать.");
                 List<RevitElementItem> sourceViews = dataService.GetDuplicatableViews(document);
+
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    2,
+                    11,
+                    "Сбор данных",
+                    "Ищем листы-образцы.");
                 List<RevitElementItem> sourceSheets = dataService.GetSheets(document);
+
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    3,
+                    11,
+                    "Сбор данных",
+                    "Загружаем типы видовых экранов.");
                 List<RevitElementItem> viewportTypes = dataService.GetViewportTypes(document);
+
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    4,
+                    11,
+                    "Сбор данных",
+                    "Загружаем типы основных надписей.");
                 List<RevitElementItem> titleBlockTypes = dataService.GetTitleBlockTypes(document);
+
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    5,
+                    11,
+                    "Сбор данных",
+                    "Читаем параметры диспетчера проекта.");
                 List<RevitElementItem> sheetBrowserParameters = dataService.GetSheetBrowserParameters(document);
+
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    6,
+                    11,
+                    "Сбор данных",
+                    "Собираем значения параметров листов.");
                 Dictionary<long, List<string>> sheetBrowserParameterValuesById = dataService.GetSheetBrowserParameterValues(document, sheetBrowserParameters);
+
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    7,
+                    11,
+                    "Сбор данных",
+                    "Загружаем шаблоны видов.");
                 List<RevitElementItem> viewTemplates = dataService.GetViewTemplates(document);
 
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    8,
+                    11,
+                    "Проверка",
+                    "Проверяем, хватает ли данных для открытия окна.");
                 string startupValidationMessage;
                 if (!ValidateStartupData(sourceViews, sourceSheets, viewportTypes, titleBlockTypes, viewTemplates, out startupValidationMessage))
                 {
+                    CloseProgressWindow(openingProgressWindow);
+                    openingProgressWindow = null;
                     TaskDialog.Show(CommandTitle, startupValidationMessage);
                     return Result.Cancelled;
                 }
 
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    9,
+                    11,
+                    "Настройки",
+                    "Загружаем сохраненные настройки команды.");
                 SettingsService settingsService = new SettingsService();
                 CreateViewsAndSheetsSettings savedSettings = settingsService.LoadSettings(document, warnings);
 
                 debugStep = "Создание модели окна";
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    10,
+                    11,
+                    "Подготовка окна",
+                    "Собираем строки, списки и проверки для интерфейса.");
                 CreateViewsAndSheetsViewModel viewModel = new CreateViewsAndSheetsViewModel(
                     sourceViews,
                     sourceSheets,
@@ -90,7 +162,13 @@ namespace SAB.CreateViewsAndSheets.Commands
                     savedSettings);
 
                 debugStep = "Открытие окна создания";
-                bool dialogAccepted = ShowCreationWindowUntilAccepted(uiDocument, document, viewModel, settingsService);
+                ReportProgressWindow(
+                    openingProgressWindow,
+                    11,
+                    11,
+                    "Подготовка окна",
+                    "Дорисовываем основное окно.");
+                bool dialogAccepted = ShowCreationWindowUntilAccepted(uiDocument, document, viewModel, settingsService, ref openingProgressWindow);
                 if (!dialogAccepted)
                 {
                     return Result.Cancelled;
@@ -108,7 +186,17 @@ namespace SAB.CreateViewsAndSheets.Commands
                 AppendWarnings(warnings, ValidateBeforeExecution(document, settings, items));
 
                 CreateViewsAndSheetsOperationService operationService = new CreateViewsAndSheetsOperationService();
-                CreateViewsAndSheetsResult result = operationService.Execute(document, settings, items);
+                CreateViewsAndSheetsProgressWindow progressWindow = ShowProgressWindow(items.Count);
+                CreateViewsAndSheetsResult result;
+                try
+                {
+                    result = operationService.Execute(document, settings, items, progressWindow);
+                }
+                finally
+                {
+                    CloseProgressWindow(progressWindow);
+                }
+
                 AppendWarnings(result.Warnings, warnings);
 
                 if (settings.Placement != null && settings.Placement.SaveSettings)
@@ -125,6 +213,8 @@ namespace SAB.CreateViewsAndSheets.Commands
             }
             catch (RowProcessingException rowException)
             {
+                CloseProgressWindow(openingProgressWindow);
+                openingProgressWindow = null;
                 message = rowException.Message;
                 TaskDialog.Show(
                     CommandTitle,
@@ -133,6 +223,8 @@ namespace SAB.CreateViewsAndSheets.Commands
             }
             catch (InvalidOperationException operationException)
             {
+                CloseProgressWindow(openingProgressWindow);
+                openingProgressWindow = null;
                 message = operationException.Message;
                 TaskDialog.Show(
                     CommandTitle,
@@ -143,6 +235,8 @@ namespace SAB.CreateViewsAndSheets.Commands
             }
             catch (Exception exception)
             {
+                CloseProgressWindow(openingProgressWindow);
+                openingProgressWindow = null;
                 message = exception.Message;
                 TaskDialog.Show(
                     CommandTitle,
@@ -151,6 +245,10 @@ namespace SAB.CreateViewsAndSheets.Commands
                     "Время: " + stopwatch.ElapsedMilliseconds + " мс\n\n" +
                     exception);
                 return Result.Failed;
+            }
+            finally
+            {
+                CloseProgressWindow(openingProgressWindow);
             }
         }
 
@@ -275,7 +373,30 @@ namespace SAB.CreateViewsAndSheets.Commands
             window.ShowInTaskbar = false;
             window.Opacity = 0.0;
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            window.SourceInitialized += CreateViewsAndSheetsWindow_SourceInitialized;
+            window.SourceInitialized += RevitOwnedWindow_SourceInitialized;
+
+            AttachRevitWindowOwner(window);
+        }
+
+        private void PrepareProgressWindowForRevit(Window window)
+        {
+            if (window == null)
+            {
+                return;
+            }
+
+            window.ShowInTaskbar = false;
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            window.SourceInitialized += RevitOwnedWindow_SourceInitialized;
+            AttachRevitWindowOwner(window);
+        }
+
+        private void AttachRevitWindowOwner(Window window)
+        {
+            if (window == null)
+            {
+                return;
+            }
 
             IntPtr ownerHandle = IntPtr.Zero;
             try
@@ -295,11 +416,189 @@ namespace SAB.CreateViewsAndSheets.Commands
 
         }
 
+        private CreateViewsAndSheetsProgressWindow ShowProgressWindow(int totalItems)
+        {
+            CreateViewsAndSheetsProgressWindow progressWindow = null;
+            try
+            {
+                progressWindow = new CreateViewsAndSheetsProgressWindow(BuildCreationProgressMessages());
+                PrepareProgressWindowForRevit(progressWindow);
+                progressWindow.Show();
+
+                CreateViewsAndSheetsProgressInfo progressInfo = new CreateViewsAndSheetsProgressInfo();
+                progressInfo.CurrentStep = 0;
+                progressInfo.TotalSteps = 1;
+                progressInfo.ProcessedItems = 0;
+                progressInfo.TotalItems = totalItems > 0 ? totalItems : 0;
+                progressInfo.Stage = "Подготовка";
+                progressInfo.Details = "Запуск создания видов и листов.";
+                progressWindow.Report(progressInfo);
+                ShowProgressWindowDebugDialogIfInvalid("Проверка окна прогресса создания после первого обновления", progressWindow);
+
+                return progressWindow;
+            }
+            catch (Exception exception)
+            {
+                ShowProgressWindowDebugDialog("Ошибка открытия окна прогресса создания", progressWindow, exception);
+                TaskDialog.Show(
+                    CommandTitle,
+                    "Не удалось открыть окно прогресса. Операция будет выполнена без полосы прогресса.\n\n" +
+                    exception.Message);
+                return null;
+            }
+        }
+
+        private CreateViewsAndSheetsProgressWindow ShowOpeningProgressWindow()
+        {
+            CreateViewsAndSheetsProgressWindow progressWindow = null;
+            try
+            {
+                progressWindow = new CreateViewsAndSheetsProgressWindow(BuildOpeningProgressMessages());
+                PrepareProgressWindowForRevit(progressWindow);
+                progressWindow.Show();
+                ReportProgressWindow(
+                    progressWindow,
+                    0,
+                    11,
+                    "Открытие",
+                    "Показываем пустое окно и готовим данные.");
+                ShowProgressWindowDebugDialogIfInvalid("Проверка окна прогресса загрузки после первого обновления", progressWindow);
+                return progressWindow;
+            }
+            catch (Exception exception)
+            {
+                ShowProgressWindowDebugDialog("Ошибка открытия окна прогресса загрузки", progressWindow, exception);
+                TaskDialog.Show(
+                    CommandTitle,
+                    "Не удалось открыть окно прогресса загрузки. Операция продолжит открываться без полосы прогресса.\n\n" +
+                    exception.Message);
+                return null;
+            }
+        }
+
+        private void ShowProgressWindowDebugDialogIfInvalid(string debugStep, CreateViewsAndSheetsProgressWindow progressWindow)
+        {
+            if (progressWindow == null)
+            {
+                return;
+            }
+
+            try
+            {
+                progressWindow.UpdateLayout();
+                bool hasInvalidHeight =
+                    progressWindow.IsLoaded &&
+                    progressWindow.ActualHeight > 0.0 &&
+                    progressWindow.MinHeight > 0.0 &&
+                    progressWindow.ActualHeight + 1.0 < progressWindow.MinHeight;
+
+                bool hasMissingContent = progressWindow.Content == null;
+                if (hasInvalidHeight || hasMissingContent)
+                {
+                    ShowProgressWindowDebugDialog(debugStep, progressWindow, null);
+                }
+            }
+            catch (Exception exception)
+            {
+                ShowProgressWindowDebugDialog(debugStep + ". Ошибка проверки размеров", progressWindow, exception);
+            }
+        }
+
+        private void ShowProgressWindowDebugDialog(string debugStep, CreateViewsAndSheetsProgressWindow progressWindow, Exception exception)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("Шаг: " + debugStep);
+            builder.AppendLine("Окно создано: " + (progressWindow != null ? "да" : "нет"));
+
+            if (progressWindow != null)
+            {
+                builder.AppendLine("Width: " + progressWindow.Width);
+                builder.AppendLine("Height: " + progressWindow.Height);
+                builder.AppendLine("MinWidth: " + progressWindow.MinWidth);
+                builder.AppendLine("MinHeight: " + progressWindow.MinHeight);
+                builder.AppendLine("ActualWidth: " + progressWindow.ActualWidth);
+                builder.AppendLine("ActualHeight: " + progressWindow.ActualHeight);
+                builder.AppendLine("SizeToContent: " + progressWindow.SizeToContent);
+                builder.AppendLine("IsLoaded: " + progressWindow.IsLoaded);
+                builder.AppendLine("Visibility: " + progressWindow.Visibility);
+                builder.AppendLine("Content: " + (progressWindow.Content != null ? progressWindow.Content.GetType().FullName : "null"));
+            }
+
+            if (exception != null)
+            {
+                builder.AppendLine();
+                builder.AppendLine("Ошибка:");
+                builder.AppendLine(exception.ToString());
+            }
+
+            TaskDialog.Show(CommandTitle + " - debug", builder.ToString());
+        }
+
+        private IList<string> BuildOpeningProgressMessages()
+        {
+            List<string> messages = new List<string>();
+            messages.Add("Загружаем потерянные буквы");
+            messages.Add("Еще чуть-чуть и я откроюсь");
+            messages.Add("Ты давно протирал компьютер?");
+            messages.Add("Если на меня не смотреть - то я откроюсь быстрее");
+            return messages;
+        }
+
+        private IList<string> BuildCreationProgressMessages()
+        {
+            List<string> messages = new List<string>();
+            messages.Add("Какие у тебя красивые чертежи! Копировать одно удовольствие!");
+            messages.Add("Как много листов для копирования... Только Гретте объем бумаги не показывайте");
+            messages.Add("А что, ручками копировать листы уже не модно?");
+            messages.Add("Я на одном из скопированных листов написать пакость:), дать подсказку, где именно?");
+            return messages;
+        }
+
+        private void ReportProgressWindow(
+            CreateViewsAndSheetsProgressWindow progressWindow,
+            int currentStep,
+            int totalSteps,
+            string stage,
+            string details)
+        {
+            if (progressWindow == null)
+            {
+                return;
+            }
+
+            CreateViewsAndSheetsProgressInfo progressInfo = new CreateViewsAndSheetsProgressInfo();
+            progressInfo.CurrentStep = currentStep;
+            progressInfo.TotalSteps = totalSteps;
+            progressInfo.ProcessedItems = 0;
+            progressInfo.TotalItems = 0;
+            progressInfo.Stage = stage;
+            progressInfo.Details = details;
+            progressWindow.Report(progressInfo);
+        }
+
+        private void CloseProgressWindow(CreateViewsAndSheetsProgressWindow progressWindow)
+        {
+            if (progressWindow == null)
+            {
+                return;
+            }
+
+            try
+            {
+                progressWindow.AllowCloseAndClose();
+            }
+            catch
+            {
+                // Закрытие окна прогресса вспомогательное и не должно менять результат команды.
+            }
+        }
+
         private bool ShowCreationWindowUntilAccepted(
             UIDocument uiDocument,
             Document document,
             CreateViewsAndSheetsViewModel viewModel,
-            SettingsService settingsService)
+            SettingsService settingsService,
+            ref CreateViewsAndSheetsProgressWindow openingProgressWindow)
         {
             if (uiDocument == null)
             {
@@ -325,6 +624,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                 CreateViewsAndSheetsWindow window = new CreateViewsAndSheetsWindow(viewModel, reopenSettingsWindowAfterPointSelection);
                 reopenSettingsWindowAfterPointSelection = false;
                 PrepareWindowForRevit(window);
+                CloseOpeningProgressWindowAfterFullWindowReady(ref openingProgressWindow);
 
                 bool? dialogResult = window.ShowDialog();
                 SaveLastWindowSession(settingsService, viewModel);
@@ -339,6 +639,23 @@ namespace SAB.CreateViewsAndSheets.Commands
 
                 return dialogResult.HasValue && dialogResult.Value;
             }
+        }
+
+        private void CloseOpeningProgressWindowAfterFullWindowReady(ref CreateViewsAndSheetsProgressWindow openingProgressWindow)
+        {
+            if (openingProgressWindow == null)
+            {
+                return;
+            }
+
+            ReportProgressWindow(
+                openingProgressWindow,
+                11,
+                11,
+                "Окно готово",
+                "Показываем настройки создания видов и листов.");
+            CloseProgressWindow(openingProgressWindow);
+            openingProgressWindow = null;
         }
 
         private void SaveLastWindowSession(SettingsService settingsService, CreateViewsAndSheetsViewModel viewModel)
@@ -460,11 +777,11 @@ namespace SAB.CreateViewsAndSheets.Commands
             }
         }
 
-        private void CreateViewsAndSheetsWindow_SourceInitialized(object sender, EventArgs e)
+        private void RevitOwnedWindow_SourceInitialized(object sender, EventArgs e)
         {
             try
             {
-                CreateViewsAndSheetsWindow window = sender as CreateViewsAndSheetsWindow;
+                Window window = sender as Window;
                 if (window == null)
                 {
                     return;
@@ -476,7 +793,7 @@ namespace SAB.CreateViewsAndSheets.Commands
                     source.CompositionTarget.RenderMode = RenderMode.SoftwareOnly;
                 }
 
-                window.SourceInitialized -= CreateViewsAndSheetsWindow_SourceInitialized;
+                window.SourceInitialized -= RevitOwnedWindow_SourceInitialized;
             }
             catch
             {

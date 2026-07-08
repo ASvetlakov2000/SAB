@@ -1,0 +1,74 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Создание видов и листов"
+        Width="520"
+        MinWidth="500"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="18"
+          Background="{StaticResource SabBrush.PanelBackground}">
+        <StackPanel>
+            <TextBlock Text="Создание видов и листов"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource SabBrush.Accent}"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,12" />
+
+            <ProgressBar x:Name="MainProgressBar"
+                         Height="16"
+                         Minimum="0"
+                         Maximum="100"
+                         Value="0"
+                         Foreground="{StaticResource SabBrush.Accent}"
+                         Background="{StaticResource SabBrush.DisabledBackground}"
+                         Margin="0,0,0,8" />
+
+            <Grid Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="StepTextBlock"
+                           Grid.Column="0"
+                           Text="Шаг 0 из 0"
+                           Foreground="{StaticResource SabBrush.Accent}"
+                           TextWrapping="Wrap" />
+
+                <TextBlock x:Name="PercentTextBlock"
+                           Grid.Column="1"
+                           Text="0%"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource SabBrush.Accent}"
+                           Margin="12,0,0,0" />
+            </Grid>
+
+            <Border x:Name="RotatingMessageBorder"
+                    Padding="12"
+                    Background="{StaticResource SabBrush.AccentLight}"
+                    BorderBrush="{StaticResource SabBrush.Accent}"
+                    BorderThickness="1"
+                    CornerRadius="6">
+                <TextBlock x:Name="RotatingMessageTextBlock"
+                           Text=""
+                           Foreground="{StaticResource SabBrush.Accent}"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center" />
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>

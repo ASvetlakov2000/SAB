@@ -51,6 +51,15 @@ namespace SAB.CreateViewsAndSheets.Services
             CreateViewsAndSheetsSettings settings,
             IList<SheetCreationItem> items)
         {
+            return Execute(document, settings, items, null);
+        }
+
+        public CreateViewsAndSheetsResult Execute(
+            Document document,
+            CreateViewsAndSheetsSettings settings,
+            IList<SheetCreationItem> items,
+            IProgress<CreateViewsAndSheetsProgressInfo> progress)
+        {
             if (document == null)
             {
                 throw new InvalidOperationException("Документ Revit недоступен.");
@@ -71,8 +80,16 @@ namespace SAB.CreateViewsAndSheets.Services
                 : null;
 
             CreateViewsAndSheetsResult result = new CreateViewsAndSheetsResult();
+            OperationProgressTracker progressTracker = new OperationProgressTracker(
+                CalculateTotalProgressSteps(settings, items),
+                items.Count);
 
+            progressTracker.Report(
+                progress,
+                "Проверка настроек",
+                "Проверяются выбранные строки, образцы видов, образцы листов и параметры размещения.");
             ValidateSettingsBeforeTransaction(settings, items);
+            progressTracker.CompleteStep();
 
             using (TransactionGroup transactionGroup = new TransactionGroup(document, "SAB Создание видов и листов"))
             {
@@ -85,16 +102,36 @@ namespace SAB.CreateViewsAndSheets.Services
                         SheetCreationItem item = items[i];
                         if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView)
                         {
-                            ProcessMultiViewRow(document, settings, item, result);
+                            ProcessMultiViewRow(document, settings, item, result, progress, progressTracker, i + 1, items.Count);
                         }
                         else
                         {
+                            progressTracker.Report(
+                                progress,
+                                "Подбор образцов",
+                                BuildRowProgressDetails(item, i + 1, items.Count, "поиск вида-образца и листа-образца"));
                             RowSourceSelection rowSource = ResolveRowSource(document, settings, item, sourceView);
-                            ProcessSingleRow(document, rowSource.SourceView, rowSource.SourceSheetId, settings, item, result);
+                            progressTracker.CompleteStep();
+
+                            ProcessSingleRow(
+                                document,
+                                rowSource.SourceView,
+                                rowSource.SourceSheetId,
+                                settings,
+                                item,
+                                result,
+                                progress,
+                                progressTracker,
+                                i + 1,
+                                items.Count);
                         }
                     }
 
                     transactionGroup.Assimilate();
+                    progressTracker.Report(
+                        progress,
+                        "Готово",
+                        "Создание видов и листов завершено.");
                 }
                 catch (RowProcessingException)
                 {
@@ -232,7 +269,11 @@ namespace SAB.CreateViewsAndSheets.Services
             ElementId sourceSheetId,
             CreateViewsAndSheetsSettings settings,
             SheetCreationItem item,
-            CreateViewsAndSheetsResult result)
+            CreateViewsAndSheetsResult result,
+            IProgress<CreateViewsAndSheetsProgressInfo> progress,
+            OperationProgressTracker progressTracker,
+            int currentRowIndex,
+            int totalRows)
         {
             Transaction transaction = null;
 
@@ -241,12 +282,21 @@ namespace SAB.CreateViewsAndSheets.Services
                 transaction = new Transaction(document, "Создать вид и лист: строка " + item.RowNumber);
                 transaction.Start();
 
+                progressTracker.Report(
+                    progress,
+                    "Дублирование вида",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "создание копии вида \"" + item.ViewName + "\""));
                 View duplicatedView = _viewDuplicationService.DuplicateView(
                     document,
                     sourceView,
                     item,
                     result.Warnings);
+                progressTracker.CompleteStep();
 
+                progressTracker.Report(
+                    progress,
+                    "Создание листа",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "создание листа " + item.SheetNumber));
                 ViewSheet createdSheet = _sheetCreationService.CreateSheet(
                     document,
                     settings.TitleBlockTypeId,
@@ -255,18 +305,28 @@ namespace SAB.CreateViewsAndSheets.Services
                     item.SheetNumber,
                     item.SheetName,
                     result.Warnings);
+                progressTracker.CompleteStep();
 
                 document.Regenerate();
 
+                progressTracker.Report(
+                    progress,
+                    "Копирование оформления",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "копирование оформления с листа-образца"));
                 _sheetDetailCopyService.CopyFromSourceSheet(
                     document,
                     sourceSheetId,
                     createdSheet,
                     settings.DetailCopy,
                     result.Warnings);
+                progressTracker.CompleteStep();
 
                 document.Regenerate();
 
+                progressTracker.Report(
+                    progress,
+                    "Размещение вида",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "размещение вида на созданном листе"));
                 if (settings.Placement != null && settings.Placement.UseSourceSheetViewportPlacement)
                 {
                     ViewSheet sourceSheet = document.GetElement(sourceSheetId) as ViewSheet;
@@ -299,6 +359,7 @@ namespace SAB.CreateViewsAndSheets.Services
                         settings.Placement,
                         result.Warnings);
                 }
+                progressTracker.CompleteStep();
 
                 CreatedViewSheetInfo info = new CreatedViewSheetInfo();
                 info.RowNumber = item.RowNumber;
@@ -309,7 +370,17 @@ namespace SAB.CreateViewsAndSheets.Services
                 info.SheetName = createdSheet.Name;
                 result.CreatedItems.Add(info);
 
+                progressTracker.Report(
+                    progress,
+                    "Сохранение строки",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "сохранение изменений строки"));
                 transaction.Commit();
+                progressTracker.CompleteStep();
+                progressTracker.CompleteRow();
+                progressTracker.Report(
+                    progress,
+                    "Строка готова",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "создание завершено"));
             }
             catch (Exception exception)
             {
@@ -333,12 +404,20 @@ namespace SAB.CreateViewsAndSheets.Services
             Document document,
             CreateViewsAndSheetsSettings settings,
             SheetCreationItem item,
-            CreateViewsAndSheetsResult result)
+            CreateViewsAndSheetsResult result,
+            IProgress<CreateViewsAndSheetsProgressInfo> progress,
+            OperationProgressTracker progressTracker,
+            int currentRowIndex,
+            int totalRows)
         {
             Transaction transaction = null;
 
             try
             {
+                progressTracker.Report(
+                    progress,
+                    "Подбор зоны",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "поиск зоны и листа-образца"));
                 MultiViewZoneMapping zoneMapping = FindMultiViewZoneMapping(settings.MultiViewZoneMappings, item != null ? item.FloorName : string.Empty);
                 if (zoneMapping == null)
                 {
@@ -357,10 +436,15 @@ namespace SAB.CreateViewsAndSheets.Services
                 ElementId viewportTypeId = zoneMapping.ViewportTypeId != null && zoneMapping.ViewportTypeId != ElementId.InvalidElementId
                     ? zoneMapping.ViewportTypeId
                     : settings.ViewportTypeId;
+                progressTracker.CompleteStep();
 
                 transaction = new Transaction(document, "Создать многовидовой лист: строка " + item.RowNumber);
                 transaction.Start();
 
+                progressTracker.Report(
+                    progress,
+                    "Создание листа",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "создание многовидового листа " + item.SheetNumber));
                 ViewSheet createdSheet = _sheetCreationService.CreateSheet(
                     document,
                     titleBlockTypeId,
@@ -369,15 +453,21 @@ namespace SAB.CreateViewsAndSheets.Services
                     item.SheetNumber,
                     item.SheetName,
                     result.Warnings);
+                progressTracker.CompleteStep();
 
                 document.Regenerate();
 
+                progressTracker.Report(
+                    progress,
+                    "Копирование оформления",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "копирование оформления с листа-образца зоны"));
                 _sheetDetailCopyService.CopyFromSourceSheet(
                     document,
                     zoneMapping.SourceSheetId,
                     createdSheet,
                     settings.DetailCopy,
                     result.Warnings);
+                progressTracker.CompleteStep();
 
                 document.Regenerate();
 
@@ -396,14 +486,23 @@ namespace SAB.CreateViewsAndSheets.Services
                     }
 
                     SheetCreationItem viewItem = CloneItemForMultiViewFloor(item, zoneMapping.ZoneName, floorMapping.FloorName);
+                    progressTracker.Report(
+                        progress,
+                        "Дублирование вида",
+                        BuildRowProgressDetails(item, currentRowIndex, totalRows, "создание вида этажа \"" + floorMapping.FloorName + "\""));
                     View duplicatedView = _viewDuplicationService.DuplicateView(
                         document,
                         sourceView,
                         viewItem,
                         result.Warnings);
+                    progressTracker.CompleteStep();
 
                     document.Regenerate();
 
+                    progressTracker.Report(
+                        progress,
+                        "Размещение вида",
+                        BuildRowProgressDetails(item, currentRowIndex, totalRows, "размещение вида этажа \"" + floorMapping.FloorName + "\""));
                     _viewportPlacementService.PlaceViewOnSheetBySourceViewport(
                         document,
                         sourceSheet,
@@ -412,6 +511,7 @@ namespace SAB.CreateViewsAndSheets.Services
                         duplicatedView,
                         viewportTypeId,
                         result.Warnings);
+                    progressTracker.CompleteStep();
 
                     CreatedViewSheetInfo info = new CreatedViewSheetInfo();
                     info.RowNumber = item.RowNumber;
@@ -423,7 +523,17 @@ namespace SAB.CreateViewsAndSheets.Services
                     result.CreatedItems.Add(info);
                 }
 
+                progressTracker.Report(
+                    progress,
+                    "Сохранение строки",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "сохранение многовидового листа"));
                 transaction.Commit();
+                progressTracker.CompleteStep();
+                progressTracker.CompleteRow();
+                progressTracker.Report(
+                    progress,
+                    "Строка готова",
+                    BuildRowProgressDetails(item, currentRowIndex, totalRows, "создание завершено"));
             }
             catch (Exception exception)
             {
@@ -778,6 +888,79 @@ namespace SAB.CreateViewsAndSheets.Services
             }
         }
 
+        private int CalculateTotalProgressSteps(CreateViewsAndSheetsSettings settings, IList<SheetCreationItem> items)
+        {
+            // Блок настройки общего количества шагов прогресса.
+            // Если позже добавятся новые этапы создания, их нужно отразить здесь и в местах progressTracker.CompleteStep().
+            int totalSteps = 1;
+
+            if (settings == null || items == null)
+            {
+                return totalSteps;
+            }
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                SheetCreationItem item = items[i];
+                if (settings.StructureMode == CreateViewsAndSheetsStructureMode.MultiView)
+                {
+                    int floorCount = CountMultiViewFloorsForProgress(settings, item);
+                    totalSteps += 4 + floorCount * 2;
+                }
+                else
+                {
+                    totalSteps += 6;
+                }
+            }
+
+            return totalSteps > 0 ? totalSteps : 1;
+        }
+
+        private int CountMultiViewFloorsForProgress(CreateViewsAndSheetsSettings settings, SheetCreationItem item)
+        {
+            if (settings == null || item == null)
+            {
+                return 0;
+            }
+
+            MultiViewZoneMapping mapping = FindMultiViewZoneMapping(settings.MultiViewZoneMappings, item.FloorName);
+            if (mapping == null || mapping.Floors == null)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            for (int i = 0; i < mapping.Floors.Count; i++)
+            {
+                if (mapping.Floors[i] != null)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private string BuildRowProgressDetails(SheetCreationItem item, int currentRowIndex, int totalRows, string actionText)
+        {
+            string details = "Строка " + currentRowIndex + " из " + totalRows;
+            if (item != null)
+            {
+                details += " (табличная строка " + item.RowNumber + ")";
+                if (!string.IsNullOrWhiteSpace(item.SheetNumber))
+                {
+                    details += ", лист " + item.SheetNumber;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(actionText))
+            {
+                details += ": " + actionText + ".";
+            }
+
+            return details;
+        }
+
         private class RowSourceSelection
         {
             public RowSourceSelection(View sourceView, ElementId sourceSheetId)
@@ -789,6 +972,57 @@ namespace SAB.CreateViewsAndSheets.Services
             public View SourceView { get; private set; }
 
             public ElementId SourceSheetId { get; private set; }
+        }
+
+        private class OperationProgressTracker
+        {
+            public OperationProgressTracker(int totalSteps, int totalItems)
+            {
+                TotalSteps = totalSteps > 0 ? totalSteps : 1;
+                TotalItems = totalItems > 0 ? totalItems : 0;
+            }
+
+            public int CurrentStep { get; private set; }
+
+            public int TotalSteps { get; private set; }
+
+            public int ProcessedItems { get; private set; }
+
+            public int TotalItems { get; private set; }
+
+            public void CompleteStep()
+            {
+                if (CurrentStep < TotalSteps)
+                {
+                    CurrentStep++;
+                }
+            }
+
+            public void CompleteRow()
+            {
+                if (ProcessedItems < TotalItems)
+                {
+                    ProcessedItems++;
+                }
+            }
+
+            public void Report(IProgress<CreateViewsAndSheetsProgressInfo> progress, string stage, string details)
+            {
+                if (progress == null)
+                {
+                    return;
+                }
+
+                CreateViewsAndSheetsProgressInfo progressInfo = new CreateViewsAndSheetsProgressInfo();
+                progressInfo.CurrentStep = CurrentStep;
+                progressInfo.TotalSteps = TotalSteps;
+                progressInfo.ProcessedItems = ProcessedItems;
+                progressInfo.TotalItems = TotalItems;
+                progressInfo.Stage = stage;
+                progressInfo.Details = details;
+
+                progress.Report(progressInfo);
+            }
         }
 
         private bool IsFinite(double value)
