@@ -18,6 +18,9 @@ namespace WixSharpInstaller
         private const string FamiliesRootFolderName = "Families for Plugin";
         private const string FamiliesManifestFileName = "families.manifest.tsv";
         private const string FamiliesInstallerStagingFolderName = "_families_for_installer";
+        private const string SyncReminderFolderName = "SyncReminderTest";
+        private const string SyncReminderAssemblyFileName = "SyncReminderTest.dll";
+        private const string SyncReminderAddinFileName = "SyncReminderTest.addin";
 
         private static int Main(string[] args)
         {
@@ -28,6 +31,7 @@ namespace WixSharpInstaller
                 string repositoryRoot = GetOption(options, "--root", Path.GetFullPath(Path.Combine(installerRoot, "..", "..", "..", "..", "..")));
 
                 string binFolder = GetOption(options, "--bin", Path.GetFullPath(Path.Combine(repositoryRoot, "SAB", "bin", "Debug")));
+                string syncReminderBinFolder = GetOption(options, "--sync-reminder-bin", string.Empty);
                 string outputFolder = GetOption(options, "--out", Path.GetFullPath(Path.Combine(repositoryRoot, "Installer", "output")));
                 string explicitVersion = GetOptionRaw(options, "--version", string.Empty);
 
@@ -55,6 +59,11 @@ namespace WixSharpInstaller
                     throw new FileNotFoundException("SAB_2024.addin was not found.", addin2024Path);
                 }
 
+                if (!string.IsNullOrWhiteSpace(syncReminderBinFolder))
+                {
+                    ValidateSyncReminderBinFolder(syncReminderBinFolder);
+                }
+
                 Directory.CreateDirectory(outputFolder);
 
                 Version installerVersion = ResolveInstallerVersion(assemblyPath, explicitVersion);
@@ -64,6 +73,7 @@ namespace WixSharpInstaller
                     addinPath: addin2023Path,
                     repositoryRoot: repositoryRoot,
                     binFolder: binFolder,
+                    syncReminderBinFolder: syncReminderBinFolder,
                     outputFolder: outputFolder,
                     upgradeCode: new Guid(UpgradeCode2023),
                     version: installerVersion);
@@ -73,6 +83,7 @@ namespace WixSharpInstaller
                     addinPath: addin2024Path,
                     repositoryRoot: repositoryRoot,
                     binFolder: binFolder,
+                    syncReminderBinFolder: syncReminderBinFolder,
                     outputFolder: outputFolder,
                     upgradeCode: new Guid(UpgradeCode2024),
                     version: installerVersion);
@@ -95,6 +106,7 @@ namespace WixSharpInstaller
             string addinPath,
             string repositoryRoot,
             string binFolder,
+            string syncReminderBinFolder,
             string outputFolder,
             Guid upgradeCode,
             Version version)
@@ -150,10 +162,40 @@ namespace WixSharpInstaller
 
             WxsFile addinFile = new WxsFile(addinPath);
 
+            List<WixEntity> addinRootFiles = new List<WixEntity>();
+            addinRootFiles.Add(addinFile);
+
+            List<WixEntity> projectEntities = new List<WixEntity>();
+            projectEntities.Add(pluginFilesDirectory);
+
+            // Test sync reminder is installed as a separate add-in next to SAB.
+            if (!string.IsNullOrWhiteSpace(syncReminderBinFolder))
+            {
+                string syncReminderAddinPath = CreateSyncReminderAddinFile(outputFolder, year);
+                addinRootFiles.Add(new WxsFile(
+                    new Id(CreateWixIdentifier("File", year + "\\" + SyncReminderAddinFileName)),
+                    syncReminderAddinPath));
+
+                List<WixEntity> syncReminderFiles = new List<WixEntity>();
+                AddPluginBinContent(syncReminderFiles, syncReminderBinFolder);
+
+                if (syncReminderFiles.Count == 0)
+                {
+                    throw new DirectoryNotFoundException("SyncReminderTest bin folder is empty: " + syncReminderBinFolder);
+                }
+
+                projectEntities.Add(new Dir(
+                    @"%AppDataFolder%\Autodesk\Revit\Addins\" + year + @"\" + SyncReminderFolderName,
+                    syncReminderFiles.ToArray()));
+            }
+
+            projectEntities.Insert(0, new Dir(
+                @"%AppDataFolder%\Autodesk\Revit\Addins\" + year,
+                addinRootFiles.ToArray()));
+
             Project project = new Project(
                 "SAB Revit " + year,
-                new Dir(@"%AppDataFolder%\Autodesk\Revit\Addins\" + year, addinFile),
-                pluginFilesDirectory);
+                projectEntities.ToArray());
 
             // ProductCode должен быть новым на каждый MSI-билд.
             // Это гарантирует корректный сценарий обновления установленного плагина через MajorUpgrade.
@@ -186,6 +228,48 @@ namespace WixSharpInstaller
 
         // Блок выбора фактической папки Docs\PluginInstructions.
         // Поддерживаем два варианта корня репозитория, чтобы сборка работала стабильно в разных окружениях.
+        private static void ValidateSyncReminderBinFolder(string syncReminderBinFolder)
+        {
+            if (string.IsNullOrWhiteSpace(syncReminderBinFolder))
+            {
+                return;
+            }
+
+            if (!Directory.Exists(syncReminderBinFolder))
+            {
+                throw new DirectoryNotFoundException("SyncReminderTest bin folder not found: " + syncReminderBinFolder);
+            }
+
+            string assemblyPath = Path.Combine(syncReminderBinFolder, SyncReminderAssemblyFileName);
+            if (!IOFile.Exists(assemblyPath))
+            {
+                throw new FileNotFoundException("SyncReminderTest.dll was not found in bin folder.", assemblyPath);
+            }
+        }
+
+        private static string CreateSyncReminderAddinFile(string outputFolder, string year)
+        {
+            string stagingFolder = Path.Combine(outputFolder, "_sync_reminder_addin", year);
+            Directory.CreateDirectory(stagingFolder);
+
+            string addinPath = Path.Combine(stagingFolder, SyncReminderAddinFileName);
+            string addinText =
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
+                "<RevitAddIns>\r\n" +
+                "  <AddIn Type=\"Application\">\r\n" +
+                "    <Name>SyncReminderTest</Name>\r\n" +
+                "    <Assembly>.\\SyncReminderTest\\SyncReminderTest.dll</Assembly>\r\n" +
+                "    <AddInId>e5679611-8e6b-44fb-a2b9-347db3c0ef76</AddInId>\r\n" +
+                "    <FullClassName>SyncReminderTest.App</FullClassName>\r\n" +
+                "    <VendorId>SAB</VendorId>\r\n" +
+                "    <VendorDescription>SAB</VendorDescription>\r\n" +
+                "  </AddIn>\r\n" +
+                "</RevitAddIns>\r\n";
+
+            IOFile.WriteAllText(addinPath, addinText, new UTF8Encoding(false));
+            return addinPath;
+        }
+
         private static string ResolvePluginInstructionsSourcePath(string repositoryRoot)
         {
             List<string> candidates = new List<string>();

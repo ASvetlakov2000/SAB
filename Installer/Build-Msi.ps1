@@ -1,5 +1,6 @@
 param(
     [string]$BinFolder = "..\SAB\bin\Debug",
+    [string]$SyncReminderBinFolder = "..\..\..\SyncReminderTest\bin\Debug",
     [string]$OutputFolder = ".\output",
     [string]$InstallerVersion = ""
 )
@@ -56,6 +57,7 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot ".."))
 $installerProjectPath = Join-Path $scriptRoot "WixSharpInstaller\WixSharpInstaller.csproj"
 $binRootPath = Resolve-AbsolutePath -Path $BinFolder -BasePath $scriptRoot
+$syncReminderBinRootPath = Resolve-AbsolutePath -Path $SyncReminderBinFolder -BasePath $scriptRoot
 $outputRootPath = Resolve-AbsolutePath -Path $OutputFolder -BasePath $scriptRoot
 $toolsRootPath = Join-Path $scriptRoot ".tools"
 
@@ -75,11 +77,24 @@ $env:PATH = "$toolsRootPath;$env:PATH"
 Ensure-WixUiExtension -WixExePath $wixExePath
 
 # Блок запуска WixSharp-генератора MSI.
-dotnet run --project $installerProjectPath -- `
-    --root "$repositoryRoot" `
-    --bin "$binRootPath" `
-    --out "$outputRootPath" `
-    --version "$InstallerVersion"
+$installerArguments = @(
+    "--root", "$repositoryRoot",
+    "--bin", "$binRootPath",
+    "--out", "$outputRootPath",
+    "--version", "$InstallerVersion"
+)
+
+if (Test-Path -LiteralPath $syncReminderBinRootPath) {
+    $installerArguments += @("--sync-reminder-bin", "$syncReminderBinRootPath")
+    Write-Host "SyncReminderTest will be included:"
+    Write-Host "  $syncReminderBinRootPath"
+}
+else {
+    Write-Host "SyncReminderTest bin folder was not found and will be skipped:"
+    Write-Host "  $syncReminderBinRootPath"
+}
+
+dotnet run --project $installerProjectPath -- @installerArguments
 
 if ($LASTEXITCODE -ne 0) {
     throw "WixSharp installer build failed."
