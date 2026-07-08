@@ -59,7 +59,6 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="DuckReminderWindow.cs" />
-    <Compile Include="FogOverlayWindow.cs" />
     <Compile Include="ReminderAnimationMode.cs" />
     <Compile Include="ReminderSettings.cs" />
     <Compile Include="ReminderSettingsService.cs" />

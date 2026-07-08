@@ -30,7 +30,7 @@ namespace SyncReminderTest
                 settings.IsEnabled = ReadBool(root, "IsEnabled", settings.IsEnabled);
                 settings.ReminderDelayMinutes = ReadInt(root, "ReminderDelayMinutes", settings.ReminderDelayMinutes);
                 settings.ReminderDelayMinutes = Clamp(settings.ReminderDelayMinutes, MinimumMinutes, MaximumMinutes);
-                settings.AnimationMode = ReadAnimationMode(root, "AnimationMode", settings.AnimationMode);
+                settings.AnimationMode = ReminderAnimationMode.DuckOnly;
 
                 return settings;
             }
@@ -55,6 +55,7 @@ namespace SyncReminderTest
 
             ReminderSettings normalizedSettings = settings.Clone();
             normalizedSettings.ReminderDelayMinutes = Clamp(normalizedSettings.ReminderDelayMinutes, MinimumMinutes, MaximumMinutes);
+            normalizedSettings.AnimationMode = ReminderAnimationMode.DuckOnly;
 
             XDocument document = new XDocument(
                 new XElement(
@@ -104,23 +105,6 @@ namespace SyncReminderTest
 
             int value;
             if (!int.TryParse(element.Value, out value))
-            {
-                return defaultValue;
-            }
-
-            return value;
-        }
-
-        private static ReminderAnimationMode ReadAnimationMode(XElement root, string elementName, ReminderAnimationMode defaultValue)
-        {
-            XElement element = root.Element(elementName);
-            if (element == null)
-            {
-                return defaultValue;
-            }
-
-            ReminderAnimationMode value;
-            if (!Enum.TryParse(element.Value, out value))
             {
                 return defaultValue;
             }

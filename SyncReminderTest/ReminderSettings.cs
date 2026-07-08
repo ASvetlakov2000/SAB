@@ -13,7 +13,7 @@ namespace SyncReminderTest
             ReminderSettings settings = new ReminderSettings();
             settings.IsEnabled = true;
             settings.ReminderDelayMinutes = 1;
-            settings.AnimationMode = ReminderAnimationMode.FogAndDuck;
+            settings.AnimationMode = ReminderAnimationMode.DuckOnly;
             return settings;
         }
 

@@ -1,5 +1,4 @@
 using System;
-using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,7 +12,7 @@ namespace SyncReminderTest
     internal class DuckReminderWindow : Window
     {
         private readonly DispatcherTimer _moveTimer;
-        private readonly DispatcherTimer _voiceTimer;
+        private readonly DispatcherTimer _messageTimer;
         private readonly Random _random;
         private Rect _allowedArea;
         private double _velocityX;
@@ -22,8 +21,8 @@ namespace SyncReminderTest
 
         public DuckReminderWindow(IntPtr ownerHandle)
         {
-            Width = 240;
-            Height = 138;
+            Width = 286;
+            Height = 176;
             WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
             ShowInTaskbar = false;
@@ -49,9 +48,9 @@ namespace SyncReminderTest
             _moveTimer.Interval = TimeSpan.FromMilliseconds(28);
             _moveTimer.Tick += OnMoveTimerTick;
 
-            _voiceTimer = new DispatcherTimer();
-            _voiceTimer.Interval = TimeSpan.FromSeconds(7);
-            _voiceTimer.Tick += OnVoiceTimerTick;
+            _messageTimer = new DispatcherTimer();
+            _messageTimer.Interval = TimeSpan.FromSeconds(7);
+            _messageTimer.Tick += OnMessageTimerTick;
         }
 
         public void SetAllowedArea(Rect allowedArea)
@@ -77,9 +76,9 @@ namespace SyncReminderTest
                 _moveTimer.Start();
             }
 
-            if (!_voiceTimer.IsEnabled)
+            if (!_messageTimer.IsEnabled)
             {
-                _voiceTimer.Start();
+                _messageTimer.Start();
             }
 
             Say("Кря! Синхронизируйся");
@@ -88,7 +87,7 @@ namespace SyncReminderTest
         public void HideDuck()
         {
             _moveTimer.Stop();
-            _voiceTimer.Stop();
+            _messageTimer.Stop();
 
             if (IsVisible)
             {
@@ -99,7 +98,7 @@ namespace SyncReminderTest
         public void CloseDuck()
         {
             _moveTimer.Stop();
-            _voiceTimer.Stop();
+            _messageTimer.Stop();
             Close();
         }
 
@@ -111,13 +110,14 @@ namespace SyncReminderTest
 
             // Block responsible for the speech bubble text. Change the phrase here if needed.
             Border bubble = new Border();
-            bubble.Width = 214;
-            bubble.Height = 42;
+            bubble.Width = 254;
+            bubble.Height = 68;
             bubble.CornerRadius = new CornerRadius(12);
-            bubble.Padding = new Thickness(12, 6, 12, 6);
+            bubble.Padding = new Thickness(14, 8, 14, 8);
             bubble.Background = new SolidColorBrush(Color.FromArgb(238, 255, 255, 255));
             bubble.BorderBrush = new SolidColorBrush(Color.FromArgb(200, 120, 148, 165));
             bubble.BorderThickness = new Thickness(1);
+            bubble.ClipToBounds = true;
 
             _bubbleText = new TextBlock();
             _bubbleText.Text = "Синхронизируйся";
@@ -126,6 +126,10 @@ namespace SyncReminderTest
             _bubbleText.FontWeight = FontWeights.SemiBold;
             _bubbleText.Foreground = new SolidColorBrush(Color.FromRgb(33, 43, 52));
             _bubbleText.TextWrapping = TextWrapping.Wrap;
+            _bubbleText.TextTrimming = TextTrimming.CharacterEllipsis;
+            _bubbleText.LineHeight = 18;
+            _bubbleText.Height = 50;
+            _bubbleText.MaxHeight = 50;
             _bubbleText.VerticalAlignment = VerticalAlignment.Center;
             bubble.Child = _bubbleText;
 
@@ -136,9 +140,9 @@ namespace SyncReminderTest
             Polygon bubbleTail = new Polygon();
             bubbleTail.Points = new PointCollection
             {
-                new Point(84, 45),
-                new Point(104, 45),
-                new Point(96, 61)
+                new Point(84, 67),
+                new Point(104, 67),
+                new Point(96, 82)
             };
             bubbleTail.Fill = bubble.Background;
             bubbleTail.Stroke = bubble.BorderBrush;
@@ -151,7 +155,7 @@ namespace SyncReminderTest
             shadow.Height = 18;
             shadow.Fill = new SolidColorBrush(Color.FromArgb(70, 50, 66, 72));
             Canvas.SetLeft(shadow, 62);
-            Canvas.SetTop(shadow, 116);
+            Canvas.SetTop(shadow, 154);
             canvas.Children.Add(shadow);
 
             Ellipse body = new Ellipse();
@@ -161,7 +165,7 @@ namespace SyncReminderTest
             body.Stroke = new SolidColorBrush(Color.FromRgb(203, 151, 27));
             body.StrokeThickness = 2;
             Canvas.SetLeft(body, 68);
-            Canvas.SetTop(body, 72);
+            Canvas.SetTop(body, 110);
             canvas.Children.Add(body);
 
             Ellipse wing = new Ellipse();
@@ -169,7 +173,7 @@ namespace SyncReminderTest
             wing.Height = 25;
             wing.Fill = new SolidColorBrush(Color.FromRgb(232, 172, 35));
             Canvas.SetLeft(wing, 96);
-            Canvas.SetTop(wing, 88);
+            Canvas.SetTop(wing, 126);
             canvas.Children.Add(wing);
 
             Ellipse head = new Ellipse();
@@ -179,15 +183,15 @@ namespace SyncReminderTest
             head.Stroke = new SolidColorBrush(Color.FromRgb(203, 151, 27));
             head.StrokeThickness = 2;
             Canvas.SetLeft(head, 46);
-            Canvas.SetTop(head, 57);
+            Canvas.SetTop(head, 95);
             canvas.Children.Add(head);
 
             Polygon beak = new Polygon();
             beak.Points = new PointCollection
             {
-                new Point(43, 77),
-                new Point(14, 86),
-                new Point(43, 94)
+                new Point(43, 115),
+                new Point(14, 124),
+                new Point(43, 132)
             };
             beak.Fill = new SolidColorBrush(Color.FromRgb(238, 127, 38));
             beak.Stroke = new SolidColorBrush(Color.FromRgb(181, 79, 24));
@@ -199,7 +203,7 @@ namespace SyncReminderTest
             eyeWhite.Height = 10;
             eyeWhite.Fill = Brushes.White;
             Canvas.SetLeft(eyeWhite, 65);
-            Canvas.SetTop(eyeWhite, 69);
+            Canvas.SetTop(eyeWhite, 107);
             canvas.Children.Add(eyeWhite);
 
             Ellipse eye = new Ellipse();
@@ -207,7 +211,7 @@ namespace SyncReminderTest
             eye.Height = 5;
             eye.Fill = new SolidColorBrush(Color.FromRgb(24, 28, 30));
             Canvas.SetLeft(eye, 68);
-            Canvas.SetTop(eye, 72);
+            Canvas.SetTop(eye, 110);
             canvas.Children.Add(eye);
 
             Rectangle legOne = new Rectangle();
@@ -217,7 +221,7 @@ namespace SyncReminderTest
             legOne.RadiusY = 2;
             legOne.Fill = new SolidColorBrush(Color.FromRgb(221, 109, 33));
             Canvas.SetLeft(legOne, 100);
-            Canvas.SetTop(legOne, 122);
+            Canvas.SetTop(legOne, 160);
             canvas.Children.Add(legOne);
 
             Rectangle legTwo = new Rectangle();
@@ -227,7 +231,7 @@ namespace SyncReminderTest
             legTwo.RadiusY = 2;
             legTwo.Fill = new SolidColorBrush(Color.FromRgb(221, 109, 33));
             Canvas.SetLeft(legTwo, 128);
-            Canvas.SetTop(legTwo, 121);
+            Canvas.SetTop(legTwo, 159);
             canvas.Children.Add(legTwo);
 
             return canvas;
@@ -271,18 +275,9 @@ namespace SyncReminderTest
             RunAwayFromMouse(e.GetPosition(this));
         }
 
-        private void OnVoiceTimerTick(object sender, EventArgs e)
+        private void OnMessageTimerTick(object sender, EventArgs e)
         {
             Say("Кря! Синхронизируйся");
-
-            try
-            {
-                SystemSounds.Asterisk.Play();
-            }
-            catch
-            {
-                // Sound is optional. The visual reminder must keep working even if Windows blocks it.
-            }
         }
 
         private void RunAwayFromMouse(Point mousePosition)

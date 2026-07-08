@@ -11,9 +11,7 @@ namespace SyncReminderTest
 {
     internal class SyncReminderController
     {
-        // Block responsible for overlay position. Adjust these values if your Revit ribbon is taller or shorter.
-        private const double RibbonTopOffset = 82;
-        private const double RibbonFogHeight = 150;
+        // Block responsible for the duck overlay position. Adjust this value if your Revit ribbon is taller or shorter.
         private const double WorkspaceTopOffset = 235;
 
         // Set to true only when checking event flow. It will show TaskDialog messages.
@@ -26,7 +24,6 @@ namespace SyncReminderTest
         private TimeSpan _reminderDelay;
         private DateTime _lastIdlingCheck;
         private IntPtr _revitWindowHandle;
-        private FogOverlayWindow _fogWindow;
         private DuckReminderWindow _duckWindow;
         private string _activeDocumentKey;
         private bool _isStarted;
@@ -384,53 +381,19 @@ namespace SyncReminderTest
                 return;
             }
 
-            Rect fogBounds = new Rect(
-                revitBounds.Left,
-                revitBounds.Top + RibbonTopOffset,
-                revitBounds.Width,
-                RibbonFogHeight);
-
             Rect duckArea = new Rect(
                 revitBounds.Left + 16,
                 revitBounds.Top + WorkspaceTopOffset,
                 Math.Max(260, revitBounds.Width - 32),
                 Math.Max(180, revitBounds.Height - WorkspaceTopOffset - 28));
 
-            bool showFog = _settings.AnimationMode == ReminderAnimationMode.FogAndDuck ||
-                           _settings.AnimationMode == ReminderAnimationMode.FogOnly;
-
-            bool showDuck = _settings.AnimationMode == ReminderAnimationMode.FogAndDuck ||
-                            _settings.AnimationMode == ReminderAnimationMode.DuckOnly;
-
-            if (showFog)
+            if (_duckWindow == null)
             {
-                if (_fogWindow == null)
-                {
-                    _fogWindow = new FogOverlayWindow(_revitWindowHandle);
-                }
-
-                _fogWindow.SetBounds(fogBounds);
-                _fogWindow.ShowFog();
-            }
-            else if (_fogWindow != null)
-            {
-                _fogWindow.HideFog();
+                _duckWindow = new DuckReminderWindow(_revitWindowHandle);
             }
 
-            if (showDuck)
-            {
-                if (_duckWindow == null)
-                {
-                    _duckWindow = new DuckReminderWindow(_revitWindowHandle);
-                }
-
-                _duckWindow.SetAllowedArea(duckArea);
-                _duckWindow.ShowDuck();
-            }
-            else if (_duckWindow != null)
-            {
-                _duckWindow.HideDuck();
-            }
+            _duckWindow.SetAllowedArea(duckArea);
+            _duckWindow.ShowDuck();
 
             if (!_isReminderVisible)
             {
@@ -441,11 +404,6 @@ namespace SyncReminderTest
 
         private void HideReminder()
         {
-            if (_fogWindow != null)
-            {
-                _fogWindow.HideFog();
-            }
-
             if (_duckWindow != null)
             {
                 _duckWindow.HideDuck();
@@ -462,6 +420,7 @@ namespace SyncReminderTest
             }
 
             _settings = settings.Clone();
+            _settings.AnimationMode = ReminderAnimationMode.DuckOnly;
 
             if (_settings.ReminderDelayMinutes < 1)
             {
@@ -480,26 +439,10 @@ namespace SyncReminderTest
                 HideReminder();
                 return;
             }
-
-            if (_settings.AnimationMode == ReminderAnimationMode.FogOnly && _duckWindow != null)
-            {
-                _duckWindow.HideDuck();
-            }
-
-            if (_settings.AnimationMode == ReminderAnimationMode.DuckOnly && _fogWindow != null)
-            {
-                _fogWindow.HideFog();
-            }
         }
 
         private void CloseOverlays()
         {
-            if (_fogWindow != null)
-            {
-                _fogWindow.CloseFog();
-                _fogWindow = null;
-            }
-
             if (_duckWindow != null)
             {
                 _duckWindow.CloseDuck();

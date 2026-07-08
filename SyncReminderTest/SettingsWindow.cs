@@ -12,7 +12,6 @@ namespace SyncReminderTest
         private CheckBox _enabledCheckBox;
         private Slider _minutesSlider;
         private TextBox _minutesTextBox;
-        private ComboBox _animationComboBox;
         private bool _isUpdatingMinutes;
 
         public SettingsWindow(ReminderSettings settings)
@@ -21,13 +20,16 @@ namespace SyncReminderTest
             Settings = _initialSettings.Clone();
 
             Title = "Настройки напоминания";
-            Width = 430;
-            Height = 325;
-            MinWidth = 430;
-            MinHeight = 325;
+            Width = 500;
+            Height = 315;
+            MinWidth = 500;
+            MinHeight = 315;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             ResizeMode = ResizeMode.NoResize;
             ShowInTaskbar = false;
+            FontFamily = new FontFamily("Segoe UI");
+            FontSize = 13;
+            Background = CreateBrush("#F7F8FA");
 
             Content = CreateContent();
             Loaded += OnLoaded;
@@ -38,68 +40,80 @@ namespace SyncReminderTest
         private UIElement CreateContent()
         {
             Grid root = new Grid();
-            root.Margin = new Thickness(18);
-            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             root.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            TextBlock titleText = new TextBlock();
-            titleText.Text = "Напоминание о синхронизации";
-            titleText.FontFamily = new FontFamily("Segoe UI");
-            titleText.FontSize = 18;
-            titleText.FontWeight = FontWeights.SemiBold;
-            titleText.Margin = new Thickness(0, 0, 0, 14);
-            Grid.SetRow(titleText, 0);
-            root.Children.Add(titleText);
+            Border panel = CreatePanelBorder();
+            panel.Margin = new Thickness(22, 18, 20, 14);
+            panel.Child = CreateMainPanelContent();
+            Grid.SetRow(panel, 0);
+            root.Children.Add(panel);
 
-            _enabledCheckBox = new CheckBox();
-            _enabledCheckBox.Content = "Включить функционал";
-            _enabledCheckBox.FontFamily = new FontFamily("Segoe UI");
-            _enabledCheckBox.FontSize = 14;
-            _enabledCheckBox.Margin = new Thickness(0, 0, 0, 18);
-            Grid.SetRow(_enabledCheckBox, 1);
-            root.Children.Add(_enabledCheckBox);
-
-            Grid timerGrid = CreateTimerGrid();
-            Grid.SetRow(timerGrid, 2);
-            root.Children.Add(timerGrid);
-
-            Grid animationGrid = CreateAnimationGrid();
-            Grid.SetRow(animationGrid, 3);
-            root.Children.Add(animationGrid);
-
-            StackPanel buttonsPanel = new StackPanel();
-            buttonsPanel.Orientation = Orientation.Horizontal;
-            buttonsPanel.HorizontalAlignment = HorizontalAlignment.Right;
-
-            Button cancelButton = new Button();
-            cancelButton.Content = "Отмена";
-            cancelButton.Width = 92;
-            cancelButton.Height = 30;
-            cancelButton.Margin = new Thickness(0, 0, 8, 0);
-            cancelButton.Click += OnCancelClick;
-            buttonsPanel.Children.Add(cancelButton);
-
-            Button saveButton = new Button();
-            saveButton.Content = "Сохранить";
-            saveButton.Width = 104;
-            saveButton.Height = 30;
-            saveButton.IsDefault = true;
-            saveButton.Click += OnSaveClick;
-            buttonsPanel.Children.Add(saveButton);
-
-            Grid.SetRow(buttonsPanel, 4);
-            root.Children.Add(buttonsPanel);
+            Border footer = CreateFooter();
+            Grid.SetRow(footer, 1);
+            root.Children.Add(footer);
 
             return root;
+        }
+
+        private UIElement CreateMainPanelContent()
+        {
+            StackPanel panel = new StackPanel();
+
+            StackPanel headerPanel = new StackPanel();
+            headerPanel.Orientation = Orientation.Horizontal;
+            headerPanel.Margin = new Thickness(0, 0, 0, 16);
+
+            Border iconBorder = new Border();
+            iconBorder.Width = 24;
+            iconBorder.Height = 24;
+            iconBorder.CornerRadius = new CornerRadius(5);
+            iconBorder.Background = CreateBrush("#EAF3FF");
+            iconBorder.BorderBrush = CreateBrush("#0F6CBD");
+            iconBorder.BorderThickness = new Thickness(1);
+            iconBorder.Margin = new Thickness(0, 0, 9, 0);
+
+            TextBlock iconText = new TextBlock();
+            iconText.Text = "!";
+            iconText.FontWeight = FontWeights.SemiBold;
+            iconText.Foreground = CreateBrush("#0F6CBD");
+            iconText.HorizontalAlignment = HorizontalAlignment.Center;
+            iconText.VerticalAlignment = VerticalAlignment.Center;
+            iconBorder.Child = iconText;
+
+            TextBlock headerText = new TextBlock();
+            headerText.Text = "Напоминание о синхронизации";
+            headerText.FontSize = 16;
+            headerText.FontWeight = FontWeights.SemiBold;
+            headerText.Foreground = CreateBrush("#1F2937");
+            headerText.VerticalAlignment = VerticalAlignment.Center;
+
+            headerPanel.Children.Add(iconBorder);
+            headerPanel.Children.Add(headerText);
+            panel.Children.Add(headerPanel);
+
+            _enabledCheckBox = new CheckBox();
+            _enabledCheckBox.Content = "Включить напоминание";
+            _enabledCheckBox.FontSize = 13;
+            _enabledCheckBox.Foreground = CreateBrush("#1F2937");
+            _enabledCheckBox.Margin = new Thickness(0, 0, 0, 18);
+            panel.Children.Add(_enabledCheckBox);
+
+            Grid timerGrid = CreateTimerGrid();
+            panel.Children.Add(timerGrid);
+
+            TextBlock modeText = new TextBlock();
+            modeText.Text = "Режим: только уточка";
+            modeText.Foreground = CreateBrush("#667085");
+            modeText.Margin = new Thickness(0, 16, 0, 0);
+            panel.Children.Add(modeText);
+
+            return panel;
         }
 
         private Grid CreateTimerGrid()
         {
             Grid timerGrid = new Grid();
-            timerGrid.Margin = new Thickness(0, 0, 0, 18);
             timerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             timerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             timerGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -107,9 +121,10 @@ namespace SyncReminderTest
 
             TextBlock label = new TextBlock();
             label.Text = "Таймер до напоминания, минут";
-            label.FontFamily = new FontFamily("Segoe UI");
-            label.FontSize = 13;
-            label.Margin = new Thickness(0, 0, 0, 6);
+            label.FontSize = 12;
+            label.FontWeight = FontWeights.SemiBold;
+            label.Foreground = CreateBrush("#1F2937");
+            label.Margin = new Thickness(0, 0, 0, 7);
             Grid.SetRow(label, 0);
             Grid.SetColumn(label, 0);
             Grid.SetColumnSpan(label, 2);
@@ -127,11 +142,14 @@ namespace SyncReminderTest
             timerGrid.Children.Add(_minutesSlider);
 
             _minutesTextBox = new TextBox();
-            _minutesTextBox.Width = 64;
-            _minutesTextBox.Height = 28;
-            _minutesTextBox.Margin = new Thickness(12, 0, 0, 0);
+            _minutesTextBox.Width = 72;
+            _minutesTextBox.Height = 30;
+            _minutesTextBox.Margin = new Thickness(14, 0, 0, 0);
             _minutesTextBox.VerticalContentAlignment = VerticalAlignment.Center;
             _minutesTextBox.TextAlignment = TextAlignment.Center;
+            _minutesTextBox.BorderBrush = CreateBrush("#D8DEE8");
+            _minutesTextBox.Background = Brushes.White;
+            _minutesTextBox.Foreground = CreateBrush("#1F2937");
             _minutesTextBox.PreviewTextInput += OnMinutesPreviewTextInput;
             _minutesTextBox.LostFocus += OnMinutesLostFocus;
             Grid.SetRow(_minutesTextBox, 1);
@@ -141,44 +159,81 @@ namespace SyncReminderTest
             return timerGrid;
         }
 
-        private Grid CreateAnimationGrid()
+        private Border CreateFooter()
         {
-            Grid animationGrid = new Grid();
-            animationGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            animationGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            Border footer = new Border();
+            footer.Background = Brushes.White;
+            footer.BorderBrush = CreateBrush("#D8DEE8");
+            footer.BorderThickness = new Thickness(0, 1, 0, 0);
+            footer.Padding = new Thickness(22, 10, 22, 10);
 
-            TextBlock label = new TextBlock();
-            label.Text = "Анимация";
-            label.FontFamily = new FontFamily("Segoe UI");
-            label.FontSize = 13;
-            label.Margin = new Thickness(0, 0, 0, 6);
-            Grid.SetRow(label, 0);
-            animationGrid.Children.Add(label);
+            Grid grid = new Grid();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            _animationComboBox = new ComboBox();
-            _animationComboBox.Height = 30;
-            _animationComboBox.Items.Add(CreateAnimationItem("Туман + уточка", ReminderAnimationMode.FogAndDuck));
-            _animationComboBox.Items.Add(CreateAnimationItem("Только туман на панели", ReminderAnimationMode.FogOnly));
-            _animationComboBox.Items.Add(CreateAnimationItem("Только уточка в рабочем окне", ReminderAnimationMode.DuckOnly));
-            Grid.SetRow(_animationComboBox, 1);
-            animationGrid.Children.Add(_animationComboBox);
+            StackPanel buttonsPanel = new StackPanel();
+            buttonsPanel.Orientation = Orientation.Horizontal;
+            buttonsPanel.HorizontalAlignment = HorizontalAlignment.Right;
+            Grid.SetColumn(buttonsPanel, 1);
 
-            return animationGrid;
+            Button cancelButton = CreateButton("Отмена", false);
+            cancelButton.Margin = new Thickness(0, 0, 10, 0);
+            cancelButton.Click += OnCancelClick;
+            buttonsPanel.Children.Add(cancelButton);
+
+            Button saveButton = CreateButton("Сохранить", true);
+            saveButton.IsDefault = true;
+            saveButton.Click += OnSaveClick;
+            buttonsPanel.Children.Add(saveButton);
+
+            grid.Children.Add(buttonsPanel);
+            footer.Child = grid;
+
+            return footer;
         }
 
-        private ComboBoxItem CreateAnimationItem(string title, ReminderAnimationMode mode)
+        private Border CreatePanelBorder()
         {
-            ComboBoxItem item = new ComboBoxItem();
-            item.Content = title;
-            item.Tag = mode;
-            return item;
+            Border border = new Border();
+            border.Background = Brushes.White;
+            border.BorderBrush = CreateBrush("#D8DEE8");
+            border.BorderThickness = new Thickness(1);
+            border.CornerRadius = new CornerRadius(6);
+            border.Padding = new Thickness(14);
+            return border;
+        }
+
+        private Button CreateButton(string text, bool isPrimary)
+        {
+            Button button = new Button();
+            button.Content = text;
+            button.Width = isPrimary ? 112 : 96;
+            button.Height = 32;
+            button.Padding = new Thickness(12, 0, 12, 0);
+            button.FontWeight = FontWeights.SemiBold;
+            button.BorderThickness = new Thickness(1);
+            button.Cursor = Cursors.Hand;
+
+            if (isPrimary)
+            {
+                button.Background = CreateBrush("#0F6CBD");
+                button.BorderBrush = CreateBrush("#0F6CBD");
+                button.Foreground = Brushes.White;
+            }
+            else
+            {
+                button.Background = Brushes.White;
+                button.BorderBrush = CreateBrush("#D8DEE8");
+                button.Foreground = CreateBrush("#1F2937");
+            }
+
+            return button;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _enabledCheckBox.IsChecked = _initialSettings.IsEnabled;
             SetMinutes(_initialSettings.ReminderDelayMinutes);
-            SelectAnimationMode(_initialSettings.AnimationMode);
         }
 
         private void OnMinutesSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -227,7 +282,7 @@ namespace SyncReminderTest
 
             Settings.IsEnabled = _enabledCheckBox.IsChecked == true;
             Settings.ReminderDelayMinutes = minutes;
-            Settings.AnimationMode = GetSelectedAnimationMode();
+            Settings.AnimationMode = ReminderAnimationMode.DuckOnly;
 
             DialogResult = true;
             Close();
@@ -288,35 +343,9 @@ namespace SyncReminderTest
             _isUpdatingMinutes = false;
         }
 
-        private void SelectAnimationMode(ReminderAnimationMode mode)
+        private static SolidColorBrush CreateBrush(string color)
         {
-            if (_animationComboBox == null)
-            {
-                return;
-            }
-
-            for (int i = 0; i < _animationComboBox.Items.Count; i++)
-            {
-                ComboBoxItem item = _animationComboBox.Items[i] as ComboBoxItem;
-                if (item != null && item.Tag is ReminderAnimationMode && (ReminderAnimationMode)item.Tag == mode)
-                {
-                    _animationComboBox.SelectedIndex = i;
-                    return;
-                }
-            }
-
-            _animationComboBox.SelectedIndex = 0;
-        }
-
-        private ReminderAnimationMode GetSelectedAnimationMode()
-        {
-            ComboBoxItem item = _animationComboBox.SelectedItem as ComboBoxItem;
-            if (item != null && item.Tag is ReminderAnimationMode)
-            {
-                return (ReminderAnimationMode)item.Tag;
-            }
-
-            return ReminderAnimationMode.FogAndDuck;
+            return new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
         }
     }
 }
