@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="SAB/SAB.csproj" Id="78a25bd0-0fef-4fb0-a3a4-13f2aa80b94b" />
+  <Project Path="SyncReminderTest/SyncReminderTest.csproj" Id="e7897b82-3f25-4dfa-950c-a7bc597376f0" />
 </Solution>

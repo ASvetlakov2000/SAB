@@ -1,6 +1,6 @@
 param(
     [string]$BinFolder = "..\SAB\bin\Debug",
-    [string]$SyncReminderBinFolder = "..\..\..\SyncReminderTest\bin\Debug",
+    [string]$SyncReminderBinFolder = "..\SyncReminderTest\bin\Debug",
     [string]$OutputFolder = ".\output",
     [string]$InstallerVersion = ""
 )
@@ -56,8 +56,10 @@ function Ensure-WixUiExtension {
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot ".."))
 $installerProjectPath = Join-Path $scriptRoot "WixSharpInstaller\WixSharpInstaller.csproj"
+$syncReminderProjectPath = Join-Path $repositoryRoot "SyncReminderTest\SyncReminderTest.csproj"
 $binRootPath = Resolve-AbsolutePath -Path $BinFolder -BasePath $scriptRoot
 $syncReminderBinRootPath = Resolve-AbsolutePath -Path $SyncReminderBinFolder -BasePath $scriptRoot
+$syncReminderAssemblyPath = Join-Path $syncReminderBinRootPath "SyncReminderTest.dll"
 $outputRootPath = Resolve-AbsolutePath -Path $OutputFolder -BasePath $scriptRoot
 $toolsRootPath = Join-Path $scriptRoot ".tools"
 
@@ -67,6 +69,17 @@ if (-not (Test-Path -LiteralPath $installerProjectPath)) {
 
 if (-not (Test-Path -LiteralPath $binRootPath)) {
     throw "Bin folder was not found: $binRootPath"
+}
+
+if ((-not (Test-Path -LiteralPath $syncReminderAssemblyPath)) -and (Test-Path -LiteralPath $syncReminderProjectPath)) {
+    Write-Host "SyncReminderTest DLL was not found. Building test plugin:"
+    Write-Host "  $syncReminderProjectPath"
+
+    dotnet build "$syncReminderProjectPath" --configuration Debug --property:Platform=AnyCPU | Out-Host
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "SyncReminderTest build failed."
+    }
 }
 
 New-Item -ItemType Directory -Path $outputRootPath -Force | Out-Null

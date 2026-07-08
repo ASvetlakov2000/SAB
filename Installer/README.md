@@ -40,3 +40,4 @@ Generated files:
 - `Program.cs` sets installer scope to `InstallScope.perUser`.
 - Files from `bin` are included recursively into `...\Addins\<Year>\SAB`.
 - `.addin` file is installed as `SAB.addin` into `...\Addins\<Year>`.
+- Test plugin `SyncReminderTest` is built from `SyncReminderTest\SyncReminderTest.csproj` when needed and installed into `...\Addins\<Year>\SyncReminderTest`.

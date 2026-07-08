@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>SyncReminderTest</Name>
+    <Assembly>.\SyncReminderTest\SyncReminderTest.dll</Assembly>
+    <AddInId>e5679611-8e6b-44fb-a2b9-347db3c0ef76</AddInId>
+    <FullClassName>SyncReminderTest.App</FullClassName>
+    <VendorId>SAB</VendorId>
+    <VendorDescription>SAB</VendorDescription>
+  </AddIn>
+</RevitAddIns>
