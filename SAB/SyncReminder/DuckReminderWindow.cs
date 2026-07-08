@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,7 @@ namespace SAB.SyncReminder
         private readonly DispatcherTimer _frameTimer;
         private readonly DispatcherTimer _messageTimer;
         private readonly DispatcherTimer _poopTimer;
+        private readonly DispatcherTimer _ownerStateTimer;
         private readonly Random _random;
         private readonly BitmapImage[] _runningFrames;
         private readonly string[] _duckOnlyMessages;
@@ -32,7 +34,7 @@ namespace SAB.SyncReminder
         private SyncReminderAnimationMode _animationMode;
         private Canvas _canvas;
         private Border _bubbleBorder;
-        private Polygon _bubbleTail;
+        private Ellipse[] _thoughtDots;
         private Ellipse _shadow;
         private Image _duckImage;
         private TextBlock _bubbleText;
@@ -51,8 +53,9 @@ namespace SAB.SyncReminder
             Background = Brushes.Transparent;
 
             _random = new Random();
-            _velocityX = 1.7;
-            _velocityY = 1.0;
+            // Block responsible for the default duck speed. Increase these values if the reminder should be more aggressive.
+            _velocityX = 2.55;
+            _velocityY = 1.5;
             _allowedArea = Rect.Empty;
             _runningFrames = LoadRunningFrames();
             _duckOnlyMessages = CreateDuckOnlyMessages();
@@ -84,15 +87,19 @@ namespace SAB.SyncReminder
             _poopTimer = new DispatcherTimer();
             _poopTimer.Interval = TimeSpan.FromSeconds(3);
             _poopTimer.Tick += OnPoopTimerTick;
+
+            _ownerStateTimer = new DispatcherTimer();
+            _ownerStateTimer.Interval = TimeSpan.FromMilliseconds(700);
+            _ownerStateTimer.Tick += OnOwnerStateTimerTick;
         }
 
         public void SetAllowedArea(Rect allowedArea)
         {
             _allowedArea = allowedArea;
 
-            if (!_allowedArea.IsEmpty && (Left < _allowedArea.Left || Top < _allowedArea.Top))
+            if (!_allowedArea.IsEmpty && IsVisible)
             {
-                PutDuckInsideAllowedArea();
+                ClampDuckToAllowedArea();
             }
         }
 
@@ -122,6 +129,11 @@ namespace SAB.SyncReminder
             }
 
             UpdatePoopTimerState();
+
+            if (!_ownerStateTimer.IsEnabled)
+            {
+                _ownerStateTimer.Start();
+            }
 
             if (!wasVisible)
             {
@@ -157,6 +169,7 @@ namespace SAB.SyncReminder
             _frameTimer.Stop();
             _messageTimer.Stop();
             _poopTimer.Stop();
+            _ownerStateTimer.Stop();
             ClosePoopDrops();
 
             if (IsVisible)
@@ -171,6 +184,7 @@ namespace SAB.SyncReminder
             _frameTimer.Stop();
             _messageTimer.Stop();
             _poopTimer.Stop();
+            _ownerStateTimer.Stop();
             ClosePoopDrops();
             Close();
         }
@@ -182,11 +196,12 @@ namespace SAB.SyncReminder
             _canvas.Height = Height;
 
             _bubbleBorder = new Border();
-            _bubbleBorder.Width = 394;
-            _bubbleBorder.MinHeight = 48;
-            _bubbleBorder.MaxHeight = 112;
+            _bubbleBorder.MinWidth = 220;
+            _bubbleBorder.MaxWidth = 394;
+            _bubbleBorder.MinHeight = 40;
+            _bubbleBorder.MaxHeight = 122;
             _bubbleBorder.CornerRadius = new CornerRadius(12);
-            _bubbleBorder.Padding = new Thickness(14, 8, 14, 8);
+            _bubbleBorder.Padding = new Thickness(12, 7, 12, 7);
             _bubbleBorder.Background = new SolidColorBrush(Color.FromArgb(238, 255, 255, 255));
             _bubbleBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(200, 120, 148, 165));
             _bubbleBorder.BorderThickness = new Thickness(1);
@@ -201,7 +216,7 @@ namespace SAB.SyncReminder
             _bubbleText.TextWrapping = TextWrapping.Wrap;
             _bubbleText.TextTrimming = TextTrimming.CharacterEllipsis;
             _bubbleText.LineHeight = 18;
-            _bubbleText.MaxHeight = 94;
+            _bubbleText.MaxHeight = 108;
             _bubbleText.VerticalAlignment = VerticalAlignment.Center;
             _bubbleBorder.Child = _bubbleText;
 
@@ -209,17 +224,11 @@ namespace SAB.SyncReminder
             Canvas.SetTop(_bubbleBorder, 4);
             _canvas.Children.Add(_bubbleBorder);
 
-            _bubbleTail = new Polygon();
-            _bubbleTail.Points = new PointCollection
+            _thoughtDots = CreateThoughtDots();
+            for (int i = 0; i < _thoughtDots.Length; i++)
             {
-                new Point(86, 103),
-                new Point(106, 103),
-                new Point(98, 118)
-            };
-            _bubbleTail.Fill = _bubbleBorder.Background;
-            _bubbleTail.Stroke = _bubbleBorder.BorderBrush;
-            _bubbleTail.StrokeThickness = 1;
-            _canvas.Children.Add(_bubbleTail);
+                _canvas.Children.Add(_thoughtDots[i]);
+            }
 
             _shadow = new Ellipse();
             _shadow.Width = 208;
@@ -244,6 +253,25 @@ namespace SAB.SyncReminder
             return _canvas;
         }
 
+        private Ellipse[] CreateThoughtDots()
+        {
+            Ellipse[] dots = new Ellipse[3];
+            double[] sizes = new[] { 5.0, 7.0, 10.0 };
+
+            for (int i = 0; i < dots.Length; i++)
+            {
+                Ellipse dot = new Ellipse();
+                dot.Width = sizes[i];
+                dot.Height = sizes[i];
+                dot.Fill = _bubbleBorder.Background;
+                dot.Stroke = _bubbleBorder.BorderBrush;
+                dot.StrokeThickness = 1;
+                dots[i] = dot;
+            }
+
+            return dots;
+        }
+
         private void OnSourceInitialized(object sender, EventArgs e)
         {
             SyncReminderWindowUtils.MakeWindowNoActivate(this);
@@ -260,9 +288,9 @@ namespace SAB.SyncReminder
             Top += _velocityY;
 
             double minLeft = _allowedArea.Left;
-            double maxLeft = _allowedArea.Right - Width;
+            double maxLeft = Math.Max(_allowedArea.Left, _allowedArea.Right - Width);
             double minTop = _allowedArea.Top;
-            double maxTop = _allowedArea.Bottom - Height;
+            double maxTop = Math.Max(_allowedArea.Top, _allowedArea.Bottom - Height);
 
             if (Left <= minLeft || Left >= maxLeft)
             {
@@ -312,6 +340,14 @@ namespace SAB.SyncReminder
             poopDropWindow.ShowDrop();
         }
 
+        private void OnOwnerStateTimerTick(object sender, EventArgs e)
+        {
+            if (!SyncReminderWindowUtils.CanShowOverlayForRevit(_ownerHandle))
+            {
+                HideDuck();
+            }
+        }
+
         private void OnMouseEnter(object sender, MouseEventArgs e)
         {
             SayNextMessage();
@@ -328,11 +364,14 @@ namespace SAB.SyncReminder
             double directionX = mousePosition.X < Width / 2.0 ? 1.0 : -1.0;
             double directionY = mousePosition.Y < Height / 2.0 ? 1.0 : -1.0;
 
-            _velocityX = directionX * (2.8 + _random.NextDouble() * 1.8);
-            _velocityY = directionY * (1.8 + _random.NextDouble() * 1.4);
+            _velocityX = directionX * (4.2 + _random.NextDouble() * 2.7);
+            _velocityY = directionY * (2.7 + _random.NextDouble() * 2.1);
 
-            Left = Clamp(Left + directionX * 95, _allowedArea.Left, _allowedArea.Right - Width);
-            Top = Clamp(Top + directionY * 60, _allowedArea.Top, _allowedArea.Bottom - Height);
+            double maxLeft = Math.Max(_allowedArea.Left, _allowedArea.Right - Width);
+            double maxTop = Math.Max(_allowedArea.Top, _allowedArea.Bottom - Height);
+
+            Left = Clamp(Left + directionX * 95, _allowedArea.Left, maxLeft);
+            Top = Clamp(Top + directionY * 60, _allowedArea.Top, maxTop);
         }
 
         private void PutDuckInsideAllowedArea()
@@ -347,6 +386,20 @@ namespace SAB.SyncReminder
 
             Left = _allowedArea.Left + Math.Max(0, (maxLeft - _allowedArea.Left) * 0.68);
             Top = _allowedArea.Top + Math.Max(0, (maxTop - _allowedArea.Top) * 0.18);
+        }
+
+        private void ClampDuckToAllowedArea()
+        {
+            if (_allowedArea.IsEmpty)
+            {
+                return;
+            }
+
+            double maxLeft = Math.Max(_allowedArea.Left, _allowedArea.Right - Width);
+            double maxTop = Math.Max(_allowedArea.Top, _allowedArea.Bottom - Height);
+
+            Left = Clamp(Left, _allowedArea.Left, maxLeft);
+            Top = Clamp(Top, _allowedArea.Top, maxTop);
         }
 
         private void Say(string text)
@@ -531,54 +584,137 @@ namespace SAB.SyncReminder
 
         private void UpdateBubbleLayout()
         {
-            if (_bubbleBorder == null || _bubbleText == null || _bubbleTail == null || _duckImage == null || _shadow == null)
+            if (_bubbleBorder == null || _bubbleText == null || _thoughtDots == null || _duckImage == null || _shadow == null)
             {
                 return;
             }
 
+            // Block responsible for linking the bubble, thought dots and visible duck sprite into one compact group.
+            const double bubbleLeft = 12.0;
             const double bubbleTop = 4.0;
-            const double minimumBubbleHeight = 48.0;
-            const double maximumBubbleHeight = 112.0;
-            const double tailHeight = 16.0;
-            const double duckGap = 12.0;
+            const double minimumBubbleWidth = 190.0;
+            const double maximumBubbleWidth = 394.0;
+            const double minimumBubbleHeight = 40.0;
+            const double maximumBubbleHeight = 122.0;
+            const double duckLeft = 68.0;
+            const double visibleDuckTopOffset = 98.0;
+            const double visibleDuckTopGap = 22.0;
 
             Thickness padding = _bubbleBorder.Padding;
-            double availableTextWidth = _bubbleBorder.Width - padding.Left - padding.Right;
+            double maximumTextWidth = maximumBubbleWidth - padding.Left - padding.Right;
+            double measuredTextWidth = MeasureWidestTextLine(_bubbleText.Text, maximumTextWidth);
+            double bubbleWidth = Math.Ceiling(measuredTextWidth + padding.Left + padding.Right);
+            bubbleWidth = Clamp(bubbleWidth, minimumBubbleWidth, maximumBubbleWidth);
+
+            double availableTextWidth = Math.Max(1.0, bubbleWidth - padding.Left - padding.Right);
+            _bubbleText.Width = availableTextWidth;
+            _bubbleText.Height = double.NaN;
             _bubbleText.Measure(new Size(availableTextWidth, double.PositiveInfinity));
 
             double textHeight = Math.Min(_bubbleText.DesiredSize.Height, _bubbleText.MaxHeight);
             double bubbleHeight = Math.Ceiling(textHeight + padding.Top + padding.Bottom);
             bubbleHeight = Clamp(bubbleHeight, minimumBubbleHeight, maximumBubbleHeight);
 
+            _bubbleBorder.Width = bubbleWidth;
             _bubbleBorder.Height = bubbleHeight;
             _bubbleText.Height = Math.Max(0, bubbleHeight - padding.Top - padding.Bottom);
 
-            double tailBaseY = bubbleTop + bubbleHeight - 1.0;
-            double tailTipY = tailBaseY + tailHeight;
-            _bubbleTail.Points = new PointCollection
-            {
-                new Point(86, tailBaseY),
-                new Point(106, tailBaseY),
-                new Point(98, tailTipY)
-            };
+            Canvas.SetLeft(_bubbleBorder, bubbleLeft);
+            Canvas.SetTop(_bubbleBorder, bubbleTop);
 
-            double duckTop = tailTipY + duckGap;
+            double bubbleBottom = bubbleTop + bubbleHeight;
+            double visibleDuckTop = bubbleBottom + visibleDuckTopGap;
+            double duckTop = visibleDuckTop - visibleDuckTopOffset;
             double shadowTop = duckTop + 196.0;
 
+            Canvas.SetLeft(_duckImage, duckLeft);
             Canvas.SetTop(_duckImage, duckTop);
+            Canvas.SetLeft(_shadow, duckLeft);
             Canvas.SetTop(_shadow, shadowTop);
 
+            UpdateThoughtDots(bubbleLeft, bubbleWidth, bubbleBottom, duckLeft, visibleDuckTop);
+
+            Width = Math.Ceiling(Math.Max(bubbleLeft + bubbleWidth + 12.0, duckLeft + _duckImage.Width + 12.0));
             Height = Math.Ceiling(shadowTop + _shadow.Height + 8.0);
             if (_canvas != null)
             {
+                _canvas.Width = Width;
                 _canvas.Height = Height;
             }
 
             if (!_allowedArea.IsEmpty)
             {
-                Left = Clamp(Left, _allowedArea.Left, _allowedArea.Right - Width);
-                Top = Clamp(Top, _allowedArea.Top, _allowedArea.Bottom - Height);
+                ClampDuckToAllowedArea();
             }
+        }
+
+        private void UpdateThoughtDots(double bubbleLeft, double bubbleWidth, double bubbleBottom, double duckLeft, double visibleDuckTop)
+        {
+            if (_thoughtDots == null || _thoughtDots.Length == 0)
+            {
+                return;
+            }
+
+            double startX = bubbleLeft + Clamp(bubbleWidth * 0.28, 42.0, Math.Max(42.0, bubbleWidth - 34.0));
+            double startY = bubbleBottom + 3.0;
+            double endX = duckLeft + 88.0;
+            double endY = visibleDuckTop + 2.0;
+
+            for (int i = 0; i < _thoughtDots.Length; i++)
+            {
+                Ellipse dot = _thoughtDots[i];
+                if (dot == null)
+                {
+                    continue;
+                }
+
+                double t = (i + 1.0) / (_thoughtDots.Length + 1.0);
+                double left = startX + (endX - startX) * t - dot.Width / 2.0;
+                double top = startY + (endY - startY) * t - dot.Height / 2.0;
+
+                Canvas.SetLeft(dot, left);
+                Canvas.SetTop(dot, top);
+            }
+        }
+
+        private double MeasureWidestTextLine(string text, double maximumTextWidth)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return 1.0;
+            }
+
+            Typeface typeface = new Typeface(
+                _bubbleText.FontFamily,
+                _bubbleText.FontStyle,
+                _bubbleText.FontWeight,
+                _bubbleText.FontStretch);
+            double pixelsPerDip = VisualTreeHelper.GetDpi(_bubbleText).PixelsPerDip;
+
+            string[] lines = text.Replace("\r\n", "\n").Split('\n');
+            double widestLine = 1.0;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                FormattedText formattedText = new FormattedText(
+                    line,
+                    CultureInfo.CurrentUICulture,
+                    FlowDirection.LeftToRight,
+                    typeface,
+                    _bubbleText.FontSize,
+                    _bubbleText.Foreground,
+                    pixelsPerDip);
+
+                widestLine = Math.Max(widestLine, formattedText.WidthIncludingTrailingWhitespace);
+            }
+
+            return Clamp(Math.Ceiling(widestLine + 4.0), 1.0, maximumTextWidth);
         }
 
         private static double Clamp(double value, double minimum, double maximum)

@@ -18,6 +18,15 @@ namespace SAB.SyncReminder
         [DllImport("user32.dll")]
         private static extern bool IsIconic(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
         [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
         private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
 
@@ -45,7 +54,7 @@ namespace SAB.SyncReminder
                 return false;
             }
 
-            if (IsIconic(windowHandle))
+            if (!IsWindowVisible(windowHandle) || IsIconic(windowHandle))
             {
                 return false;
             }
@@ -69,6 +78,31 @@ namespace SAB.SyncReminder
 
             bounds = new Rect(topLeft.X, topLeft.Y, width, height);
             return true;
+        }
+
+        public static bool CanShowOverlayForRevit(IntPtr windowHandle)
+        {
+            if (windowHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            if (!IsWindowVisible(windowHandle) || IsIconic(windowHandle))
+            {
+                return false;
+            }
+
+            IntPtr foregroundWindow = GetForegroundWindow();
+            if (foregroundWindow == IntPtr.Zero)
+            {
+                return true;
+            }
+
+            uint foregroundProcessId;
+            GetWindowThreadProcessId(foregroundWindow, out foregroundProcessId);
+
+            uint currentProcessId = (uint)Process.GetCurrentProcess().Id;
+            return foregroundProcessId == currentProcessId;
         }
 
         public static void MakeWindowNoActivate(Window window)

@@ -103,6 +103,7 @@ namespace SAB.SyncReminder
 
                 if (result != true)
                 {
+                    StopTestDuckPreview();
                     return;
                 }
 
@@ -213,7 +214,8 @@ namespace SAB.SyncReminder
             try
             {
                 DateTime now = DateTime.Now;
-                if ((now - _lastIdlingCheck).TotalSeconds < 5)
+                double secondsBetweenChecks = _isPreviewVisible || _isReminderVisible ? 1.0 : 5.0;
+                if ((now - _lastIdlingCheck).TotalSeconds < secondsBetweenChecks)
                 {
                     return;
                 }
@@ -434,6 +436,12 @@ namespace SAB.SyncReminder
                 _revitWindowHandle = SyncReminderWindowUtils.GetRevitMainWindowHandle();
             }
 
+            if (!SyncReminderWindowUtils.CanShowOverlayForRevit(_revitWindowHandle))
+            {
+                HideReminder();
+                return false;
+            }
+
             Rect revitBounds;
             if (!SyncReminderWindowUtils.TryGetWindowBounds(_revitWindowHandle, out revitBounds))
             {
@@ -460,6 +468,16 @@ namespace SAB.SyncReminder
             _duckWindow.SetAllowedArea(duckArea);
             _duckWindow.ShowDuck();
             return true;
+        }
+
+        private void StopTestDuckPreview()
+        {
+            if (!_isPreviewVisible)
+            {
+                return;
+            }
+
+            HideReminder();
         }
 
         private void HideReminder()
