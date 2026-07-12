@@ -12,9 +12,10 @@ namespace SAB.SyncReminder
 {
     internal class PeekingAnimalReminderWindow : Window
     {
-        private const double VisibleSeconds = 3.0;
         private const double SlideSeconds = 0.65;
         private const double BubbleMaxWidth = 360.0;
+        private const double AnimalWidthScreenPart = 0.20;
+        private const double BottomEdgeLoweringPart = 0.10;
 
         private readonly IntPtr _ownerHandle;
         private readonly Random _random;
@@ -244,12 +245,6 @@ namespace SAB.SyncReminder
             if (_animationState == AnimationState.Visible)
             {
                 ApplyAnimalPosition(1.0);
-                if (elapsedSeconds >= VisibleSeconds)
-                {
-                    _animationState = AnimationState.SlidingOut;
-                    _stateStartedAt = DateTime.Now;
-                }
-
                 return;
             }
 
@@ -276,7 +271,8 @@ namespace SAB.SyncReminder
         private void OnAnimalMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            PrepareNextAppearance();
+            _animationState = AnimationState.SlidingOut;
+            _stateStartedAt = DateTime.Now;
         }
 
         private void PrepareNextAppearance()
@@ -299,7 +295,8 @@ namespace SAB.SyncReminder
 
         private void CalculateAnimalSize()
         {
-            double targetWidth = Math.Max(220.0, Width / 4.0);
+            // Block responsible for face size. 0.20 means 20% of the Revit workspace width.
+            double targetWidth = Math.Max(176.0, Width * AnimalWidthScreenPart);
             double aspectRatio = 0.55;
 
             if (_animalSource != null && _animalSource.PixelWidth > 0)
@@ -318,6 +315,11 @@ namespace SAB.SyncReminder
 
         private PeekingEdge GetRandomEdge()
         {
+            if (_mode == SyncReminderAnimationMode.PeekingBear)
+            {
+                return PeekingEdge.Bottom;
+            }
+
             int value = _random.Next(0, 4);
             if (value == 0)
             {
@@ -345,7 +347,7 @@ namespace SAB.SyncReminder
             if (_edge == PeekingEdge.Bottom)
             {
                 _visibleLeft = 8.0 + _random.NextDouble() * Math.Max(1.0, maxHorizontal - 8.0);
-                _visibleTop = Height - _animalHeight + 8.0;
+                _visibleTop = Height - _animalHeight + 8.0 + _animalHeight * BottomEdgeLoweringPart;
                 _hiddenLeft = _visibleLeft;
                 _hiddenTop = Height + 18.0;
                 return;
@@ -458,9 +460,7 @@ namespace SAB.SyncReminder
 
         private static BitmapImage LoadAnimalImage(SyncReminderAnimationMode mode)
         {
-            string fileName = mode == SyncReminderAnimationMode.PeekingBear
-                ? "BearPeeking.png"
-                : "ScottishFoldPeeking.png";
+            string fileName = GetAnimalFileName(mode);
 
             string assemblyFolder = Path.GetDirectoryName(typeof(PeekingAnimalReminderWindow).Assembly.Location);
             if (string.IsNullOrWhiteSpace(assemblyFolder))
@@ -487,7 +487,29 @@ namespace SAB.SyncReminder
         private static bool IsPeekingMode(SyncReminderAnimationMode mode)
         {
             return mode == SyncReminderAnimationMode.PeekingScottishFold
-                   || mode == SyncReminderAnimationMode.PeekingBear;
+                   || mode == SyncReminderAnimationMode.PeekingBear
+                   || mode == SyncReminderAnimationMode.PeekingSiamese
+                   || mode == SyncReminderAnimationMode.PeekingPigeon;
+        }
+
+        private static string GetAnimalFileName(SyncReminderAnimationMode mode)
+        {
+            if (mode == SyncReminderAnimationMode.PeekingBear)
+            {
+                return "BearPeeking.png";
+            }
+
+            if (mode == SyncReminderAnimationMode.PeekingSiamese)
+            {
+                return "SiamesePeeking.png";
+            }
+
+            if (mode == SyncReminderAnimationMode.PeekingPigeon)
+            {
+                return "PigeonPeeking.png";
+            }
+
+            return "ScottishFoldPeeking.png";
         }
 
         private static string[] CreateMessages()

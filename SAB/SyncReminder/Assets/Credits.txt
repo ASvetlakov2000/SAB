@@ -7,3 +7,11 @@ Local file: SyncReminder\Assets\PeekingAnimal\ScottishFoldPeeking.png
 Peeking bear:
 Source: https://www.rawpixel.com/image/15630680/png-animal-bear-peeking-cartoon
 Local file: SyncReminder\Assets\PeekingAnimal\BearPeeking.png
+
+Peeking Siamese cat:
+Source: local user-provided asset from Z:\01_IN\SAB\Новая папка
+Local file: SyncReminder\Assets\PeekingAnimal\SiamesePeeking.png
+
+Peeking pigeon:
+Source: local user-provided asset from Z:\01_IN\SAB\Новая папка
+Local file: SyncReminder\Assets\PeekingAnimal\PigeonPeeking.png

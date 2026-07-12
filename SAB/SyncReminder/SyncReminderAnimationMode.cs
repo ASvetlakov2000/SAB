@@ -5,6 +5,8 @@ namespace SAB.SyncReminder
         DuckOnly = 0,
         DuckWithPoop = 1,
         PeekingScottishFold = 2,
-        PeekingBear = 3
+        PeekingBear = 3,
+        PeekingSiamese = 4,
+        PeekingPigeon = 5
     }
 }

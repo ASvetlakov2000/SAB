@@ -572,7 +572,9 @@ namespace SAB.SyncReminder
         private static bool IsPeekingReminderMode(SyncReminderAnimationMode animationMode)
         {
             return animationMode == SyncReminderAnimationMode.PeekingScottishFold
-                   || animationMode == SyncReminderAnimationMode.PeekingBear;
+                   || animationMode == SyncReminderAnimationMode.PeekingBear
+                   || animationMode == SyncReminderAnimationMode.PeekingSiamese
+                   || animationMode == SyncReminderAnimationMode.PeekingPigeon;
         }
 
         private void ShowDebugMessage(string message)
