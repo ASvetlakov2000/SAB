@@ -17,12 +17,12 @@ CraftPix animal mode references:
 Title: Free Top-Down Hunt Animals Pixel Sprite Pack
 Source: https://craftpix.net/freebies/free-top-down-hunt-animals-pixel-sprite-pack/
 License page: https://craftpix.net/file-licenses/
-Used for: fox, boar, deer reminder mode references.
+Used for: fox reminder mode references.
 
 Title: Free Top-Down Animals Farm Pixel Art Sprites
 Source: https://craftpix.net/freebies/free-top-down-animals-farm-pixel-art-sprites/
 License page: https://craftpix.net/file-licenses/
-Used for: rooster, pig, sheep reminder mode references.
+Used for: pig and sheep reminder mode references.
 
 Note:
 CraftPix download links require a browser session on the site. The plugin contains WPF fallback animals and can load downloaded PNG frames later from SyncReminder\Assets\Animals\<AnimalName>.

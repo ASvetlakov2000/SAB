@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SAB.BimDashboard.Models;
+using SAB.BimDashboard.Services;
 using SAB.BimDashboard.Services.Processing;
 using SAB.BimDashboard.Services.Tables;
 
@@ -48,7 +49,7 @@ namespace SAB.BimDashboard.Services.Data
                 throw new InvalidOperationException("Выбран неподдерживаемый CSV файл.");
             }
 
-            DashboardProfileType detectedProfile = DetectProfileByFileName(context.FilePath);
+            DashboardProfileType detectedProfile = DashboardProfileResolver.DetectFromFilePath(context.FilePath);
             TabularDataSet dataSet = _tableReader.Read(context.FilePath);
 
             List<string> warnings = new List<string>();
@@ -89,50 +90,6 @@ namespace SAB.BimDashboard.Services.Data
             result.Records = records;
             result.Warnings.AddRange(warnings);
             return result;
-        }
-
-        private static DashboardProfileType DetectProfileByFileName(string filePath)
-        {
-            string fileNameWithoutExtension;
-
-            try
-            {
-                fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath) ?? string.Empty;
-            }
-            catch
-            {
-                throw new InvalidOperationException("Не удалось определить имя CSV файла.");
-            }
-
-            if (fileNameWithoutExtension.IndexOf("Системные семейства", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return DashboardProfileType.SystemFamilies;
-            }
-
-            if (fileNameWithoutExtension.IndexOf("Загружаемые семейства", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return DashboardProfileType.LoadableFamilies;
-            }
-
-            if (fileNameWithoutExtension.IndexOf("Линии", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                fileNameWithoutExtension.IndexOf("LineStyles", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return DashboardProfileType.Lines;
-            }
-
-            if (fileNameWithoutExtension.IndexOf("Штриховки", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                fileNameWithoutExtension.IndexOf("FillPatterns", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return DashboardProfileType.FillPatterns;
-            }
-
-            throw new InvalidOperationException(
-                "Имя файла не соответствует поддерживаемым шаблонам.\n" +
-                "Ожидается, что имя содержит:\n" +
-                "- \"Системные семейства\"\n" +
-                "- \"Загружаемые семейства\"\n" +
-                "- \"Линии\"\n" +
-                "- \"Штриховки\"");
         }
 
         // Блок пост-обработки путей миниатюр для корректного рендера в HTML.

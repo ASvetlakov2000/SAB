@@ -10,8 +10,9 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using RevitLibraryBuilder.Models;
 using SAB.BimDashboard.Models;
+using SAB.BimDashboard.Services;
 using SAB.UI;
-using Forms = System.Windows.Forms;
+using asBIM;
 
 namespace SAB.Cls_RevitLibraryBuilder.UI
 {
@@ -34,6 +35,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
         private readonly Dictionary<Button, LibraryOperationInfo> _operationsByButton;
         private readonly List<Button> _operationButtons;
         private readonly List<string> _viewerCsvFilePaths;
+        private readonly ImageFolderDiscoveryService _imageFolderDiscoveryService;
 
         private Button _selectedModeButton;
         private Button _selectedOperationButton;
@@ -43,6 +45,14 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
         private string _loadableImagesFolder;
         private string _lineImagesFolder;
         private string _fillImagesFolder;
+        private bool _systemImagesFolderWasSelectedManually;
+        private bool _loadableImagesFolderWasSelectedManually;
+        private bool _lineImagesFolderWasSelectedManually;
+        private bool _fillImagesFolderWasSelectedManually;
+        private ImageFolderMatchResult _systemImagesMatchResult;
+        private ImageFolderMatchResult _loadableImagesMatchResult;
+        private ImageFolderMatchResult _lineImagesMatchResult;
+        private ImageFolderMatchResult _fillImagesMatchResult;
         private TextBlock _documentContextTextBlock;
         private TextBlock _activeViewContextTextBlock;
         private TextBlock _selectionContextTextBlock;
@@ -83,6 +93,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
             _operationsByButton = new Dictionary<Button, LibraryOperationInfo>();
             _operationButtons = new List<Button>();
             _viewerCsvFilePaths = new List<string>();
+            _imageFolderDiscoveryService = new ImageFolderDiscoveryService();
             _systemImagesFolder = string.Empty;
             _loadableImagesFolder = string.Empty;
             _lineImagesFolder = string.Empty;
@@ -110,6 +121,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
             AttachModeHandlers();
             AttachOperationHandlers();
             AttachViewerHandlers();
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
             SelectMode("Catalogs");
         }
@@ -452,36 +464,86 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
                 AddUniqueViewerCsvPath(dialog.FileNames[i]);
             }
 
+            RefreshViewerImageMatches(true);
             UpdateViewerState();
         }
 
         private void ClearViewerCsvFilesButton_Click(object sender, RoutedEventArgs e)
         {
             _viewerCsvFilePaths.Clear();
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
         }
 
         private void SelectSystemImagesFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            _systemImagesFolder = SelectFolder("Выберите папку PNG системных типов", _systemImagesFolder);
+            string selectedFolder = SelectFolder(
+                DashboardProfileType.SystemFamilies,
+                "Выберите папку PNG системных типов",
+                "PNG_Pirogi",
+                _systemImagesFolder);
+
+            if (!string.IsNullOrWhiteSpace(selectedFolder))
+            {
+                _systemImagesFolder = selectedFolder;
+                _systemImagesFolderWasSelectedManually = true;
+            }
+
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
         }
 
         private void SelectLoadableImagesFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            _loadableImagesFolder = SelectFolder("Выберите папку PNG загружаемых семейств", _loadableImagesFolder);
+            string selectedFolder = SelectFolder(
+                DashboardProfileType.LoadableFamilies,
+                "Выберите папку PNG загружаемых семейств",
+                "PNG_Family",
+                _loadableImagesFolder);
+
+            if (!string.IsNullOrWhiteSpace(selectedFolder))
+            {
+                _loadableImagesFolder = selectedFolder;
+                _loadableImagesFolderWasSelectedManually = true;
+            }
+
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
         }
 
         private void SelectLineImagesFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            _lineImagesFolder = SelectFolder("Выберите папку PNG стилей линий", _lineImagesFolder);
+            string selectedFolder = SelectFolder(
+                DashboardProfileType.Lines,
+                "Выберите папку PNG стилей линий",
+                "PNG_Lines",
+                _lineImagesFolder);
+
+            if (!string.IsNullOrWhiteSpace(selectedFolder))
+            {
+                _lineImagesFolder = selectedFolder;
+                _lineImagesFolderWasSelectedManually = true;
+            }
+
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
         }
 
         private void SelectFillImagesFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            _fillImagesFolder = SelectFolder("Выберите папку PNG штриховок", _fillImagesFolder);
+            string selectedFolder = SelectFolder(
+                DashboardProfileType.FillPatterns,
+                "Выберите папку PNG штриховок",
+                "PNG_Fills",
+                _fillImagesFolder);
+
+            if (!string.IsNullOrWhiteSpace(selectedFolder))
+            {
+                _fillImagesFolder = selectedFolder;
+                _fillImagesFolderWasSelectedManually = true;
+            }
+
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
         }
 
@@ -491,6 +553,11 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
             _loadableImagesFolder = string.Empty;
             _lineImagesFolder = string.Empty;
             _fillImagesFolder = string.Empty;
+            _systemImagesFolderWasSelectedManually = false;
+            _loadableImagesFolderWasSelectedManually = false;
+            _lineImagesFolderWasSelectedManually = false;
+            _fillImagesFolderWasSelectedManually = false;
+            RefreshViewerImageMatches(false);
             UpdateViewerState();
         }
 
@@ -523,30 +590,110 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
             _viewerCsvFilePaths.Add(fullPath);
         }
 
-        private string SelectFolder(string title, string currentFolder)
+        private string SelectFolder(
+            DashboardProfileType profile,
+            string title,
+            string suggestedFolderName,
+            string currentFolder)
         {
-            using (Forms.FolderBrowserDialog dialog = new Forms.FolderBrowserDialog())
+            string initialDirectory = Directory.Exists(currentFolder)
+                ? currentFolder
+                : GetInitialDirectoryForProfile(profile);
+            IntPtr ownerHandle = new WindowInteropHelper(this).Handle;
+
+            return OpenFolder.SelectFolderPath(
+                title,
+                suggestedFolderName,
+                initialDirectory,
+                ownerHandle);
+        }
+
+        private string GetInitialDirectoryForProfile(DashboardProfileType profile)
+        {
+            for (int i = 0; i < _viewerCsvFilePaths.Count; i++)
             {
-                dialog.Description = title;
-                dialog.ShowNewFolderButton = false;
+                DashboardProfileType detectedProfile;
 
-                if (!string.IsNullOrWhiteSpace(currentFolder) && Directory.Exists(currentFolder))
+                if (!DashboardProfileResolver.TryDetectFromFilePath(_viewerCsvFilePaths[i], out detectedProfile) ||
+                    detectedProfile != profile)
                 {
-                    dialog.SelectedPath = currentFolder;
+                    continue;
                 }
 
-                IntPtr ownerHandle = new WindowInteropHelper(this).Handle;
-                Forms.DialogResult result = ownerHandle == IntPtr.Zero
-                    ? dialog.ShowDialog()
-                    : dialog.ShowDialog(new Win32Window(ownerHandle));
+                string folder = Path.GetDirectoryName(_viewerCsvFilePaths[i]);
 
-                if (result != Forms.DialogResult.OK || string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
                 {
-                    return currentFolder ?? string.Empty;
+                    return folder;
                 }
-
-                return dialog.SelectedPath;
             }
+
+            return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
+
+        // Block responsible for automatically locating PNG folders near the selected profile CSV files.
+        private void RefreshViewerImageMatches(bool discoverAutomaticFolders)
+        {
+            RefreshOneImageFolder(
+                DashboardProfileType.SystemFamilies,
+                ref _systemImagesFolder,
+                _systemImagesFolderWasSelectedManually,
+                ref _systemImagesMatchResult,
+                discoverAutomaticFolders);
+
+            RefreshOneImageFolder(
+                DashboardProfileType.LoadableFamilies,
+                ref _loadableImagesFolder,
+                _loadableImagesFolderWasSelectedManually,
+                ref _loadableImagesMatchResult,
+                discoverAutomaticFolders);
+
+            RefreshOneImageFolder(
+                DashboardProfileType.Lines,
+                ref _lineImagesFolder,
+                _lineImagesFolderWasSelectedManually,
+                ref _lineImagesMatchResult,
+                discoverAutomaticFolders);
+
+            RefreshOneImageFolder(
+                DashboardProfileType.FillPatterns,
+                ref _fillImagesFolder,
+                _fillImagesFolderWasSelectedManually,
+                ref _fillImagesMatchResult,
+                discoverAutomaticFolders);
+        }
+
+        private void RefreshOneImageFolder(
+            DashboardProfileType profile,
+            ref string folderPath,
+            bool wasSelectedManually,
+            ref ImageFolderMatchResult matchResult,
+            bool discoverAutomaticFolder)
+        {
+            if (discoverAutomaticFolder && !wasSelectedManually)
+            {
+                ImageFolderMatchResult discoveredResult = _imageFolderDiscoveryService.FindBestMatch(
+                    profile,
+                    _viewerCsvFilePaths);
+
+                if (discoveredResult.PngFileCount > 0 && Directory.Exists(discoveredResult.FolderPath))
+                {
+                    folderPath = discoveredResult.FolderPath;
+                }
+                else
+                {
+                    folderPath = string.Empty;
+                }
+
+                matchResult = discoveredResult;
+                return;
+            }
+
+            matchResult = _imageFolderDiscoveryService.EvaluateSelectedFolder(
+                profile,
+                _viewerCsvFilePaths,
+                folderPath,
+                !wasSelectedManually && !string.IsNullOrWhiteSpace(folderPath));
         }
 
         // Block responsible for progress and warnings while the viewer input is assembled.
@@ -558,10 +705,10 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
             }
 
             _viewerCsvFilesTextBlock.Text = BuildViewerCsvSummary();
-            _systemImagesFolderTextBlock.Text = BuildFolderDisplayText(_systemImagesFolder);
-            _loadableImagesFolderTextBlock.Text = BuildFolderDisplayText(_loadableImagesFolder);
-            _lineImagesFolderTextBlock.Text = BuildFolderDisplayText(_lineImagesFolder);
-            _fillImagesFolderTextBlock.Text = BuildFolderDisplayText(_fillImagesFolder);
+            ApplyFolderResultVisual(_systemImagesFolderTextBlock, _systemImagesFolder, _systemImagesMatchResult);
+            ApplyFolderResultVisual(_loadableImagesFolderTextBlock, _loadableImagesFolder, _loadableImagesMatchResult);
+            ApplyFolderResultVisual(_lineImagesFolderTextBlock, _lineImagesFolder, _lineImagesMatchResult);
+            ApplyFolderResultVisual(_fillImagesFolderTextBlock, _fillImagesFolder, _fillImagesMatchResult);
 
             const int expectedGroupsCount = 8;
             int loadedGroupsCount = GetLoadedViewerGroupsCount();
@@ -572,6 +719,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
 
             string statusText;
             Brush statusBrush;
+            List<string> freshnessIssues = BuildFreshnessIssueSummaries();
 
             if (loadedGroupsCount == 0)
             {
@@ -587,6 +735,12 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
             {
                 statusText = "Полный набор: четыре профиля CSV и четыре группы изображений загружены.";
                 statusBrush = GetBrushResource("SabBrush.Success");
+            }
+
+            if (freshnessIssues.Count > 0)
+            {
+                statusText += "\nПроверка актуальности: " + string.Join(" ", freshnessIssues);
+                statusBrush = GetBrushResource("SabBrush.Warning");
             }
 
             _viewerStatusTextBlock.Text = statusText;
@@ -620,35 +774,124 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
                    string.Join("; ", fileNames);
         }
 
-        private static string BuildFolderDisplayText(string folderPath)
+        private void ApplyFolderResultVisual(
+            TextBlock textBlock,
+            string folderPath,
+            ImageFolderMatchResult matchResult)
         {
+            if (textBlock == null)
+            {
+                return;
+            }
+
+            textBlock.Text = BuildFolderDisplayText(folderPath, matchResult);
+
+            if (matchResult == null)
+            {
+                textBlock.Foreground = GetBrushResource("SabBrush.TextSecondary");
+                return;
+            }
+
+            switch (matchResult.Status)
+            {
+                case ImageFolderFreshnessStatus.Current:
+                    textBlock.Foreground = GetBrushResource("SabBrush.Success");
+                    break;
+                case ImageFolderFreshnessStatus.TimeDifferenceWarning:
+                    textBlock.Foreground = GetBrushResource("SabBrush.Accent");
+                    break;
+                case ImageFolderFreshnessStatus.Outdated:
+                case ImageFolderFreshnessStatus.ReadError:
+                    textBlock.Foreground = GetBrushResource("SabBrush.Error");
+                    break;
+                default:
+                    textBlock.Foreground = GetBrushResource("SabBrush.TextSecondary");
+                    break;
+            }
+        }
+
+        private static string BuildFolderDisplayText(
+            string folderPath,
+            ImageFolderMatchResult matchResult)
+        {
+            string sourceText = matchResult != null && matchResult.IsAutoDetected
+                ? "Найдено автоматически"
+                : "Выбрано вручную";
+
             if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
             {
-                return "Папка не выбрана";
+                return (matchResult != null ? matchResult.Message : "Папка не выбрана") +
+                       "\nДля ручного выбора можно вставить путь в адресное поле диалога.";
             }
 
-            int pngCount = 0;
+            string result = sourceText + ": " + folderPath;
 
-            try
+            if (matchResult != null)
             {
-                pngCount = Directory.GetFiles(folderPath, "*.png", SearchOption.AllDirectories).Length;
-            }
-            catch
-            {
-                pngCount = 0;
+                result += "\nPNG-файлов: " + matchResult.PngFileCount + ". " + matchResult.Message;
             }
 
-            return folderPath + "\nPNG-файлов: " + pngCount;
+            return result;
         }
 
         private int GetLoadedViewerGroupsCount()
         {
             int count = GetSelectedViewerCsvProfilesCount();
-            count += Directory.Exists(_systemImagesFolder) ? 1 : 0;
-            count += Directory.Exists(_loadableImagesFolder) ? 1 : 0;
-            count += Directory.Exists(_lineImagesFolder) ? 1 : 0;
-            count += Directory.Exists(_fillImagesFolder) ? 1 : 0;
+            count += IsLoadedImageGroup(_systemImagesFolder, _systemImagesMatchResult) ? 1 : 0;
+            count += IsLoadedImageGroup(_loadableImagesFolder, _loadableImagesMatchResult) ? 1 : 0;
+            count += IsLoadedImageGroup(_lineImagesFolder, _lineImagesMatchResult) ? 1 : 0;
+            count += IsLoadedImageGroup(_fillImagesFolder, _fillImagesMatchResult) ? 1 : 0;
             return count;
+        }
+
+        private static bool IsLoadedImageGroup(string folderPath, ImageFolderMatchResult matchResult)
+        {
+            return !string.IsNullOrWhiteSpace(folderPath) &&
+                   Directory.Exists(folderPath) &&
+                   matchResult != null &&
+                   matchResult.PngFileCount > 0;
+        }
+
+        private List<string> BuildFreshnessIssueSummaries()
+        {
+            List<string> result = new List<string>();
+            AddFreshnessIssue(result, _systemImagesMatchResult);
+            AddFreshnessIssue(result, _loadableImagesMatchResult);
+            AddFreshnessIssue(result, _lineImagesMatchResult);
+            AddFreshnessIssue(result, _fillImagesMatchResult);
+            return result;
+        }
+
+        private static void AddFreshnessIssue(
+            IList<string> destination,
+            ImageFolderMatchResult matchResult)
+        {
+            if (destination == null || matchResult == null)
+            {
+                return;
+            }
+
+            string profileName = DashboardProfileResolver.GetDisplayName(matchResult.Profile);
+
+            if (matchResult.Status == ImageFolderFreshnessStatus.TimeDifferenceWarning)
+            {
+                destination.Add(profileName + ": разница CSV/PNG " +
+                                Math.Round(matchResult.DifferenceHours, 1, MidpointRounding.AwayFromZero) + " ч.");
+            }
+            else if (matchResult.Status == ImageFolderFreshnessStatus.Outdated)
+            {
+                destination.Add(profileName + ": изображения устарели на " +
+                                Math.Round(matchResult.DifferenceHours, 1, MidpointRounding.AwayFromZero) + " ч.");
+            }
+            else if (matchResult.Status == ImageFolderFreshnessStatus.NotFound &&
+                     !string.IsNullOrWhiteSpace(matchResult.CsvFilePath))
+            {
+                destination.Add(profileName + ": папка PNG не найдена.");
+            }
+            else if (matchResult.Status == ImageFolderFreshnessStatus.ReadError)
+            {
+                destination.Add(profileName + ": папку PNG не удалось проверить.");
+            }
         }
 
         private int GetSelectedViewerCsvProfilesCount()
@@ -673,36 +916,7 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
         // Block responsible for matching selected CSV files to the four supported viewer profiles.
         private static bool TryGetViewerCsvProfile(string filePath, out DashboardProfileType profile)
         {
-            profile = DashboardProfileType.SystemFamilies;
-            string fileName = Path.GetFileNameWithoutExtension(filePath) ?? string.Empty;
-
-            if (fileName.IndexOf("Системные семейства", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                profile = DashboardProfileType.SystemFamilies;
-                return true;
-            }
-
-            if (fileName.IndexOf("Загружаемые семейства", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                profile = DashboardProfileType.LoadableFamilies;
-                return true;
-            }
-
-            if (fileName.IndexOf("Линии", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                fileName.IndexOf("LineStyles", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                profile = DashboardProfileType.Lines;
-                return true;
-            }
-
-            if (fileName.IndexOf("Штриховки", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                fileName.IndexOf("FillPatterns", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                profile = DashboardProfileType.FillPatterns;
-                return true;
-            }
-
-            return false;
+            return DashboardProfileResolver.TryDetectFromFilePath(filePath, out profile);
         }
 
         private DashboardLaunchRequest BuildDashboardRequest()
@@ -1071,17 +1285,6 @@ namespace SAB.Cls_RevitLibraryBuilder.UI
                 default:
                     return "Команда использует существующий сервис RevitLibraryBuilder и сохраняет его проверки и границы транзакций.";
             }
-        }
-
-        // Block responsible for keeping WinForms folder dialogs owned by the WPF/Revit window.
-        private sealed class Win32Window : Forms.IWin32Window
-        {
-            public Win32Window(IntPtr handle)
-            {
-                Handle = handle;
-            }
-
-            public IntPtr Handle { get; private set; }
         }
 
         private class LibraryOperationInfo

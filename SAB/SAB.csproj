@@ -90,6 +90,8 @@
     <Compile Include="BimDashboard\Models\DashboardData.cs" />
     <Compile Include="BimDashboard\Models\DashboardLaunchRequest.cs" />
     <Compile Include="BimDashboard\Models\DashboardLaunchResult.cs" />
+    <Compile Include="BimDashboard\Models\ImageFolderFreshnessStatus.cs" />
+    <Compile Include="BimDashboard\Models\ImageFolderMatchResult.cs" />
     <Compile Include="BimDashboard\Models\DataProviderContext.cs" />
     <Compile Include="BimDashboard\Models\DashboardProfileType.cs" />
     <Compile Include="BimDashboard\Models\DataSourceType.cs" />
@@ -106,6 +108,8 @@
     <Compile Include="BimDashboard\Services\Data\RevitDataProvider.cs" />
     <Compile Include="BimDashboard\Services\Data\ThumbnailRuntimePathEnricher.cs" />
     <Compile Include="BimDashboard\Services\DashboardLaunchService.cs" />
+    <Compile Include="BimDashboard\Services\DashboardProfileResolver.cs" />
+    <Compile Include="BimDashboard\Services\ImageFolderDiscoveryService.cs" />
     <Compile Include="BimDashboard\Services\Processing\DataMapper.cs" />
     <Compile Include="BimDashboard\Services\Processing\TabularRecordMapper.cs" />
     <Compile Include="BimDashboard\Services\Reporting\HtmlReportBuilder.cs" />

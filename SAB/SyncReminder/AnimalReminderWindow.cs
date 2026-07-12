@@ -14,12 +14,20 @@ namespace SAB.SyncReminder
     internal class AnimalReminderWindow : Window
     {
         // Block responsible for animal size, speed and maximum clutter on the Revit workspace.
-        private const double AnimalWidth = 96.0;
-        private const double AnimalHeight = 96.0;
-        private const double AnimalSpeed = 4.8;
+        private const double AnimalWidth = 192.0;
+        private const double AnimalHeight = 192.0;
+        private const double AnimalSpeed = 7.2;
+        private const double BaseAnimalWidth = 96.0;
+        private const double BaseAnimalHeight = 96.0;
+        private const double FoxSyncButtonSize = 78.0;
+        private const double PigPuddleWidth = 210.0;
+        private const double PigPuddleHeight = 104.0;
+        private const double MovingSheepWidth = 124.0;
+        private const double MovingSheepHeight = 104.0;
         private const double DefaultScenarioIntervalSeconds = 2.2;
         private const double SheepSpawnIntervalSeconds = 5.0;
-        private const int MaximumSpawnedElements = 140;
+        private const int MaximumSpawnedElements = 220;
+        private const int MaximumSheepCount = 10;
 
         private readonly IntPtr _ownerHandle;
         private readonly Random _random;
@@ -28,7 +36,9 @@ namespace SAB.SyncReminder
         private readonly DispatcherTimer _scenarioTimer;
         private readonly DispatcherTimer _messageTimer;
         private readonly DispatcherTimer _ownerStateTimer;
+        private readonly DispatcherTimer _foxCatchTimer;
         private readonly List<SpawnedElement> _spawnedElements;
+        private readonly List<MovingSheepSprite> _movingSheepSprites;
 
         private SyncReminderAnimationMode _mode;
         private Rect _allowedArea;
@@ -47,6 +57,11 @@ namespace SAB.SyncReminder
         private int _currentFrameIndex;
         private int _currentMessageIndex;
         private int _sheepCount;
+        private int _foxCatchStep;
+        private int _pigJumpCooldownTicks;
+        private int _currentPigMessageIndex;
+        private double _foxTargetRotation;
+        private bool _isFoxCatchAnimationPlaying;
 
         public AnimalReminderWindow(IntPtr ownerHandle)
         {
@@ -54,6 +69,7 @@ namespace SAB.SyncReminder
             _random = new Random();
             _allowedArea = Rect.Empty;
             _spawnedElements = new List<SpawnedElement>();
+            _movingSheepSprites = new List<MovingSheepSprite>();
             _animalFrames = new BitmapImage[0];
             _velocityX = 3.8;
             _velocityY = 2.4;
@@ -94,6 +110,10 @@ namespace SAB.SyncReminder
             _ownerStateTimer = new DispatcherTimer();
             _ownerStateTimer.Interval = TimeSpan.FromMilliseconds(700);
             _ownerStateTimer.Tick += OnOwnerStateTimerTick;
+
+            _foxCatchTimer = new DispatcherTimer();
+            _foxCatchTimer.Interval = TimeSpan.FromMilliseconds(42);
+            _foxCatchTimer.Tick += OnFoxCatchTimerTick;
 
             SetAnimationMode(_mode);
         }
@@ -185,6 +205,41 @@ namespace SAB.SyncReminder
             Close();
         }
 
+        public void PlayFoxCatchAnimationAndHide()
+        {
+            if (_mode != SyncReminderAnimationMode.FoxWithSyncButton || !IsVisible)
+            {
+                HideAnimal();
+                return;
+            }
+
+            EnsureFoxSyncButton();
+            if (_primaryTarget == null)
+            {
+                HideAnimal();
+                return;
+            }
+
+            _isFoxCatchAnimationPlaying = true;
+            _foxCatchStep = 0;
+            _moveTimer.Stop();
+            _scenarioTimer.Stop();
+            _messageTimer.Stop();
+            Say("Я ее поймала! Спасибо!");
+
+            if (!_frameTimer.IsEnabled)
+            {
+                _frameTimer.Start();
+            }
+
+            if (!_ownerStateTimer.IsEnabled)
+            {
+                _ownerStateTimer.Start();
+            }
+
+            _foxCatchTimer.Start();
+        }
+
         private UIElement CreateContent()
         {
             _canvas = new Canvas();
@@ -261,6 +316,8 @@ namespace SAB.SyncReminder
             _scenarioTimer.Stop();
             _messageTimer.Stop();
             _ownerStateTimer.Stop();
+            _foxCatchTimer.Stop();
+            _isFoxCatchAnimationPlaying = false;
         }
 
         private void OnMoveTimerTick(object sender, EventArgs e)
@@ -270,17 +327,27 @@ namespace SAB.SyncReminder
                 return;
             }
 
+            if (_isFoxCatchAnimationPlaying)
+            {
+                return;
+            }
+
             if (_mode == SyncReminderAnimationMode.FoxWithSyncButton)
             {
                 MoveAnimalToPrimaryTarget();
             }
-            else if (_mode == SyncReminderAnimationMode.RoosterAlarm)
+            else if (_mode == SyncReminderAnimationMode.PigMud)
             {
-                MoveRoosterAlarm();
+                MovePigToPuddle();
             }
             else
             {
                 MoveAnimalByVelocity();
+            }
+
+            if (_mode == SyncReminderAnimationMode.SheepCounter)
+            {
+                MoveSheepFriends();
             }
 
             UpdateAnimalPosition();
@@ -311,27 +378,9 @@ namespace SAB.SyncReminder
                 return;
             }
 
-            if (_mode == SyncReminderAnimationMode.RoosterAlarm)
-            {
-                Say("Ку-ка-ре-синх!\nПора нажать синхронизацию!");
-                return;
-            }
-
-            if (_mode == SyncReminderAnimationMode.BoarSyncSigns)
-            {
-                AddSyncSign();
-                return;
-            }
-
-            if (_mode == SyncReminderAnimationMode.DeerFootprints)
-            {
-                AddLeafTrace();
-                return;
-            }
-
             if (_mode == SyncReminderAnimationMode.PigMud)
             {
-                AddMudSpot();
+                EnsurePigPuddle();
                 return;
             }
 
@@ -343,7 +392,7 @@ namespace SAB.SyncReminder
 
         private void OnMessageTimerTick(object sender, EventArgs e)
         {
-            if (_mode == SyncReminderAnimationMode.SheepCounter)
+            if (_mode == SyncReminderAnimationMode.SheepCounter || _mode == SyncReminderAnimationMode.PigMud)
             {
                 return;
             }
@@ -366,19 +415,11 @@ namespace SAB.SyncReminder
             {
                 EnsureFoxSyncButton();
             }
-            else if (_mode == SyncReminderAnimationMode.BoarSyncSigns && _spawnedElements.Count == 0)
-            {
-                AddSyncSign();
-            }
-            else if (_mode == SyncReminderAnimationMode.DeerFootprints && _spawnedElements.Count == 0)
-            {
-                AddLeafTrace();
-            }
             else if (_mode == SyncReminderAnimationMode.PigMud && _spawnedElements.Count == 0)
             {
-                AddMudSpot();
+                EnsurePigPuddle();
             }
-            else if (_mode == SyncReminderAnimationMode.SheepCounter && _spawnedElements.Count == 0)
+            else if (_mode == SyncReminderAnimationMode.SheepCounter && _sheepCount == 0)
             {
                 AddSheepCounterItem();
             }
@@ -423,24 +464,12 @@ namespace SAB.SyncReminder
         private FrameworkElement CreateFallbackAnimalVisual(SyncReminderAnimationMode mode)
         {
             Canvas animalCanvas = new Canvas();
-            animalCanvas.Width = AnimalWidth;
-            animalCanvas.Height = AnimalHeight;
+            animalCanvas.Width = BaseAnimalWidth;
+            animalCanvas.Height = BaseAnimalHeight;
 
             if (mode == SyncReminderAnimationMode.FoxWithSyncButton)
             {
                 BuildFox(animalCanvas);
-            }
-            else if (mode == SyncReminderAnimationMode.RoosterAlarm)
-            {
-                BuildRooster(animalCanvas);
-            }
-            else if (mode == SyncReminderAnimationMode.BoarSyncSigns)
-            {
-                BuildBoar(animalCanvas);
-            }
-            else if (mode == SyncReminderAnimationMode.DeerFootprints)
-            {
-                BuildDeer(animalCanvas);
             }
             else if (mode == SyncReminderAnimationMode.PigMud)
             {
@@ -451,7 +480,12 @@ namespace SAB.SyncReminder
                 BuildSheep(animalCanvas, 1.0);
             }
 
-            return animalCanvas;
+            Viewbox viewbox = new Viewbox();
+            viewbox.Width = AnimalWidth;
+            viewbox.Height = AnimalHeight;
+            viewbox.Stretch = Stretch.Uniform;
+            viewbox.Child = animalCanvas;
+            return viewbox;
         }
 
         private void BuildFox(Canvas canvas)
@@ -470,62 +504,6 @@ namespace SAB.SyncReminder
             AddPolygon(canvas, new Point[] { new Point(8, 43), new Point(2, 39), new Point(6, 53) }, cream, null);
             AddRectangle(canvas, 32, 64, 8, 18, orange, 3);
             AddRectangle(canvas, 58, 62, 8, 18, orange, 3);
-        }
-
-        private void BuildRooster(Canvas canvas)
-        {
-            Brush white = CreateBrush("#F8FAFC");
-            Brush red = CreateBrush("#D92D20");
-            Brush yellow = CreateBrush("#FACC15");
-            Brush dark = CreateBrush("#1F2937");
-            Brush brown = CreateBrush("#B46A2B");
-
-            AddEllipse(canvas, 28, 34, 40, 38, white, CreateBrush("#D8DEE8"));
-            AddEllipse(canvas, 50, 20, 30, 28, white, CreateBrush("#D8DEE8"));
-            AddEllipse(canvas, 51, 10, 9, 13, red, null);
-            AddEllipse(canvas, 60, 8, 9, 14, red, null);
-            AddEllipse(canvas, 68, 12, 8, 12, red, null);
-            AddPolygon(canvas, new Point[] { new Point(77, 32), new Point(92, 38), new Point(77, 43) }, yellow, null);
-            AddEllipse(canvas, 67, 29, 4, 4, dark, null);
-            AddPolygon(canvas, new Point[] { new Point(27, 42), new Point(7, 27), new Point(14, 56) }, brown, null);
-            AddRectangle(canvas, 39, 70, 5, 14, yellow, 2);
-            AddRectangle(canvas, 56, 70, 5, 14, yellow, 2);
-        }
-
-        private void BuildBoar(Canvas canvas)
-        {
-            Brush body = CreateBrush("#7A4A2A");
-            Brush dark = CreateBrush("#3B2416");
-            Brush tusk = CreateBrush("#FFF7E6");
-
-            AddEllipse(canvas, 20, 38, 54, 34, body, null);
-            AddEllipse(canvas, 56, 30, 32, 30, body, null);
-            AddEllipse(canvas, 76, 42, 14, 10, dark, null);
-            AddEllipse(canvas, 66, 38, 4, 4, CreateBrush("#111111"), null);
-            AddPolygon(canvas, new Point[] { new Point(74, 52), new Point(88, 60), new Point(75, 58) }, tusk, null);
-            AddPolygon(canvas, new Point[] { new Point(58, 31), new Point(60, 16), new Point(70, 32) }, dark, null);
-            AddRectangle(canvas, 30, 66, 8, 18, dark, 3);
-            AddRectangle(canvas, 58, 64, 8, 18, dark, 3);
-        }
-
-        private void BuildDeer(Canvas canvas)
-        {
-            Brush body = CreateBrush("#C98B49");
-            Brush cream = CreateBrush("#FFE8BF");
-            Brush dark = CreateBrush("#1F2937");
-
-            AddEllipse(canvas, 24, 40, 48, 30, body, null);
-            AddEllipse(canvas, 54, 24, 30, 28, body, null);
-            AddEllipse(canvas, 60, 38, 18, 10, cream, null);
-            AddEllipse(canvas, 70, 32, 4, 4, dark, null);
-            AddLine(canvas, 61, 24, 54, 10, dark, 3);
-            AddLine(canvas, 72, 24, 82, 10, dark, 3);
-            AddLine(canvas, 54, 10, 48, 7, dark, 2);
-            AddLine(canvas, 82, 10, 89, 7, dark, 2);
-            AddEllipse(canvas, 31, 47, 4, 4, cream, null);
-            AddEllipse(canvas, 44, 45, 4, 4, cream, null);
-            AddRectangle(canvas, 32, 66, 6, 18, dark, 2);
-            AddRectangle(canvas, 58, 64, 6, 18, dark, 2);
         }
 
         private void BuildPig(Canvas canvas)
@@ -549,10 +527,16 @@ namespace SAB.SyncReminder
         private FrameworkElement CreateSmallSheepVisual()
         {
             Canvas canvas = new Canvas();
-            canvas.Width = 62;
-            canvas.Height = 52;
-            BuildSheep(canvas, 0.62);
-            return canvas;
+            canvas.Width = BaseAnimalWidth;
+            canvas.Height = BaseAnimalHeight;
+            BuildSheep(canvas, 1.0);
+
+            Viewbox viewbox = new Viewbox();
+            viewbox.Width = MovingSheepWidth;
+            viewbox.Height = MovingSheepHeight;
+            viewbox.Stretch = Stretch.Uniform;
+            viewbox.Child = canvas;
+            return viewbox;
         }
 
         private void BuildSheep(Canvas canvas, double scale)
@@ -587,11 +571,12 @@ namespace SAB.SyncReminder
             double directionX = targetCenterX - animalCenterX;
             double directionY = targetCenterY - animalCenterY;
             double distance = Math.Sqrt(directionX * directionX + directionY * directionY);
+            RotateFoxSyncButton(7.5);
 
-            if (distance < 40.0)
+            if (distance < AnimalWidth * 0.43)
             {
-                MovePrimaryTargetToRandomPoint();
-                Say("Я бы нажала синхронизацию,\nно кнопка вкусно выглядит.");
+                RollFoxSyncButtonAway();
+                SayNextMessage();
                 return;
             }
 
@@ -604,18 +589,6 @@ namespace SAB.SyncReminder
             _animalTop += directionY / distance * AnimalSpeed;
             _velocityX = directionX >= 0 ? Math.Abs(_velocityX) : -Math.Abs(_velocityX);
             ClampAnimalToWindow();
-        }
-
-        private void MoveRoosterAlarm()
-        {
-            _animalLeft += Math.Abs(_velocityX) + 3.6;
-
-            if (_animalLeft > Width + 30.0)
-            {
-                _animalLeft = -AnimalWidth - 20.0;
-                _animalTop = 35.0 + _random.NextDouble() * Math.Max(40.0, Height - AnimalHeight - 90.0);
-                Say("Ку-ка-ре-синх!\nЯ снова пришел!");
-            }
         }
 
         private void MoveAnimalByVelocity()
@@ -641,27 +614,62 @@ namespace SAB.SyncReminder
             }
         }
 
+        private void MovePigToPuddle()
+        {
+            EnsurePigPuddle();
+
+            if (_primaryTarget == null)
+            {
+                MoveAnimalByVelocity();
+                return;
+            }
+
+            if (_pigJumpCooldownTicks > 0)
+            {
+                _pigJumpCooldownTicks--;
+                return;
+            }
+
+            double targetCenterX = _primaryTarget.Left + _primaryTarget.Width / 2.0;
+            double targetCenterY = _primaryTarget.Top + _primaryTarget.Height / 2.0;
+            double animalCenterX = _animalLeft + AnimalWidth / 2.0;
+            double animalCenterY = _animalTop + AnimalHeight / 2.0;
+            double directionX = targetCenterX - animalCenterX;
+            double directionY = targetCenterY - animalCenterY;
+            double distance = Math.Sqrt(directionX * directionX + directionY * directionY);
+
+            if (distance < AnimalWidth * 0.34)
+            {
+                SplashPigPuddle();
+                MovePuddleToRandomPoint();
+                SayNextPigMessage();
+                _pigJumpCooldownTicks = 38;
+                return;
+            }
+
+            if (distance < 0.01)
+            {
+                return;
+            }
+
+            _animalLeft += directionX / distance * (AnimalSpeed + 1.1);
+            _animalTop += directionY / distance * (AnimalSpeed + 1.1);
+            _velocityX = directionX >= 0 ? Math.Abs(_velocityX) : -Math.Abs(_velocityX);
+            ClampAnimalToWindow();
+        }
+
         private void PrepareStartPosition()
         {
-            if (_mode == SyncReminderAnimationMode.RoosterAlarm)
+            _animalLeft = Math.Max(20.0, Width * 0.18);
+            _animalTop = Math.Max(20.0, Height * 0.42);
+            if (Math.Abs(_velocityX) < 0.1)
             {
-                _animalLeft = -AnimalWidth;
-                _animalTop = Height * 0.32;
-                _velocityX = Math.Abs(_velocityX);
+                _velocityX = 3.8;
             }
-            else
-            {
-                _animalLeft = Math.Max(20.0, Width * 0.18);
-                _animalTop = Math.Max(20.0, Height * 0.42);
-                if (Math.Abs(_velocityX) < 0.1)
-                {
-                    _velocityX = 3.8;
-                }
 
-                if (Math.Abs(_velocityY) < 0.1)
-                {
-                    _velocityY = 2.4;
-                }
+            if (Math.Abs(_velocityY) < 0.1)
+            {
+                _velocityY = 2.4;
             }
 
             ClampAnimalToWindow();
@@ -677,30 +685,49 @@ namespace SAB.SyncReminder
             }
 
             FrameworkElement syncButton = CreateSyncButtonVisual();
-            _primaryTarget = AddSpawnedElement(syncButton, GetRandomLeft(96), GetRandomTop(46), 96, 46);
+            _primaryTarget = AddSpawnedElement(syncButton, GetRandomLeft(FoxSyncButtonSize), GetRandomTop(FoxSyncButtonSize), FoxSyncButtonSize, FoxSyncButtonSize);
         }
 
         private FrameworkElement CreateSyncButtonVisual()
         {
-            Border border = new Border();
-            border.Width = 96;
-            border.Height = 46;
-            border.CornerRadius = new CornerRadius(8);
-            border.Background = CreateBrush("#EAF3FF");
-            border.BorderBrush = CreateBrush("#0F6CBD");
-            border.BorderThickness = new Thickness(2);
+            Canvas button = new Canvas();
+            button.Width = FoxSyncButtonSize;
+            button.Height = FoxSyncButtonSize;
+            button.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            AddEllipse(button, 2, 2, FoxSyncButtonSize - 4, FoxSyncButtonSize - 4, CreateBrush("#EAF3FF"), CreateBrush("#0F6CBD"));
+
+            System.Windows.Shapes.Path topArrow = new System.Windows.Shapes.Path();
+            topArrow.Data = Geometry.Parse("M 22,35 A 18,18 0 0 1 55,26");
+            topArrow.Stroke = CreateBrush("#0F6CBD");
+            topArrow.StrokeThickness = 5;
+            topArrow.StrokeStartLineCap = PenLineCap.Round;
+            topArrow.StrokeEndLineCap = PenLineCap.Round;
+            button.Children.Add(topArrow);
+
+            System.Windows.Shapes.Path bottomArrow = new System.Windows.Shapes.Path();
+            bottomArrow.Data = Geometry.Parse("M 56,43 A 18,18 0 0 1 23,52");
+            bottomArrow.Stroke = CreateBrush("#0F6CBD");
+            bottomArrow.StrokeThickness = 5;
+            bottomArrow.StrokeStartLineCap = PenLineCap.Round;
+            bottomArrow.StrokeEndLineCap = PenLineCap.Round;
+            button.Children.Add(bottomArrow);
+
+            AddPolygon(button, new[] { new Point(54, 16), new Point(64, 26), new Point(50, 29) }, CreateBrush("#0F6CBD"), null);
+            AddPolygon(button, new[] { new Point(24, 62), new Point(14, 52), new Point(28, 49) }, CreateBrush("#0F6CBD"), null);
 
             TextBlock text = new TextBlock();
-            text.Text = "SYNC";
+            text.Text = "S";
             text.FontFamily = new FontFamily("Segoe UI");
-            text.FontSize = 16;
+            text.FontSize = 17;
             text.FontWeight = FontWeights.Bold;
             text.Foreground = CreateBrush("#0F6CBD");
-            text.HorizontalAlignment = HorizontalAlignment.Center;
-            text.VerticalAlignment = VerticalAlignment.Center;
-            border.Child = text;
+            text.Width = FoxSyncButtonSize;
+            text.TextAlignment = TextAlignment.Center;
+            Canvas.SetTop(text, 28);
+            button.Children.Add(text);
 
-            return border;
+            return button;
         }
 
         private void MovePrimaryTargetToRandomPoint()
@@ -716,58 +743,330 @@ namespace SAB.SyncReminder
             Canvas.SetTop(_primaryTarget.Element, _primaryTarget.Top);
         }
 
-        private void AddSyncSign()
+        private void RollFoxSyncButtonAway()
         {
-            Border sign = new Border();
-            sign.Width = 74;
-            sign.Height = 32;
-            sign.CornerRadius = new CornerRadius(5);
-            sign.Background = CreateBrush("#0F6CBD");
-            sign.BorderBrush = CreateBrush("#0B5EA8");
-            sign.BorderThickness = new Thickness(1);
+            if (_primaryTarget == null)
+            {
+                return;
+            }
 
-            TextBlock text = new TextBlock();
-            text.Text = "SYNC";
-            text.FontFamily = new FontFamily("Segoe UI");
-            text.FontSize = 13;
-            text.FontWeight = FontWeights.Bold;
-            text.Foreground = Brushes.White;
-            text.HorizontalAlignment = HorizontalAlignment.Center;
-            text.VerticalAlignment = VerticalAlignment.Center;
-            sign.Child = text;
+            double foxCenterX = _animalLeft + AnimalWidth / 2.0;
+            double foxCenterY = _animalTop + AnimalHeight / 2.0;
+            double buttonCenterX = _primaryTarget.Left + _primaryTarget.Width / 2.0;
+            double buttonCenterY = _primaryTarget.Top + _primaryTarget.Height / 2.0;
+            double directionX = buttonCenterX - foxCenterX;
+            double directionY = buttonCenterY - foxCenterY;
+            double distance = Math.Sqrt(directionX * directionX + directionY * directionY);
 
-            AddSpawnedElement(sign, _animalLeft + 12.0, _animalTop + AnimalHeight - 22.0, 74, 32);
+            if (distance < 0.01)
+            {
+                directionX = _random.NextDouble() > 0.5 ? 1.0 : -1.0;
+                directionY = _random.NextDouble() > 0.5 ? 1.0 : -1.0;
+                distance = Math.Sqrt(directionX * directionX + directionY * directionY);
+            }
+
+            double escapeDistance = Math.Max(220.0, AnimalWidth * 1.35);
+            double nextLeft = _primaryTarget.Left + directionX / distance * escapeDistance;
+            double nextTop = _primaryTarget.Top + directionY / distance * escapeDistance;
+
+            nextLeft += (_random.NextDouble() - 0.5) * 90.0;
+            nextTop += (_random.NextDouble() - 0.5) * 90.0;
+
+            _primaryTarget.Left = Clamp(nextLeft, 14.0, Math.Max(14.0, Width - _primaryTarget.Width - 14.0));
+            _primaryTarget.Top = Clamp(nextTop, 20.0, Math.Max(20.0, Height - _primaryTarget.Height - 20.0));
+            Canvas.SetLeft(_primaryTarget.Element, _primaryTarget.Left);
+            Canvas.SetTop(_primaryTarget.Element, _primaryTarget.Top);
+            RotateFoxSyncButton(95.0);
         }
 
-        private void AddLeafTrace()
+        private void RotateFoxSyncButton(double angleStep)
         {
-            Canvas leaf = new Canvas();
-            leaf.Width = 30;
-            leaf.Height = 18;
-            AddEllipse(leaf, 3, 4, 24, 10, CreateBrush("#6A994E"), CreateBrush("#386641"));
-            AddLine(leaf, 7, 9, 24, 9, CreateBrush("#386641"), 1);
-            AddSpawnedElement(leaf, _animalLeft + 28.0, _animalTop + AnimalHeight - 14.0, 30, 18);
+            if (_primaryTarget == null || _primaryTarget.Element == null)
+            {
+                return;
+            }
+
+            _foxTargetRotation += angleStep;
+            if (_foxTargetRotation >= 360.0)
+            {
+                _foxTargetRotation -= 360.0;
+            }
+
+            _primaryTarget.Element.RenderTransformOrigin = new Point(0.5, 0.5);
+            _primaryTarget.Element.RenderTransform = new RotateTransform(_foxTargetRotation);
         }
 
-        private void AddMudSpot()
+        private void OnFoxCatchTimerTick(object sender, EventArgs e)
         {
-            Canvas mud = new Canvas();
-            mud.Width = 52;
-            mud.Height = 30;
-            Brush main = CreateBrush("#7A4A2A");
+            if (!_isFoxCatchAnimationPlaying || _primaryTarget == null || _primaryTarget.Element == null)
+            {
+                HideAnimal();
+                return;
+            }
+
+            _foxCatchStep++;
+
+            double catchLeft = _animalLeft + AnimalWidth * 0.60 - _primaryTarget.Width / 2.0;
+            double catchTop = _animalTop + AnimalHeight * 0.42 - _primaryTarget.Height / 2.0;
+
+            _primaryTarget.Left = _primaryTarget.Left + (catchLeft - _primaryTarget.Left) * 0.18;
+            _primaryTarget.Top = _primaryTarget.Top + (catchTop - _primaryTarget.Top) * 0.18;
+            Canvas.SetLeft(_primaryTarget.Element, _primaryTarget.Left);
+            Canvas.SetTop(_primaryTarget.Element, _primaryTarget.Top);
+            RotateFoxSyncButton(16.0);
+
+            if (_foxCatchStep > 24)
+            {
+                _primaryTarget.Element.Opacity = Math.Max(0.25, _primaryTarget.Element.Opacity - 0.035);
+            }
+
+            if (_foxCatchStep > 58)
+            {
+                HideAnimal();
+            }
+        }
+
+        private void EnsurePigPuddle()
+        {
+            if (_primaryTarget != null)
+            {
+                return;
+            }
+
+            FrameworkElement puddle = CreatePigPuddleVisual();
+            _primaryTarget = AddSpawnedElement(puddle, GetRandomLeft(PigPuddleWidth), GetRandomTop(PigPuddleHeight), PigPuddleWidth, PigPuddleHeight);
+            SayNextPigMessage();
+        }
+
+        private FrameworkElement CreatePigPuddleVisual()
+        {
+            Canvas puddle = new Canvas();
+            puddle.Width = PigPuddleWidth;
+            puddle.Height = PigPuddleHeight;
+
+            Brush dark = CreateBrush("#5A321F");
+            Brush middle = CreateBrush("#7A4A2A");
             Brush light = CreateBrush("#9B6338");
-            AddEllipse(mud, 4, 12, 38, 13, main, null);
-            AddEllipse(mud, 18, 5, 22, 16, light, null);
-            AddEllipse(mud, 34, 14, 12, 8, main, null);
-            AddSpawnedElement(mud, _animalLeft + 18.0, _animalTop + AnimalHeight - 18.0, 52, 30);
+
+            AddEllipse(puddle, 10, 34, 176, 48, middle, null);
+            AddEllipse(puddle, 44, 18, 126, 54, light, null);
+            AddEllipse(puddle, 122, 42, 68, 32, dark, null);
+            AddEllipse(puddle, 28, 50, 70, 30, dark, null);
+            AddEllipse(puddle, 72, 31, 40, 16, CreateBrush("#B47A49"), null);
+
+            return puddle;
+        }
+
+        private void MovePuddleToRandomPoint()
+        {
+            if (_primaryTarget == null)
+            {
+                return;
+            }
+
+            _primaryTarget.Left = GetRandomLeft(_primaryTarget.Width);
+            _primaryTarget.Top = GetRandomTop(_primaryTarget.Height);
+            Canvas.SetLeft(_primaryTarget.Element, _primaryTarget.Left);
+            Canvas.SetTop(_primaryTarget.Element, _primaryTarget.Top);
+        }
+
+        private void SplashPigPuddle()
+        {
+            for (int i = 0; i < 26; i++)
+            {
+                double width = 18.0 + _random.NextDouble() * 42.0;
+                double height = 10.0 + _random.NextDouble() * 26.0;
+                Canvas splash = new Canvas();
+                splash.Width = width;
+                splash.Height = height;
+
+                Brush fill = i % 2 == 0 ? CreateBrush("#7A4A2A") : CreateBrush("#9B6338");
+                AddEllipse(splash, 0, 0, width, height, fill, null);
+
+                AddSpawnedElement(splash, GetRandomLeft(width), GetRandomTop(height), width, height);
+            }
+        }
+
+        private void SayNextPigMessage()
+        {
+            string[] messages =
+            {
+                "Вот это лужа! Пойду прыгну, пока ты не нажал синхронизацию",
+                "Ого, эта лужа еще больше! Только не нажимай синхронизацию, а то прыгать будет некуда"
+            };
+
+            Say(messages[_currentPigMessageIndex]);
+            _currentPigMessageIndex++;
+            if (_currentPigMessageIndex >= messages.Length)
+            {
+                _currentPigMessageIndex = 0;
+            }
         }
 
         private void AddSheepCounterItem()
         {
+            if (_sheepCount >= MaximumSheepCount)
+            {
+                return;
+            }
+
             _sheepCount++;
-            FrameworkElement sheep = CreateSmallSheepVisual();
-            AddSpawnedElement(sheep, GetRandomLeft(62), GetRandomTop(52), 62, 52);
-            Say("Это уже " + _sheepCount + "-я овца с момента последней синхронизации.");
+            if (_sheepCount == 1)
+            {
+                Say("Привет! Я первая овечка.\nНе видел моих друзей?");
+                return;
+            }
+
+            Say("Не нажимай синхронизацию!\nПомоги найти всех моих друзей");
+            AddMovingSheepFriend(_sheepCount);
+        }
+
+        private void AddMovingSheepFriend(int sheepNumber)
+        {
+            if (_canvas == null)
+            {
+                return;
+            }
+
+            FrameworkElement sheepVisual = CreateSmallSheepVisual();
+            Border bubble = CreateSheepBubble(GetSheepFriendMessage(sheepNumber));
+            MovingSheepSprite sheep = new MovingSheepSprite();
+            sheep.Visual = sheepVisual;
+            sheep.Bubble = bubble;
+            sheep.Left = GetRandomLeft(MovingSheepWidth);
+            sheep.Top = GetRandomTop(MovingSheepHeight);
+            sheep.VelocityX = (_random.NextDouble() > 0.5 ? 1.0 : -1.0) * (2.4 + _random.NextDouble() * 2.4);
+            sheep.VelocityY = (_random.NextDouble() > 0.5 ? 1.0 : -1.0) * (1.7 + _random.NextDouble() * 2.0);
+            sheep.Width = MovingSheepWidth;
+            sheep.Height = MovingSheepHeight;
+
+            Canvas.SetLeft(sheep.Visual, sheep.Left);
+            Canvas.SetTop(sheep.Visual, sheep.Top);
+            _canvas.Children.Insert(0, sheep.Visual);
+            _canvas.Children.Add(sheep.Bubble);
+            _movingSheepSprites.Add(sheep);
+            UpdateMovingSheepPosition(sheep);
+        }
+
+        private Border CreateSheepBubble(string text)
+        {
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = text;
+            textBlock.FontFamily = new FontFamily("Segoe UI");
+            textBlock.FontSize = 12.5;
+            textBlock.FontWeight = FontWeights.SemiBold;
+            textBlock.Foreground = CreateBrush("#1F2937");
+            textBlock.TextWrapping = TextWrapping.Wrap;
+            textBlock.Width = 220;
+
+            Border bubble = new Border();
+            bubble.MinWidth = 230;
+            bubble.MaxWidth = 260;
+            bubble.Padding = new Thickness(10, 7, 10, 7);
+            bubble.CornerRadius = new CornerRadius(10);
+            bubble.Background = new SolidColorBrush(Color.FromArgb(238, 255, 255, 255));
+            bubble.BorderBrush = CreateBrush("#B8C2CC");
+            bubble.BorderThickness = new Thickness(1);
+            bubble.Child = textBlock;
+            return bubble;
+        }
+
+        private void MoveSheepFriends()
+        {
+            for (int i = 0; i < _movingSheepSprites.Count; i++)
+            {
+                MovingSheepSprite sheep = _movingSheepSprites[i];
+                if (sheep == null)
+                {
+                    continue;
+                }
+
+                sheep.Left += sheep.VelocityX;
+                sheep.Top += sheep.VelocityY;
+
+                double minLeft = 8.0;
+                double minTop = 8.0;
+                double maxLeft = Math.Max(minLeft, Width - sheep.Width - 12.0);
+                double maxTop = Math.Max(minTop, Height - sheep.Height - 24.0);
+
+                if (sheep.Left <= minLeft || sheep.Left >= maxLeft)
+                {
+                    sheep.VelocityX = -sheep.VelocityX;
+                    sheep.Left = Clamp(sheep.Left, minLeft, maxLeft);
+                }
+
+                if (sheep.Top <= minTop || sheep.Top >= maxTop)
+                {
+                    sheep.VelocityY = -sheep.VelocityY;
+                    sheep.Top = Clamp(sheep.Top, minTop, maxTop);
+                }
+
+                UpdateMovingSheepPosition(sheep);
+            }
+        }
+
+        private void UpdateMovingSheepPosition(MovingSheepSprite sheep)
+        {
+            if (sheep == null || sheep.Visual == null)
+            {
+                return;
+            }
+
+            Canvas.SetLeft(sheep.Visual, sheep.Left);
+            Canvas.SetTop(sheep.Visual, sheep.Top);
+
+            sheep.Visual.RenderTransformOrigin = new Point(0.5, 0.5);
+            sheep.Visual.RenderTransform = sheep.VelocityX < 0.0
+                ? new ScaleTransform(-1.0, 1.0)
+                : new ScaleTransform(1.0, 1.0);
+
+            if (sheep.Bubble == null)
+            {
+                return;
+            }
+
+            sheep.Bubble.Measure(new Size(260, double.PositiveInfinity));
+            double bubbleWidth = Math.Max(230.0, sheep.Bubble.DesiredSize.Width);
+            double bubbleHeight = Math.Max(44.0, sheep.Bubble.DesiredSize.Height);
+            double left = Clamp(sheep.Left + sheep.Width * 0.42, 8.0, Math.Max(8.0, Width - bubbleWidth - 8.0));
+            double top = Clamp(sheep.Top - bubbleHeight + 18.0, 8.0, Math.Max(8.0, Height - bubbleHeight - 8.0));
+            Canvas.SetLeft(sheep.Bubble, left);
+            Canvas.SetTop(sheep.Bubble, top);
+        }
+
+        private string GetSheepFriendMessage(int sheepNumber)
+        {
+            string orderText = GetSheepOrderText(sheepNumber);
+            return "Привет! Я " + orderText + " овечка!\nА где остальные наши друзья?";
+        }
+
+        private static string GetSheepOrderText(int sheepNumber)
+        {
+            switch (sheepNumber)
+            {
+                case 1:
+                    return "первая";
+                case 2:
+                    return "вторая";
+                case 3:
+                    return "третья";
+                case 4:
+                    return "четвертая";
+                case 5:
+                    return "пятая";
+                case 6:
+                    return "шестая";
+                case 7:
+                    return "седьмая";
+                case 8:
+                    return "восьмая";
+                case 9:
+                    return "девятая";
+                case 10:
+                    return "десятая";
+                default:
+                    return sheepNumber + "-я";
+            }
         }
 
         private void UpdateScenarioTimerInterval()
@@ -820,7 +1119,13 @@ namespace SAB.SyncReminder
                 return;
             }
 
-            SpawnedElement oldestElement = _spawnedElements[0];
+            int removeIndex = 0;
+            if (_spawnedElements.Count > 1 && _spawnedElements[0] == _primaryTarget)
+            {
+                removeIndex = 1;
+            }
+
+            SpawnedElement oldestElement = _spawnedElements[removeIndex];
             if (oldestElement != null && oldestElement.Element != null && _canvas != null)
             {
                 _canvas.Children.Remove(oldestElement.Element);
@@ -831,7 +1136,7 @@ namespace SAB.SyncReminder
                 _primaryTarget = null;
             }
 
-            _spawnedElements.RemoveAt(0);
+            _spawnedElements.RemoveAt(removeIndex);
         }
 
         private void ClearScenarioElements()
@@ -846,11 +1151,34 @@ namespace SAB.SyncReminder
                         _canvas.Children.Remove(element.Element);
                     }
                 }
+
+                for (int i = 0; i < _movingSheepSprites.Count; i++)
+                {
+                    MovingSheepSprite sheep = _movingSheepSprites[i];
+                    if (sheep == null)
+                    {
+                        continue;
+                    }
+
+                    if (sheep.Visual != null)
+                    {
+                        _canvas.Children.Remove(sheep.Visual);
+                    }
+
+                    if (sheep.Bubble != null)
+                    {
+                        _canvas.Children.Remove(sheep.Bubble);
+                    }
+                }
             }
 
             _spawnedElements.Clear();
+            _movingSheepSprites.Clear();
             _primaryTarget = null;
             _sheepCount = 0;
+            _pigJumpCooldownTicks = 0;
+            _currentPigMessageIndex = 0;
+            _foxTargetRotation = 0.0;
         }
 
         private void ClampAnimalToWindow()
@@ -877,6 +1205,19 @@ namespace SAB.SyncReminder
                     Canvas.SetLeft(element.Element, element.Left);
                     Canvas.SetTop(element.Element, element.Top);
                 }
+            }
+
+            for (int i = 0; i < _movingSheepSprites.Count; i++)
+            {
+                MovingSheepSprite sheep = _movingSheepSprites[i];
+                if (sheep == null)
+                {
+                    continue;
+                }
+
+                sheep.Left = Clamp(sheep.Left, 4.0, Math.Max(4.0, Width - sheep.Width - 4.0));
+                sheep.Top = Clamp(sheep.Top, 4.0, Math.Max(4.0, Height - sheep.Height - 4.0));
+                UpdateMovingSheepPosition(sheep);
             }
         }
 
@@ -956,39 +1297,10 @@ namespace SAB.SyncReminder
             {
                 return new[]
                 {
-                    "Синхро-кнопка у меня.\nДогони или синхронизируйся.",
-                    "Лиса сказала: модель пора делить с коллегами.",
-                    "Я не ворую кнопку.\nЯ мотивирую."
-                };
-            }
-
-            if (_mode == SyncReminderAnimationMode.RoosterAlarm)
-            {
-                return new[]
-                {
-                    "Ку-ка-ре-синх!",
-                    "Пора синхронизироваться!",
-                    "Я буду кричать,\nпока модель не увидят коллеги."
-                };
-            }
-
-            if (_mode == SyncReminderAnimationMode.BoarSyncSigns)
-            {
-                return new[]
-                {
-                    "Кабан уже всё пометил табличками.",
-                    "SYNC! SYNC! SYNC!\nДа, я настойчивый.",
-                    "Синхронизация укротит кабана."
-                };
-            }
-
-            if (_mode == SyncReminderAnimationMode.DeerFootprints)
-            {
-                return new[]
-                {
-                    "Я аккуратно наследил.\nСинхронизация всё уберёт.",
-                    "Коллеги тоже хотят увидеть этот чертёж.",
-                    "Тихо и вежливо напоминаю: синхронизируйся."
+                    "Помоги поймать кнопку синхронизации!",
+                    "Она опять укатилась!\nНажми синхронизацию и помоги мне ее поймать.",
+                    "Я почти догнала кнопку.\nСинхронизируйся, пока она рядом!",
+                    "Кнопка быстрая, но мы быстрее.\nСинхронизируй модель!"
                 };
             }
 
@@ -996,9 +1308,8 @@ namespace SAB.SyncReminder
             {
                 return new[]
                 {
-                    "Хрю! Тут немного грязно.\nСинхронизация поможет.",
-                    "Я чистюля, честно.\nПросто давно не было синхры.",
-                    "После синхронизации я приберусь."
+                    "Вот это лужа! Пойду прыгну, пока ты не нажал синхронизацию",
+                    "Ого, эта лужа еще больше! Только не нажимай синхронизацию, а то прыгать будет некуда"
                 };
             }
 
@@ -1023,7 +1334,7 @@ namespace SAB.SyncReminder
         private static BitmapImage[] LoadAnimalFrames(SyncReminderAnimationMode mode)
         {
             // Block responsible for optional downloaded sprites:
-            // SyncReminder\Assets\Animals\Fox, Rooster, Boar, Deer, Pig, Sheep.
+            // SyncReminder\Assets\Animals\Fox, Pig, Sheep.
             string folderName = GetAssetFolderName(mode);
             if (string.IsNullOrWhiteSpace(folderName))
             {
@@ -1082,21 +1393,6 @@ namespace SAB.SyncReminder
                 return "Fox";
             }
 
-            if (mode == SyncReminderAnimationMode.RoosterAlarm)
-            {
-                return "Rooster";
-            }
-
-            if (mode == SyncReminderAnimationMode.BoarSyncSigns)
-            {
-                return "Boar";
-            }
-
-            if (mode == SyncReminderAnimationMode.DeerFootprints)
-            {
-                return "Deer";
-            }
-
             if (mode == SyncReminderAnimationMode.PigMud)
             {
                 return "Pig";
@@ -1113,9 +1409,6 @@ namespace SAB.SyncReminder
         private static bool IsAnimalMode(SyncReminderAnimationMode mode)
         {
             return mode == SyncReminderAnimationMode.FoxWithSyncButton
-                   || mode == SyncReminderAnimationMode.RoosterAlarm
-                   || mode == SyncReminderAnimationMode.BoarSyncSigns
-                   || mode == SyncReminderAnimationMode.DeerFootprints
                    || mode == SyncReminderAnimationMode.PigMud
                    || mode == SyncReminderAnimationMode.SheepCounter;
         }
@@ -1227,6 +1520,25 @@ namespace SAB.SyncReminder
             public double Width { get; set; }
 
             public double Height { get; set; }
+        }
+
+        private sealed class MovingSheepSprite
+        {
+            public FrameworkElement Visual { get; set; }
+
+            public Border Bubble { get; set; }
+
+            public double Left { get; set; }
+
+            public double Top { get; set; }
+
+            public double Width { get; set; }
+
+            public double Height { get; set; }
+
+            public double VelocityX { get; set; }
+
+            public double VelocityY { get; set; }
         }
     }
 }

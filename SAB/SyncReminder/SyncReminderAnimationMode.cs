@@ -6,10 +6,7 @@ namespace SAB.SyncReminder
         DuckWithPoop = 1,
         RabbitWithCarrots = 2,
         FoxWithSyncButton = 3,
-        RoosterAlarm = 4,
-        BoarSyncSigns = 5,
-        DeerFootprints = 6,
-        PigMud = 7,
-        SheepCounter = 8
+        PigMud = 4,
+        SheepCounter = 5
     }
 }

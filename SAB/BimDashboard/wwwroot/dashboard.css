@@ -37,6 +37,7 @@ body {
 }
 
 .header,
+.profile-modes-card,
 .controls-card,
 .columns-card,
 .table-card {
@@ -48,6 +49,90 @@ body {
 
 .header {
     padding: 10px 12px;
+}
+
+.profile-modes-card {
+    margin-top: 14px;
+    padding: 14px;
+}
+
+.profile-mode-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.profile-mode-kicker {
+    margin: 0;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.profile-mode-heading h1 {
+    margin: 4px 0 0;
+    font-size: 22px;
+}
+
+.profile-mode-heading p:last-child {
+    margin: 5px 0 0;
+    color: var(--muted);
+}
+
+.profile-mode-count {
+    min-width: 116px;
+    padding: 8px 12px;
+    border: 1px solid #b9d5fb;
+    border-radius: 8px;
+    background: #eef5ff;
+    color: #164f9c;
+    font-weight: 700;
+    text-align: center;
+}
+
+.profile-mode-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(170px, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.profile-tab {
+    min-height: 48px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+}
+
+.profile-tab:hover {
+    border-color: #8bb9f4;
+    background: #f4f8ff;
+}
+
+.profile-tab.active {
+    border-color: var(--accent);
+    background: #eaf3ff;
+    color: #12498f;
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.profile-tab-title {
+    display: block;
+    font-weight: 700;
+}
+
+.profile-tab-count {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 12px;
 }
 
 .header-grid {
@@ -154,6 +239,34 @@ body {
 
 .actions button:hover {
     background: var(--accent-hover);
+}
+
+.quick-filter-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.quick-filter-button {
+    min-height: 30px;
+    padding: 5px 9px;
+    border: 1px solid #b9d5fb;
+    border-radius: 7px;
+    background: #eef5ff;
+    color: #164f9c;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.quick-filter-button:hover {
+    border-color: var(--accent);
+    background: #e2efff;
+}
+
+.quick-filter-empty {
+    color: var(--muted);
+    font-size: 12px;
 }
 
 .result-info {
@@ -290,6 +403,27 @@ body {
     display: block;
 }
 
+/* Each profile mode keeps its own visual density and preview emphasis. */
+body.mode-systemfamilies .thumbnail-image,
+body.mode-loadablefamilies .thumbnail-image {
+    max-height: 190px;
+}
+
+body.mode-lines .data-table {
+    font-size: 12px;
+}
+
+body.mode-lines .data-table th,
+body.mode-lines .data-table td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+body.mode-fillpatterns .thumbnail-image {
+    max-height: 240px;
+    image-rendering: auto;
+}
+
 .thumbnail-empty {
     color: var(--muted);
     font-size: 12px;
@@ -340,12 +474,24 @@ body {
 }
 
 @media (max-width: 1200px) {
+    .profile-mode-tabs {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
+
     .workspace-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 900px) {
+    .profile-mode-tabs {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-mode-heading {
+        flex-direction: column;
+    }
+
     .controls-grid {
         grid-template-columns: 1fr;
     }

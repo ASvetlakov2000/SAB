@@ -26,7 +26,7 @@
                 </section>
 
                 <section class="header-section">
-                    <p class="header-label">Всего элементов</p>
+                    <p class="header-label">Элементов в режиме</p>
                     <p class="header-value" id="totalElementsHeader">0</p>
                 </section>
 
@@ -36,6 +36,18 @@
                 </section>
             </div>
         </header>
+
+        <section class="profile-modes-card">
+            <div class="profile-mode-heading">
+                <div>
+                    <p class="profile-mode-kicker">Режим просмотра</p>
+                    <h1 id="profileModeTitle">Выберите раздел каталога</h1>
+                    <p id="profileModeDescription">Каждый раздел использует собственный набор колонок и фильтров.</p>
+                </div>
+                <div id="profileModeCount" class="profile-mode-count">0 записей</div>
+            </div>
+            <nav id="profileModeTabs" class="profile-mode-tabs" aria-label="Разделы каталога"></nav>
+        </section>
 
         <section class="workspace-grid">
             <aside class="left-panel">
@@ -47,6 +59,11 @@
                             <span>Поиск по всем колонкам</span>
                             <input id="searchInput" type="text" placeholder="Введите текст для поиска" />
                         </label>
+
+                        <div class="control-item control-full">
+                            <span>Быстрые фильтры режима</span>
+                            <div id="quickFilterContainer" class="quick-filter-list"></div>
+                        </div>
 
                         <label class="control-item">
                             <span>Фильтр по колонке</span>

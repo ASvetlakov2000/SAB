@@ -4,23 +4,55 @@
     var state = {
         data: null,
         sourceProfile: "",
+        activeProfile: "",
         rawColumns: [],
         displayColumns: [],
+        allRows: [],
         rows: [],
         filteredRows: [],
         visibleColumnIndexes: [],
         filterColumnIndex: -1,
         sortColumnIndex: -1,
         sortDirection: "asc",
-        columnWidthsByIndex: {}
+        columnWidthsByIndex: {},
+        profileStates: {},
+        profileColumnIndex: -1,
+        profileDisplayColumnIndex: -1
     };
 
     var hiddenColumns = {
         recordtype: true,
         sourcetype: true,
         sourcefile: true,
+        profilekey: true,
+        "профиль": true,
         include: true,
         "включить": true
+    };
+
+    var profileKeys = ["systemfamilies", "loadablefamilies", "lines", "fillpatterns"];
+
+    var profileConfigurations = {
+        systemfamilies: {
+            title: "Системные типы",
+            description: "Слои, толщина, семейство и типоразмер системных конструкций.",
+            quickFilters: ["категория", "семейство", "типоразмер"]
+        },
+        loadablefamilies: {
+            title: "Загружаемые семейства",
+            description: "Каталог семейств и типоразмеров с крупными изображениями предпросмотра.",
+            quickFilters: ["категория", "семейство", "типоразмер"]
+        },
+        lines: {
+            title: "Стили линий",
+            description: "Компактная таблица линий с цветом, весом и графическим образцом.",
+            quickFilters: ["наименование", "категория", "цвет", "вес линии"]
+        },
+        fillpatterns: {
+            title: "Штриховки",
+            description: "Штриховки с увеличенными превью и фильтрами по имени и типу образца.",
+            quickFilters: ["наименование", "тип штриховки"]
+        }
     };
 
     var profileColumnOrders = {
@@ -73,6 +105,23 @@
         if (element) {
             element.textContent = value;
         }
+    }
+
+    function formatRecordCount(count) {
+        var safeCount = Number(count) || 0;
+        var lastTwoDigits = safeCount % 100;
+        var lastDigit = safeCount % 10;
+        var word = "записей";
+
+        if (lastTwoDigits < 11 || lastTwoDigits > 14) {
+            if (lastDigit === 1) {
+                word = "запись";
+            } else if (lastDigit >= 2 && lastDigit <= 4) {
+                word = "записи";
+            }
+        }
+
+        return safeCount + " " + word;
     }
 
     function toLowerSafe(value) {
@@ -141,8 +190,82 @@
         return toLowerSafe(name).trim();
     }
 
+    function normalizeProfileKey(value) {
+        var normalized = normalizeColumnName(value).replace(/\s+/g, "");
+
+        if (normalized === "systemfamilies" || normalized.indexOf("систем") >= 0) {
+            return "systemfamilies";
+        }
+
+        if (normalized === "loadablefamilies" || normalized.indexOf("загружа") >= 0) {
+            return "loadablefamilies";
+        }
+
+        if (normalized === "lines" || normalized.indexOf("лини") >= 0) {
+            return "lines";
+        }
+
+        if (normalized === "fillpatterns" || normalized.indexOf("штрих") >= 0) {
+            return "fillpatterns";
+        }
+
+        return "";
+    }
+
+    function findRawColumnIndex(columnName) {
+        var normalizedTarget = normalizeColumnName(columnName);
+
+        for (var i = 0; i < state.rawColumns.length; i++) {
+            if (normalizeColumnName(state.rawColumns[i]) === normalizedTarget) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    function getRowProfileKey(row) {
+        if (!Array.isArray(row)) {
+            return "";
+        }
+
+        if (state.profileColumnIndex >= 0) {
+            var technicalProfile = normalizeProfileKey(row[state.profileColumnIndex]);
+
+            if (technicalProfile) {
+                return technicalProfile;
+            }
+        }
+
+        if (state.profileDisplayColumnIndex >= 0) {
+            var displayProfile = normalizeProfileKey(row[state.profileDisplayColumnIndex]);
+
+            if (displayProfile) {
+                return displayProfile;
+            }
+        }
+
+        return normalizeProfileKey(state.sourceProfile);
+    }
+
+    function getRowsForProfile(profileKey) {
+        var result = [];
+
+        for (var i = 0; i < state.allRows.length; i++) {
+            if (getRowProfileKey(state.allRows[i]) === profileKey) {
+                result.push(state.allRows[i].slice());
+            }
+        }
+
+        return result;
+    }
+
+    function getProfileRowCount(profileKey) {
+        return getRowsForProfile(profileKey).length;
+    }
+
     function getProfileOrder() {
-        var key = normalizeColumnName(state.sourceProfile);
+        var key = normalizeColumnName(state.activeProfile || state.sourceProfile);
 
         if (profileColumnOrders.hasOwnProperty(key)) {
             return profileColumnOrders[key];
@@ -152,7 +275,17 @@
     }
 
     function isCurrentProfile(profileKey) {
-        return normalizeColumnName(state.sourceProfile) === profileKey;
+        return normalizeColumnName(state.activeProfile || state.sourceProfile) === profileKey;
+    }
+
+    function hasAnyValueForColumn(columnIndex) {
+        for (var rowIndex = 0; rowIndex < state.rows.length; rowIndex++) {
+            if (String(state.rows[rowIndex][columnIndex] || "").trim()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     function shouldHideColumnForProfile(loweredColumnName) {
@@ -187,6 +320,10 @@
             }
 
             if (shouldHideColumnForProfile(lowered)) {
+                continue;
+            }
+
+            if (state.activeProfile && !hasAnyValueForColumn(i)) {
                 continue;
             }
 
@@ -458,6 +595,241 @@
         wrapper.appendChild(text);
     }
 
+    function clonePlainObject(source) {
+        var result = {};
+
+        if (!source) {
+            return result;
+        }
+
+        for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+                result[key] = source[key];
+            }
+        }
+
+        return result;
+    }
+
+    function saveActiveProfileState() {
+        if (!state.activeProfile) {
+            return;
+        }
+
+        var searchInput = document.getElementById("searchInput");
+        var filterValueInput = document.getElementById("filterValueInput");
+
+        state.profileStates[state.activeProfile] = {
+            searchText: searchInput ? searchInput.value : "",
+            filterText: filterValueInput ? filterValueInput.value : "",
+            filterColumnIndex: state.filterColumnIndex,
+            sortColumnIndex: state.sortColumnIndex,
+            sortDirection: state.sortDirection,
+            visibleColumnIndexes: state.visibleColumnIndexes.slice(),
+            columnWidthsByIndex: clonePlainObject(state.columnWidthsByIndex)
+        };
+    }
+
+    function buildDefaultVisibleColumnIndexes() {
+        var result = [];
+
+        for (var i = 0; i < state.displayColumns.length; i++) {
+            result.push(state.displayColumns[i].index);
+        }
+
+        return result;
+    }
+
+    function restoreVisibleColumnIndexes(savedIndexes) {
+        var result = [];
+
+        if (Array.isArray(savedIndexes)) {
+            for (var i = 0; i < savedIndexes.length; i++) {
+                if (findDisplayColumnMetaByIndex(savedIndexes[i])) {
+                    result.push(savedIndexes[i]);
+                }
+            }
+        }
+
+        return result.length > 0 ? result : buildDefaultVisibleColumnIndexes();
+    }
+
+    function updateProfileModeHeader() {
+        var configuration = profileConfigurations[state.activeProfile] || {
+            title: "Каталог",
+            description: "Данные выбранного профиля."
+        };
+
+        setText("profileModeTitle", configuration.title);
+        setText("profileModeDescription", configuration.description);
+        setText("profileModeCount", formatRecordCount(state.rows.length));
+        setText("totalElementsHeader", String(state.rows.length));
+
+        for (var i = 0; i < profileKeys.length; i++) {
+            document.body.classList.remove("mode-" + profileKeys[i]);
+        }
+
+        document.body.classList.add("mode-" + state.activeProfile);
+    }
+
+    function buildProfileModeTabs() {
+        var container = document.getElementById("profileModeTabs");
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = "";
+
+        for (var i = 0; i < profileKeys.length; i++) {
+            (function (profileKey) {
+                var configuration = profileConfigurations[profileKey];
+                var button = document.createElement("button");
+                button.type = "button";
+                button.className = "profile-tab" + (state.activeProfile === profileKey ? " active" : "");
+                button.setAttribute("data-profile", profileKey);
+                button.setAttribute("aria-pressed", state.activeProfile === profileKey ? "true" : "false");
+
+                var title = document.createElement("span");
+                title.className = "profile-tab-title";
+                title.textContent = configuration.title;
+
+                var count = document.createElement("span");
+                count.className = "profile-tab-count";
+                count.textContent = formatRecordCount(getProfileRowCount(profileKey));
+
+                button.appendChild(title);
+                button.appendChild(count);
+                button.addEventListener("click", function () {
+                    activateProfileMode(profileKey);
+                });
+                container.appendChild(button);
+            })(profileKeys[i]);
+        }
+    }
+
+    function findDisplayColumnByQuickFilter(filterName) {
+        var normalizedFilter = normalizeColumnName(filterName);
+
+        for (var i = 0; i < state.displayColumns.length; i++) {
+            var column = state.displayColumns[i];
+
+            if (column.loweredName === normalizedFilter || normalizeColumnName(column.label) === normalizedFilter) {
+                return column;
+            }
+        }
+
+        return null;
+    }
+
+    function buildQuickFilters() {
+        var container = document.getElementById("quickFilterContainer");
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = "";
+        var configuration = profileConfigurations[state.activeProfile];
+        var addedCount = 0;
+
+        if (configuration && Array.isArray(configuration.quickFilters)) {
+            for (var i = 0; i < configuration.quickFilters.length; i++) {
+                var column = findDisplayColumnByQuickFilter(configuration.quickFilters[i]);
+
+                if (!column) {
+                    continue;
+                }
+
+                (function (columnMeta) {
+                    var button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "quick-filter-button";
+                    button.textContent = columnMeta.label;
+                    button.addEventListener("click", function () {
+                        state.filterColumnIndex = columnMeta.index;
+                        updateFilterColumnOptions();
+
+                        var filterValueInput = document.getElementById("filterValueInput");
+
+                        if (filterValueInput) {
+                            filterValueInput.focus();
+                        }
+
+                        applyAndRender();
+                    });
+                    container.appendChild(button);
+                })(column);
+
+                addedCount++;
+            }
+        }
+
+        if (addedCount === 0) {
+            var empty = document.createElement("span");
+            empty.className = "quick-filter-empty";
+            empty.textContent = state.rows.length === 0
+                ? "Для этого режима таблица не загружена."
+                : "Профильные колонки для быстрых фильтров не найдены.";
+            container.appendChild(empty);
+        }
+    }
+
+    function activateProfileMode(profileKey) {
+        if (!profileConfigurations.hasOwnProperty(profileKey)) {
+            return;
+        }
+
+        if (state.activeProfile && state.activeProfile !== profileKey) {
+            saveActiveProfileState();
+        }
+
+        state.activeProfile = profileKey;
+        state.rows = getRowsForProfile(profileKey);
+        state.displayColumns = buildDisplayColumns(state.rawColumns);
+
+        var savedState = state.profileStates[profileKey];
+        var searchInput = document.getElementById("searchInput");
+        var filterValueInput = document.getElementById("filterValueInput");
+
+        if (savedState) {
+            state.visibleColumnIndexes = restoreVisibleColumnIndexes(savedState.visibleColumnIndexes);
+            state.filterColumnIndex = savedState.filterColumnIndex;
+            state.sortColumnIndex = savedState.sortColumnIndex;
+            state.sortDirection = savedState.sortDirection || "asc";
+            state.columnWidthsByIndex = clonePlainObject(savedState.columnWidthsByIndex);
+
+            if (searchInput) {
+                searchInput.value = savedState.searchText || "";
+            }
+
+            if (filterValueInput) {
+                filterValueInput.value = savedState.filterText || "";
+            }
+        } else {
+            state.visibleColumnIndexes = buildDefaultVisibleColumnIndexes();
+            state.filterColumnIndex = -1;
+            state.sortColumnIndex = state.displayColumns.length > 0 ? state.displayColumns[0].index : -1;
+            state.sortDirection = "asc";
+            state.columnWidthsByIndex = {};
+
+            if (searchInput) {
+                searchInput.value = "";
+            }
+
+            if (filterValueInput) {
+                filterValueInput.value = "";
+            }
+        }
+
+        updateProfileModeHeader();
+        buildProfileModeTabs();
+        buildColumnVisibilityMenu();
+        updateFilterColumnOptions();
+        buildQuickFilters();
+        applyAndRender();
+    }
+
     function buildColumnVisibilityMenu() {
         var menu = document.getElementById("columnVisibilityMenu");
 
@@ -676,7 +1048,9 @@
             return;
         }
 
-        resultInfo.textContent = "Показано строк: " + state.filteredRows.length + " из " + state.rows.length;
+        var configuration = profileConfigurations[state.activeProfile];
+        var prefix = configuration ? configuration.title + ": " : "";
+        resultInfo.textContent = prefix + "показано строк " + state.filteredRows.length + " из " + state.rows.length;
     }
 
     function getMinimumColumnWidth(columnMeta) {
@@ -736,7 +1110,11 @@
         var visibleColumns = getVisibleDisplayColumns();
 
         if (!visibleColumns.length) {
-            container.innerHTML = '<div class="warning">Выберите хотя бы одну колонку.</div>';
+            var emptyConfiguration = profileConfigurations[state.activeProfile];
+            var emptyTitle = emptyConfiguration ? emptyConfiguration.title : "Этот режим";
+            container.innerHTML = state.rows.length === 0
+                ? '<div class="warning">' + emptyTitle + ': профильная таблица не загружена. Переключитесь на другой режим или добавьте соответствующий CSV.</div>'
+                : '<div class="warning">Выберите хотя бы одну колонку.</div>';
             return;
         }
 
@@ -851,8 +1229,6 @@
         var filterValueInput = document.getElementById("filterValueInput");
         var resetFiltersButton = document.getElementById("resetFiltersButton");
 
-        updateFilterColumnOptions();
-
         if (searchInput) {
             searchInput.addEventListener("input", applyAndRender);
         }
@@ -879,10 +1255,14 @@
                 }
 
                 state.filterColumnIndex = -1;
+                state.sortColumnIndex = state.displayColumns.length > 0 ? state.displayColumns[0].index : -1;
                 state.sortDirection = "asc";
+                state.visibleColumnIndexes = buildDefaultVisibleColumnIndexes();
+                state.columnWidthsByIndex = {};
 
-                syncColumnMenuChecks();
+                buildColumnVisibilityMenu();
                 updateFilterColumnOptions();
+                buildQuickFilters();
                 applyAndRender();
             });
         }
@@ -895,24 +1275,27 @@
             state.data = data;
             state.sourceProfile = String(data.sourceProfile || "");
             state.rawColumns = Array.isArray(data.columns) ? data.columns.slice() : [];
-            state.rows = normalizeRows(data.rows, state.rawColumns.length);
-            state.displayColumns = buildDisplayColumns(state.rawColumns);
-            state.visibleColumnIndexes = [];
-
-            for (var i = 0; i < state.displayColumns.length; i++) {
-                state.visibleColumnIndexes.push(state.displayColumns[i].index);
-            }
-
-            state.filteredRows = state.rows.slice();
-
-            if (state.displayColumns.length > 0) {
-                state.sortColumnIndex = state.displayColumns[0].index;
-            }
+            state.allRows = normalizeRows(data.rows, state.rawColumns.length);
+            state.profileColumnIndex = findRawColumnIndex("ProfileKey");
+            state.profileDisplayColumnIndex = findRawColumnIndex("Профиль");
 
             initHeader(data);
             initializeControls();
-            buildColumnVisibilityMenu();
-            applyAndRender();
+
+            var initialProfile = normalizeProfileKey(state.sourceProfile);
+
+            if (!initialProfile || getProfileRowCount(initialProfile) === 0) {
+                initialProfile = profileKeys[0];
+
+                for (var i = 0; i < profileKeys.length; i++) {
+                    if (getProfileRowCount(profileKeys[i]) > 0) {
+                        initialProfile = profileKeys[i];
+                        break;
+                    }
+                }
+            }
+
+            activateProfileMode(initialProfile);
         } catch (error) {
             var container = document.getElementById("tableContainer");
 

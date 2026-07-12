@@ -24,6 +24,7 @@ namespace SAB.BimDashboard.Services
             }
 
             DashboardLaunchRequest safeRequest = request ?? new DashboardLaunchRequest();
+            ResolveMissingImageFolders(safeRequest);
             ConfigureImageFolders(safeRequest);
 
             DashboardLaunchResult launchResult = new DashboardLaunchResult();
@@ -77,6 +78,7 @@ namespace SAB.BimDashboard.Services
             combinedProviderResult.SourceProfile = ResolveCombinedProfile(loadedProfiles);
 
             AddRelevantImageWarnings(launchResult.Warnings, loadedProfiles, safeRequest);
+            AddImageFreshnessWarnings(launchResult.Warnings, loadedProfiles, safeRequest);
 
             DataMapper dataMapper = new DataMapper();
             DashboardData dashboardData = dataMapper.Map(combinedProviderResult);
@@ -99,6 +101,64 @@ namespace SAB.BimDashboard.Services
             ThumbnailFoldersRuntimeStore.SetLineImagesFolder(request.LineImagesFolder);
             ThumbnailFoldersRuntimeStore.SetFillImagesFolder(request.FillImagesFolder);
             ThumbnailFoldersRuntimeStore.ClearInvalidPaths();
+        }
+
+        // Block responsible for the same nearby-folder fallback used by the preparation window.
+        private static void ResolveMissingImageFolders(DashboardLaunchRequest request)
+        {
+            if (request == null)
+            {
+                return;
+            }
+
+            ImageFolderDiscoveryService discoveryService = new ImageFolderDiscoveryService();
+
+            if (string.IsNullOrWhiteSpace(request.SystemFamilyImagesFolder) ||
+                !Directory.Exists(request.SystemFamilyImagesFolder))
+            {
+                request.SystemFamilyImagesFolder = GetDiscoveredFolder(
+                    discoveryService,
+                    DashboardProfileType.SystemFamilies,
+                    request.CsvFilePaths);
+            }
+
+            if (string.IsNullOrWhiteSpace(request.LoadableFamilyImagesFolder) ||
+                !Directory.Exists(request.LoadableFamilyImagesFolder))
+            {
+                request.LoadableFamilyImagesFolder = GetDiscoveredFolder(
+                    discoveryService,
+                    DashboardProfileType.LoadableFamilies,
+                    request.CsvFilePaths);
+            }
+
+            if (string.IsNullOrWhiteSpace(request.LineImagesFolder) ||
+                !Directory.Exists(request.LineImagesFolder))
+            {
+                request.LineImagesFolder = GetDiscoveredFolder(
+                    discoveryService,
+                    DashboardProfileType.Lines,
+                    request.CsvFilePaths);
+            }
+
+            if (string.IsNullOrWhiteSpace(request.FillImagesFolder) ||
+                !Directory.Exists(request.FillImagesFolder))
+            {
+                request.FillImagesFolder = GetDiscoveredFolder(
+                    discoveryService,
+                    DashboardProfileType.FillPatterns,
+                    request.CsvFilePaths);
+            }
+        }
+
+        private static string GetDiscoveredFolder(
+            ImageFolderDiscoveryService discoveryService,
+            DashboardProfileType profile,
+            IList<string> csvFilePaths)
+        {
+            ImageFolderMatchResult result = discoveryService.FindBestMatch(profile, csvFilePaths);
+            return result != null && result.PngFileCount > 0 && Directory.Exists(result.FolderPath)
+                ? result.FolderPath
+                : string.Empty;
         }
 
         private static List<string> BuildUniqueExistingPaths(IList<string> sourcePaths, IList<string> warnings)
@@ -184,6 +244,7 @@ namespace SAB.BimDashboard.Services
                 }
 
                 record.Fields["Профиль"] = profileDisplayName;
+                record.Fields["ProfileKey"] = sourceProfile ?? string.Empty;
                 destination.Add(record);
             }
         }
@@ -203,6 +264,7 @@ namespace SAB.BimDashboard.Services
             record.Fields["Загружено папок PNG"] = CountSelectedImageFolders(request).ToString();
             record.Fields["SourceType"] = "ViewerPreparation";
             record.Fields["RecordType"] = "Status";
+            record.Fields["ProfileKey"] = "Empty";
             records.Add(record);
         }
 
@@ -341,6 +403,91 @@ namespace SAB.BimDashboard.Services
             {
                 warnings.Add("Не удалось прочитать папку PNG для " + subject + ": " + exception.Message);
             }
+        }
+
+        private static void AddImageFreshnessWarnings(
+            IList<string> warnings,
+            IList<string> profiles,
+            DashboardLaunchRequest request)
+        {
+            if (warnings == null || profiles == null || request == null)
+            {
+                return;
+            }
+
+            ImageFolderDiscoveryService discoveryService = new ImageFolderDiscoveryService();
+            AddImageFreshnessWarning(
+                warnings,
+                profiles,
+                discoveryService,
+                DashboardProfileType.SystemFamilies,
+                request.CsvFilePaths,
+                request.SystemFamilyImagesFolder);
+            AddImageFreshnessWarning(
+                warnings,
+                profiles,
+                discoveryService,
+                DashboardProfileType.LoadableFamilies,
+                request.CsvFilePaths,
+                request.LoadableFamilyImagesFolder);
+            AddImageFreshnessWarning(
+                warnings,
+                profiles,
+                discoveryService,
+                DashboardProfileType.Lines,
+                request.CsvFilePaths,
+                request.LineImagesFolder);
+            AddImageFreshnessWarning(
+                warnings,
+                profiles,
+                discoveryService,
+                DashboardProfileType.FillPatterns,
+                request.CsvFilePaths,
+                request.FillImagesFolder);
+        }
+
+        private static void AddImageFreshnessWarning(
+            IList<string> warnings,
+            IList<string> loadedProfiles,
+            ImageFolderDiscoveryService discoveryService,
+            DashboardProfileType profile,
+            IList<string> csvFilePaths,
+            string folderPath)
+        {
+            if (!ContainsProfile(loadedProfiles, profile) ||
+                string.IsNullOrWhiteSpace(folderPath) ||
+                !Directory.Exists(folderPath))
+            {
+                return;
+            }
+
+            ImageFolderMatchResult result = discoveryService.EvaluateSelectedFolder(
+                profile,
+                csvFilePaths,
+                folderPath,
+                false);
+
+            if (result.Status == ImageFolderFreshnessStatus.TimeDifferenceWarning ||
+                result.Status == ImageFolderFreshnessStatus.Outdated ||
+                result.Status == ImageFolderFreshnessStatus.ReadError)
+            {
+                warnings.Add(DashboardProfileResolver.GetDisplayName(profile) + ": " + result.Message);
+            }
+        }
+
+        private static bool ContainsProfile(IList<string> profiles, DashboardProfileType profile)
+        {
+            string expected = profile.ToString();
+
+            for (int i = 0; i < profiles.Count; i++)
+            {
+                if (string.Equals(profiles[i], expected, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static string GetProfileDisplayName(string profile)

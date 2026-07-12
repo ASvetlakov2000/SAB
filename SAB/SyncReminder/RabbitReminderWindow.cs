@@ -13,13 +13,13 @@ namespace SAB.SyncReminder
 {
     internal class RabbitReminderWindow : Window
     {
-        private const double RabbitWidth = 184.0;
-        private const double RabbitHeight = 88.0;
-        private const double CarrotWidth = 36.0;
-        private const double CarrotHeight = 60.0;
-        private const double RabbitSpeed = 6.2;
-        private const int InitialCarrotCount = 4;
-        private const int MaximumCarrotCount = 8;
+        private const double RabbitWidth = 368.0;
+        private const double RabbitHeight = 176.0;
+        private const double CarrotWidth = 72.0;
+        private const double CarrotHeight = 120.0;
+        private const double RabbitSpeed = 8.6;
+        private const int InitialCarrotCount = 1;
+        private const int MaximumCarrotCount = 1;
 
         private readonly IntPtr _ownerHandle;
         private readonly Random _random;
@@ -31,6 +31,7 @@ namespace SAB.SyncReminder
         private readonly BitmapImage _idleFrame;
         private readonly BitmapImage _carrotImageSource;
         private readonly List<CarrotSprite> _carrots;
+        private readonly string[] _carrotMessages;
 
         private Rect _allowedArea;
         private Canvas _canvas;
@@ -50,6 +51,7 @@ namespace SAB.SyncReminder
             _runFrames = LoadRabbitRunFrames();
             _idleFrame = LoadRabbitFrame("Rabbit Idle.png");
             _carrotImageSource = LoadCarrotImage();
+            _carrotMessages = CreateCarrotMessages();
 
             Width = 800;
             Height = 500;
@@ -76,7 +78,7 @@ namespace SAB.SyncReminder
             _frameTimer.Tick += OnFrameTimerTick;
 
             _carrotTimer = new DispatcherTimer();
-            _carrotTimer.Interval = TimeSpan.FromSeconds(2);
+            _carrotTimer.Interval = TimeSpan.FromSeconds(2.5);
             _carrotTimer.Tick += OnCarrotTimerTick;
 
             _ownerStateTimer = new DispatcherTimer();
@@ -151,8 +153,8 @@ namespace SAB.SyncReminder
             _canvas.Height = Height;
 
             _shadow = new Ellipse();
-            _shadow.Width = 128;
-            _shadow.Height = 18;
+            _shadow.Width = 256;
+            _shadow.Height = 36;
             _shadow.Fill = new SolidColorBrush(Color.FromArgb(72, 50, 66, 72));
             _canvas.Children.Add(_shadow);
 
@@ -225,7 +227,7 @@ namespace SAB.SyncReminder
             double directionY = carrotCenterY - rabbitCenterY;
             double distance = Math.Sqrt(directionX * directionX + directionY * directionY);
 
-            if (distance <= 34.0)
+            if (distance <= 70.0)
             {
                 CollectCarrot(targetCarrot);
                 return;
@@ -262,7 +264,7 @@ namespace SAB.SyncReminder
 
         private void OnCarrotTimerTick(object sender, EventArgs e)
         {
-            if (_carrots.Count < MaximumCarrotCount)
+            if (_carrots.Count == 0 && _carrots.Count < MaximumCarrotCount)
             {
                 AddCarrotAtRandomPoint();
             }
@@ -317,10 +319,15 @@ namespace SAB.SyncReminder
             carrot.Image = carrotImage;
             carrot.Left = left;
             carrot.Top = top;
+
+            Border bubble = CreateCarrotBubble(GetNextCarrotMessage());
+            carrot.Bubble = bubble;
             _carrots.Add(carrot);
 
             int insertIndex = Math.Max(0, _canvas.Children.Count - 2);
             _canvas.Children.Insert(insertIndex, carrotImage);
+            _canvas.Children.Add(bubble);
+            UpdateCarrotBubblePosition(carrot);
         }
 
         private CarrotSprite FindNearestCarrot()
@@ -366,12 +373,12 @@ namespace SAB.SyncReminder
                 _canvas.Children.Remove(carrot.Image);
             }
 
-            _carrots.Remove(carrot);
-
-            if (_carrots.Count == 0)
+            if (_canvas != null && carrot.Bubble != null)
             {
-                AddCarrotAtRandomPoint();
+                _canvas.Children.Remove(carrot.Bubble);
             }
+
+            _carrots.Remove(carrot);
         }
 
         private void ClearCarrots()
@@ -384,6 +391,11 @@ namespace SAB.SyncReminder
                     if (carrot != null && carrot.Image != null)
                     {
                         _canvas.Children.Remove(carrot.Image);
+                    }
+
+                    if (carrot != null && carrot.Bubble != null)
+                    {
+                        _canvas.Children.Remove(carrot.Bubble);
                     }
                 }
             }
@@ -421,6 +433,8 @@ namespace SAB.SyncReminder
                     Canvas.SetLeft(carrot.Image, carrot.Left);
                     Canvas.SetTop(carrot.Image, carrot.Top);
                 }
+
+                UpdateCarrotBubblePosition(carrot);
             }
         }
 
@@ -433,7 +447,7 @@ namespace SAB.SyncReminder
 
             Canvas.SetLeft(_rabbitImage, _rabbitLeft);
             Canvas.SetTop(_rabbitImage, _rabbitTop);
-            Canvas.SetLeft(_shadow, _rabbitLeft + 28.0);
+            Canvas.SetLeft(_shadow, _rabbitLeft + 56.0);
             Canvas.SetTop(_shadow, _rabbitTop + RabbitHeight - 14.0);
 
             _rabbitImage.RenderTransform = _isMovingLeft
@@ -468,6 +482,69 @@ namespace SAB.SyncReminder
         private static BitmapImage LoadCarrotImage()
         {
             return LoadImageFromAssetFolder("Carrot", "Carrot.png");
+        }
+
+        private Border CreateCarrotBubble(string text)
+        {
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = text;
+            textBlock.FontFamily = new FontFamily("Segoe UI");
+            textBlock.FontSize = 12.5;
+            textBlock.FontWeight = FontWeights.SemiBold;
+            textBlock.Foreground = new SolidColorBrush(Color.FromRgb(84, 45, 17));
+            textBlock.TextWrapping = TextWrapping.Wrap;
+            textBlock.Width = 235;
+
+            Border bubble = new Border();
+            bubble.MinWidth = 245;
+            bubble.MaxWidth = 275;
+            bubble.Padding = new Thickness(10, 7, 10, 7);
+            bubble.CornerRadius = new CornerRadius(10);
+            bubble.Background = new SolidColorBrush(Color.FromArgb(238, 255, 245, 218));
+            bubble.BorderBrush = new SolidColorBrush(Color.FromRgb(214, 148, 74));
+            bubble.BorderThickness = new Thickness(1);
+            bubble.Child = textBlock;
+            return bubble;
+        }
+
+        private void UpdateCarrotBubblePosition(CarrotSprite carrot)
+        {
+            if (carrot == null || carrot.Bubble == null)
+            {
+                return;
+            }
+
+            carrot.Bubble.Measure(new Size(275, double.PositiveInfinity));
+            double bubbleWidth = Math.Max(245.0, carrot.Bubble.DesiredSize.Width);
+            double bubbleHeight = Math.Max(44.0, carrot.Bubble.DesiredSize.Height);
+
+            double left = Clamp(carrot.Left + CarrotWidth * 0.45, 8.0, Math.Max(8.0, Width - bubbleWidth - 8.0));
+            double top = Clamp(carrot.Top - bubbleHeight + 18.0, 8.0, Math.Max(8.0, Height - bubbleHeight - 8.0));
+
+            Canvas.SetLeft(carrot.Bubble, left);
+            Canvas.SetTop(carrot.Bubble, top);
+        }
+
+        private string GetNextCarrotMessage()
+        {
+            if (_carrotMessages == null || _carrotMessages.Length == 0)
+            {
+                return "Синхронизируйся, пожалуйста, кролик опять рядом.";
+            }
+
+            int index = _random.Next(0, _carrotMessages.Length);
+            return _carrotMessages[index];
+        }
+
+        private static string[] CreateCarrotMessages()
+        {
+            return new[]
+            {
+                "Мы устали, что этот бешеный кролик дергает нас безнаказанно. Синхронизируйся и спаси морковку!",
+                "Пользователь опять не синхронится, а кролик уже точит лапы. Помоги нам выжить!",
+                "Если не нажать синхронизацию, он доберется до всех. Морковный совет просит помощи!",
+                "Мы просто хотели расти спокойно, но кролик бегает как служба доставки. Синхронизируй модель!"
+            };
         }
 
         private static BitmapImage LoadImageFromAssetFolder(string folderName, string fileName)
@@ -517,6 +594,8 @@ namespace SAB.SyncReminder
         private sealed class CarrotSprite
         {
             public Image Image { get; set; }
+
+            public Border Bubble { get; set; }
 
             public double Left { get; set; }
 

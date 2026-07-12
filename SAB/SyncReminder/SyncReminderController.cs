@@ -202,7 +202,7 @@ namespace SAB.SyncReminder
                 string documentKey = GetDocumentKey(document);
                 if (string.Equals(_activeDocumentKey, documentKey, StringComparison.OrdinalIgnoreCase))
                 {
-                    HideReminder();
+                    HideReminderAfterSuccessfulSync();
                 }
             }
             catch (Exception ex)
@@ -558,6 +558,33 @@ namespace SAB.SyncReminder
             _isPreviewVisible = false;
         }
 
+        private void HideReminderAfterSuccessfulSync()
+        {
+            SyncReminderAnimationMode animationMode = _settings == null
+                ? SyncReminderAnimationMode.DuckOnly
+                : _settings.AnimationMode;
+
+            if (animationMode == SyncReminderAnimationMode.FoxWithSyncButton && _animalWindow != null)
+            {
+                if (_duckWindow != null)
+                {
+                    _duckWindow.HideDuck();
+                }
+
+                if (_rabbitWindow != null)
+                {
+                    _rabbitWindow.HideRabbit();
+                }
+
+                _animalWindow.PlayFoxCatchAnimationAndHide();
+                _isReminderVisible = false;
+                _isPreviewVisible = false;
+                return;
+            }
+
+            HideReminder();
+        }
+
         private void ApplySettings(SyncReminderSettings settings)
         {
             if (settings == null)
@@ -616,9 +643,6 @@ namespace SAB.SyncReminder
         private static bool IsAnimalReminderMode(SyncReminderAnimationMode animationMode)
         {
             return animationMode == SyncReminderAnimationMode.FoxWithSyncButton
-                   || animationMode == SyncReminderAnimationMode.RoosterAlarm
-                   || animationMode == SyncReminderAnimationMode.BoarSyncSigns
-                   || animationMode == SyncReminderAnimationMode.DeerFootprints
                    || animationMode == SyncReminderAnimationMode.PigMud
                    || animationMode == SyncReminderAnimationMode.SheepCounter;
         }

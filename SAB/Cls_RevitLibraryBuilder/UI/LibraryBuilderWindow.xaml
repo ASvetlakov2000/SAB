@@ -615,7 +615,7 @@
                         <StackPanel x:Name="ViewerModePanel" Visibility="Collapsed">
                             <TextBlock Text="HTML-просмотрщик"
                                        Style="{StaticResource SabWindowTitleTextStyle}" />
-                            <TextBlock Text="Соберите один или несколько CSV и добавьте доступные папки изображений. Просмотрщик запускается при любом наборе."
+                            <TextBlock Text="Добавьте CSV — подходящие папки изображений будут найдены рядом автоматически. Просмотрщик запускается при любом наборе."
                                        Style="{StaticResource SabWindowSubtitleTextStyle}"
                                        Margin="0,3,0,16" />
 
@@ -661,7 +661,7 @@
                                         <StackPanel Grid.Column="0">
                                             <TextBlock Text="Папки изображений"
                                                        Style="{StaticResource SabPanelHeaderTextStyle}" />
-                                            <TextBlock Text="Папки необязательны. Если профильный CSV загружен без PNG, таблица откроется с предупреждением и пустыми превью."
+                                            <TextBlock Text="Сначала проверяются стандартные и соседние папки. Если PNG не найдены, нажмите «Выбрать» и вставьте путь вручную в диалоге."
                                                        Style="{StaticResource SabFieldHintTextStyle}"
                                                        TextWrapping="Wrap"
                                                        Margin="0,4,12,0" />

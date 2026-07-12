@@ -81,7 +81,11 @@ namespace asBIM
         /// <param name="suggestedName">Предзаполненное имя в поле.</param>
         /// <param name="initialDirectory">Стартовая директория.</param>
         /// <returns>Путь к папке или пустая строка при отмене.</returns>
-        public static string SelectFolderPath(string title, string suggestedName = "", string initialDirectory = "")
+        public static string SelectFolderPath(
+            string title,
+            string suggestedName = "",
+            string initialDirectory = "",
+            IntPtr ownerHandle = default(IntPtr))
         {
             string safeSuggestedName = string.IsNullOrWhiteSpace(suggestedName) ? "Output" : suggestedName;
 
@@ -106,7 +110,11 @@ namespace asBIM
                 saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             }
 
-            if (saveDialog.ShowDialog() != DialogResult.OK)
+            DialogResult dialogResult = ownerHandle == IntPtr.Zero
+                ? saveDialog.ShowDialog()
+                : saveDialog.ShowDialog(new DialogOwnerWindow(ownerHandle));
+
+            if (dialogResult != DialogResult.OK)
             {
                 return string.Empty;
             }
@@ -142,6 +150,17 @@ namespace asBIM
             }
 
             return normalizedPath;
+        }
+
+        // Блок владельца диалога: окно выбора пути не теряется за Revit.
+        private sealed class DialogOwnerWindow : IWin32Window
+        {
+            public DialogOwnerWindow(IntPtr handle)
+            {
+                Handle = handle;
+            }
+
+            public IntPtr Handle { get; private set; }
         }
     }
 
