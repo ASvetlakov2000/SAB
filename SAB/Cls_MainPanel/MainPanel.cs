@@ -39,7 +39,7 @@ namespace SAB
             RibbonPanel structurePanel = application.CreateRibbonPanel(RibbonTabName, StructurePanelName);
 
 
-            // Блок кнопок с инструкциями.
+            /// Блок кнопок с инструкциями.
             Ribbon.AddPushButtonSingle(
                 infoPanel,
                 "SAB_OpenPluginInstructionsHtml",
