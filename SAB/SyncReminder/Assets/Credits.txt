@@ -1,0 +1,28 @@
+Sync Reminder test character assets
+
+Rabbit:
+Title: Animated rabbit with a hat in seven actions
+Author: Julien Jorge
+Source: https://opengameart.org/content/animated-rabbit-with-a-hat-in-seven-actions
+License: CC-BY-SA 3.0
+Attribution requested by source: (c) 2005-2013 Julien Jorge <julien.jorge@stuff-o-matic.com>
+
+Carrot:
+Title: 8-Bit PixelArt Carrot
+Author: sufan02
+Source: https://opengameart.org/content/8-bit-pixelart-carrot
+License: CC0
+
+CraftPix animal mode references:
+Title: Free Top-Down Hunt Animals Pixel Sprite Pack
+Source: https://craftpix.net/freebies/free-top-down-hunt-animals-pixel-sprite-pack/
+License page: https://craftpix.net/file-licenses/
+Used for: fox, boar, deer reminder mode references.
+
+Title: Free Top-Down Animals Farm Pixel Art Sprites
+Source: https://craftpix.net/freebies/free-top-down-animals-farm-pixel-art-sprites/
+License page: https://craftpix.net/file-licenses/
+Used for: rooster, pig, sheep reminder mode references.
+
+Note:
+CraftPix download links require a browser session on the site. The plugin contains WPF fallback animals and can load downloaded PNG frames later from SyncReminder\Assets\Animals\<AnimalName>.

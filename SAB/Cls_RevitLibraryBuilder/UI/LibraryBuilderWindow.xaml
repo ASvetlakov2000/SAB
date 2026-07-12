@@ -1,0 +1,825 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Библиотека"
+        Width="1080"
+        Height="760"
+        MinWidth="920"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="LibraryNavigationButtonStyle"
+                   TargetType="{x:Type Button}"
+                   BasedOn="{StaticResource SabNeutralButtonStyle}">
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="MinHeight" Value="66" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Padding" Value="12,10" />
+                <Setter Property="Margin" Value="0,0,0,8" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            </Style>
+
+            <Style x:Key="LibraryOperationButtonStyle"
+                   TargetType="{x:Type Button}"
+                   BasedOn="{StaticResource SabNeutralButtonStyle}">
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="MinHeight" Value="76" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Padding" Value="12,10" />
+                <Setter Property="Margin" Value="0,0,10,10" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="LibraryDangerOperationButtonStyle"
+                   TargetType="{x:Type Button}"
+                   BasedOn="{StaticResource SabDangerOutlineButtonStyle}">
+                <Setter Property="Height" Value="Auto" />
+                <Setter Property="MinHeight" Value="76" />
+                <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Padding" Value="12,10" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+
+            <Style x:Key="LibraryWorkflowBorderStyle" TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="Margin" Value="0,0,0,12" />
+            </Style>
+
+            <Style x:Key="LibraryContextBorderStyle" TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="{StaticResource SabBrush.TableHeaderBackground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource SabBrush.BorderWeak}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="5" />
+                <Setter Property="Padding" Value="9,5" />
+                <Setter Property="Margin" Value="0,0,8,0" />
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header and current Revit context -->
+        <Border Grid.Row="0"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,0,0,1"
+                Padding="20,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Библиотека"
+                               Style="{StaticResource SabWindowTitleTextStyle}" />
+                    <TextBlock Text="Единый центр подготовки, обновления и размещения библиотечных данных"
+                               Style="{StaticResource SabWindowSubtitleTextStyle}"
+                               Margin="0,3,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="20,0,0,0">
+                    <Border Style="{StaticResource LibraryContextBorderStyle}">
+                        <TextBlock x:Name="DocumentContextTextBlock"
+                                   Foreground="{StaticResource SabBrush.TextSecondary}"
+                                   MaxWidth="210"
+                                   TextTrimming="CharacterEllipsis" />
+                    </Border>
+                    <Border Style="{StaticResource LibraryContextBorderStyle}">
+                        <TextBlock x:Name="ActiveViewContextTextBlock"
+                                   Foreground="{StaticResource SabBrush.TextSecondary}"
+                                   MaxWidth="220"
+                                   TextTrimming="CharacterEllipsis" />
+                    </Border>
+                    <Border Style="{StaticResource LibraryContextBorderStyle}"
+                            Margin="0">
+                        <TextBlock x:Name="SelectionContextTextBlock"
+                                   Foreground="{StaticResource SabBrush.TextSecondary}" />
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Left mode navigation and main workspace -->
+        <Grid Grid.Row="1" Margin="20,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="224" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SabPanelBorderStyle}">
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="Режим работы"
+                                   Style="{StaticResource SabPanelHeaderTextStyle}"
+                                   Margin="0,0,0,4" />
+                        <TextBlock Text="Выберите рабочий сценарий"
+                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                   Margin="0,0,0,14" />
+
+                        <Button x:Name="CatalogsModeButton"
+                                Style="{StaticResource LibraryNavigationButtonStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Каталоги" FontWeight="SemiBold" />
+                                    <TextBlock Text="CSV и изображения семейств"
+                                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               Margin="0,3,8,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="NamingModeButton"
+                                Style="{StaticResource LibraryNavigationButtonStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Наименования" FontWeight="SemiBold" />
+                                    <TextBlock Text="Типы, семейства и материалы"
+                                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               Margin="0,3,8,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="GraphicsModeButton"
+                                Style="{StaticResource LibraryNavigationButtonStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Графика и превью" FontWeight="SemiBold" />
+                                    <TextBlock Text="Линии, штриховки и легенды"
+                                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               Margin="0,3,8,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="PlacementModeButton"
+                                Style="{StaticResource LibraryNavigationButtonStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Размещение и очистка" FontWeight="SemiBold" />
+                                    <TextBlock Text="Создание элементов и удаление"
+                                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               Margin="0,3,8,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="ViewerModeButton"
+                                Style="{StaticResource LibraryNavigationButtonStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="HTML-просмотрщик" FontWeight="SemiBold" />
+                                    <TextBlock Text="CSV, изображения и проверка полноты"
+                                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"
+                                               Margin="0,3,8,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+
+                    <Border DockPanel.Dock="Bottom"
+                            Background="{StaticResource SabBrush.AccentLight}"
+                            BorderBrush="{StaticResource SabBrush.BorderWeak}"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Padding="10"
+                            Margin="0,8,0,0"
+                            VerticalAlignment="Bottom">
+                        <TextBlock Text="Наведите на команду, чтобы увидеть краткую инструкцию."
+                                   Foreground="{StaticResource SabBrush.TextSecondary}"
+                                   FontSize="11"
+                                   TextWrapping="Wrap" />
+                    </Border>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Style="{StaticResource SabPanelBorderStyle}"
+                    Padding="0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              Padding="18">
+                    <Grid>
+                        <!-- Catalogs mode -->
+                        <StackPanel x:Name="CatalogsModePanel">
+                            <TextBlock Text="Каталоги"
+                                       Style="{StaticResource SabWindowTitleTextStyle}" />
+                            <TextBlock Text="Выгрузка структуры библиотеки и изображений загружаемых семейств."
+                                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                                       Margin="0,3,0,16" />
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Данные семейств"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}"
+                                               Margin="0,0,0,4" />
+                                    <TextBlock Text="Независимые выгрузки в выбранную корневую папку библиотеки."
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,0,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="ExportSystemFamiliesButton"
+                                                Grid.Column="0"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Системные семейства"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="Экспорт CSV по категориям"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <Button x:Name="ExportLoadableFamiliesButton"
+                                                Grid.Column="1"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="Загружаемые семейства"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="Экспорт CSV по категориям"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+
+                                        <Button x:Name="ExportLoadableThumbnailsButton"
+                                                Grid.Column="2"
+                                                Margin="0,0,0,10"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="PNG семейств"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap" />
+                                                <TextBlock Text="Изображения предпросмотра"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Naming mode -->
+                        <StackPanel x:Name="NamingModePanel" Visibility="Collapsed">
+                            <TextBlock Text="Наименования"
+                                       Style="{StaticResource SabWindowTitleTextStyle}" />
+                            <TextBlock Text="Парные сценарии: сначала выгрузить таблицу, затем проверить и применить изменения."
+                                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                                       Margin="0,3,0,16" />
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Типы и семейства"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    <TextBlock Text="1. Выгрузить XLSX → 2. Проверить значения → 3. Применить файл"
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,4,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="ExportTypeNamingButton"
+                                                Grid.Column="0"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="1  Экспорт наименований"
+                                                           FontWeight="SemiBold" />
+                                                <TextBlock Text="Подготовить XLSX для редактирования"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ImportTypeNamingButton"
+                                                Grid.Column="1"
+                                                Margin="0,0,0,10"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="2  Применить наименования"
+                                                           FontWeight="SemiBold" />
+                                                <TextBlock Text="Переименовать или удалить по таблице"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Материалы"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    <TextBlock Text="1. Выгрузить XLSX → 2. Проверить имена и описания → 3. Применить файл"
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,4,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="ExportMaterialNamingButton"
+                                                Grid.Column="0"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="1  Экспорт материалов"
+                                                           FontWeight="SemiBold" />
+                                                <TextBlock Text="Подготовить XLSX для редактирования"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ImportMaterialNamingButton"
+                                                Grid.Column="1"
+                                                Margin="0,0,0,10"
+                                                Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="2  Применить материалы"
+                                                           FontWeight="SemiBold" />
+                                                <TextBlock Text="Обновить имена, описания и удаления"
+                                                           Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                           FontSize="11"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Graphics mode -->
+                        <StackPanel x:Name="GraphicsModePanel" Visibility="Collapsed">
+                            <TextBlock Text="Графика и превью"
+                                       Style="{StaticResource SabWindowTitleTextStyle}" />
+                            <TextBlock Text="Связанные последовательности подготовки данных, образцов и PNG."
+                                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                                       Margin="0,3,0,16" />
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Стили линий"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    <TextBlock Text="CSV → образцы на чертёжном виде → PNG"
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,4,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="ExportLineStylesButton" Grid.Column="0" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="1  Экспорт CSV" FontWeight="SemiBold" />
+                                                <TextBlock Text="Данные стилей линий" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="PlaceLineStylesButton" Grid.Column="1" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="2  Размещение" FontWeight="SemiBold" />
+                                                <TextBlock Text="Образцы на виде" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ExportLineStylesPngButton" Grid.Column="2" Margin="0,0,0,10" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="3  Экспорт PNG" FontWeight="SemiBold" />
+                                                <TextBlock Text="Изображения образцов" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Штриховки"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    <TextBlock Text="CSV → образцы на чертёжном виде → PNG"
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,4,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="ExportFillPatternsButton" Grid.Column="0" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="1  Экспорт CSV" FontWeight="SemiBold" />
+                                                <TextBlock Text="Данные штриховок" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="PlaceFillPatternsButton" Grid.Column="1" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="2  Размещение" FontWeight="SemiBold" />
+                                                <TextBlock Text="Образцы на виде" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ExportFillPatternsPngButton" Grid.Column="2" Margin="0,0,0,10" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="3  Экспорт PNG" FontWeight="SemiBold" />
+                                                <TextBlock Text="Изображения образцов" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Изображения системных типов"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    <TextBlock Text="Компоненты легенды → PNG → параметр изображения типоразмера"
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,4,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="PlaceLegendComponentsButton" Grid.Column="0" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="1  Компоненты" FontWeight="SemiBold" />
+                                                <TextBlock Text="Разместить на легенде" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ExportSystemThumbnailsButton" Grid.Column="1" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="2  Экспорт PNG" FontWeight="SemiBold" />
+                                                <TextBlock Text="Выгрузить изображения" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="LoadSystemImagesButton" Grid.Column="2" Margin="0,0,0,10" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="3  Загрузка PNG" FontWeight="SemiBold" />
+                                                <TextBlock Text="Назначить изображения типам" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Placement and cleanup mode -->
+                        <StackPanel x:Name="PlacementModePanel" Visibility="Collapsed">
+                            <TextBlock Text="Размещение и очистка"
+                                       Style="{StaticResource SabWindowTitleTextStyle}" />
+                            <TextBlock Text="Создание элементов из CSV и контролируемое удаление библиотечных объектов."
+                                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                                       Margin="0,3,0,16" />
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Размещение элементов"
+                                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    <TextBlock Text="Выберите способ построения, соответствующий категории из CSV."
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               Margin="0,4,0,12" />
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="ImportByPointButton" Grid.Column="0" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="По точке" FontWeight="SemiBold" />
+                                                <TextBlock Text="Точечные и размещаемые семейства" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ImportByLineButton" Grid.Column="1" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="По линии" FontWeight="SemiBold" />
+                                                <TextBlock Text="Линейные семейства" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="ImportByBoundaryButton" Grid.Column="2" Margin="0,0,0,10" Style="{StaticResource LibraryOperationButtonStyle}">
+                                            <StackPanel>
+                                                <TextBlock Text="По границе" FontWeight="SemiBold" />
+                                                <TextBlock Text="Элементы с замкнутым контуром" Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#FEF3F2"
+                                    BorderBrush="#FDA29B"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="14">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="280" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,18,0">
+                                        <TextBlock Text="Очистка выбранных элементов"
+                                                   Foreground="{StaticResource SabBrush.Error}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="14" />
+                                        <TextBlock Text="Команда анализирует текущее выделение и может удалить экземпляры, типы, семейства, стили линий и штриховки."
+                                                   Foreground="{StaticResource SabBrush.TextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,5,0,0" />
+                                    </StackPanel>
+                                    <Button x:Name="DeleteSelectedButton"
+                                            Grid.Column="1"
+                                            Style="{StaticResource LibraryDangerOperationButtonStyle}">
+                                        <StackPanel>
+                                            <TextBlock Text="Удалить выбранное"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Text="С обязательным подтверждением"
+                                                       FontSize="11"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,4,0,0" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- HTML viewer preparation mode -->
+                        <StackPanel x:Name="ViewerModePanel" Visibility="Collapsed">
+                            <TextBlock Text="HTML-просмотрщик"
+                                       Style="{StaticResource SabWindowTitleTextStyle}" />
+                            <TextBlock Text="Соберите один или несколько CSV и добавьте доступные папки изображений. Просмотрщик запускается при любом наборе."
+                                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                                       Margin="0,3,0,16" />
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                        <TextBlock Text="Файлы данных"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                        <TextBlock Text="Можно выбрать несколько CSV: системные и загружаемые семейства, линии и штриховки. Корректные файлы будут объединены в один каталог."
+                                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,0,8" />
+                                        <TextBlock x:Name="ViewerCsvFilesTextBlock"
+                                                   Text="CSV-файлы не выбраны"
+                                                   Foreground="{StaticResource SabBrush.Text}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button x:Name="ClearViewerCsvFilesButton"
+                                                Content="Очистить"
+                                                Style="{StaticResource SabNeutralButtonStyle}"
+                                                Margin="0,0,8,0" />
+                                        <Button x:Name="SelectViewerCsvFilesButton"
+                                                Content="Добавить CSV"
+                                                Style="{StaticResource SabOutlineButtonStyle}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Папки изображений"
+                                                       Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                            <TextBlock Text="Папки необязательны. Если профильный CSV загружен без PNG, таблица откроется с предупреждением и пустыми превью."
+                                                       Style="{StaticResource SabFieldHintTextStyle}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,4,12,0" />
+                                        </StackPanel>
+                                        <Button x:Name="ClearViewerImageFoldersButton"
+                                                Grid.Column="1"
+                                                Content="Очистить папки"
+                                                Style="{StaticResource SabNeutralButtonStyle}" />
+                                    </Grid>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="12" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource SabSettingRowBorderStyle}">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,0">
+                                                    <TextBlock Text="Системные типы" FontWeight="SemiBold" />
+                                                    <TextBlock x:Name="SystemImagesFolderTextBlock" Text="Папка не выбрана" Style="{StaticResource SabFieldHintTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                                </StackPanel>
+                                                <Button x:Name="SelectSystemImagesFolderButton" Grid.Row="0" Grid.Column="1" Content="Выбрать" Style="{StaticResource SabOutlineButtonStyle}" />
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource SabSettingRowBorderStyle}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                                    <TextBlock Text="Загружаемые семейства" FontWeight="SemiBold" />
+                                                    <TextBlock x:Name="LoadableImagesFolderTextBlock" Text="Папка не выбрана" Style="{StaticResource SabFieldHintTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                                </StackPanel>
+                                                <Button x:Name="SelectLoadableImagesFolderButton" Grid.Column="1" Content="Выбрать" Style="{StaticResource SabOutlineButtonStyle}" />
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource SabSettingRowBorderStyle}" Margin="0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                                    <TextBlock Text="Стили линий" FontWeight="SemiBold" />
+                                                    <TextBlock x:Name="LineImagesFolderTextBlock" Text="Папка не выбрана" Style="{StaticResource SabFieldHintTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                                </StackPanel>
+                                                <Button x:Name="SelectLineImagesFolderButton" Grid.Column="1" Content="Выбрать" Style="{StaticResource SabOutlineButtonStyle}" />
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource SabSettingRowBorderStyle}" Margin="0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                                    <TextBlock Text="Штриховки" FontWeight="SemiBold" />
+                                                    <TextBlock x:Name="FillImagesFolderTextBlock" Text="Папка не выбрана" Style="{StaticResource SabFieldHintTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                                </StackPanel>
+                                                <Button x:Name="SelectFillImagesFolderButton" Grid.Column="1" Content="Выбрать" Style="{StaticResource SabOutlineButtonStyle}" />
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource LibraryWorkflowBorderStyle}" Margin="0">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Полнота набора"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                        <TextBlock x:Name="ViewerCompletenessTextBlock"
+                                                   Grid.Column="1"
+                                                   Foreground="{StaticResource SabBrush.Accent}"
+                                                   FontWeight="SemiBold" />
+                                    </Grid>
+                                    <ProgressBar x:Name="ViewerCompletenessProgressBar"
+                                                 Minimum="0"
+                                                 Maximum="100"
+                                                 Value="0"
+                                                 Height="10"
+                                                 Margin="0,10,0,8"
+                                                 Foreground="{StaticResource SabBrush.Accent}"
+                                                 Background="{StaticResource SabBrush.BorderWeak}" />
+                                    <TextBlock x:Name="ViewerStatusTextBlock"
+                                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- Current requirement/status and actions -->
+        <Border Grid.Row="2"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Margin="0,0,18,0"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="Статус запуска"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                               FontSize="11" />
+                    <TextBlock x:Name="SelectedOperationRequirementTextBlock"
+                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Margin="0,3,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button x:Name="CloseButton"
+                            Content="Закрыть"
+                            Width="110"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="RunButton"
+                            Content="Запустить"
+                            Width="180"
+                            IsEnabled="False"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

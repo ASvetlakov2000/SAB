@@ -26,9 +26,9 @@ namespace SAB.SyncReminder
 
             Title = "Настройки напоминания о синхронизации";
             Width = 560;
-            Height = 440;
+            Height = 540;
             MinWidth = 560;
-            MinHeight = 440;
+            MinHeight = 540;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             ResizeMode = ResizeMode.NoResize;
             ShowInTaskbar = false;
@@ -80,7 +80,7 @@ namespace SAB.SyncReminder
             panel.Children.Add(titleText);
 
             TextBlock subtitleText = new TextBlock();
-            subtitleText.Text = "Утка появляется в рабочей области Revit после заданного времени без синхронизации.";
+            subtitleText.Text = "Персонаж появляется в рабочей области Revit после заданного времени без синхронизации.";
             subtitleText.Margin = new Thickness(0, 4, 0, 0);
             ApplyStyle(subtitleText, "SabWindowSubtitleTextStyle");
             panel.Children.Add(subtitleText);
@@ -176,6 +176,13 @@ namespace SAB.SyncReminder
             _animationModeComboBox = new ComboBox();
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Только утка", SyncReminderAnimationMode.DuckOnly));
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Утка и следы", SyncReminderAnimationMode.DuckWithPoop));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Кролик и морковки", SyncReminderAnimationMode.RabbitWithCarrots));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Лиса и синхро-кнопка", SyncReminderAnimationMode.FoxWithSyncButton));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Петух-будильник", SyncReminderAnimationMode.RoosterAlarm));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Кабан и SYNC-таблички", SyncReminderAnimationMode.BoarSyncSigns));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Олень и следы", SyncReminderAnimationMode.DeerFootprints));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Поросенок и грязь", SyncReminderAnimationMode.PigMud));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Овца-счетчик", SyncReminderAnimationMode.SheepCounter));
             ApplyStyle(_animationModeComboBox, "SabComboBoxStyle");
             Grid.SetRow(_animationModeComboBox, 1);
             modeGrid.Children.Add(_animationModeComboBox);
@@ -199,7 +206,7 @@ namespace SAB.SyncReminder
             border.BorderThickness = new Thickness(1);
 
             TextBlock textBlock = new TextBlock();
-            textBlock.Text = "Кнопка предпросмотра показывает утку временно. Если закрыть это окно без сохранения, предпросмотр тоже закроется.";
+            textBlock.Text = "Кнопка предпросмотра показывает выбранного персонажа временно. Если закрыть это окно без сохранения, предпросмотр тоже закроется.";
             textBlock.TextWrapping = TextWrapping.Wrap;
             textBlock.Foreground = GetBrush("SabBrush.Accent", "#0F6CBD");
             textBlock.FontSize = 12;
@@ -224,7 +231,7 @@ namespace SAB.SyncReminder
             footer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             footer.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            Button testButton = CreateButton("Показать утку", "SabOutlineButtonStyle", 132);
+            Button testButton = CreateButton("Показать персонажа", "SabOutlineButtonStyle", 158);
             testButton.HorizontalAlignment = HorizontalAlignment.Left;
             testButton.Click += OnTestDuckClick;
             Grid.SetColumn(testButton, 0);

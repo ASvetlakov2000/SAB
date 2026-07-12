@@ -9,6 +9,7 @@ namespace SAB.SyncReminder
     internal static class SyncReminderWindowUtils
     {
         private const int GWL_EXSTYLE = -20;
+        private const int WS_EX_TRANSPARENT = 0x00000020;
         private const int WS_EX_TOOLWINDOW = 0x00000080;
         private const int WS_EX_NOACTIVATE = 0x08000000;
 
@@ -121,6 +122,25 @@ namespace SAB.SyncReminder
 
             int extendedStyle = GetExtendedStyle(handle);
             extendedStyle = extendedStyle | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE;
+            SetExtendedStyle(handle, extendedStyle);
+        }
+
+        public static void MakeWindowNoActivateAndClickThrough(Window window)
+        {
+            if (window == null)
+            {
+                return;
+            }
+
+            WindowInteropHelper helper = new WindowInteropHelper(window);
+            IntPtr handle = helper.Handle;
+            if (handle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            int extendedStyle = GetExtendedStyle(handle);
+            extendedStyle = extendedStyle | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_TRANSPARENT;
             SetExtendedStyle(handle, extendedStyle);
         }
 

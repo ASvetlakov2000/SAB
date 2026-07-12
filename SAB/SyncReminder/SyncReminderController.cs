@@ -24,6 +24,8 @@ namespace SAB.SyncReminder
         private DateTime _lastIdlingCheck;
         private IntPtr _revitWindowHandle;
         private DuckReminderWindow _duckWindow;
+        private RabbitReminderWindow _rabbitWindow;
+        private AnimalReminderWindow _animalWindow;
         private string _activeDocumentKey;
         private DateTime _previewUntil;
         private bool _isPreviewVisible;
@@ -464,6 +466,61 @@ namespace SAB.SyncReminder
                 ? SyncReminderAnimationMode.DuckOnly
                 : _settings.AnimationMode;
 
+            if (animationMode == SyncReminderAnimationMode.RabbitWithCarrots)
+            {
+                if (_duckWindow != null)
+                {
+                    _duckWindow.HideDuck();
+                }
+
+                if (_animalWindow != null)
+                {
+                    _animalWindow.HideAnimal();
+                }
+
+                if (_rabbitWindow == null)
+                {
+                    _rabbitWindow = new RabbitReminderWindow(_revitWindowHandle);
+                }
+
+                _rabbitWindow.SetAllowedArea(duckArea);
+                _rabbitWindow.ShowRabbit();
+                return true;
+            }
+
+            if (IsAnimalReminderMode(animationMode))
+            {
+                if (_duckWindow != null)
+                {
+                    _duckWindow.HideDuck();
+                }
+
+                if (_rabbitWindow != null)
+                {
+                    _rabbitWindow.HideRabbit();
+                }
+
+                if (_animalWindow == null)
+                {
+                    _animalWindow = new AnimalReminderWindow(_revitWindowHandle);
+                }
+
+                _animalWindow.SetAnimationMode(animationMode);
+                _animalWindow.SetAllowedArea(duckArea);
+                _animalWindow.ShowAnimal();
+                return true;
+            }
+
+            if (_rabbitWindow != null)
+            {
+                _rabbitWindow.HideRabbit();
+            }
+
+            if (_animalWindow != null)
+            {
+                _animalWindow.HideAnimal();
+            }
+
             _duckWindow.SetAnimationMode(animationMode);
             _duckWindow.SetAllowedArea(duckArea);
             _duckWindow.ShowDuck();
@@ -485,6 +542,16 @@ namespace SAB.SyncReminder
             if (_duckWindow != null)
             {
                 _duckWindow.HideDuck();
+            }
+
+            if (_rabbitWindow != null)
+            {
+                _rabbitWindow.HideRabbit();
+            }
+
+            if (_animalWindow != null)
+            {
+                _animalWindow.HideAnimal();
             }
 
             _isReminderVisible = false;
@@ -530,8 +597,30 @@ namespace SAB.SyncReminder
                 _duckWindow = null;
             }
 
+            if (_rabbitWindow != null)
+            {
+                _rabbitWindow.CloseRabbit();
+                _rabbitWindow = null;
+            }
+
+            if (_animalWindow != null)
+            {
+                _animalWindow.CloseAnimal();
+                _animalWindow = null;
+            }
+
             _isReminderVisible = false;
             _isPreviewVisible = false;
+        }
+
+        private static bool IsAnimalReminderMode(SyncReminderAnimationMode animationMode)
+        {
+            return animationMode == SyncReminderAnimationMode.FoxWithSyncButton
+                   || animationMode == SyncReminderAnimationMode.RoosterAlarm
+                   || animationMode == SyncReminderAnimationMode.BoarSyncSigns
+                   || animationMode == SyncReminderAnimationMode.DeerFootprints
+                   || animationMode == SyncReminderAnimationMode.PigMud
+                   || animationMode == SyncReminderAnimationMode.SheepCounter;
         }
 
         private void ShowDebugMessage(string message)

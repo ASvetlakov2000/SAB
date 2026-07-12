@@ -88,6 +88,8 @@
   <ItemGroup>
     <Compile Include="BimDashboard\Commands\GenerateDashboardCommand.cs" />
     <Compile Include="BimDashboard\Models\DashboardData.cs" />
+    <Compile Include="BimDashboard\Models\DashboardLaunchRequest.cs" />
+    <Compile Include="BimDashboard\Models\DashboardLaunchResult.cs" />
     <Compile Include="BimDashboard\Models\DataProviderContext.cs" />
     <Compile Include="BimDashboard\Models\DashboardProfileType.cs" />
     <Compile Include="BimDashboard\Models\DataSourceType.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="BimDashboard\Services\Data\IDataProvider.cs" />
     <Compile Include="BimDashboard\Services\Data\RevitDataProvider.cs" />
     <Compile Include="BimDashboard\Services\Data\ThumbnailRuntimePathEnricher.cs" />
+    <Compile Include="BimDashboard\Services\DashboardLaunchService.cs" />
     <Compile Include="BimDashboard\Services\Processing\DataMapper.cs" />
     <Compile Include="BimDashboard\Services\Processing\TabularRecordMapper.cs" />
     <Compile Include="BimDashboard\Services\Reporting\HtmlReportBuilder.cs" />
@@ -255,6 +258,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportMaterialNamingCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\LoadSystemFamilyTypeImagesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Import\ImportTypeNamingCommand.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Commands\OpenLibraryBuilderCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\DeleteSelectedTypesAndFamiliesCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByBoundaryCommand.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Commands\Placement\ImportByLineCommand.cs" />
@@ -269,6 +273,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Model\ElementTypeCsvModel.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Model\MaterialNamingCsvModel.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Model\NamingErrorCsvModel.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Model\LibraryToolId.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Model\PlacementResult.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Model\TypeNamingCsvModel.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\CsvExportService.cs" />
@@ -284,6 +289,7 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Csv\TypeNamingCsvService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\ElementLayerStructureService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\ElementThicknessService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\Services\LibraryCommandDispatcher.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\FillPatternPlacer.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\HostedDoorWindowPlacementService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Placement\IPlacementService.cs" />
@@ -307,6 +313,9 @@
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\DraftingElementImageExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentImageExportService.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\Services\Views\LegendComponentPlacementService.cs" />
+    <Compile Include="Cls_RevitLibraryBuilder\UI\LibraryBuilderWindow.cs">
+      <DependentUpon>LibraryBuilderWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ConfirmViewCreationDialog.xaml.cs" />
     <Compile Include="Cls_RevitLibraryBuilder\UI\Dialogs\ViewCreationDialogService.cs" />
     <Compile Include="Cls_RoomGeometryTools\Commands\OpenRoomGeometryToolsCommand.cs" />
@@ -347,7 +356,9 @@
     <Compile Include="Cls_RoomGeometryTools\Utils\PolygonUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
+    <Compile Include="SyncReminder\AnimalReminderWindow.cs" />
     <Compile Include="SyncReminder\DuckReminderWindow.cs" />
+    <Compile Include="SyncReminder\RabbitReminderWindow.cs" />
     <Compile Include="SyncReminder\SyncReminderAnimationMode.cs" />
     <Compile Include="SyncReminder\SyncReminderController.cs" />
     <Compile Include="SyncReminder\SyncReminderSettings.cs" />
@@ -386,40 +397,10 @@
     <EmbeddedResource Include="Resources\FlipElevation180ByLineCommand_32.png" />
     <EmbeddedResource Include="Resources\OpenNamingStandardsHtmlCommand_16.png" />
     <EmbeddedResource Include="Resources\OpenNamingStandardsHtmlCommand_32.png" />
-    <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_16.png" />
-    <EmbeddedResource Include="Resources\ExportLoadableFamilyThumbnailsCommand_32.png" />
-    <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_16.png" />
-    <EmbeddedResource Include="Resources\ExportSystemFamilyThumbnailTemplateCommand_32.png" />
-    <EmbeddedResource Include="Resources\LoadSystemFamilyTypeImagesCommand_16.png" />
-    <EmbeddedResource Include="Resources\LoadSystemFamilyTypeImagesCommand_32.png" />
     <EmbeddedResource Include="Resources\GenerateDashboardCommand_16.png" />
     <EmbeddedResource Include="Resources\GenerateDashboardCommand_32.png" />
-    <EmbeddedResource Include="Resources\ExportMaterialNamingCommand_16.png" />
-    <EmbeddedResource Include="Resources\ExportMaterialNamingCommand_32.png" />
-    <EmbeddedResource Include="Resources\ExportTypeNamingCommand_16.png" />
-    <EmbeddedResource Include="Resources\ExportTypeNamingCommand_32.png" />
-    <EmbeddedResource Include="Resources\ImportMaterialNamingCommand_16.png" />
-    <EmbeddedResource Include="Resources\ImportMaterialNamingCommand_32.png" />
-    <EmbeddedResource Include="Resources\ImportTypeNamingCommand_16.png" />
-    <EmbeddedResource Include="Resources\ImportTypeNamingCommand_32.png" />
-    <EmbeddedResource Include="Resources\DeleteSelectedTypesAndFamiliesCommand_16.png" />
-    <EmbeddedResource Include="Resources\DeleteSelectedTypesAndFamiliesCommand_32.png" />
-    <EmbeddedResource Include="Resources\ExportLineAndFillPatternsCommand_16.png" />
-    <EmbeddedResource Include="Resources\ExportLineAndFillPatternsCommand_32.png" />
-    <EmbeddedResource Include="Resources\ExportTypesByCategoryCommand_16.png" />
-    <EmbeddedResource Include="Resources\ExportTypesByCategoryCommand_32.png" />
     <EmbeddedResource Include="Resources\ExportTypesSingleFileCommand_16.png" />
     <EmbeddedResource Include="Resources\ExportTypesSingleFileCommand_32.png" />
-    <EmbeddedResource Include="Resources\ImportByBoundaryCommand_16.png" />
-    <EmbeddedResource Include="Resources\ImportByBoundaryCommand_32.png" />
-    <EmbeddedResource Include="Resources\ImportByLineCommand_16.png" />
-    <EmbeddedResource Include="Resources\ImportByLineCommand_32.png" />
-    <EmbeddedResource Include="Resources\ImportByPointCommand_16.png" />
-    <EmbeddedResource Include="Resources\ImportByPointCommand_32.png" />
-    <EmbeddedResource Include="Resources\PlaceFillPatternsCommand_16.png" />
-    <EmbeddedResource Include="Resources\PlaceFillPatternsCommand_32.png" />
-    <EmbeddedResource Include="Resources\PlaceLineStylesCommand_16.png" />
-    <EmbeddedResource Include="Resources\PlaceLineStylesCommand_32.png" />
     <EmbeddedResource Include="Resources\CreateInteriorElevationsCommand_16.png" />
     <EmbeddedResource Include="Resources\CreateInteriorElevationsCommand_32.png" />
     <EmbeddedResource Include="Resources\MoveElevationViewportsToNewSheetCommand_16.png" />
@@ -441,6 +422,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_CreateViewsAndSheets\Views\DeleteViewsAndSheetsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_RevitLibraryBuilder\UI\LibraryBuilderWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="Resources\CreateViewsAndSheets_16.png" />
@@ -498,6 +482,27 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SyncReminder\Assets\Duck\Running 002.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Idle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Run 001.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Run 002.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Run 003.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Carrot\Carrot.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Animals\**\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SyncReminder\Assets\Credits.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
