@@ -4,9 +4,7 @@ namespace SAB.SyncReminder
     {
         DuckOnly = 0,
         DuckWithPoop = 1,
-        RabbitWithCarrots = 2,
-        FoxWithSyncButton = 3,
-        PigMud = 4,
-        SheepCounter = 5
+        PeekingScottishFold = 2,
+        PeekingBear = 3
     }
 }

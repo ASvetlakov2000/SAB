@@ -360,9 +360,8 @@
     <Compile Include="Cls_RoomGeometryTools\Utils\PolygonUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RevitParameterUtils.cs" />
     <Compile Include="Cls_RoomGeometryTools\Utils\RelayCommand.cs" />
-    <Compile Include="SyncReminder\AnimalReminderWindow.cs" />
     <Compile Include="SyncReminder\DuckReminderWindow.cs" />
-    <Compile Include="SyncReminder\RabbitReminderWindow.cs" />
+    <Compile Include="SyncReminder\PeekingAnimalReminderWindow.cs" />
     <Compile Include="SyncReminder\SyncReminderAnimationMode.cs" />
     <Compile Include="SyncReminder\SyncReminderController.cs" />
     <Compile Include="SyncReminder\SyncReminderSettings.cs" />
@@ -488,22 +487,7 @@
     <Content Include="SyncReminder\Assets\Duck\Running 002.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Idle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Run 001.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Run 002.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SyncReminder\Assets\Rabbit\Rabbit Run 003.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SyncReminder\Assets\Carrot\Carrot.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SyncReminder\Assets\Animals\**\*.png">
+    <Content Include="SyncReminder\Assets\PeekingAnimal\*.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SyncReminder\Assets\Credits.txt">

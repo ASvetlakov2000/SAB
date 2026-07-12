@@ -176,10 +176,8 @@ namespace SAB.SyncReminder
             _animationModeComboBox = new ComboBox();
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Только утка", SyncReminderAnimationMode.DuckOnly));
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Утка и следы", SyncReminderAnimationMode.DuckWithPoop));
-            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Кролик и морковки", SyncReminderAnimationMode.RabbitWithCarrots));
-            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Лиса и синхро-кнопка", SyncReminderAnimationMode.FoxWithSyncButton));
-            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Поросенок и грязь", SyncReminderAnimationMode.PigMud));
-            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Овца-счетчик", SyncReminderAnimationMode.SheepCounter));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Мордочка: Scottish Fold", SyncReminderAnimationMode.PeekingScottishFold));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Мордочка: медвежонок", SyncReminderAnimationMode.PeekingBear));
             ApplyStyle(_animationModeComboBox, "SabComboBoxStyle");
             Grid.SetRow(_animationModeComboBox, 1);
             modeGrid.Children.Add(_animationModeComboBox);

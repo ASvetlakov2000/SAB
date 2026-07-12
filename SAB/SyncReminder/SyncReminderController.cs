@@ -24,8 +24,7 @@ namespace SAB.SyncReminder
         private DateTime _lastIdlingCheck;
         private IntPtr _revitWindowHandle;
         private DuckReminderWindow _duckWindow;
-        private RabbitReminderWindow _rabbitWindow;
-        private AnimalReminderWindow _animalWindow;
+        private PeekingAnimalReminderWindow _peekingAnimalWindow;
         private string _activeDocumentKey;
         private DateTime _previewUntil;
         private bool _isPreviewVisible;
@@ -202,7 +201,7 @@ namespace SAB.SyncReminder
                 string documentKey = GetDocumentKey(document);
                 if (string.Equals(_activeDocumentKey, documentKey, StringComparison.OrdinalIgnoreCase))
                 {
-                    HideReminderAfterSuccessfulSync();
+                    HideReminder();
                 }
             }
             catch (Exception ex)
@@ -466,59 +465,27 @@ namespace SAB.SyncReminder
                 ? SyncReminderAnimationMode.DuckOnly
                 : _settings.AnimationMode;
 
-            if (animationMode == SyncReminderAnimationMode.RabbitWithCarrots)
+            if (IsPeekingReminderMode(animationMode))
             {
                 if (_duckWindow != null)
                 {
                     _duckWindow.HideDuck();
                 }
 
-                if (_animalWindow != null)
+                if (_peekingAnimalWindow == null)
                 {
-                    _animalWindow.HideAnimal();
+                    _peekingAnimalWindow = new PeekingAnimalReminderWindow(_revitWindowHandle);
                 }
 
-                if (_rabbitWindow == null)
-                {
-                    _rabbitWindow = new RabbitReminderWindow(_revitWindowHandle);
-                }
-
-                _rabbitWindow.SetAllowedArea(duckArea);
-                _rabbitWindow.ShowRabbit();
+                _peekingAnimalWindow.SetAnimationMode(animationMode);
+                _peekingAnimalWindow.SetAllowedArea(duckArea);
+                _peekingAnimalWindow.ShowAnimal();
                 return true;
             }
 
-            if (IsAnimalReminderMode(animationMode))
+            if (_peekingAnimalWindow != null)
             {
-                if (_duckWindow != null)
-                {
-                    _duckWindow.HideDuck();
-                }
-
-                if (_rabbitWindow != null)
-                {
-                    _rabbitWindow.HideRabbit();
-                }
-
-                if (_animalWindow == null)
-                {
-                    _animalWindow = new AnimalReminderWindow(_revitWindowHandle);
-                }
-
-                _animalWindow.SetAnimationMode(animationMode);
-                _animalWindow.SetAllowedArea(duckArea);
-                _animalWindow.ShowAnimal();
-                return true;
-            }
-
-            if (_rabbitWindow != null)
-            {
-                _rabbitWindow.HideRabbit();
-            }
-
-            if (_animalWindow != null)
-            {
-                _animalWindow.HideAnimal();
+                _peekingAnimalWindow.HideAnimal();
             }
 
             _duckWindow.SetAnimationMode(animationMode);
@@ -544,45 +511,13 @@ namespace SAB.SyncReminder
                 _duckWindow.HideDuck();
             }
 
-            if (_rabbitWindow != null)
+            if (_peekingAnimalWindow != null)
             {
-                _rabbitWindow.HideRabbit();
-            }
-
-            if (_animalWindow != null)
-            {
-                _animalWindow.HideAnimal();
+                _peekingAnimalWindow.HideAnimal();
             }
 
             _isReminderVisible = false;
             _isPreviewVisible = false;
-        }
-
-        private void HideReminderAfterSuccessfulSync()
-        {
-            SyncReminderAnimationMode animationMode = _settings == null
-                ? SyncReminderAnimationMode.DuckOnly
-                : _settings.AnimationMode;
-
-            if (animationMode == SyncReminderAnimationMode.FoxWithSyncButton && _animalWindow != null)
-            {
-                if (_duckWindow != null)
-                {
-                    _duckWindow.HideDuck();
-                }
-
-                if (_rabbitWindow != null)
-                {
-                    _rabbitWindow.HideRabbit();
-                }
-
-                _animalWindow.PlayFoxCatchAnimationAndHide();
-                _isReminderVisible = false;
-                _isPreviewVisible = false;
-                return;
-            }
-
-            HideReminder();
         }
 
         private void ApplySettings(SyncReminderSettings settings)
@@ -624,27 +559,20 @@ namespace SAB.SyncReminder
                 _duckWindow = null;
             }
 
-            if (_rabbitWindow != null)
+            if (_peekingAnimalWindow != null)
             {
-                _rabbitWindow.CloseRabbit();
-                _rabbitWindow = null;
-            }
-
-            if (_animalWindow != null)
-            {
-                _animalWindow.CloseAnimal();
-                _animalWindow = null;
+                _peekingAnimalWindow.CloseAnimal();
+                _peekingAnimalWindow = null;
             }
 
             _isReminderVisible = false;
             _isPreviewVisible = false;
         }
 
-        private static bool IsAnimalReminderMode(SyncReminderAnimationMode animationMode)
+        private static bool IsPeekingReminderMode(SyncReminderAnimationMode animationMode)
         {
-            return animationMode == SyncReminderAnimationMode.FoxWithSyncButton
-                   || animationMode == SyncReminderAnimationMode.PigMud
-                   || animationMode == SyncReminderAnimationMode.SheepCounter;
+            return animationMode == SyncReminderAnimationMode.PeekingScottishFold
+                   || animationMode == SyncReminderAnimationMode.PeekingBear;
         }
 
         private void ShowDebugMessage(string message)
