@@ -42,9 +42,10 @@ namespace SAB.SyncReminder
         private double _visibleTop;
         private double _hiddenLeft;
         private double _hiddenTop;
+        private double _previousVisibleLeft;
         private int _currentMessageIndex;
 
-        public event EventHandler DismissRequested;
+        public event EventHandler RelocationRequested;
 
         public PeekingAnimalReminderWindow(IntPtr ownerHandle)
         {
@@ -54,6 +55,7 @@ namespace SAB.SyncReminder
             _mode = SyncReminderAnimationMode.PeekingScottishFold;
             _messages = CreateMessages();
             _currentMessageIndex = -1;
+            _previousVisibleLeft = double.NaN;
 
             Width = 900;
             Height = 560;
@@ -278,10 +280,12 @@ namespace SAB.SyncReminder
         {
             e.Handled = true;
 
-            // Clicking a face dismisses it until the controller receives a successful sync event.
-            HideAnimal();
+            // Clicking a face immediately starts a new appearance in another place.
+            // The reminder remains active and can only be dismissed by the controller after synchronization.
+            PrepareNextAppearance();
+            StartTimers();
 
-            EventHandler handler = DismissRequested;
+            EventHandler handler = RelocationRequested;
             if (handler != null)
             {
                 handler(this, EventArgs.Empty);
@@ -330,7 +334,32 @@ namespace SAB.SyncReminder
             double maxHorizontal = Math.Max(8.0, Width - _animalWidth - 8.0);
 
             // Block responsible for bottom-only placement of every peeking character.
-            _visibleLeft = 8.0 + _random.NextDouble() * Math.Max(1.0, maxHorizontal - 8.0);
+            // A minimum distance prevents the character from appearing almost in the same place after a click.
+            double availableWidth = Math.Max(1.0, maxHorizontal - 8.0);
+            double minimumMoveDistance = Math.Min(availableWidth * 0.45, Math.Max(80.0, _animalWidth * 0.75));
+            double nextVisibleLeft = 8.0 + _random.NextDouble() * availableWidth;
+
+            if (!double.IsNaN(_previousVisibleLeft) && availableWidth > minimumMoveDistance)
+            {
+                const int maximumPlacementAttempts = 12;
+                int attempt = 0;
+                while (Math.Abs(nextVisibleLeft - _previousVisibleLeft) < minimumMoveDistance
+                       && attempt < maximumPlacementAttempts)
+                {
+                    nextVisibleLeft = 8.0 + _random.NextDouble() * availableWidth;
+                    attempt++;
+                }
+
+                if (Math.Abs(nextVisibleLeft - _previousVisibleLeft) < minimumMoveDistance)
+                {
+                    double leftDistance = _previousVisibleLeft - 8.0;
+                    double rightDistance = maxHorizontal - _previousVisibleLeft;
+                    nextVisibleLeft = leftDistance > rightDistance ? 8.0 : maxHorizontal;
+                }
+            }
+
+            _visibleLeft = nextVisibleLeft;
+            _previousVisibleLeft = _visibleLeft;
             _visibleTop = Height - _animalHeight + 8.0 + _animalHeight * BottomEdgeLoweringPart;
             _hiddenLeft = _visibleLeft;
             _hiddenTop = Height + 18.0;

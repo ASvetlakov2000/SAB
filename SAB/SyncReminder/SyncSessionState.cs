@@ -9,7 +9,5 @@ namespace SAB.SyncReminder
         public string DocumentTitle { get; set; }
 
         public DateTime LastSuccessfulSyncTime { get; set; }
-
-        public bool IsReminderDismissed { get; set; }
     }
 }
