@@ -7,6 +7,7 @@ namespace SAB.SyncReminder
         PeekingScottishFold = 2,
         PeekingBear = 3,
         PeekingSiamese = 4,
-        PeekingPigeon = 5
+        PeekingPigeon = 5,
+        PeekingSeagull = 6
     }
 }

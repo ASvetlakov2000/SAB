@@ -269,6 +269,14 @@ namespace SAB.SyncReminder
 
                 _activeDocumentKey = session.DocumentKey;
 
+                // A click dismisses the face for the current synchronization cycle.
+                // A successful synchronization resets this flag in RegisterOrResetDocument.
+                if (session.IsReminderDismissed)
+                {
+                    HideReminder();
+                    return;
+                }
+
                 TimeSpan timeAfterSync = now - session.LastSuccessfulSyncTime;
                 if (timeAfterSync >= _reminderDelay)
                 {
@@ -348,6 +356,7 @@ namespace SAB.SyncReminder
             session.DocumentKey = documentKey;
             session.DocumentTitle = document.Title;
             session.LastSuccessfulSyncTime = DateTime.Now;
+            session.IsReminderDismissed = false;
             _sessions[documentKey] = session;
 
             ShowDebugMessage("Timer started for " + session.DocumentTitle);
@@ -378,6 +387,7 @@ namespace SAB.SyncReminder
 
             session.DocumentTitle = document.Title;
             session.LastSuccessfulSyncTime = DateTime.Now;
+            session.IsReminderDismissed = false;
 
             ShowDebugMessage(reason + ": timer reset for " + session.DocumentTitle);
         }
@@ -475,6 +485,7 @@ namespace SAB.SyncReminder
                 if (_peekingAnimalWindow == null)
                 {
                     _peekingAnimalWindow = new PeekingAnimalReminderWindow(_revitWindowHandle);
+                    _peekingAnimalWindow.DismissRequested += OnPeekingAnimalDismissRequested;
                 }
 
                 _peekingAnimalWindow.SetAnimationMode(animationMode);
@@ -492,6 +503,35 @@ namespace SAB.SyncReminder
             _duckWindow.SetAllowedArea(duckArea);
             _duckWindow.ShowDuck();
             return true;
+        }
+
+        private void OnPeekingAnimalDismissRequested(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_isPreviewVisible)
+                {
+                    ShowDebugMessage("Preview face clicked. The preview will be hidden.");
+                    HideReminder();
+                    return;
+                }
+
+                SyncSessionState session;
+                if (!string.IsNullOrWhiteSpace(_activeDocumentKey)
+                    && _sessions.TryGetValue(_activeDocumentKey, out session))
+                {
+                    session.IsReminderDismissed = true;
+                    ShowDebugMessage(
+                        "Reminder face clicked. Document: " + session.DocumentTitle
+                        + ". Dismissed until the next successful synchronization.");
+                }
+
+                HideReminder();
+            }
+            catch (Exception ex)
+            {
+                ShowError("PeekingAnimalDismissRequested", ex);
+            }
         }
 
         private void StopTestDuckPreview()
@@ -561,6 +601,7 @@ namespace SAB.SyncReminder
 
             if (_peekingAnimalWindow != null)
             {
+                _peekingAnimalWindow.DismissRequested -= OnPeekingAnimalDismissRequested;
                 _peekingAnimalWindow.CloseAnimal();
                 _peekingAnimalWindow = null;
             }
@@ -574,7 +615,8 @@ namespace SAB.SyncReminder
             return animationMode == SyncReminderAnimationMode.PeekingScottishFold
                    || animationMode == SyncReminderAnimationMode.PeekingBear
                    || animationMode == SyncReminderAnimationMode.PeekingSiamese
-                   || animationMode == SyncReminderAnimationMode.PeekingPigeon;
+                   || animationMode == SyncReminderAnimationMode.PeekingPigeon
+                   || animationMode == SyncReminderAnimationMode.PeekingSeagull;
         }
 
         private void ShowDebugMessage(string message)

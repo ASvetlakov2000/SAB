@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,8 @@ namespace SAB.SyncReminder
         private const double BubbleMaxWidth = 360.0;
         private const double AnimalWidthScreenPart = 0.20;
         private const double BottomEdgeLoweringPart = 0.10;
+        private const byte WhiteBackgroundChannelThreshold = 250;
+        private const byte WhiteBackgroundMaximumChannelDifference = 6;
 
         private readonly IntPtr _ownerHandle;
         private readonly Random _random;
@@ -30,8 +33,7 @@ namespace SAB.SyncReminder
         private Image _animalImage;
         private Border _bubbleBorder;
         private TextBlock _bubbleText;
-        private BitmapImage _animalSource;
-        private PeekingEdge _edge;
+        private BitmapSource _animalSource;
         private DateTime _stateStartedAt;
         private AnimationState _animationState;
         private double _animalWidth;
@@ -41,6 +43,8 @@ namespace SAB.SyncReminder
         private double _hiddenLeft;
         private double _hiddenTop;
         private int _currentMessageIndex;
+
+        public event EventHandler DismissRequested;
 
         public PeekingAnimalReminderWindow(IntPtr ownerHandle)
         {
@@ -102,6 +106,12 @@ namespace SAB.SyncReminder
 
         public void SetAllowedArea(Rect allowedArea)
         {
+            bool areaChanged = _allowedArea.IsEmpty
+                               || Math.Abs(_allowedArea.Left - allowedArea.Left) > 0.5
+                               || Math.Abs(_allowedArea.Top - allowedArea.Top) > 0.5
+                               || Math.Abs(_allowedArea.Width - allowedArea.Width) > 0.5
+                               || Math.Abs(_allowedArea.Height - allowedArea.Height) > 0.5;
+
             _allowedArea = allowedArea;
             if (_allowedArea.IsEmpty)
             {
@@ -119,7 +129,12 @@ namespace SAB.SyncReminder
                 _canvas.Height = Height;
             }
 
-            PrepareNextAppearance();
+            // Recalculate a visible face only when the Revit workspace really moved or resized.
+            // Repeated Idling checks must not restart the slide-in animation.
+            if (areaChanged && IsVisible)
+            {
+                PrepareNextAppearance();
+            }
         }
 
         public void ShowAnimal()
@@ -201,7 +216,7 @@ namespace SAB.SyncReminder
 
         private void StartTimers()
         {
-            if (!_animationTimer.IsEnabled)
+            if (_animationState != AnimationState.Visible && !_animationTimer.IsEnabled)
             {
                 _animationTimer.Start();
             }
@@ -237,6 +252,7 @@ namespace SAB.SyncReminder
                     _animationState = AnimationState.Visible;
                     _stateStartedAt = DateTime.Now;
                     ApplyAnimalPosition(1.0);
+                    _animationTimer.Stop();
                 }
 
                 return;
@@ -245,18 +261,8 @@ namespace SAB.SyncReminder
             if (_animationState == AnimationState.Visible)
             {
                 ApplyAnimalPosition(1.0);
+                _animationTimer.Stop();
                 return;
-            }
-
-            if (_animationState == AnimationState.SlidingOut)
-            {
-                double progress = Clamp(elapsedSeconds / SlideSeconds, 0.0, 1.0);
-                ApplyAnimalPosition(1.0 - progress);
-
-                if (progress >= 1.0)
-                {
-                    PrepareNextAppearance();
-                }
             }
         }
 
@@ -271,8 +277,15 @@ namespace SAB.SyncReminder
         private void OnAnimalMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            _animationState = AnimationState.SlidingOut;
-            _stateStartedAt = DateTime.Now;
+
+            // Clicking a face dismisses it until the controller receives a successful sync event.
+            HideAnimal();
+
+            EventHandler handler = DismissRequested;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         private void PrepareNextAppearance()
@@ -283,7 +296,6 @@ namespace SAB.SyncReminder
             }
 
             CalculateAnimalSize();
-            _edge = GetRandomEdge();
             CalculatePositionsForEdge();
             SayNextMessage();
             ApplyRotationForEdge();
@@ -313,87 +325,20 @@ namespace SAB.SyncReminder
             _animalImage.Height = _animalHeight;
         }
 
-        private PeekingEdge GetRandomEdge()
-        {
-            if (_mode == SyncReminderAnimationMode.PeekingBear)
-            {
-                return PeekingEdge.Bottom;
-            }
-
-            int value = _random.Next(0, 4);
-            if (value == 0)
-            {
-                return PeekingEdge.Bottom;
-            }
-
-            if (value == 1)
-            {
-                return PeekingEdge.Left;
-            }
-
-            if (value == 2)
-            {
-                return PeekingEdge.Right;
-            }
-
-            return PeekingEdge.Top;
-        }
-
         private void CalculatePositionsForEdge()
         {
             double maxHorizontal = Math.Max(8.0, Width - _animalWidth - 8.0);
-            double maxVertical = Math.Max(8.0, Height - _animalHeight - 8.0);
 
-            if (_edge == PeekingEdge.Bottom)
-            {
-                _visibleLeft = 8.0 + _random.NextDouble() * Math.Max(1.0, maxHorizontal - 8.0);
-                _visibleTop = Height - _animalHeight + 8.0 + _animalHeight * BottomEdgeLoweringPart;
-                _hiddenLeft = _visibleLeft;
-                _hiddenTop = Height + 18.0;
-                return;
-            }
-
-            if (_edge == PeekingEdge.Top)
-            {
-                _visibleLeft = 8.0 + _random.NextDouble() * Math.Max(1.0, maxHorizontal - 8.0);
-                _visibleTop = -_animalHeight + Math.Min(118.0, _animalHeight * 0.72);
-                _hiddenLeft = _visibleLeft;
-                _hiddenTop = -_animalHeight - 18.0;
-                return;
-            }
-
-            if (_edge == PeekingEdge.Left)
-            {
-                _visibleLeft = -_animalWidth + Math.Min(128.0, _animalWidth * 0.70);
-                _visibleTop = 20.0 + _random.NextDouble() * Math.Max(1.0, maxVertical - 20.0);
-                _hiddenLeft = -_animalWidth - 18.0;
-                _hiddenTop = _visibleTop;
-                return;
-            }
-
-            _visibleLeft = Width - Math.Min(128.0, _animalWidth * 0.70);
-            _visibleTop = 20.0 + _random.NextDouble() * Math.Max(1.0, maxVertical - 20.0);
-            _hiddenLeft = Width + 18.0;
-            _hiddenTop = _visibleTop;
+            // Block responsible for bottom-only placement of every peeking character.
+            _visibleLeft = 8.0 + _random.NextDouble() * Math.Max(1.0, maxHorizontal - 8.0);
+            _visibleTop = Height - _animalHeight + 8.0 + _animalHeight * BottomEdgeLoweringPart;
+            _hiddenLeft = _visibleLeft;
+            _hiddenTop = Height + 18.0;
         }
 
         private void ApplyRotationForEdge()
         {
-            double angle = 0.0;
-            if (_edge == PeekingEdge.Top)
-            {
-                angle = 180.0;
-            }
-            else if (_edge == PeekingEdge.Left)
-            {
-                angle = 90.0;
-            }
-            else if (_edge == PeekingEdge.Right)
-            {
-                angle = -90.0;
-            }
-
-            _animalImage.RenderTransform = new RotateTransform(angle);
+            _animalImage.RenderTransform = Transform.Identity;
         }
 
         private void ApplyAnimalPosition(double visibleProgress)
@@ -425,21 +370,6 @@ namespace SAB.SyncReminder
             double left = animalLeft + _animalWidth * 0.5 - bubbleWidth * 0.5;
             double top = animalTop - bubbleHeight - 10.0;
 
-            if (_edge == PeekingEdge.Top)
-            {
-                top = animalTop + _animalHeight + 10.0;
-            }
-            else if (_edge == PeekingEdge.Left)
-            {
-                left = animalLeft + _animalWidth + 12.0;
-                top = animalTop + _animalHeight * 0.36;
-            }
-            else if (_edge == PeekingEdge.Right)
-            {
-                left = animalLeft - bubbleWidth - 12.0;
-                top = animalTop + _animalHeight * 0.36;
-            }
-
             left = Clamp(left, 8.0, Math.Max(8.0, Width - bubbleWidth - 8.0));
             top = Clamp(top, 8.0, Math.Max(8.0, Height - bubbleHeight - 8.0));
 
@@ -458,7 +388,7 @@ namespace SAB.SyncReminder
             _bubbleText.Text = _messages[_currentMessageIndex];
         }
 
-        private static BitmapImage LoadAnimalImage(SyncReminderAnimationMode mode)
+        private static BitmapSource LoadAnimalImage(SyncReminderAnimationMode mode)
         {
             string fileName = GetAnimalFileName(mode);
 
@@ -481,7 +411,126 @@ namespace SAB.SyncReminder
             image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
             image.EndInit();
             image.Freeze();
-            return image;
+            return RemoveConnectedWhiteBackground(image);
+        }
+
+        private static BitmapSource RemoveConnectedWhiteBackground(BitmapSource source)
+        {
+            if (source == null || source.PixelWidth <= 0 || source.PixelHeight <= 0)
+            {
+                return source;
+            }
+
+            BitmapSource pixelSource = source;
+            if (source.Format != PixelFormats.Bgra32)
+            {
+                FormatConvertedBitmap convertedSource = new FormatConvertedBitmap(
+                    source,
+                    PixelFormats.Bgra32,
+                    null,
+                    0.0);
+                convertedSource.Freeze();
+                pixelSource = convertedSource;
+            }
+
+            int width = pixelSource.PixelWidth;
+            int height = pixelSource.PixelHeight;
+            int stride = width * 4;
+            byte[] pixels = new byte[stride * height];
+            pixelSource.CopyPixels(pixels, stride, 0);
+
+            bool[] backgroundMask = new bool[width * height];
+            Queue<int> pendingPixels = new Queue<int>();
+
+            // Only nearly-white pixels connected to an outer image edge are removed.
+            // This preserves enclosed white details such as the seagull's feathers and eyes.
+            for (int x = 0; x < width; x++)
+            {
+                TryAddWhiteBackgroundPixel(x, 0, width, height, stride, pixels, backgroundMask, pendingPixels);
+                TryAddWhiteBackgroundPixel(x, height - 1, width, height, stride, pixels, backgroundMask, pendingPixels);
+            }
+
+            for (int y = 1; y < height - 1; y++)
+            {
+                TryAddWhiteBackgroundPixel(0, y, width, height, stride, pixels, backgroundMask, pendingPixels);
+                TryAddWhiteBackgroundPixel(width - 1, y, width, height, stride, pixels, backgroundMask, pendingPixels);
+            }
+
+            while (pendingPixels.Count > 0)
+            {
+                int pixelIndex = pendingPixels.Dequeue();
+                int x = pixelIndex % width;
+                int y = pixelIndex / width;
+
+                TryAddWhiteBackgroundPixel(x - 1, y, width, height, stride, pixels, backgroundMask, pendingPixels);
+                TryAddWhiteBackgroundPixel(x + 1, y, width, height, stride, pixels, backgroundMask, pendingPixels);
+                TryAddWhiteBackgroundPixel(x, y - 1, width, height, stride, pixels, backgroundMask, pendingPixels);
+                TryAddWhiteBackgroundPixel(x, y + 1, width, height, stride, pixels, backgroundMask, pendingPixels);
+            }
+
+            for (int pixelIndex = 0; pixelIndex < backgroundMask.Length; pixelIndex++)
+            {
+                if (backgroundMask[pixelIndex])
+                {
+                    pixels[pixelIndex * 4 + 3] = 0;
+                }
+            }
+
+            WriteableBitmap result = new WriteableBitmap(
+                width,
+                height,
+                pixelSource.DpiX,
+                pixelSource.DpiY,
+                PixelFormats.Bgra32,
+                null);
+            result.WritePixels(new Int32Rect(0, 0, width, height), pixels, stride, 0);
+            result.Freeze();
+            return result;
+        }
+
+        private static void TryAddWhiteBackgroundPixel(
+            int x,
+            int y,
+            int width,
+            int height,
+            int stride,
+            byte[] pixels,
+            bool[] backgroundMask,
+            Queue<int> pendingPixels)
+        {
+            if (x < 0 || x >= width || y < 0 || y >= height)
+            {
+                return;
+            }
+
+            int pixelIndex = y * width + x;
+            if (backgroundMask[pixelIndex])
+            {
+                return;
+            }
+
+            int byteIndex = y * stride + x * 4;
+            byte blue = pixels[byteIndex];
+            byte green = pixels[byteIndex + 1];
+            byte red = pixels[byteIndex + 2];
+            byte alpha = pixels[byteIndex + 3];
+
+            if (alpha == 0 || red < WhiteBackgroundChannelThreshold
+                || green < WhiteBackgroundChannelThreshold
+                || blue < WhiteBackgroundChannelThreshold)
+            {
+                return;
+            }
+
+            byte maximumChannel = Math.Max(red, Math.Max(green, blue));
+            byte minimumChannel = Math.Min(red, Math.Min(green, blue));
+            if (maximumChannel - minimumChannel > WhiteBackgroundMaximumChannelDifference)
+            {
+                return;
+            }
+
+            backgroundMask[pixelIndex] = true;
+            pendingPixels.Enqueue(pixelIndex);
         }
 
         private static bool IsPeekingMode(SyncReminderAnimationMode mode)
@@ -489,7 +538,8 @@ namespace SAB.SyncReminder
             return mode == SyncReminderAnimationMode.PeekingScottishFold
                    || mode == SyncReminderAnimationMode.PeekingBear
                    || mode == SyncReminderAnimationMode.PeekingSiamese
-                   || mode == SyncReminderAnimationMode.PeekingPigeon;
+                   || mode == SyncReminderAnimationMode.PeekingPigeon
+                   || mode == SyncReminderAnimationMode.PeekingSeagull;
         }
 
         private static string GetAnimalFileName(SyncReminderAnimationMode mode)
@@ -507,6 +557,11 @@ namespace SAB.SyncReminder
             if (mode == SyncReminderAnimationMode.PeekingPigeon)
             {
                 return "PigeonPeeking.png";
+            }
+
+            if (mode == SyncReminderAnimationMode.PeekingSeagull)
+            {
+                return "SeagullPeeking.png";
             }
 
             return "ScottishFoldPeeking.png";
@@ -557,19 +612,10 @@ namespace SAB.SyncReminder
             return new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
         }
 
-        private enum PeekingEdge
-        {
-            Bottom,
-            Top,
-            Left,
-            Right
-        }
-
         private enum AnimationState
         {
             SlidingIn,
-            Visible,
-            SlidingOut
+            Visible
         }
     }
 }

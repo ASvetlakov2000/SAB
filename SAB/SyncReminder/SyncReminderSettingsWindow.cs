@@ -180,6 +180,7 @@ namespace SAB.SyncReminder
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Медвежонок", SyncReminderAnimationMode.PeekingBear));
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Сиамский котик", SyncReminderAnimationMode.PeekingSiamese));
             _animationModeComboBox.Items.Add(CreateAnimationModeItem("Голубь", SyncReminderAnimationMode.PeekingPigeon));
+            _animationModeComboBox.Items.Add(CreateAnimationModeItem("Чайка", SyncReminderAnimationMode.PeekingSeagull));
             ApplyStyle(_animationModeComboBox, "SabComboBoxStyle");
             Grid.SetRow(_animationModeComboBox, 1);
             modeGrid.Children.Add(_animationModeComboBox);
