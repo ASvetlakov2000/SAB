@@ -178,6 +178,22 @@
     <Compile Include="Cls_CreateViewsAndSheets\Views\DeleteViewsAndSheetsWindow.cs">
       <DependentUpon>DeleteViewsAndSheetsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Cls_ViewTemplateGraphics\Commands\EditViewTemplateGraphicsCommand.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Models\ViewTemplateGraphicsModels.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Services\RevitLinkGraphicsReflectionService.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Services\ViewTemplateGraphicsApplyService.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Services\ViewTemplateGraphicsDataService.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\ViewModels\GraphicOverrideEditorViewModel.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\ViewModels\ViewTemplateGraphicsViewModel.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Views\AddFiltersWindow.xaml.cs">
+      <DependentUpon>AddFiltersWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_ViewTemplateGraphics\Views\GraphicOverrideEditorWindow.xaml.cs">
+      <DependentUpon>GraphicOverrideEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_ViewTemplateGraphics\Views\ViewTemplateGraphicsWindow.xaml.cs">
+      <DependentUpon>ViewTemplateGraphicsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\FlipElevation180ByLineCommand.cs" />
@@ -425,6 +441,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_CreateViewsAndSheets\Views\DeleteViewsAndSheetsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_ViewTemplateGraphics\Views\GraphicOverrideEditorWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_ViewTemplateGraphics\Views\AddFiltersWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_ViewTemplateGraphics\Views\ViewTemplateGraphicsWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_RevitLibraryBuilder\UI\LibraryBuilderWindow.xaml">

@@ -8,7 +8,7 @@ namespace RevitLibraryBuilder.Commands.Regulations
     [Transaction(TransactionMode.ReadOnly)]
     public class OpenNamingStandardsHtmlCommand : IExternalCommand
     {
-        private const string StartFileName = "IDEOLOGIST_HTML_Reglamenty.html";
+        private const string StartFileName = "01_IDEOLOGIST_HTML_Reglamenty.html";
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {

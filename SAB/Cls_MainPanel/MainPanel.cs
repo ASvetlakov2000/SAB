@@ -140,6 +140,14 @@ namespace SAB
                 "SAB.Resources.DeleteViewsAndSheets_32.png",
                 "SAB.Resources.DeleteViewsAndSheets_16.png");
 
+            Ribbon.AddPushButtonSingle(
+            structurePanel,
+                "SAB_EditViewTemplateGraphics",
+                "Редактор шаблонов\nвидов",
+                "SAB.ViewTemplateGraphics.Commands.EditViewTemplateGraphicsCommand",
+                "SAB.Resources.CreateViewsAndSheets_32.png",
+                "SAB.Resources.CreateViewsAndSheets_16.png");
+
             StartSyncReminder(application);
 
             return Result.Succeeded;
