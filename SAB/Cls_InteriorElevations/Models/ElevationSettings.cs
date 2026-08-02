@@ -22,9 +22,19 @@ namespace SAB.InteriorElevations.Models
 
         public double MarkerOffsetMm { get; set; }
 
+        public string ElevationNamePart1 { get; set; }
+
+        public string ElevationNamePart2 { get; set; }
+
+        public string ElevationNamePart3 { get; set; }
+
         public bool CreateSheet { get; set; }
 
+        public bool MultipleRoomsOnSheet { get; set; }
+
         public ElementId TitleBlockTypeId { get; set; }
+
+        public ElementId ViewportTypeId { get; set; }
 
         public ElementId PlanCornerMarkTypeId { get; set; }
 
@@ -33,6 +43,12 @@ namespace SAB.InteriorElevations.Models
         public int? SheetFormatAValue { get; set; }
 
         public SheetLayoutSettings SheetLayoutSettings { get; set; }
+
+        public string SheetNamePart1 { get; set; }
+
+        public string SheetNamePart2 { get; set; }
+
+        public string SheetNamePart3 { get; set; }
 
         // Блок настроек создания план-схемы помещения после построения разверток.
         public string RoomPlanNamePart1 { get; set; }

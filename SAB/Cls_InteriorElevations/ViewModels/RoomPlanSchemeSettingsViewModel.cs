@@ -15,14 +15,11 @@ namespace SAB.InteriorElevations.ViewModels
     public class RoomPlanSchemeSettingsViewModel : INotifyPropertyChanged
     {
         private readonly Document _document;
-        private readonly View _activeView;
         private RevitElementOption _selectedViewTemplate;
 
         public RoomPlanSchemeSettingsViewModel(Document document, View activeView, RoomPlanSchemeSettings initialSettings = null)
         {
             _document = document;
-            _activeView = activeView;
-
             // Блок предзаполненных значений, которые пользователь может менять в окне.
             NamePart1Text = "План-схема разверток пом. ";
             NamePart2Text = "{Номер помещения}";
@@ -121,36 +118,14 @@ namespace SAB.InteriorElevations.ViewModels
                     continue;
                 }
 
-                // Блок фильтрации шаблонов: сначала предпочитаем тот же тип вида, что активный план.
-                if (_activeView != null && view.ViewType == _activeView.ViewType)
+                // Для план-схем доступны только шаблоны планов этажей.
+                if (view.ViewType == ViewType.FloorPlan)
                 {
                     templates.Add(new RevitElementOption
                     {
                         Id = view.Id,
                         DisplayName = view.Name
                     });
-                }
-            }
-
-            // Если шаблоны соответствующего типа не найдены, показываем все шаблоны планов как fallback.
-            if (templates.Count == 0)
-            {
-                foreach (Element element in collector)
-                {
-                    View view = element as View;
-                    if (view == null || !view.IsTemplate)
-                    {
-                        continue;
-                    }
-
-                    if (view.ViewType == ViewType.FloorPlan || view.ViewType == ViewType.CeilingPlan)
-                    {
-                        templates.Add(new RevitElementOption
-                        {
-                            Id = view.Id,
-                            DisplayName = view.Name
-                        });
-                    }
                 }
             }
 

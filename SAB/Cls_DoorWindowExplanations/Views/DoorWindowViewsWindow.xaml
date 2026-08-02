@@ -1,0 +1,524 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Экспликации дверей и окон"
+        Width="1180"
+        Height="780"
+        MinWidth="980"
+        MinHeight="680"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,18,20,14">
+            <TextBlock Text="Экспликации дверей и окон"
+                       Style="{StaticResource SabWindowTitleTextStyle}" />
+            <TextBlock Text="Настройте три ортогональных вида для выбранных элементов и их размещение на одном листе."
+                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                       Margin="0,4,0,0" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="20,0,20,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource SabPanelBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                            <TextBlock Text="▣" Style="{StaticResource SabPanelIconTextStyle}" />
+                        </Border>
+                        <TextBlock Text="Элемент и правила"
+                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="Выбранный экземпляр"
+                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <Border Style="{StaticResource SabValidationPanelStyle}"
+                                    Margin="0,0,0,12">
+                                <TextBlock x:Name="ElementSummaryTextBlock"
+                                           TextWrapping="Wrap"
+                                           Foreground="{StaticResource SabBrush.Text}" />
+                            </Border>
+
+                            <TextBlock Text="Источник габаритов"
+                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <RadioButton x:Name="AutomaticBoundsRadioButton"
+                                         Content="Автоматически по элементу"
+                                         GroupName="BoundsMode"
+                                         IsChecked="True"
+                                         Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                            <RadioButton x:Name="ManualBoundsRadioButton"
+                                         Content="По линиям контура на развертке"
+                                         GroupName="BoundsMode"
+                                         Style="{StaticResource SabStructureModeRadioButtonStyle}"
+                                         Margin="0,0,0,8" />
+                            <TextBlock Text="В ручном режиме после нажатия «Создать» выберите заранее нарисованные линии."
+                                       Style="{StaticResource SabFieldHintTextStyle}"
+                                       Margin="0,0,0,10" />
+
+                            <TextBlock Text="Глубина стены для ручного контура, мм"
+                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                             <TextBox x:Name="ManualPlanDepthTextBox"
+                                      Style="{StaticResource SabTextBoxStyle}"
+                                      Margin="0,0,0,14" />
+
+                            <Expander Style="{StaticResource SabPanelExpanderStyle}"
+                                      IsExpanded="True"
+                                      Margin="0,0,0,10">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                            <TextBlock Text="Aa" Style="{StaticResource SabPanelIconTextStyle}" />
+                                        </Border>
+                                        <TextBlock Text="Наименования"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    </StackPanel>
+                                </Expander.Header>
+
+                                <StackPanel>
+                                    <TextBlock Text="Параметр позиции"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <ComboBox x:Name="PositionParameterComboBox"
+                                              Style="{StaticResource SabComboBoxStyle}"
+                                              Margin="0,0,0,12" />
+
+                                    <TextBlock Text="Вид сверху"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <TextBox x:Name="TopNameFormulaTextBox"
+                                             Style="{StaticResource SabTextBoxStyle}"
+                                             Margin="0,0,0,10" />
+
+                                    <TextBlock Text="Фасадный вид"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <TextBox x:Name="FrontNameFormulaTextBox"
+                                             Style="{StaticResource SabTextBoxStyle}"
+                                             Margin="0,0,0,10" />
+
+                                    <TextBlock Text="Поперечный разрез"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <TextBox x:Name="SectionNameFormulaTextBox"
+                                             Style="{StaticResource SabTextBoxStyle}" />
+
+                                    <TextBlock Text="Токены: {Категория}, {Позиция}; {Сторона} — только для фасадного вида"
+                                               Style="{StaticResource SabFieldHintTextStyle}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,8,0,0" />
+                                </StackPanel>
+                            </Expander>
+
+                            <CheckBox x:Name="SaveSettingsCheckBox"
+                                      Content="Сохранить настройки"
+                                      Style="{StaticResource SabCheckBoxStyle}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource SabPanelBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                            <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
+                        </Border>
+                        <TextBlock Text="Настройки видов"
+                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,12,0">
+                            <Border Style="{StaticResource SabPanelBorderStyle}" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                            <TextBlock Text="⌂" Style="{StaticResource SabPanelIconTextStyle}" />
+                                        </Border>
+                                        <TextBlock Text="Вид сверху"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    </StackPanel>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="12" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="170" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="Масштаб"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="TopScaleTextBox"
+                                                 Grid.Row="1" Grid.Column="0"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="2"
+                                                   Text="Шаблон вида"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <ComboBox x:Name="TopTemplateComboBox"
+                                                  Grid.Row="1" Grid.Column="2"
+                                                  Style="{StaticResource SabComboBoxStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="4"
+                                                   Text="Высота сечения, %"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="TopCutHeightPercentTextBox"
+                                                 Grid.Row="1" Grid.Column="4"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                                   Text="Глубина проекции, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="TopProjectionDepthTextBox"
+                                                 Grid.Row="4" Grid.Column="0"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="2"
+                                                   Text="Офсет по глубине стены, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="PlanDepthOffsetTextBox"
+                                                 Grid.Row="4" Grid.Column="2"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="4"
+                                                   Text="Общий боковой офсет, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="WidthOffsetTextBox"
+                                                 Grid.Row="4" Grid.Column="4"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="5" Grid.Column="4"
+                                                   Text="Одинаковый для вида сверху и спереди."
+                                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,8,0,0" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource SabPanelBorderStyle}" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                            <TextBlock Text="▤" Style="{StaticResource SabPanelIconTextStyle}" />
+                                        </Border>
+                                        <TextBlock Text="Фасадный вид"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    </StackPanel>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="12" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="170" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="Масштаб"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="FrontScaleTextBox"
+                                                 Grid.Row="1" Grid.Column="0"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="2"
+                                                   Text="Шаблон вида"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <ComboBox x:Name="FrontTemplateComboBox"
+                                                  Grid.Row="1" Grid.Column="2"
+                                                  Style="{StaticResource SabComboBoxStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="4"
+                                                   Text="Офсет сверху и снизу, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBox x:Name="FrontVerticalOffsetTextBox"
+                                                 Grid.Row="1" Grid.Column="4"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                                   Text="Глубина проекции, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="FrontProjectionDepthTextBox"
+                                                 Grid.Row="4" Grid.Column="0"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                    </Grid>
+
+                                    <StackPanel Margin="0,14,0,0">
+                                        <TextBlock Text="С какой стороны двери находится фасадный вид"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="12" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <RadioButton x:Name="FrontElevationSideRadioButton"
+                                                         Grid.Column="0"
+                                                         Content="Спереди — по ориентации семейства"
+                                                         GroupName="ElevationSide"
+                                                         IsChecked="True"
+                                                         Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                                            <RadioButton x:Name="BackElevationSideRadioButton"
+                                                         Grid.Column="2"
+                                                         Content="Сзади — с противоположной стороны"
+                                                         GroupName="ElevationSide"
+                                                         Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource SabPanelBorderStyle}" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                            <TextBlock Text="↕" Style="{StaticResource SabPanelIconTextStyle}" />
+                                        </Border>
+                                        <TextBlock Text="Разрез по центру"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    </StackPanel>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="12" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="170" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="Масштаб"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="SectionScaleTextBox"
+                                                 Grid.Row="1" Grid.Column="0"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="2"
+                                                   Text="Шаблон вида"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <ComboBox x:Name="SectionTemplateComboBox"
+                                                  Grid.Row="1" Grid.Column="2"
+                                                  Style="{StaticResource SabComboBoxStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="4"
+                                                   Text="Офсет разреза, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="SectionOffsetTextBox"
+                                                 Grid.Row="1" Grid.Column="4"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                                   Text="Глубина проекции, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <TextBox x:Name="SectionProjectionDepthTextBox"
+                                                 Grid.Row="4" Grid.Column="0"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="3" Grid.Column="4"
+                                                   Text="Выступ линии разреза за границу фасадного вида, мм"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBox x:Name="SectionLineOverhangTextBox"
+                                                 Grid.Row="4" Grid.Column="4"
+                                                 Style="{StaticResource SabTextBoxStyle}" />
+                                        <TextBlock Grid.Row="5" Grid.Column="4"
+                                                   Text="Применяется одинаково сверху и снизу."
+                                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,8,0,0" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource SabPanelBorderStyle}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
+                                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                            <TextBlock Text="▦" Style="{StaticResource SabPanelIconTextStyle}" />
+                                        </Border>
+                                        <TextBlock Text="Общий лист"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    </StackPanel>
+
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="170" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Основная надпись"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <ComboBox x:Name="TitleBlockTypeComboBox"
+                                                      Style="{StaticResource SabComboBoxStyle}"
+                                                      Margin="0,0,0,12" />
+                                            <TextBlock Text="Тип видового экрана"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <ComboBox x:Name="ViewportTypeComboBox"
+                                                      Style="{StaticResource SabComboBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Номер листа"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox x:Name="SheetNumberTextBox"
+                                                     Style="{StaticResource SabTextBoxStyle}"
+                                                     Margin="0,0,0,12" />
+                                            <TextBlock Text="Имя листа"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox x:Name="SheetNameTextBox"
+                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="4">
+                                            <TextBlock Text="Зазор между видами, мм"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox x:Name="ViewHorizontalStepTextBox"
+                                                     Style="{StaticResource SabTextBoxStyle}"
+                                                     Margin="0,0,0,12" />
+                                            <TextBlock Text="Зазор между элементами, мм"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox x:Name="ElementVerticalStepTextBox"
+                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Grid.Row="2"
+                                               Text="Размещение заголовков видов"
+                                               Style="{StaticResource SabFieldLabelTextStyle}"
+                                               Margin="0,16,0,8" />
+
+                                    <Grid Grid.Row="3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition Width="170" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Привязка размещения"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <ComboBox x:Name="ViewTitleAnchorComboBox"
+                                                      Style="{StaticResource SabComboBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Смещение X, мм"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox x:Name="ViewTitleOffsetXTextBox"
+                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="4">
+                                            <TextBlock Text="Смещение Y, мм"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox x:Name="ViewTitleOffsetYTextBox"
+                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <Border Grid.Row="2"
+                            x:Name="ValidationBorder"
+                            Style="{StaticResource SabValidationPanelStyle}"
+                            Margin="0,12,0,0">
+                        <TextBlock x:Name="ValidationTextBlock"
+                                   Text="Настройки готовы. Будут созданы три вида."
+                                   TextWrapping="Wrap"
+                                   Foreground="{StaticResource SabBrush.TextSecondary}" />
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,10">
+            <Grid>
+                <TextBlock Text="Формат: 3 вида · единая ширина сверху/спереди · разрез строго по центру"
+                           Style="{StaticResource SabStatusTextStyle}"
+                           VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="CancelButton"
+                            Content="Отмена"
+                            Width="120"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="CreateButton"
+                            Content="Создать"
+                            Width="140"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

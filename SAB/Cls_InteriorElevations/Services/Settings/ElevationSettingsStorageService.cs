@@ -9,7 +9,7 @@ namespace SAB.InteriorElevations.Services.Settings
 {
     public class ElevationSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 4;
+        private const int CurrentSchemaVersion = 5;
         private readonly string _settingsFilePath;
 
         public ElevationSettingsStorageService()
@@ -38,7 +38,7 @@ namespace SAB.InteriorElevations.Services.Settings
                 return null;
             }
 
-            if (persistedSettings.SchemaVersion != CurrentSchemaVersion)
+            if (persistedSettings.SchemaVersion < 4 || persistedSettings.SchemaVersion > CurrentSchemaVersion)
             {
                 return null;
             }
@@ -78,9 +78,23 @@ namespace SAB.InteriorElevations.Services.Settings
             settings.RightOffsetMm = persistedSettings.RightOffsetMm;
             settings.ViewDepthMm = persistedSettings.ViewDepthMm;
             settings.MarkerOffsetMm = persistedSettings.MarkerOffsetMm;
+            if (persistedSettings.SchemaVersion >= 5)
+            {
+                settings.ElevationNamePart1 = persistedSettings.ElevationNamePart1 ?? string.Empty;
+                settings.ElevationNamePart2 = persistedSettings.ElevationNamePart2 ?? string.Empty;
+                settings.ElevationNamePart3 = persistedSettings.ElevationNamePart3 ?? string.Empty;
+            }
+            else
+            {
+                settings.ElevationNamePart1 = "ELV_r";
+                settings.ElevationNamePart2 = "{Номер помещения}_{Имя помещения}";
+                settings.ElevationNamePart3 = "_Elev_{Начальный угол}-{Конечный угол}";
+            }
 
             settings.CreateSheet = persistedSettings.CreateSheet;
+            settings.MultipleRoomsOnSheet = persistedSettings.MultipleRoomsOnSheet;
             settings.TitleBlockTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.TitleBlockTypeIdValue);
+            settings.ViewportTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.ViewportTypeIdValue);
             settings.PlanCornerMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.PlanCornerMarkTypeIdValue);
             settings.SheetCornerMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.SheetCornerMarkTypeIdValue);
             settings.SheetFormatAValue = persistedSettings.HasSheetFormatAValue
@@ -93,6 +107,28 @@ namespace SAB.InteriorElevations.Services.Settings
             settings.SheetLayoutSettings.StartYmm = persistedSettings.StartYmm;
             settings.SheetLayoutSettings.StepXmm = persistedSettings.StepXmm;
             settings.SheetLayoutSettings.StepYmm = persistedSettings.StepYmm;
+            settings.SheetLayoutSettings.ViewTitleAnchor = persistedSettings.SchemaVersion >= 5
+                ? persistedSettings.ViewTitleAnchor
+                : ViewTitleAnchor.BottomLeft;
+            settings.SheetLayoutSettings.ViewTitleOffsetXmm = persistedSettings.SchemaVersion >= 5
+                ? persistedSettings.ViewTitleOffsetXmm
+                : 0.0;
+            settings.SheetLayoutSettings.ViewTitleOffsetYmm = persistedSettings.SchemaVersion >= 5
+                ? persistedSettings.ViewTitleOffsetYmm
+                : -5.0;
+
+            if (persistedSettings.SchemaVersion >= 5)
+            {
+                settings.SheetNamePart1 = persistedSettings.SheetNamePart1 ?? string.Empty;
+                settings.SheetNamePart2 = persistedSettings.SheetNamePart2 ?? string.Empty;
+                settings.SheetNamePart3 = persistedSettings.SheetNamePart3 ?? string.Empty;
+            }
+            else
+            {
+                settings.SheetNamePart1 = "Развертки стен пом. ";
+                settings.SheetNamePart2 = "{Помещения}";
+                settings.SheetNamePart3 = string.Empty;
+            }
 
             settings.RoomPlanNamePart1 = persistedSettings.RoomPlanNamePart1 ?? string.Empty;
             settings.RoomPlanNamePart2 = persistedSettings.RoomPlanNamePart2 ?? string.Empty;
@@ -122,9 +158,14 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.RightOffsetMm = settings.RightOffsetMm;
             persistedSettings.ViewDepthMm = settings.ViewDepthMm;
             persistedSettings.MarkerOffsetMm = settings.MarkerOffsetMm;
+            persistedSettings.ElevationNamePart1 = settings.ElevationNamePart1 ?? string.Empty;
+            persistedSettings.ElevationNamePart2 = settings.ElevationNamePart2 ?? string.Empty;
+            persistedSettings.ElevationNamePart3 = settings.ElevationNamePart3 ?? string.Empty;
 
             persistedSettings.CreateSheet = settings.CreateSheet;
+            persistedSettings.MultipleRoomsOnSheet = settings.MultipleRoomsOnSheet;
             persistedSettings.TitleBlockTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.TitleBlockTypeId);
+            persistedSettings.ViewportTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.ViewportTypeId);
             persistedSettings.PlanCornerMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.PlanCornerMarkTypeId);
             persistedSettings.SheetCornerMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.SheetCornerMarkTypeId);
             persistedSettings.HasSheetFormatAValue = settings.SheetFormatAValue.HasValue;
@@ -136,6 +177,13 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.StartYmm = sheetLayoutSettings.StartYmm;
             persistedSettings.StepXmm = sheetLayoutSettings.StepXmm;
             persistedSettings.StepYmm = sheetLayoutSettings.StepYmm;
+            persistedSettings.ViewTitleAnchor = sheetLayoutSettings.ViewTitleAnchor;
+            persistedSettings.ViewTitleOffsetXmm = sheetLayoutSettings.ViewTitleOffsetXmm;
+            persistedSettings.ViewTitleOffsetYmm = sheetLayoutSettings.ViewTitleOffsetYmm;
+
+            persistedSettings.SheetNamePart1 = settings.SheetNamePart1 ?? string.Empty;
+            persistedSettings.SheetNamePart2 = settings.SheetNamePart2 ?? string.Empty;
+            persistedSettings.SheetNamePart3 = settings.SheetNamePart3 ?? string.Empty;
 
             persistedSettings.RoomPlanNamePart1 = settings.RoomPlanNamePart1 ?? string.Empty;
             persistedSettings.RoomPlanNamePart2 = settings.RoomPlanNamePart2 ?? string.Empty;
@@ -170,9 +218,19 @@ namespace SAB.InteriorElevations.Services.Settings
 
             public double MarkerOffsetMm { get; set; }
 
+            public string ElevationNamePart1 { get; set; }
+
+            public string ElevationNamePart2 { get; set; }
+
+            public string ElevationNamePart3 { get; set; }
+
             public bool CreateSheet { get; set; }
 
+            public bool MultipleRoomsOnSheet { get; set; }
+
             public long TitleBlockTypeIdValue { get; set; }
+
+            public long ViewportTypeIdValue { get; set; }
 
             public long PlanCornerMarkTypeIdValue { get; set; }
 
@@ -191,6 +249,18 @@ namespace SAB.InteriorElevations.Services.Settings
             public double StepXmm { get; set; }
 
             public double StepYmm { get; set; }
+
+            public ViewTitleAnchor ViewTitleAnchor { get; set; }
+
+            public double ViewTitleOffsetXmm { get; set; }
+
+            public double ViewTitleOffsetYmm { get; set; }
+
+            public string SheetNamePart1 { get; set; }
+
+            public string SheetNamePart2 { get; set; }
+
+            public string SheetNamePart3 { get; set; }
 
             public string RoomPlanNamePart1 { get; set; }
 

@@ -82,7 +82,11 @@ namespace SAB.InteriorElevations.Services.Elevations
                         ? lineData.EndIndex
                         : lineData.Index + 1;
 
-                    string uniqueViewName = _namingService.GenerateUniqueElevationViewName(lineData.RoomData, startPointNumber, endPointNumber);
+                    string uniqueViewName = _namingService.GenerateUniqueElevationViewName(
+                        lineData.RoomData,
+                        startPointNumber,
+                        endPointNumber,
+                        settings);
                     createdView.Name = uniqueViewName;
 
                     bool templateApplied = false;

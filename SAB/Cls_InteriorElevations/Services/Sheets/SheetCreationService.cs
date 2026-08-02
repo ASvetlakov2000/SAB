@@ -3,6 +3,7 @@ using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Services.Elevations;
 using SAB.InteriorElevations.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace SAB.InteriorElevations.Services.Sheets
 {
@@ -11,35 +12,71 @@ namespace SAB.InteriorElevations.Services.Sheets
         public ViewSheet CreateSheet(
             Document document,
             ElevationSettings settings,
-            RoomData roomData,
-            ElevationNamingService namingService)
+            IList<RoomData> roomDataList,
+            ElevationNamingService namingService,
+            IList<string> warnings)
         {
             if (document == null || settings == null || namingService == null)
             {
+                AddWarning(warnings, "Недостаточно данных для создания листа.");
                 return null;
             }
 
             if (settings.TitleBlockTypeId == null || settings.TitleBlockTypeId == ElementId.InvalidElementId)
             {
+                AddWarning(warnings, "Не выбран тип основной надписи для листа.");
                 return null;
             }
 
             FamilySymbol titleBlockType = document.GetElement(settings.TitleBlockTypeId) as FamilySymbol;
             if (titleBlockType == null)
             {
+                AddWarning(warnings, "Выбранный тип основной надписи не найден в документе.");
                 return null;
             }
 
-            ViewSheet sheet = ViewSheet.Create(document, settings.TitleBlockTypeId);
-            if (sheet == null)
+            ViewSheet sheet;
+            try
             {
+                if (!titleBlockType.IsActive)
+                {
+                    titleBlockType.Activate();
+                    document.Regenerate();
+                }
+
+                sheet = ViewSheet.Create(document, settings.TitleBlockTypeId);
+                if (sheet == null)
+                {
+                    AddWarning(warnings, "Revit не создал лист с выбранной основной надписью.");
+                    return null;
+                }
+            }
+            catch (Exception exception)
+            {
+                AddWarning(warnings, "Не удалось создать лист: " + exception.Message);
                 return null;
             }
 
             // Блок уникальных параметров листа.
-            sheet.Name = namingService.GenerateUniqueSheetName(roomData);
-            sheet.SheetNumber = namingService.GenerateUniqueSheetNumber(roomData);
-            TrySetSheetFormatAParameter(document, sheet, settings);
+            try
+            {
+                sheet.Name = namingService.GenerateUniqueSheetName(roomDataList, settings);
+            }
+            catch (Exception exception)
+            {
+                AddWarning(warnings, "Лист создан, но не удалось назначить его имя: " + exception.Message);
+            }
+
+            try
+            {
+                sheet.SheetNumber = namingService.GenerateUniqueSheetNumber(roomDataList);
+            }
+            catch (Exception exception)
+            {
+                AddWarning(warnings, "Лист создан, но не удалось назначить его номер: " + exception.Message);
+            }
+
+            TrySetSheetFormatAParameter(document, sheet, settings, warnings);
 
             return sheet;
         }
@@ -74,7 +111,7 @@ namespace SAB.InteriorElevations.Services.Sheets
             if (existingSheet != null)
             {
                 TryApplyTitleBlockType(document, existingSheet, settings);
-                TrySetSheetFormatAParameter(document, existingSheet, settings);
+                TrySetSheetFormatAParameter(document, existingSheet, settings, null);
                 return existingSheet;
             }
 
@@ -86,7 +123,7 @@ namespace SAB.InteriorElevations.Services.Sheets
 
             sheet.Name = preparedBaseName;
             sheet.SheetNumber = preparedBaseName;
-            TrySetSheetFormatAParameter(document, sheet, settings);
+            TrySetSheetFormatAParameter(document, sheet, settings, null);
 
             return sheet;
         }
@@ -174,7 +211,11 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
         }
 
-        private void TrySetSheetFormatAParameter(Document document, ViewSheet sheet, ElevationSettings settings)
+        private void TrySetSheetFormatAParameter(
+            Document document,
+            ViewSheet sheet,
+            ElevationSettings settings,
+            IList<string> warnings)
         {
             if (document == null || sheet == null || settings == null || !settings.SheetFormatAValue.HasValue)
             {
@@ -219,7 +260,12 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
 
             Parameter titleBlockTypeParameter = titleBlockType.LookupParameter("Формат А");
-            TrySetIntegerParameterValue(titleBlockTypeParameter, formatAValue);
+            if (!TrySetIntegerParameterValue(titleBlockTypeParameter, formatAValue))
+            {
+                AddWarning(
+                    warnings,
+                    "Лист создан, но параметр 'Формат А' не найден либо недоступен для записи.");
+            }
         }
 
         private bool TrySetIntegerParameterValue(Parameter parameter, int value)
@@ -234,8 +280,23 @@ namespace SAB.InteriorElevations.Services.Sheets
                 return false;
             }
 
-            parameter.Set(value);
-            return true;
+            try
+            {
+                parameter.Set(value);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void AddWarning(IList<string> warnings, string message)
+        {
+            if (warnings != null && !string.IsNullOrWhiteSpace(message))
+            {
+                warnings.Add(message);
+            }
         }
     }
 }

@@ -39,6 +39,16 @@ namespace SAB.InteriorElevations.Services.Reports
             {
                 reportBuilder.AppendLine("Лист: не создан");
                 reportBuilder.AppendLine("Размещено видовых экранов: 0");
+                if (warnings != null && warnings.Count > 0)
+                {
+                    reportBuilder.AppendLine("Причина: " + warnings[warnings.Count - 1]);
+                }
+            }
+
+            if (createdSheet != null && createdCount > 0 && placedViewportCount == 0 &&
+                warnings != null && warnings.Count > 0)
+            {
+                reportBuilder.AppendLine("Причина отсутствия видов на листе: " + warnings[warnings.Count - 1]);
             }
 
             if (warnings != null && warnings.Count > 0)

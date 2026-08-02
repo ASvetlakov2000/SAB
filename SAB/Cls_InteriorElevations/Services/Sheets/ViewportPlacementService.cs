@@ -17,6 +17,7 @@ namespace SAB.InteriorElevations.Services.Sheets
             ViewSheet sheet,
             IList<ElevationViewData> createdViews,
             SheetLayoutSettings layoutSettings,
+            ElementId viewportTypeId,
             IList<string> warnings)
         {
             ViewportPlacementResult result = new ViewportPlacementResult();
@@ -79,6 +80,9 @@ namespace SAB.InteriorElevations.Services.Sheets
                             continue;
                         }
 
+                        TryApplyViewportType(viewport, viewportTypeId, warnings);
+                        document.Regenerate();
+
                         double viewportWidth;
                         double viewportHeight;
                         Outline initialOutline;
@@ -117,6 +121,8 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                             continue;
                         }
+
+                        TryPlaceViewportTitle(viewport, finalOutline, layoutSettings, warnings);
 
                         PlacedViewportData placedViewportData = new PlacedViewportData();
                         placedViewportData.ViewportId = viewport.Id;
@@ -157,6 +163,71 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
 
             return result;
+        }
+
+        public ViewportPlacementResult PlaceRoomViewGroupsOnSheet(
+            Document document,
+            ViewSheet sheet,
+            IList<IList<ElevationViewData>> roomViewGroups,
+            IList<View> roomPlanViews,
+            SheetLayoutSettings layoutSettings,
+            ElementId viewportTypeId,
+            IList<string> warnings)
+        {
+            ViewportPlacementResult aggregateResult = new ViewportPlacementResult();
+            if (document == null || sheet == null || roomViewGroups == null || layoutSettings == null)
+            {
+                return aggregateResult;
+            }
+
+            double nextRowTopFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartYmm);
+            double gapYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepYmm);
+
+            for (int groupIndex = 0; groupIndex < roomViewGroups.Count; groupIndex++)
+            {
+                SheetLayoutSettings groupLayout = CopyLayoutWithStartY(
+                    layoutSettings,
+                    UnitConversionUtils.FeetToMillimeters(nextRowTopFeet));
+
+                IList<ElevationViewData> roomViews = roomViewGroups[groupIndex];
+                ViewportPlacementResult groupResult = PlaceViewsOnSheet(
+                    document,
+                    sheet,
+                    roomViews,
+                    groupLayout,
+                    viewportTypeId,
+                    warnings);
+
+                MergePlacementResults(aggregateResult, groupResult);
+
+                double lowestViewportY;
+                if (TryGetLowestViewportY(document, aggregateResult, out lowestViewportY))
+                {
+                    nextRowTopFeet = lowestViewportY - gapYFeet;
+                }
+            }
+
+            if (roomPlanViews != null)
+            {
+                for (int planIndex = 0; planIndex < roomPlanViews.Count; planIndex++)
+                {
+                    View roomPlanView = roomPlanViews[planIndex];
+                    if (roomPlanView == null)
+                    {
+                        continue;
+                    }
+
+                    TryPlaceAdditionalViewOnSheet(
+                        document,
+                        sheet,
+                        roomPlanView,
+                        layoutSettings,
+                        aggregateResult,
+                        warnings);
+                }
+            }
+
+            return aggregateResult;
         }
 
         /// <summary>
@@ -296,6 +367,306 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                 return false;
             }
+        }
+
+        private SheetLayoutSettings CopyLayoutWithStartY(SheetLayoutSettings source, double startYmm)
+        {
+            SheetLayoutSettings copy = new SheetLayoutSettings();
+            copy.ColumnsCount = source.ColumnsCount;
+            copy.StartXmm = source.StartXmm;
+            copy.StartYmm = startYmm;
+            copy.StepXmm = source.StepXmm;
+            copy.StepYmm = source.StepYmm;
+            copy.ViewTitleAnchor = source.ViewTitleAnchor;
+            copy.ViewTitleOffsetXmm = source.ViewTitleOffsetXmm;
+            copy.ViewTitleOffsetYmm = source.ViewTitleOffsetYmm;
+            return copy;
+        }
+
+        private void MergePlacementResults(ViewportPlacementResult target, ViewportPlacementResult source)
+        {
+            if (target == null || source == null)
+            {
+                return;
+            }
+
+            target.PlacedCount += source.PlacedCount;
+            for (int index = 0; index < source.PlacedViewports.Count; index++)
+            {
+                target.PlacedViewports.Add(source.PlacedViewports[index]);
+            }
+        }
+
+        private bool TryGetLowestViewportY(
+            Document document,
+            ViewportPlacementResult placementResult,
+            out double lowestY)
+        {
+            lowestY = double.MaxValue;
+            if (document == null || placementResult == null)
+            {
+                return false;
+            }
+
+            for (int index = 0; index < placementResult.PlacedViewports.Count; index++)
+            {
+                PlacedViewportData placedViewportData = placementResult.PlacedViewports[index];
+                if (placedViewportData == null || placedViewportData.ViewportId == null ||
+                    placedViewportData.ViewportId == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                Viewport viewport = document.GetElement(placedViewportData.ViewportId) as Viewport;
+                Outline outline = viewport != null ? viewport.GetBoxOutline() : null;
+                if (outline == null || outline.MinimumPoint == null)
+                {
+                    continue;
+                }
+
+                lowestY = Math.Min(lowestY, outline.MinimumPoint.Y);
+            }
+
+            return lowestY < double.MaxValue;
+        }
+
+        private void TryApplyViewportType(Viewport viewport, ElementId viewportTypeId, IList<string> warnings)
+        {
+            if (viewport == null)
+            {
+                return;
+            }
+
+            try
+            {
+                ElementId targetTypeId = viewportTypeId;
+                if (targetTypeId == null || RevitElementIdUtils.GetElementIdValue(targetTypeId) < 0)
+                {
+                    targetTypeId = GetOrCreateNoTitleViewportTypeId(viewport, warnings);
+                }
+
+                if (targetTypeId == null || RevitElementIdUtils.GetElementIdValue(targetTypeId) < 0)
+                {
+                    return;
+                }
+
+                if (viewport.CanHaveTypeAssigned() && viewport.IsValidType(targetTypeId))
+                {
+                    viewport.ChangeTypeId(targetTypeId);
+                }
+                else if (warnings != null)
+                {
+                    warnings.Add("Выбранный тип заголовка не подходит для видового экрана развертки.");
+                }
+            }
+            catch (Exception exception)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("Не удалось назначить тип заголовка развертки: " + exception.Message);
+                }
+            }
+        }
+
+        private ElementId GetOrCreateNoTitleViewportTypeId(Viewport viewport, IList<string> warnings)
+        {
+            if (viewport == null || viewport.Document == null)
+            {
+                return ElementId.InvalidElementId;
+            }
+
+            Document document = viewport.Document;
+            ICollection<ElementId> validTypeIds = null;
+            try
+            {
+                validTypeIds = viewport.GetValidTypes();
+            }
+            catch
+            {
+                // Ниже остается текущий тип видового экрана как источник для дублирования.
+            }
+
+            if (validTypeIds != null)
+            {
+                foreach (ElementId validTypeId in validTypeIds)
+                {
+                    ElementType candidate = document.GetElement(validTypeId) as ElementType;
+                    if (IsNoTitleViewportType(candidate))
+                    {
+                        return candidate.Id;
+                    }
+                }
+            }
+
+            ElementType sourceType = document.GetElement(viewport.GetTypeId()) as ElementType;
+            if (sourceType == null)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("Не найден исходный тип видового экрана для создания варианта без заголовка.");
+                }
+
+                return ElementId.InvalidElementId;
+            }
+
+            for (int attempt = 0; attempt < 100; attempt++)
+            {
+                string typeName = attempt == 0
+                    ? "SAB_Без заголовка"
+                    : "SAB_Без заголовка_" + attempt.ToString("00");
+
+                ElementType noTitleType;
+                try
+                {
+                    noTitleType = sourceType.Duplicate(typeName);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                if (noTitleType == null)
+                {
+                    continue;
+                }
+
+                Parameter showLabelParameter = GetParameterByBuiltInName(
+                    noTitleType,
+                    "VIEWPORT_ATTR_SHOW_LABEL");
+
+                if (showLabelParameter != null &&
+                    !showLabelParameter.IsReadOnly &&
+                    showLabelParameter.StorageType == StorageType.Integer)
+                {
+                    try
+                    {
+                        showLabelParameter.Set(0);
+                        return noTitleType.Id;
+                    }
+                    catch
+                    {
+                        // Не оставляем в проекте нерабочий технический тип.
+                    }
+                }
+
+                try
+                {
+                    document.Delete(noTitleType.Id);
+                }
+                catch
+                {
+                    // Ошибка очистки не должна срывать создание разверток и листа.
+                }
+            }
+
+            if (warnings != null)
+            {
+                warnings.Add("Не удалось создать тип видового экрана без заголовка. Виды размещены с типом Revit по умолчанию.");
+            }
+
+            return ElementId.InvalidElementId;
+        }
+
+        private bool IsNoTitleViewportType(ElementType viewportType)
+        {
+            if (viewportType == null)
+            {
+                return false;
+            }
+
+            Parameter showLabelParameter = GetParameterByBuiltInName(
+                viewportType,
+                "VIEWPORT_ATTR_SHOW_LABEL");
+
+            if (showLabelParameter != null && showLabelParameter.StorageType == StorageType.Integer)
+            {
+                return showLabelParameter.AsInteger() == 0;
+            }
+
+            string typeName = viewportType.Name ?? string.Empty;
+            return typeName.IndexOf("Без заголовка", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   typeName.IndexOf("No Title", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   string.Equals(typeName.Trim(), "Нет", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private Parameter GetParameterByBuiltInName(Element element, string builtInParameterName)
+        {
+            if (element == null || string.IsNullOrWhiteSpace(builtInParameterName))
+            {
+                return null;
+            }
+
+            try
+            {
+                BuiltInParameter builtInParameter = (BuiltInParameter)Enum.Parse(
+                    typeof(BuiltInParameter),
+                    builtInParameterName,
+                    true);
+                return element.get_Parameter(builtInParameter);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private void TryPlaceViewportTitle(
+            Viewport viewport,
+            Outline viewportOutline,
+            SheetLayoutSettings layoutSettings,
+            IList<string> warnings)
+        {
+            if (viewport == null || viewportOutline == null || viewportOutline.MinimumPoint == null ||
+                viewportOutline.MaximumPoint == null || layoutSettings == null)
+            {
+                return;
+            }
+
+            try
+            {
+                viewport.LabelOffset = BuildViewportTitleOffset(viewportOutline, layoutSettings);
+            }
+            catch (Exception exception)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("Не удалось разместить заголовок развертки: " + exception.Message);
+                }
+            }
+        }
+
+        private XYZ BuildViewportTitleOffset(Outline viewportOutline, SheetLayoutSettings layoutSettings)
+        {
+            double minimumX = viewportOutline.MinimumPoint.X;
+            double minimumY = viewportOutline.MinimumPoint.Y;
+            double maximumX = viewportOutline.MaximumPoint.X;
+            double maximumY = viewportOutline.MaximumPoint.Y;
+
+            double anchorX = minimumX;
+            double anchorY = minimumY;
+            if (layoutSettings.ViewTitleAnchor == ViewTitleAnchor.BottomCenter ||
+                layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopCenter)
+            {
+                anchorX = (minimumX + maximumX) / 2.0;
+            }
+            else if (layoutSettings.ViewTitleAnchor == ViewTitleAnchor.BottomRight)
+            {
+                anchorX = maximumX;
+            }
+
+            double offsetX = UnitConversionUtils.MillimetersToFeet(layoutSettings.ViewTitleOffsetXmm);
+            double offsetY = UnitConversionUtils.MillimetersToFeet(layoutSettings.ViewTitleOffsetYmm);
+
+            if (layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopCenter)
+            {
+                anchorY = maximumY;
+                offsetY = -offsetY;
+            }
+
+            return new XYZ(
+                anchorX + offsetX - minimumX,
+                anchorY + offsetY - minimumY,
+                0.0);
         }
 
         private bool TryGetViewportOutline(Viewport viewport, out Outline outline, out double width, out double height)

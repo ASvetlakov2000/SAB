@@ -88,6 +88,8 @@
                                 </Expander.Header>
 
                                 <StackPanel>
+                                    <TextBlock Text="Способ построения разверток"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
                                     <RadioButton x:Name="SingleGroupRadioButton"
                                                  Content="Одна группа линий"
                                                  GroupName="LineGroupSelectionMode"
@@ -96,6 +98,18 @@
                                     <RadioButton x:Name="MultipleGroupsRadioButton"
                                                  Content="Несколько групп линий"
                                                  GroupName="LineGroupSelectionMode"
+                                                 Style="{StaticResource SabStructureModeRadioButtonStyle}"
+                                                 Margin="0,0,0,12" />
+
+                                    <TextBlock Text="Размещение помещений на листах"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <RadioButton Content="Одно помещение на листе"
+                                                 GroupName="RoomSheetMode"
+                                                 IsChecked="{Binding IsSingleRoomPerSheet, Mode=TwoWay}"
+                                                 Style="{StaticResource SabStructureModeRadioButtonStyle}" />
+                                    <RadioButton Content="Несколько помещений на листе"
+                                                 GroupName="RoomSheetMode"
+                                                 IsChecked="{Binding IsMultipleRoomsOnSheet, Mode=TwoWay}"
                                                  Style="{StaticResource SabStructureModeRadioButtonStyle}"
                                                  Margin="0,0,0,10" />
 
@@ -189,6 +203,92 @@
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="0,0,14,0">
+                            <Expander Style="{StaticResource SabPanelExpanderStyle}"
+                                      IsExpanded="True"
+                                      Margin="0,0,0,10">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                            <TextBlock Text="≡" Style="{StaticResource SabPanelIconTextStyle}" />
+                                        </Border>
+                                        <TextBlock Text="Наименование и заголовок развертки"
+                                                   Style="{StaticResource SabPanelHeaderTextStyle}" />
+                                    </StackPanel>
+                                </Expander.Header>
+
+                                <StackPanel>
+                                    <TextBlock Text="Формула имени развертки"
+                                               Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <Grid Margin="0,0,0,12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="10" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0"
+                                                 Text="{Binding ElevationNamePart1Text, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource SabTextBoxStyle}"
+                                                 ToolTip="Часть 1. Доступны: {Номер помещения}, {Имя помещения}, {Начальный угол}, {Конечный угол}" />
+                                        <TextBox Grid.Column="2"
+                                                 Text="{Binding ElevationNamePart2Text, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource SabTextBoxStyle}"
+                                                 ToolTip="Часть 2. Доступны: {Номер помещения}, {Имя помещения}, {Начальный угол}, {Конечный угол}" />
+                                        <TextBox Grid.Column="4"
+                                                 Text="{Binding ElevationNamePart3Text, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource SabTextBoxStyle}"
+                                                 ToolTip="Часть 3. Доступны: {Номер помещения}, {Имя помещения}, {Начальный угол}, {Конечный угол}" />
+                                    </Grid>
+
+                                    <Grid IsEnabled="{Binding CreateSheet}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="12" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="12" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <StackPanel Grid.Row="0" Grid.Column="0">
+                                            <TextBlock Text="Тип заголовка"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <ComboBox ItemsSource="{Binding ViewportTypes}"
+                                                      SelectedItem="{Binding SelectedViewportType}"
+                                                      DisplayMemberPath="DisplayName"
+                                                      ToolTip="{Binding SelectedViewportType.DisplayName}"
+                                                      Style="{StaticResource SabComboBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="0" Grid.Column="2">
+                                            <TextBlock Text="Привязка размещения"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <ComboBox ItemsSource="{Binding ViewTitleAnchors}"
+                                                      SelectedItem="{Binding SelectedViewTitleAnchor}"
+                                                      DisplayMemberPath="DisplayName"
+                                                      Style="{StaticResource SabComboBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="2" Grid.Column="0">
+                                            <TextBlock Text="Смещение X, мм"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox Text="{Binding ViewTitleOffsetXmmText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="2" Grid.Column="2">
+                                            <TextBlock Text="Смещение Y, мм"
+                                                       Style="{StaticResource SabFieldLabelTextStyle}" />
+                                            <TextBox Text="{Binding ViewTitleOffsetYmmText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabTextBoxStyle}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Expander>
+
                             <Expander Style="{StaticResource SabPanelExpanderStyle}"
                                       IsExpanded="True"
                                       Margin="0,0,0,10">
@@ -345,6 +445,32 @@
                                                   IsChecked="{Binding CreateSheet}"
                                                   Style="{StaticResource SabCheckBoxStyle}" />
                                     </Border>
+
+                                    <StackPanel IsEnabled="{Binding CreateSheet}" Margin="0,0,0,12">
+                                        <TextBlock Text="Формула имени листа"
+                                                   Style="{StaticResource SabFieldLabelTextStyle}" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="10" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="10" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0"
+                                                     Text="{Binding SheetNamePart1Text, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabTextBoxStyle}"
+                                                     ToolTip="Часть 1. Доступны: {Номер помещения}, {Имя помещения}, {Помещения}" />
+                                            <TextBox Grid.Column="2"
+                                                     Text="{Binding SheetNamePart2Text, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabTextBoxStyle}"
+                                                     ToolTip="Часть 2. {Помещения} перечисляет номера и имена всех выбранных помещений" />
+                                            <TextBox Grid.Column="4"
+                                                     Text="{Binding SheetNamePart3Text, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource SabTextBoxStyle}"
+                                                     ToolTip="Часть 3. Доступны: {Номер помещения}, {Имя помещения}, {Помещения}" />
+                                        </Grid>
+                                    </StackPanel>
 
                                     <Grid IsEnabled="{Binding CreateSheet}">
                                         <Grid.ColumnDefinitions>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Autodesk.Revit.DB;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Utils;
@@ -21,37 +22,158 @@ namespace SAB.InteriorElevations.Services.Elevations
             CollectExistingNames(document);
         }
 
-        public string GenerateUniqueElevationViewName(RoomData roomData, int startPointNumber, int endPointNumber)
+        public string GenerateUniqueElevationViewName(
+            RoomData roomData,
+            int startPointNumber,
+            int endPointNumber,
+            ElevationSettings settings)
         {
-            string roomNumber = roomData != null ? roomData.RoomNumber : "Без номера";
-            string roomName = roomData != null ? roomData.RoomName : "Без имени";
-
-            string baseName =
-                "ELV_r" + roomNumber +
-                "_" + roomName +
-                "_Elev_" + startPointNumber + "-" + endPointNumber;
+            string part1 = settings != null ? settings.ElevationNamePart1 : string.Empty;
+            string part2 = settings != null ? settings.ElevationNamePart2 : string.Empty;
+            string part3 = settings != null ? settings.ElevationNamePart3 : string.Empty;
+            string baseName = BuildFormulaName(
+                part1,
+                part2,
+                part3,
+                roomData,
+                null,
+                startPointNumber,
+                endPointNumber);
 
             baseName = RevitNameUtils.SanitizeName(baseName, "ELV_rБез номера_Без имени_Elev_1-2");
             return GetUniqueName(baseName, _usedViewNames, "_", 2);
         }
 
-        public string GenerateUniqueSheetName(RoomData roomData)
+        public string GenerateUniqueSheetName(IList<RoomData> roomDataList, ElevationSettings settings)
         {
-            string roomNumber = roomData != null ? roomData.RoomNumber : "Без номера";
-            string roomName = roomData != null ? roomData.RoomName : "Без имени";
-
-            string baseName = "Развертки стен помещения №" + roomNumber + " " + roomName;
-            baseName = RevitNameUtils.SanitizeName(baseName, "Развертки стен помещения №Без номера Без имени");
+            RoomData firstRoom = roomDataList != null && roomDataList.Count > 0 ? roomDataList[0] : null;
+            string part1 = settings != null ? settings.SheetNamePart1 : string.Empty;
+            string part2 = settings != null ? settings.SheetNamePart2 : string.Empty;
+            string part3 = settings != null ? settings.SheetNamePart3 : string.Empty;
+            string baseName = BuildFormulaName(part1, part2, part3, firstRoom, roomDataList, 0, 0);
+            baseName = RevitNameUtils.SanitizeName(baseName, "Развертки стен пом. №Без номера Без имени");
 
             return GetUniqueName(baseName, _usedSheetNames, "_", 2);
         }
 
-        public string GenerateUniqueSheetNumber(RoomData roomData)
+        public string GenerateUniqueSheetNumber(IList<RoomData> roomDataList)
         {
-            string roomNumber = roomData != null ? roomData.RoomNumber : "000";
-            string baseNumber = RevitNameUtils.SanitizeName("ELV-" + roomNumber, "ELV-000");
+            StringBuilder numberBuilder = new StringBuilder("ELV");
+            if (roomDataList != null)
+            {
+                for (int index = 0; index < roomDataList.Count; index++)
+                {
+                    RoomData roomData = roomDataList[index];
+                    string roomNumber = roomData != null ? roomData.RoomNumber : "000";
+                    numberBuilder.Append("-");
+                    numberBuilder.Append(string.IsNullOrWhiteSpace(roomNumber) ? "000" : roomNumber.Trim());
+                }
+            }
 
+            string baseNumber = RevitNameUtils.SanitizeName(numberBuilder.ToString(), "ELV-000");
             return GetUniqueName(baseNumber, _usedSheetNumbers, "-", 2);
+        }
+
+        private string BuildFormulaName(
+            string part1,
+            string part2,
+            string part3,
+            RoomData roomData,
+            IList<RoomData> roomDataList,
+            int startPointNumber,
+            int endPointNumber)
+        {
+            StringBuilder builder = new StringBuilder();
+            AppendResolvedPart(builder, part1, roomData, roomDataList, startPointNumber, endPointNumber);
+            AppendResolvedPart(builder, part2, roomData, roomDataList, startPointNumber, endPointNumber);
+            AppendResolvedPart(builder, part3, roomData, roomDataList, startPointNumber, endPointNumber);
+            return builder.ToString().Trim();
+        }
+
+        private void AppendResolvedPart(
+            StringBuilder builder,
+            string template,
+            RoomData roomData,
+            IList<RoomData> roomDataList,
+            int startPointNumber,
+            int endPointNumber)
+        {
+            if (builder == null || string.IsNullOrEmpty(template))
+            {
+                return;
+            }
+
+            string roomNumber = roomData != null && !string.IsNullOrWhiteSpace(roomData.RoomNumber)
+                ? roomData.RoomNumber
+                : "Без номера";
+            string roomName = roomData != null && !string.IsNullOrWhiteSpace(roomData.RoomName)
+                ? roomData.RoomName
+                : "Без имени";
+
+            string value = template;
+            if (string.Equals(value.Trim(), "Номер помещения", StringComparison.OrdinalIgnoreCase))
+            {
+                value = roomNumber;
+            }
+            else if (string.Equals(value.Trim(), "Имя помещения", StringComparison.OrdinalIgnoreCase))
+            {
+                value = roomName;
+            }
+            else if (string.Equals(value.Trim(), "Помещения", StringComparison.OrdinalIgnoreCase))
+            {
+                value = BuildRoomList(roomDataList, roomData);
+            }
+            else if (string.Equals(value.Trim(), "Начальный угол", StringComparison.OrdinalIgnoreCase))
+            {
+                value = startPointNumber.ToString();
+            }
+            else if (string.Equals(value.Trim(), "Конечный угол", StringComparison.OrdinalIgnoreCase))
+            {
+                value = endPointNumber.ToString();
+            }
+            else
+            {
+                value = value.Replace("{Номер помещения}", roomNumber);
+                value = value.Replace("{Имя помещения}", roomName);
+                value = value.Replace("{Начальный угол}", startPointNumber.ToString());
+                value = value.Replace("{Конечный угол}", endPointNumber.ToString());
+                value = value.Replace("{Помещения}", BuildRoomList(roomDataList, roomData));
+            }
+
+            builder.Append(value);
+        }
+
+        private string BuildRoomList(IList<RoomData> roomDataList, RoomData fallbackRoom)
+        {
+            IList<RoomData> rooms = roomDataList;
+            if (rooms == null || rooms.Count == 0)
+            {
+                rooms = new List<RoomData> { fallbackRoom };
+            }
+
+            StringBuilder builder = new StringBuilder();
+            for (int index = 0; index < rooms.Count; index++)
+            {
+                RoomData room = rooms[index];
+                string roomNumber = room != null && !string.IsNullOrWhiteSpace(room.RoomNumber)
+                    ? room.RoomNumber.Trim()
+                    : "Без номера";
+                string roomName = room != null && !string.IsNullOrWhiteSpace(room.RoomName)
+                    ? room.RoomName.Trim()
+                    : "Без имени";
+
+                if (builder.Length > 0)
+                {
+                    builder.Append(", ");
+                }
+
+                builder.Append("№");
+                builder.Append(roomNumber);
+                builder.Append(" ");
+                builder.Append(roomName);
+            }
+
+            return builder.ToString();
         }
 
         private string GetUniqueName(string baseValue, HashSet<string> nameStorage, string suffixSeparator, int suffixDigits)

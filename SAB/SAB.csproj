@@ -194,6 +194,24 @@
     <Compile Include="Cls_ViewTemplateGraphics\Views\ViewTemplateGraphicsWindow.xaml.cs">
       <DependentUpon>ViewTemplateGraphicsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Cls_DoorWindowExplanations\Commands\CreateDoorWindowViewsCommand.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Models\DoorWindowViewSettings.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowContourSelectionService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowGeometryService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowNamingService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowParameterService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowRevitDataService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowSelectionService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\Reports\DoorWindowCreationReportService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowSheetPlacementService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowSettingsStorageService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Services\DoorWindowViewCreationService.cs" />
+    <Compile Include="Cls_DoorWindowExplanations\Views\DoorWindowViewsWindow.xaml.cs">
+      <DependentUpon>DoorWindowViewsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_DoorWindowExplanations\Views\DoorWindowSelectionListWindow.xaml.cs">
+      <DependentUpon>DoorWindowSelectionListWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Cls_InteriorElevations\Commands\CreateInteriorElevationsCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\AlignPlanCornerMarksCommand.cs" />
     <Compile Include="Cls_InteriorElevations\Commands\FlipElevation180ByLineCommand.cs" />
@@ -203,6 +221,7 @@
     <Compile Include="Cls_InteriorElevations\Models\ElevationLineData.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Models\ElevationViewData.cs" />
+    <Compile Include="Cls_InteriorElevations\Models\MultiRoomSelectionItem.cs" />
     <Compile Include="Cls_InteriorElevations\Models\PlanCornerMarkAlignmentResult.cs" />
     <Compile Include="Cls_InteriorElevations\Models\PlanCornerMarkAlignmentSettings.cs" />
     <Compile Include="Cls_InteriorElevations\Models\PlacedViewportData.cs" />
@@ -243,6 +262,7 @@
     <Compile Include="Cls_InteriorElevations\Utils\RevitNameUtils.cs" />
     <Compile Include="Cls_InteriorElevations\Utils\UnitConversionUtils.cs" />
     <Compile Include="Cls_InteriorElevations\ViewModels\ElevationSettingsViewModel.cs" />
+    <Compile Include="Cls_InteriorElevations\ViewModels\MultiRoomSelectionViewModel.cs" />
     <Compile Include="Cls_InteriorElevations\ViewModels\RoomPlanSchemeSettingsViewModel.cs" />
     <Compile Include="Cls_InteriorElevations\Views\PlanCornerMarkAlignmentWindow.cs">
       <DependentUpon>PlanCornerMarkAlignmentWindow.xaml</DependentUpon>
@@ -261,6 +281,9 @@
     </Compile>
     <Compile Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml.cs">
       <DependentUpon>ElevationSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Cls_InteriorElevations\Views\MultiRoomSelectionWindow.xaml.cs">
+      <DependentUpon>MultiRoomSelectionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Cls_InteriorElevations\Views\RoomPlanSchemeSettingsWindow.xaml.cs">
       <DependentUpon>RoomPlanSchemeSettingsWindow.xaml</DependentUpon>
@@ -464,7 +487,16 @@
     <Content Include="UI\Styles\SABWindowStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Cls_DoorWindowExplanations\Views\DoorWindowViewsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_DoorWindowExplanations\Views\DoorWindowSelectionListWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Cls_InteriorElevations\Views\ElevationSettingsWindow.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cls_InteriorElevations\Views\MultiRoomSelectionWindow.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_InteriorElevations\Views\RoomPlanSchemeSettingsWindow.xaml">

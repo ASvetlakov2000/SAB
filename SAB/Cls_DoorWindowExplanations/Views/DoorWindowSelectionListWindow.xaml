@@ -1,0 +1,137 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Список дверей и окон"
+        Width="980"
+        Height="620"
+        MinWidth="900"
+        MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,18,20,14">
+            <TextBlock Text="Список дверей и окон"
+                       Style="{StaticResource SabWindowTitleTextStyle}" />
+            <TextBlock Text="Соберите элементы несколькими заходами. Порядок списка определяет размещение строк сверху вниз на общем листе."
+                       Style="{StaticResource SabWindowSubtitleTextStyle}"
+                       Margin="0,4,0,0" />
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Style="{StaticResource SabPanelBorderStyle}"
+                Margin="20,0,20,14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+                    <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                        <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
+                    </Border>
+                    <TextBlock Text="Элементы для размещения"
+                               Style="{StaticResource SabPanelHeaderTextStyle}" />
+                </StackPanel>
+
+                <Border Grid.Row="1" Style="{StaticResource SabDataGridContainerBorderStyle}">
+                    <DataGrid x:Name="SelectionDataGrid"
+                              Style="{StaticResource SabDataGridStyle}"
+                              AutoGenerateColumns="False"
+                              SelectionMode="Extended"
+                              SelectionUnit="FullRow"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              HeadersVisibility="Column"
+                              BorderThickness="0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID"
+                                                Binding="{Binding ElementIdText}"
+                                                Width="80"
+                                                MinWidth="70" />
+                            <DataGridTextColumn Header="Категория"
+                                                Binding="{Binding CategoryName}"
+                                                Width="130"
+                                                MinWidth="110" />
+                            <DataGridTextColumn Header="Семейство"
+                                                Binding="{Binding FamilyName}"
+                                                Width="*"
+                                                MinWidth="180" />
+                            <DataGridTextColumn Header="Тип"
+                                                Binding="{Binding TypeName}"
+                                                Width="*"
+                                                MinWidth="160" />
+                            <DataGridTextColumn Header="Источник"
+                                                Binding="{Binding SourceName}"
+                                                Width="1.2*"
+                                                MinWidth="180" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <Border Grid.Row="2"
+                        Style="{StaticResource SabValidationPanelStyle}"
+                        Margin="0,12,0,0">
+                    <TextBlock x:Name="SelectionStatusTextBlock"
+                               Text="Список пуст. Нажмите «Добавить двери и окна»."
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource SabBrush.TextSecondary}" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,10">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button x:Name="AddButton"
+                            Content="Добавить двери и окна"
+                            Width="190"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,8,0" />
+                    <Button x:Name="RemoveButton"
+                            Content="Удалить выбранные"
+                            Width="160"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,8,0" />
+                    <Button x:Name="ClearButton"
+                            Content="Очистить список"
+                            Width="140"
+                            Style="{StaticResource SabNeutralButtonStyle}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="CancelButton"
+                            Content="Отмена"
+                            Width="120"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="ContinueButton"
+                            Content="Далее"
+                            Width="140"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

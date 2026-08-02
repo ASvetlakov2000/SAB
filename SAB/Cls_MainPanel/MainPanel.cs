@@ -11,6 +11,7 @@ namespace SAB
         private const string RibbonPanelName = "Библиотека";
         private const string RegulationsPanelName = "Регламент";
         private const string InteriorElevationsPanelName = "Развертки";
+        private const string DoorWindowExplanationsPanelName = "Экспликации";
         private const string RoomsPanelName = "Помещения";
         private const string InfoPanelName = "Инфо";
         private const string StructurePanelName = "Листы";
@@ -35,6 +36,7 @@ namespace SAB
             RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
             RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
+            RibbonPanel doorWindowExplanationsPanel = application.CreateRibbonPanel(RibbonTabName, DoorWindowExplanationsPanelName);
             RibbonPanel roomsPanel = application.CreateRibbonPanel(RibbonTabName, RoomsPanelName);
             RibbonPanel structurePanel = application.CreateRibbonPanel(RibbonTabName, StructurePanelName);
 
@@ -111,6 +113,16 @@ namespace SAB
                 "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
                 "SAB.Resources.AlignPlanCornerMarksCommand_32.png",
                 "SAB.Resources.AlignPlanCornerMarksCommand_16.png");
+
+
+            // Блок создания ортогональных видов для экспликаций дверей и окон.
+            Ribbon.AddPushButtonSingle(
+                doorWindowExplanationsPanel,
+                "SAB_CreateDoorWindowViews",
+                "Экспликации\nдверей и окон",
+                "SAB.DoorWindowExplanations.Commands.CreateDoorWindowViewsCommand",
+                "SAB.Resources.CreateInteriorElevationsCommand_32.png",
+                "SAB.Resources.CreateInteriorElevationsCommand_16.png");
 
 
             // Блок кнопок для проверки геометрии помещений.
