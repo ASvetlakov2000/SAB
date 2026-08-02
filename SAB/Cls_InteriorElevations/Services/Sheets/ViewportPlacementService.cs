@@ -181,15 +181,18 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
 
             double nextRowTopFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartYmm);
+            double startXFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartXmm);
+            double gapXFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepXmm);
             double gapYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepYmm);
 
             for (int groupIndex = 0; groupIndex < roomViewGroups.Count; groupIndex++)
             {
+                IList<ElevationViewData> roomViews = roomViewGroups[groupIndex];
                 SheetLayoutSettings groupLayout = CopyLayoutWithStartY(
                     layoutSettings,
                     UnitConversionUtils.FeetToMillimeters(nextRowTopFeet));
+                groupLayout.ColumnsCount = Math.Max(1, roomViews != null ? roomViews.Count : 1);
 
-                IList<ElevationViewData> roomViews = roomViewGroups[groupIndex];
                 ViewportPlacementResult groupResult = PlaceViewsOnSheet(
                     document,
                     sheet,
@@ -198,33 +201,39 @@ namespace SAB.InteriorElevations.Services.Sheets
                     viewportTypeId,
                     warnings);
 
-                MergePlacementResults(aggregateResult, groupResult);
-
-                double lowestViewportY;
-                if (TryGetLowestViewportY(document, aggregateResult, out lowestViewportY))
+                View roomPlanView = roomPlanViews != null && groupIndex < roomPlanViews.Count
+                    ? roomPlanViews[groupIndex]
+                    : null;
+                if (roomPlanView != null)
                 {
-                    nextRowTopFeet = lowestViewportY - gapYFeet;
-                }
-            }
-
-            if (roomPlanViews != null)
-            {
-                for (int planIndex = 0; planIndex < roomPlanViews.Count; planIndex++)
-                {
-                    View roomPlanView = roomPlanViews[planIndex];
-                    if (roomPlanView == null)
+                    double planLeftX = startXFeet;
+                    double rightmostViewportX;
+                    if (TryGetRightmostViewportX(document, groupResult, out rightmostViewportX))
                     {
-                        continue;
+                        planLeftX = rightmostViewportX + gapXFeet;
                     }
 
-                    TryPlaceAdditionalViewOnSheet(
+                    TryPlaceAdditionalViewAtPosition(
                         document,
                         sheet,
                         roomPlanView,
-                        layoutSettings,
-                        aggregateResult,
+                        planLeftX,
+                        nextRowTopFeet,
+                        groupResult,
                         warnings);
                 }
+
+                double lowestViewportY;
+                if (TryGetLowestViewportY(document, groupResult, out lowestViewportY))
+                {
+                    nextRowTopFeet = lowestViewportY - gapYFeet;
+                }
+                else
+                {
+                    nextRowTopFeet -= gapYFeet;
+                }
+
+                MergePlacementResults(aggregateResult, groupResult);
             }
 
             return aggregateResult;
@@ -260,9 +269,57 @@ namespace SAB.InteriorElevations.Services.Sheets
             double startYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartYmm);
             double gapYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepYmm);
 
+            double targetTopY = startYFeet;
+            if (placementResult != null && placementResult.PlacedViewports.Count > 0)
+            {
+                double lowestViewportY;
+                if (TryGetLowestViewportY(document, placementResult, out lowestViewportY))
+                {
+                    targetTopY = lowestViewportY - gapYFeet;
+                }
+            }
+
+            return TryPlaceAdditionalViewAtPosition(
+                document,
+                sheet,
+                view,
+                startXFeet,
+                targetTopY,
+                placementResult,
+                warnings);
+        }
+
+        private bool TryPlaceAdditionalViewAtPosition(
+            Document document,
+            ViewSheet sheet,
+            View view,
+            double targetLeftX,
+            double targetTopY,
+            ViewportPlacementResult placementResult,
+            IList<string> warnings)
+        {
+            if (document == null || sheet == null || view == null)
+            {
+                return false;
+            }
+
+            if (!Viewport.CanAddViewToSheet(document, sheet.Id, view.Id))
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("План-схему нельзя разместить на листе.");
+                }
+
+                return false;
+            }
+
             try
             {
-                Viewport viewport = Viewport.Create(document, sheet.Id, view.Id, new XYZ(startXFeet, startYFeet, 0.0));
+                Viewport viewport = Viewport.Create(
+                    document,
+                    sheet.Id,
+                    view.Id,
+                    new XYZ(targetLeftX, targetTopY, 0.0));
                 if (viewport == null)
                 {
                     if (warnings != null)
@@ -272,6 +329,8 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                     return false;
                 }
+
+                document.Regenerate();
 
                 Outline outline;
                 double width;
@@ -286,44 +345,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                     return false;
                 }
 
-                // Блок расчета позиции: размещаем план-схему ниже всех уже размещенных видовых экранов.
-                double targetTopY = startYFeet;
-                if (placementResult != null && placementResult.PlacedViewports.Count > 0)
-                {
-                    double minY = double.MaxValue;
-                    for (int i = 0; i < placementResult.PlacedViewports.Count; i++)
-                    {
-                        PlacedViewportData placed = placementResult.PlacedViewports[i];
-                        if (placed == null || placed.ViewportId == null || placed.ViewportId == ElementId.InvalidElementId)
-                        {
-                            continue;
-                        }
-
-                        Viewport placedViewport = document.GetElement(placed.ViewportId) as Viewport;
-                        if (placedViewport == null)
-                        {
-                            continue;
-                        }
-
-                        Outline placedOutline = placedViewport.GetBoxOutline();
-                        if (placedOutline == null || placedOutline.MinimumPoint == null)
-                        {
-                            continue;
-                        }
-
-                        if (placedOutline.MinimumPoint.Y < minY)
-                        {
-                            minY = placedOutline.MinimumPoint.Y;
-                        }
-                    }
-
-                    if (minY < double.MaxValue)
-                    {
-                        targetTopY = minY - gapYFeet;
-                    }
-                }
-
-                double targetCenterX = startXFeet + width / 2.0;
+                double targetCenterX = targetLeftX + width / 2.0;
                 double targetCenterY = targetTopY - height / 2.0;
                 XYZ currentCenter = viewport.GetBoxCenter();
                 XYZ targetCenter = new XYZ(targetCenterX, targetCenterY, currentCenter.Z);
@@ -332,6 +354,8 @@ namespace SAB.InteriorElevations.Services.Sheets
                 {
                     ElementTransformUtils.MoveElement(document, viewport.Id, moveVector);
                 }
+
+                document.Regenerate();
 
                 if (placementResult != null)
                 {
@@ -367,6 +391,39 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                 return false;
             }
+        }
+
+        private bool TryGetRightmostViewportX(
+            Document document,
+            ViewportPlacementResult placementResult,
+            out double rightmostX)
+        {
+            rightmostX = double.MinValue;
+            if (document == null || placementResult == null)
+            {
+                return false;
+            }
+
+            for (int index = 0; index < placementResult.PlacedViewports.Count; index++)
+            {
+                PlacedViewportData placedViewportData = placementResult.PlacedViewports[index];
+                if (placedViewportData == null || placedViewportData.ViewportId == null ||
+                    placedViewportData.ViewportId == ElementId.InvalidElementId)
+                {
+                    continue;
+                }
+
+                Viewport viewport = document.GetElement(placedViewportData.ViewportId) as Viewport;
+                Outline outline = viewport != null ? viewport.GetBoxOutline() : null;
+                if (outline == null || outline.MaximumPoint == null)
+                {
+                    continue;
+                }
+
+                rightmostX = Math.Max(rightmostX, outline.MaximumPoint.X);
+            }
+
+            return rightmostX > double.MinValue;
         }
 
         private SheetLayoutSettings CopyLayoutWithStartY(SheetLayoutSettings source, double startYmm)
