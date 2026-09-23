@@ -55,6 +55,8 @@ namespace SAB.InteriorElevations.Services.Elevations
                 ElevationViewData viewData = new ElevationViewData();
                 viewData.SourceLineId = lineData.LineElementId;
                 viewData.Index = lineData.Index;
+                viewData.WallSequenceIndex = lineData.WallSequenceIndex;
+                viewData.IsSplitWallContinuation = lineData.IsSplitWallContinuation;
 
                 try
                 {
@@ -108,6 +110,13 @@ namespace SAB.InteriorElevations.Services.Elevations
                         }
                     }
 
+                    string titleOnSheet = _namingService.GenerateElevationTitleOnSheet(
+                        lineData.RoomData,
+                        startPointNumber,
+                        endPointNumber,
+                        settings);
+                    TryApplyTitleOnSheet(createdView, titleOnSheet, warnings);
+
                     // Блок применения масштаба:
                     // если масштаб контролируется текущим шаблоном вида, значение из окна не применяем.
                     TryApplyScaleRespectTemplate(document, createdView, settings.ViewScale, warnings);
@@ -152,6 +161,40 @@ namespace SAB.InteriorElevations.Services.Elevations
             }
 
             return result;
+        }
+
+        private void TryApplyTitleOnSheet(ViewSection view, string titleOnSheet, IList<string> warnings)
+        {
+            if (view == null || string.IsNullOrWhiteSpace(titleOnSheet))
+            {
+                return;
+            }
+
+            try
+            {
+                Parameter titleParameter = view.get_Parameter(BuiltInParameter.VIEW_DESCRIPTION);
+                if (titleParameter == null || titleParameter.IsReadOnly)
+                {
+                    if (warnings != null)
+                    {
+                        warnings.Add("Не удалось задать заголовок на листе для вида " + view.Name + ": параметр недоступен или заблокирован шаблоном.");
+                    }
+
+                    return;
+                }
+
+                if (!titleParameter.Set(titleOnSheet) && warnings != null)
+                {
+                    warnings.Add("Не удалось задать заголовок на листе для вида " + view.Name + ".");
+                }
+            }
+            catch (Exception exception)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add("Не удалось задать заголовок на листе для вида " + view.Name + ": " + exception.Message);
+                }
+            }
         }
 
         private void TryApplyScaleRespectTemplate(

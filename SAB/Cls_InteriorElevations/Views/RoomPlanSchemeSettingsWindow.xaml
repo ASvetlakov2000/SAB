@@ -62,12 +62,12 @@
                                          Style="{StaticResource SabTextBoxStyle}"
                                          Margin="0,0,0,12" />
 
-                                <TextBlock Text="Часть 2 (Номер помещения или токен {Номер помещения})" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBlock Text="Часть 2 (Номер помещения или параметр [Номер помещения])" Style="{StaticResource SabFieldLabelTextStyle}" />
                                 <TextBox Text="{Binding NamePart2Text, UpdateSourceTrigger=PropertyChanged}"
                                          Style="{StaticResource SabTextBoxStyle}"
                                          Margin="0,0,0,12" />
 
-                                <TextBlock Text="Часть 3 (Имя помещения или токен {Имя помещения})" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                <TextBlock Text="Часть 3 (Имя помещения или параметр [Имя помещения])" Style="{StaticResource SabFieldLabelTextStyle}" />
                                 <TextBox Text="{Binding NamePart3Text, UpdateSourceTrigger=PropertyChanged}"
                                          Style="{StaticResource SabTextBoxStyle}" />
                             </StackPanel>

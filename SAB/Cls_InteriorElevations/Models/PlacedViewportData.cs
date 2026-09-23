@@ -12,6 +12,10 @@ namespace SAB.InteriorElevations.Models
 
         public XYZ TopRight { get; set; }
 
+        public XYZ BottomLeft { get; set; }
+
+        public XYZ BottomRight { get; set; }
+
         public XYZ Center { get; set; }
     }
 }

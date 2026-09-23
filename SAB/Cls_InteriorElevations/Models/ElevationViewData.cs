@@ -24,6 +24,10 @@ namespace SAB.InteriorElevations.Models
 
         public int EndCornerNumber { get; set; }
 
+        public int WallSequenceIndex { get; set; }
+
+        public bool IsSplitWallContinuation { get; set; }
+
         public ElementId MarkerElementId { get; set; }
 
         public string FailureReason { get; set; }

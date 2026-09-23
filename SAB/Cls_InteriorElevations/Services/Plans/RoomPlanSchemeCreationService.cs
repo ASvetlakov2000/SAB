@@ -14,6 +14,7 @@ namespace SAB.InteriorElevations.Services.Plans
     public class RoomPlanSchemeCreationService
     {
         private const double PointToleranceFeet = 1e-4;
+        private const double BoundaryConnectionToleranceMm = 5.0;
 
         /// <summary>
         /// Основной метод создания план-схем.
@@ -24,7 +25,8 @@ namespace SAB.InteriorElevations.Services.Plans
             ViewPlan sourcePlanView,
             IList<Room> rooms,
             RoomPlanSchemeSettings settings,
-            CurveLoop manualBoundaryLoop = null)
+            CurveLoop manualBoundaryLoop = null,
+            Transform roomToHost = null)
         {
             RoomPlanSchemeCreationSummary summary = new RoomPlanSchemeCreationSummary();
 
@@ -68,11 +70,25 @@ namespace SAB.InteriorElevations.Services.Plans
                 bool useManualBoundary = manualBoundaryLoop != null;
                 if (!useManualBoundary)
                 {
-                    if (!TryGetRoomOuterBoundaryLoop(room, out sourceRoomLoop, out string boundaryError))
+                    Transform boundaryTransform = BuildRoomBoundaryTransform(room, sourcePlanView, roomToHost);
+                    if (!TryGetRoomOuterBoundaryLoop(
+                            room,
+                            sourcePlanView,
+                            boundaryTransform,
+                            out sourceRoomLoop,
+                            out bool usedRectangularBoundaryFallback,
+                            out string boundaryError))
                     {
                         summary.SkippedRoomsCount++;
                         summary.Warnings.Add(BuildRoomPrefix(room) + boundaryError);
                         continue;
+                    }
+
+                    if (usedRectangularBoundaryFallback)
+                    {
+                        summary.Warnings.Add(
+                            BuildRoomPrefix(room) +
+                            "Контур помещения имеет разрывы. Для границы план-схемы использован прямоугольник по габаритам помещения.");
                     }
                 }
 
@@ -176,6 +192,26 @@ namespace SAB.InteriorElevations.Services.Plans
             return summary;
         }
 
+        private static Transform BuildRoomBoundaryTransform(Room room, ViewPlan sourcePlanView, Transform roomToHost)
+        {
+            Transform linkTransform = roomToHost ?? Transform.Identity;
+            if (room == null || sourcePlanView == null || room.Document == sourcePlanView.Document ||
+                sourcePlanView.GenLevel == null)
+            {
+                return linkTransform;
+            }
+
+            Level roomLevel = room.Document.GetElement(room.LevelId) as Level;
+            if (roomLevel == null)
+            {
+                return linkTransform;
+            }
+
+            double roomLevelInHost = linkTransform.OfPoint(new XYZ(0.0, 0.0, roomLevel.Elevation)).Z;
+            double verticalShift = sourcePlanView.GenLevel.Elevation - roomLevelInHost;
+            return Transform.CreateTranslation(new XYZ(0.0, 0.0, verticalShift)).Multiply(linkTransform);
+        }
+
         private static bool IsRoomValidForScheme(Room room, out string errorMessage)
         {
             errorMessage = string.Empty;
@@ -246,6 +282,8 @@ namespace SAB.InteriorElevations.Services.Plans
                 return roomName ?? string.Empty;
             }
 
+            value = value.Replace("[Номер помещения]", roomNumber ?? string.Empty);
+            value = value.Replace("[Имя помещения]", roomName ?? string.Empty);
             value = value.Replace("{Номер помещения}", roomNumber ?? string.Empty);
             value = value.Replace("{Имя помещения}", roomName ?? string.Empty);
             return value;
@@ -332,9 +370,16 @@ namespace SAB.InteriorElevations.Services.Plans
             }
         }
 
-        private static bool TryGetRoomOuterBoundaryLoop(Room room, out CurveLoop outerLoop, out string errorMessage)
+        private static bool TryGetRoomOuterBoundaryLoop(
+            Room room,
+            ViewPlan sourcePlanView,
+            Transform roomToHost,
+            out CurveLoop outerLoop,
+            out bool usedRectangularFallback,
+            out string errorMessage)
         {
             outerLoop = null;
+            usedRectangularFallback = false;
             errorMessage = string.Empty;
 
             if (room == null)
@@ -353,6 +398,7 @@ namespace SAB.InteriorElevations.Services.Plans
 
             double maxArea = double.MinValue;
             CurveLoop selectedLoop = null;
+            bool selectedLoopUsesRectangularFallback = false;
 
             for (int i = 0; i < loops.Count; i++)
             {
@@ -362,8 +408,7 @@ namespace SAB.InteriorElevations.Services.Plans
                     continue;
                 }
 
-                CurveLoop curveLoop = new CurveLoop();
-                List<XYZ> polygon = new List<XYZ>();
+                List<Curve> boundaryCurves = new List<Curve>();
 
                 for (int segmentIndex = 0; segmentIndex < segments.Count; segmentIndex++)
                 {
@@ -379,16 +424,38 @@ namespace SAB.InteriorElevations.Services.Plans
                         continue;
                     }
 
-                    Curve copiedCurve = sourceCurve.Clone();
-                    curveLoop.Append(copiedCurve);
-
-                    XYZ startPoint = copiedCurve.GetEndPoint(0);
-                    polygon.Add(new XYZ(startPoint.X, startPoint.Y, 0));
+                    try
+                    {
+                        boundaryCurves.Add(sourceCurve.CreateTransformed(roomToHost ?? Transform.Identity));
+                    }
+                    catch
+                    {
+                        // Поврежденный сегмент связи не должен прерывать построение остальных границ.
+                    }
                 }
 
-                if (polygon.Count < 3)
+                if (boundaryCurves.Count == 0)
                 {
                     continue;
+                }
+
+                CurveLoop curveLoop;
+                List<XYZ> polygon;
+                bool usesRectangularFallback = false;
+                if (!TryBuildConnectedBoundaryLoop(boundaryCurves, out curveLoop, out polygon))
+                {
+                    if (!TryBuildBoundaryRectangle(
+                            room,
+                            sourcePlanView,
+                            roomToHost,
+                            boundaryCurves,
+                            out curveLoop,
+                            out polygon))
+                    {
+                        continue;
+                    }
+
+                    usesRectangularFallback = true;
                 }
 
                 double loopArea = Math.Abs(CalculatePolygonArea(polygon));
@@ -396,6 +463,7 @@ namespace SAB.InteriorElevations.Services.Plans
                 {
                     maxArea = loopArea;
                     selectedLoop = curveLoop;
+                    selectedLoopUsesRectangularFallback = usesRectangularFallback;
                 }
             }
 
@@ -406,7 +474,300 @@ namespace SAB.InteriorElevations.Services.Plans
             }
 
             outerLoop = selectedLoop;
+            usedRectangularFallback = selectedLoopUsesRectangularFallback;
             return true;
+        }
+
+        private static bool TryBuildConnectedBoundaryLoop(
+            IList<Curve> sourceCurves,
+            out CurveLoop curveLoop,
+            out List<XYZ> polygon)
+        {
+            curveLoop = null;
+            polygon = new List<XYZ>();
+
+            if (sourceCurves == null || sourceCurves.Count < 3)
+            {
+                return false;
+            }
+
+            try
+            {
+                List<Curve> remainingCurves = new List<Curve>();
+                for (int i = 0; i < sourceCurves.Count; i++)
+                {
+                    if (sourceCurves[i] != null)
+                    {
+                        remainingCurves.Add(sourceCurves[i].Clone());
+                    }
+                }
+
+                if (remainingCurves.Count < 3)
+                {
+                    return false;
+                }
+
+                List<Curve> orderedCurves = new List<Curve>();
+                orderedCurves.Add(remainingCurves[0]);
+                remainingCurves.RemoveAt(0);
+
+                double connectionTolerance = UnitConversionUtils.MillimetersToFeet(BoundaryConnectionToleranceMm);
+                while (remainingCurves.Count > 0)
+                {
+                    XYZ currentEnd = orderedCurves[orderedCurves.Count - 1].GetEndPoint(1);
+                    int bestIndex = -1;
+                    bool reverseBestCurve = false;
+                    double bestDistance = double.MaxValue;
+
+                    for (int curveIndex = 0; curveIndex < remainingCurves.Count; curveIndex++)
+                    {
+                        Curve candidate = remainingCurves[curveIndex];
+                        double startDistance = currentEnd.DistanceTo(candidate.GetEndPoint(0));
+                        if (startDistance < bestDistance)
+                        {
+                            bestDistance = startDistance;
+                            bestIndex = curveIndex;
+                            reverseBestCurve = false;
+                        }
+
+                        double endDistance = currentEnd.DistanceTo(candidate.GetEndPoint(1));
+                        if (endDistance < bestDistance)
+                        {
+                            bestDistance = endDistance;
+                            bestIndex = curveIndex;
+                            reverseBestCurve = true;
+                        }
+                    }
+
+                    if (bestIndex < 0 || bestDistance > connectionTolerance)
+                    {
+                        return false;
+                    }
+
+                    Curve nextCurve = remainingCurves[bestIndex];
+                    remainingCurves.RemoveAt(bestIndex);
+                    orderedCurves.Add(reverseBestCurve ? nextCurve.CreateReversed() : nextCurve);
+                }
+
+                XYZ loopStart = orderedCurves[0].GetEndPoint(0);
+                XYZ loopEnd = orderedCurves[orderedCurves.Count - 1].GetEndPoint(1);
+                if (loopStart.DistanceTo(loopEnd) > connectionTolerance)
+                {
+                    return false;
+                }
+
+                CurveLoop connectedLoop = new CurveLoop();
+                for (int i = 0; i < orderedCurves.Count; i++)
+                {
+                    Curve curve = orderedCurves[i];
+                    connectedLoop.Append(curve);
+                    XYZ startPoint = curve.GetEndPoint(0);
+                    polygon.Add(new XYZ(startPoint.X, startPoint.Y, 0));
+                }
+
+                if (connectedLoop.IsOpen())
+                {
+                    polygon.Clear();
+                    return false;
+                }
+
+                curveLoop = connectedLoop;
+                return polygon.Count >= 3;
+            }
+            catch
+            {
+                curveLoop = null;
+                polygon.Clear();
+                return false;
+            }
+        }
+
+        private static bool TryBuildBoundaryRectangle(
+            Room room,
+            ViewPlan sourcePlanView,
+            Transform roomToHost,
+            IList<Curve> sourceCurves,
+            out CurveLoop curveLoop,
+            out List<XYZ> polygon)
+        {
+            curveLoop = null;
+            polygon = new List<XYZ>();
+
+            try
+            {
+                List<XYZ> vertices = new List<XYZ>();
+
+                if (sourceCurves != null)
+                {
+                    for (int i = 0; i < sourceCurves.Count; i++)
+                    {
+                        Curve curve = sourceCurves[i];
+                        if (curve == null)
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            IList<XYZ> tessellatedPoints = curve.Tessellate();
+                            if (tessellatedPoints != null)
+                            {
+                                for (int pointIndex = 0; pointIndex < tessellatedPoints.Count; pointIndex++)
+                                {
+                                    vertices.Add(tessellatedPoints[pointIndex]);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                vertices.Add(curve.GetEndPoint(0));
+                                vertices.Add(curve.GetEndPoint(1));
+                            }
+                            catch
+                            {
+                                // Один поврежденный сегмент не должен отменять прямоугольный fallback.
+                            }
+                        }
+                    }
+                }
+
+                if (vertices.Count < 3)
+                {
+                    AddRoomBoundingBoxVertices(room, sourcePlanView, roomToHost, vertices);
+                }
+
+                if (vertices.Count < 3)
+                {
+                    return false;
+                }
+
+                if (!TryGetPlanDirections(sourcePlanView, out XYZ dirX, out XYZ dirY))
+                {
+                    return false;
+                }
+
+                XYZ origin = vertices[0];
+                double minX = double.MaxValue;
+                double maxX = double.MinValue;
+                double minY = double.MaxValue;
+                double maxY = double.MinValue;
+
+                for (int i = 0; i < vertices.Count; i++)
+                {
+                    XYZ local = ToLocal(vertices[i], origin, dirX, dirY);
+                    if (local.X < minX) minX = local.X;
+                    if (local.X > maxX) maxX = local.X;
+                    if (local.Y < minY) minY = local.Y;
+                    if (local.Y > maxY) maxY = local.Y;
+                }
+
+                if ((maxX - minX) <= PointToleranceFeet || (maxY - minY) <= PointToleranceFeet)
+                {
+                    return false;
+                }
+
+                double z = origin.Z;
+                XYZ p1 = ToWorld(minX, minY, origin, dirX, dirY, z);
+                XYZ p2 = ToWorld(maxX, minY, origin, dirX, dirY, z);
+                XYZ p3 = ToWorld(maxX, maxY, origin, dirX, dirY, z);
+                XYZ p4 = ToWorld(minX, maxY, origin, dirX, dirY, z);
+
+                CurveLoop rectangle = new CurveLoop();
+                rectangle.Append(Line.CreateBound(p1, p2));
+                rectangle.Append(Line.CreateBound(p2, p3));
+                rectangle.Append(Line.CreateBound(p3, p4));
+                rectangle.Append(Line.CreateBound(p4, p1));
+
+                polygon.Add(p1);
+                polygon.Add(p2);
+                polygon.Add(p3);
+                polygon.Add(p4);
+                curveLoop = rectangle;
+                return true;
+            }
+            catch
+            {
+                curveLoop = null;
+                polygon.Clear();
+                return false;
+            }
+        }
+
+        private static bool TryGetPlanDirections(ViewPlan sourcePlanView, out XYZ dirX, out XYZ dirY)
+        {
+            dirX = XYZ.BasisX;
+            dirY = XYZ.BasisY;
+
+            try
+            {
+                XYZ right = sourcePlanView != null ? sourcePlanView.RightDirection : XYZ.BasisX;
+                XYZ up = sourcePlanView != null ? sourcePlanView.UpDirection : XYZ.BasisY;
+                XYZ flatRight = new XYZ(right.X, right.Y, 0);
+                XYZ flatUp = new XYZ(up.X, up.Y, 0);
+                if (flatRight.GetLength() <= PointToleranceFeet || flatUp.GetLength() <= PointToleranceFeet)
+                {
+                    return false;
+                }
+
+                dirX = flatRight.Normalize();
+                XYZ orthogonalUp = flatUp - dirX.Multiply(flatUp.DotProduct(dirX));
+                if (orthogonalUp.GetLength() <= PointToleranceFeet)
+                {
+                    orthogonalUp = new XYZ(-dirX.Y, dirX.X, 0);
+                }
+
+                dirY = orthogonalUp.Normalize();
+                return true;
+            }
+            catch
+            {
+                dirX = XYZ.BasisX;
+                dirY = XYZ.BasisY;
+                return sourcePlanView == null;
+            }
+        }
+
+        private static void AddRoomBoundingBoxVertices(
+            Room room,
+            ViewPlan sourcePlanView,
+            Transform roomToHost,
+            IList<XYZ> vertices)
+        {
+            if (room == null || vertices == null)
+            {
+                return;
+            }
+
+            try
+            {
+                ViewPlan roomDocumentView = sourcePlanView != null && room.Document == sourcePlanView.Document
+                    ? sourcePlanView
+                    : null;
+                BoundingBoxXYZ boundingBox = room.get_BoundingBox(roomDocumentView);
+                if (boundingBox == null)
+                {
+                    boundingBox = room.get_BoundingBox(null);
+                }
+
+                if (boundingBox == null)
+                {
+                    return;
+                }
+
+                Transform transform = boundingBox.Transform ?? Transform.Identity;
+                Transform hostTransform = roomToHost ?? Transform.Identity;
+                double z = boundingBox.Min.Z;
+                vertices.Add(hostTransform.OfPoint(transform.OfPoint(new XYZ(boundingBox.Min.X, boundingBox.Min.Y, z))));
+                vertices.Add(hostTransform.OfPoint(transform.OfPoint(new XYZ(boundingBox.Max.X, boundingBox.Min.Y, z))));
+                vertices.Add(hostTransform.OfPoint(transform.OfPoint(new XYZ(boundingBox.Max.X, boundingBox.Max.Y, z))));
+                vertices.Add(hostTransform.OfPoint(transform.OfPoint(new XYZ(boundingBox.Min.X, boundingBox.Max.Y, z))));
+            }
+            catch
+            {
+                // Если даже BoundingBox помещения недоступен, вызывающий метод пропустит план-схему.
+            }
         }
 
         private static double CalculatePolygonArea(IList<XYZ> polygon)
@@ -485,7 +846,12 @@ namespace SAB.InteriorElevations.Services.Plans
             // Для сложных контуров (больше 4 сторон) сразу переходим к упрощенному прямоугольному контуру.
             if (GetSideCount(sourceLoop) > 4)
             {
-                if (!TryBuildSimplifiedRectLoop(sourceLoop, offsetFeet, out CurveLoop simplifiedLoop, out string simplifiedError))
+                if (!TryBuildSimplifiedRectLoop(
+                        sourceLoop,
+                        offsetFeet,
+                        viewPlan,
+                        out CurveLoop simplifiedLoop,
+                        out string simplifiedError))
                 {
                     errorMessage = "Не удалось упростить контур помещения: " + simplifiedError;
                     return false;
@@ -528,7 +894,12 @@ namespace SAB.InteriorElevations.Services.Plans
             }
 
             // Fallback: упростить контур до прямоугольника и применить.
-            if (!TryBuildSimplifiedRectLoop(sourceLoop, offsetFeet, out CurveLoop fallbackLoop, out string fallbackError))
+            if (!TryBuildSimplifiedRectLoop(
+                    sourceLoop,
+                    offsetFeet,
+                    viewPlan,
+                    out CurveLoop fallbackLoop,
+                    out string fallbackError))
             {
                 errorMessage = "Не удалось построить fallback-контур: " + fallbackError;
                 return false;
@@ -565,6 +936,7 @@ namespace SAB.InteriorElevations.Services.Plans
         private static bool TryBuildSimplifiedRectLoop(
             CurveLoop sourceLoop,
             double offsetFeet,
+            ViewPlan sourcePlanView,
             out CurveLoop simplifiedLoop,
             out string errorMessage)
         {
@@ -576,12 +948,12 @@ namespace SAB.InteriorElevations.Services.Plans
                 return false;
             }
 
-            if (!TryFindLongestDirection(vertices, out XYZ dirX, out errorMessage))
+            if (!TryGetPlanDirections(sourcePlanView, out XYZ dirX, out XYZ dirY))
             {
+                errorMessage = "Не удалось определить ориентацию прямоугольной границы по осям плана.";
                 return false;
             }
 
-            XYZ dirY = new XYZ(-dirX.Y, dirX.X, 0);
             XYZ origin = vertices[0];
 
             double minX = double.MaxValue;

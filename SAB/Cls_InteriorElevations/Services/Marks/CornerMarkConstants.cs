@@ -8,6 +8,12 @@ namespace SAB.InteriorElevations.Services.Marks
 
         public const string CornerNumberParameterName = "Номер угла";
 
+        public const string ProjectSpecificCornerMarkFamilyName = "SAB_Марка угла_Развертки";
+
+        public const string LeftCornerMarkTypeName = "Left";
+
+        public const string RightCornerMarkTypeName = "Right";
+
         public static bool IsAnnotationSymbol(FamilySymbol symbol)
         {
             if (symbol == null || symbol.Category == null)

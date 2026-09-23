@@ -25,6 +25,7 @@ namespace SAB.ViewTemplateGraphics.Views
 
         private readonly ViewTemplateGraphicsViewModel _viewModel;
         private TextBox _templateSearchTextBox;
+        private TextBox _viewPropertiesSearchTextBox;
         private TextBox _filtersSearchTextBox;
         private TextBox _worksetsSearchTextBox;
         private TextBox _revitLinksSearchTextBox;
@@ -110,6 +111,7 @@ namespace SAB.ViewTemplateGraphics.Views
         private void ViewTemplateGraphicsWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _templateSearchTextBox = FindVisualChildByName<TextBox>(this, "TemplateSearchTextBox");
+            _viewPropertiesSearchTextBox = FindVisualChildByName<TextBox>(this, "ViewPropertiesSearchTextBox");
             _filtersSearchTextBox = FindVisualChildByName<TextBox>(this, "FiltersSearchTextBox");
             _worksetsSearchTextBox = FindVisualChildByName<TextBox>(this, "WorksetsSearchTextBox");
             _revitLinksSearchTextBox = FindVisualChildByName<TextBox>(this, "RevitLinksSearchTextBox");
@@ -225,7 +227,8 @@ namespace SAB.ViewTemplateGraphics.Views
             }
 
             string action = button.Tag as string;
-            if (string.Equals(action, "FindCategories", StringComparison.Ordinal) ||
+            if (string.Equals(action, "FindViewProperties", StringComparison.Ordinal) ||
+                string.Equals(action, "FindCategories", StringComparison.Ordinal) ||
                 string.Equals(action, "FindFilters", StringComparison.Ordinal) ||
                 string.Equals(action, "FindWorksets", StringComparison.Ordinal) ||
                 string.Equals(action, "FindRevitLinks", StringComparison.Ordinal))
@@ -302,6 +305,37 @@ namespace SAB.ViewTemplateGraphics.Views
                 }
 
                 e.Handled = true;
+            }
+            else if (string.Equals(action, "OpenViewPropertyEditor", StringComparison.Ordinal))
+            {
+                ViewTemplateParameterRow row = button.CommandParameter as ViewTemplateParameterRow;
+                OpenViewPropertyEditor(row);
+                e.Handled = true;
+            }
+        }
+
+        private void OpenViewPropertyEditor(ViewTemplateParameterRow row)
+        {
+            if (row == null || string.IsNullOrWhiteSpace(row.NavigationTarget))
+            {
+                return;
+            }
+
+            TabControl tabControl = FindVisualChildByName<TabControl>(this, "GraphicsTabControl");
+            if (tabControl == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < tabControl.Items.Count; i++)
+            {
+                TabItem tabItem = tabControl.Items[i] as TabItem;
+                if (tabItem != null &&
+                    string.Equals(Convert.ToString(tabItem.Header), row.NavigationTarget, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    tabControl.SelectedItem = tabItem;
+                    return;
+                }
             }
         }
 
@@ -418,6 +452,15 @@ namespace SAB.ViewTemplateGraphics.Views
             }
 
             System.Windows.Controls.Grid searchGrid = FindParent<System.Windows.Controls.Grid>(button);
+            if (string.Equals(action, "FindViewProperties", StringComparison.Ordinal))
+            {
+                _viewPropertiesSearchTextBox = FindVisualChildByTag<TextBox>(searchGrid, "ViewPropertiesSearchInput");
+                _viewModel.FilterViewProperties(
+                    _viewPropertiesSearchTextBox != null ? _viewPropertiesSearchTextBox.Text : string.Empty);
+                RefreshDataGridFilter(FindVisualChild<DataGrid>(GetParentObject(searchGrid)), true);
+                return;
+            }
+
             if (string.Equals(action, "FindCategories", StringComparison.Ordinal))
             {
                 TextBox input = FindVisualChildByTag<TextBox>(searchGrid, "CategorySearchInput");
@@ -506,6 +549,12 @@ namespace SAB.ViewTemplateGraphics.Views
 
         private static bool IsDataGridItemVisible(object item)
         {
+            ViewTemplateParameterRow viewPropertyRow = item as ViewTemplateParameterRow;
+            if (viewPropertyRow != null)
+            {
+                return viewPropertyRow.IsVisibleInList;
+            }
+
             CategoryOverrideRow categoryRow = item as CategoryOverrideRow;
             if (categoryRow != null)
             {
@@ -923,6 +972,11 @@ namespace SAB.ViewTemplateGraphics.Views
 
         private void ApplyRightSearchFilters()
         {
+            if (_viewPropertiesSearchTextBox != null)
+            {
+                _viewModel.FilterViewProperties(_viewPropertiesSearchTextBox.Text);
+            }
+
             if (_filtersSearchTextBox != null)
             {
                 _viewModel.FilterFilters(_filtersSearchTextBox.Text);

@@ -9,7 +9,7 @@ namespace SAB.InteriorElevations.Services.Settings
 {
     public class ElevationSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 5;
+        private const int CurrentSchemaVersion = 11;
         private readonly string _settingsFilePath;
 
         public ElevationSettingsStorageService()
@@ -87,16 +87,35 @@ namespace SAB.InteriorElevations.Services.Settings
             else
             {
                 settings.ElevationNamePart1 = "ELV_r";
-                settings.ElevationNamePart2 = "{Номер помещения}_{Имя помещения}";
-                settings.ElevationNamePart3 = "_Elev_{Начальный угол}-{Конечный угол}";
+                settings.ElevationNamePart2 = "[Номер помещения]_[Имя помещения]";
+                settings.ElevationNamePart3 = "_Elev_[Начальный угол]-[Конечный угол]";
+            }
+
+            if (persistedSettings.SchemaVersion >= 7)
+            {
+                settings.ElevationTitlePart1 = persistedSettings.ElevationTitlePart1 ?? string.Empty;
+                settings.ElevationTitlePart2 = persistedSettings.ElevationTitlePart2 ?? string.Empty;
+                settings.ElevationTitlePart3 = persistedSettings.ElevationTitlePart3 ?? string.Empty;
+            }
+            else
+            {
+                settings.ElevationTitlePart1 = "Пом. №";
+                settings.ElevationTitlePart2 = "[Номер помещения] [Имя помещения]. Вид ";
+                settings.ElevationTitlePart3 = "[Начальный угол]-[Конечный угол]";
             }
 
             settings.CreateSheet = persistedSettings.CreateSheet;
+            settings.OpenCreatedSheet = persistedSettings.SchemaVersion >= 6 && persistedSettings.OpenCreatedSheet;
             settings.MultipleRoomsOnSheet = persistedSettings.MultipleRoomsOnSheet;
+            settings.PickRoomFromLink = persistedSettings.SchemaVersion >= 8 && persistedSettings.PickRoomFromLink;
+            settings.EnableRoomObjectCategory = persistedSettings.SchemaVersion < 11 ||
+                                                persistedSettings.EnableRoomObjectCategory;
             settings.TitleBlockTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.TitleBlockTypeIdValue);
             settings.ViewportTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.ViewportTypeIdValue);
             settings.PlanCornerMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.PlanCornerMarkTypeIdValue);
             settings.SheetCornerMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persistedSettings.SheetCornerMarkTypeIdValue);
+            settings.CornerMarksOnlyCornerNumber = persistedSettings.SchemaVersion >= 9 && persistedSettings.CornerMarksOnlyCornerNumber;
+            settings.SheetCornerMarksBelowView = persistedSettings.SchemaVersion >= 9 && persistedSettings.SheetCornerMarksBelowView;
             settings.SheetFormatAValue = persistedSettings.HasSheetFormatAValue
                 ? (int?)persistedSettings.SheetFormatAValue
                 : null;
@@ -126,10 +145,14 @@ namespace SAB.InteriorElevations.Services.Settings
             else
             {
                 settings.SheetNamePart1 = "Развертки стен пом. ";
-                settings.SheetNamePart2 = "{Помещения}";
+                settings.SheetNamePart2 = "[Помещения]";
                 settings.SheetNamePart3 = string.Empty;
             }
 
+            settings.CreateRoomPlanScheme = persistedSettings.SchemaVersion < 7 || persistedSettings.CreateRoomPlanScheme;
+            settings.PlaceRoomPlanSchemeOnSheet = persistedSettings.SchemaVersion < 10
+                ? settings.CreateRoomPlanScheme
+                : persistedSettings.PlaceRoomPlanSchemeOnSheet;
             settings.RoomPlanNamePart1 = persistedSettings.RoomPlanNamePart1 ?? string.Empty;
             settings.RoomPlanNamePart2 = persistedSettings.RoomPlanNamePart2 ?? string.Empty;
             settings.RoomPlanNamePart3 = persistedSettings.RoomPlanNamePart3 ?? string.Empty;
@@ -161,13 +184,21 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.ElevationNamePart1 = settings.ElevationNamePart1 ?? string.Empty;
             persistedSettings.ElevationNamePart2 = settings.ElevationNamePart2 ?? string.Empty;
             persistedSettings.ElevationNamePart3 = settings.ElevationNamePart3 ?? string.Empty;
+            persistedSettings.ElevationTitlePart1 = settings.ElevationTitlePart1 ?? string.Empty;
+            persistedSettings.ElevationTitlePart2 = settings.ElevationTitlePart2 ?? string.Empty;
+            persistedSettings.ElevationTitlePart3 = settings.ElevationTitlePart3 ?? string.Empty;
 
             persistedSettings.CreateSheet = settings.CreateSheet;
+            persistedSettings.OpenCreatedSheet = settings.OpenCreatedSheet;
             persistedSettings.MultipleRoomsOnSheet = settings.MultipleRoomsOnSheet;
+            persistedSettings.PickRoomFromLink = settings.PickRoomFromLink;
+            persistedSettings.EnableRoomObjectCategory = settings.EnableRoomObjectCategory;
             persistedSettings.TitleBlockTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.TitleBlockTypeId);
             persistedSettings.ViewportTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.ViewportTypeId);
             persistedSettings.PlanCornerMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.PlanCornerMarkTypeId);
             persistedSettings.SheetCornerMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(settings.SheetCornerMarkTypeId);
+            persistedSettings.CornerMarksOnlyCornerNumber = settings.CornerMarksOnlyCornerNumber;
+            persistedSettings.SheetCornerMarksBelowView = settings.SheetCornerMarksBelowView;
             persistedSettings.HasSheetFormatAValue = settings.SheetFormatAValue.HasValue;
             persistedSettings.SheetFormatAValue = settings.SheetFormatAValue.HasValue ? settings.SheetFormatAValue.Value : 0;
 
@@ -185,6 +216,8 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.SheetNamePart2 = settings.SheetNamePart2 ?? string.Empty;
             persistedSettings.SheetNamePart3 = settings.SheetNamePart3 ?? string.Empty;
 
+            persistedSettings.CreateRoomPlanScheme = settings.CreateRoomPlanScheme;
+            persistedSettings.PlaceRoomPlanSchemeOnSheet = settings.PlaceRoomPlanSchemeOnSheet;
             persistedSettings.RoomPlanNamePart1 = settings.RoomPlanNamePart1 ?? string.Empty;
             persistedSettings.RoomPlanNamePart2 = settings.RoomPlanNamePart2 ?? string.Empty;
             persistedSettings.RoomPlanNamePart3 = settings.RoomPlanNamePart3 ?? string.Empty;
@@ -224,9 +257,21 @@ namespace SAB.InteriorElevations.Services.Settings
 
             public string ElevationNamePart3 { get; set; }
 
+            public string ElevationTitlePart1 { get; set; }
+
+            public string ElevationTitlePart2 { get; set; }
+
+            public string ElevationTitlePart3 { get; set; }
+
             public bool CreateSheet { get; set; }
 
+            public bool OpenCreatedSheet { get; set; }
+
             public bool MultipleRoomsOnSheet { get; set; }
+
+            public bool PickRoomFromLink { get; set; }
+
+            public bool EnableRoomObjectCategory { get; set; }
 
             public long TitleBlockTypeIdValue { get; set; }
 
@@ -235,6 +280,10 @@ namespace SAB.InteriorElevations.Services.Settings
             public long PlanCornerMarkTypeIdValue { get; set; }
 
             public long SheetCornerMarkTypeIdValue { get; set; }
+
+            public bool CornerMarksOnlyCornerNumber { get; set; }
+
+            public bool SheetCornerMarksBelowView { get; set; }
 
             public bool HasSheetFormatAValue { get; set; }
 
@@ -261,6 +310,10 @@ namespace SAB.InteriorElevations.Services.Settings
             public string SheetNamePart2 { get; set; }
 
             public string SheetNamePart3 { get; set; }
+
+            public bool CreateRoomPlanScheme { get; set; }
+
+            public bool PlaceRoomPlanSchemeOnSheet { get; set; }
 
             public string RoomPlanNamePart1 { get; set; }
 

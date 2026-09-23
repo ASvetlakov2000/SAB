@@ -28,9 +28,30 @@ namespace SAB.InteriorElevations.Models
 
         public string ElevationNamePart3 { get; set; }
 
+        public string ElevationTitlePart1 { get; set; }
+
+        public string ElevationTitlePart2 { get; set; }
+
+        public string ElevationTitlePart3 { get; set; }
+
         public bool CreateSheet { get; set; }
 
+        public bool UseExistingSheet { get; set; }
+
+        public ElementId ExistingSheetId { get; set; }
+
+        // План-схема, уже размещенная на выбранном существующем листе.
+        // В этом режиме новый вид плана не создается: в выбранный вид добавляются
+        // линии и марки углов очередного помещения.
+        public ElementId ExistingRoomPlanViewId { get; set; }
+
+        public bool OpenCreatedSheet { get; set; }
+
         public bool MultipleRoomsOnSheet { get; set; }
+
+        public bool PickRoomFromLink { get; set; }
+
+        public bool EnableRoomObjectCategory { get; set; }
 
         public ElementId TitleBlockTypeId { get; set; }
 
@@ -39,6 +60,10 @@ namespace SAB.InteriorElevations.Models
         public ElementId PlanCornerMarkTypeId { get; set; }
 
         public ElementId SheetCornerMarkTypeId { get; set; }
+
+        public bool CornerMarksOnlyCornerNumber { get; set; }
+
+        public bool SheetCornerMarksBelowView { get; set; }
 
         public int? SheetFormatAValue { get; set; }
 
@@ -51,6 +76,10 @@ namespace SAB.InteriorElevations.Models
         public string SheetNamePart3 { get; set; }
 
         // Блок настроек создания план-схемы помещения после построения разверток.
+        public bool CreateRoomPlanScheme { get; set; }
+
+        public bool PlaceRoomPlanSchemeOnSheet { get; set; }
+
         public string RoomPlanNamePart1 { get; set; }
 
         public string RoomPlanNamePart2 { get; set; }

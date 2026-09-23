@@ -208,6 +208,10 @@
                 </Style.Triggers>
             </Style>
 
+            <Style x:Key="ViewPropertyDataGridRowStyle"
+                   TargetType="{x:Type DataGridRow}"
+                   BasedOn="{StaticResource SearchableDataGridRowStyle}" />
+
             <DataTemplate x:Key="CategoryTabTemplate">
                 <Grid Margin="0,12,0,0">
                     <Grid.RowDefinitions>
@@ -441,7 +445,7 @@
                 <StackPanel>
                     <TextBlock Text="Пакетное редактирование шаблонов видов"
                                Style="{StaticResource SabWindowTitleTextStyle}" />
-                    <TextBlock Text="Переопределение графики и видимости для выбранных шаблонов"
+                    <TextBlock Text="Свойства вида, графика и видимость для выбранных шаблонов"
                                Style="{StaticResource SabWindowSubtitleTextStyle}" />
                 </StackPanel>
         </Border>
@@ -583,7 +587,7 @@
 
                     <Grid Grid.Row="0" Margin="0,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="Переопределение графики/видимости"
+                            <TextBlock Text="Настройки шаблона вида"
                                        Style="{StaticResource SabPanelHeaderTextStyle}" />
                             <TextBlock Text="{Binding GraphicsData.SourceTemplateName}"
                                        Style="{StaticResource SabFieldHintTextStyle}"
@@ -591,7 +595,152 @@
                         </StackPanel>
                     </Grid>
 
-                    <TabControl Grid.Row="1" Style="{StaticResource GraphicsTabControlStyle}">
+                    <TabControl x:Name="GraphicsTabControl" Grid.Row="1" Style="{StaticResource GraphicsTabControlStyle}">
+                        <TabItem Header="Свойства вида" Style="{StaticResource GraphicsTabItemStyle}">
+                            <Grid Margin="0,12,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0"
+                                            Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Margin="0,0,0,8">
+                                    <TextBlock Text="Число видов, которым назначен этот шаблон: "
+                                               Foreground="{DynamicResource SabBrush.Text}" />
+                                    <TextBlock Text="{Binding GraphicsData.AssignedViewCount}"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource SabBrush.Text}" />
+                                </StackPanel>
+
+                                <Border Grid.Row="1" Style="{StaticResource SabDataGridContainerBorderStyle}">
+                                    <DataGrid ItemsSource="{Binding GraphicsData.ViewProperties}"
+                                              AutoGenerateColumns="False"
+                                              CanUserAddRows="False"
+                                              CanUserDeleteRows="False"
+                                              CanUserReorderColumns="False"
+                                              CanUserSortColumns="False"
+                                              SelectionMode="Single"
+                                              SelectionUnit="FullRow"
+                                              RowHeight="30"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                              RowStyle="{StaticResource ViewPropertyDataGridRowStyle}"
+                                              Style="{StaticResource SabDataGridStyle}">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Параметр"
+                                                                Binding="{Binding Name}"
+                                                                Width="290"
+                                                                IsReadOnly="True" />
+                                            <DataGridTemplateColumn Header="Значение" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid Margin="2,1">
+                                                            <TextBox Text="{Binding ValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                     IsReadOnly="{Binding IsValueReadOnly}"
+                                                                     ToolTip="{Binding ValueText}">
+                                                                <TextBox.Style>
+                                                                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource SabTextBoxStyle}">
+                                                                        <Setter Property="Height" Value="24" />
+                                                                        <Setter Property="Padding" Value="4,0" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsElementIdValue}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding UsesValueOptions}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding IsNavigationRow}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBox.Style>
+                                                            </TextBox>
+                                                            <ComboBox ItemsSource="{Binding ElementOptions}"
+                                                                      DisplayMemberPath="Name"
+                                                                      SelectedValuePath="IdValue"
+                                                                      SelectedValue="{Binding SelectedElementIdValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                      IsEnabled="{Binding CanEditValue}"
+                                                                      ToolTip="{Binding ValueText}">
+                                                                <ComboBox.Style>
+                                                                    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource SabComboBoxStyle}">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Setter Property="Height" Value="24" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsElementIdValue}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </ComboBox.Style>
+                                                            </ComboBox>
+                                                            <ComboBox ItemsSource="{Binding ValueOptions}"
+                                                                      DisplayMemberPath="Name"
+                                                                      SelectedValuePath="Value"
+                                                                      SelectedValue="{Binding ValueText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                      IsEnabled="{Binding CanEditValue}">
+                                                                <ComboBox.Style>
+                                                                    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource SabComboBoxStyle}">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Setter Property="Height" Value="24" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding UsesValueOptions}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </ComboBox.Style>
+                                                            </ComboBox>
+                                                            <Button Content="{Binding ValueText}"
+                                                                    Tag="OpenViewPropertyEditor"
+                                                                    CommandParameter="{Binding}"
+                                                                    Height="24"
+                                                                    Padding="6,0">
+                                                                <Button.Style>
+                                                                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SabOutlineButtonStyle}">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                        <Setter Property="Height" Value="24" />
+                                                                        <Setter Property="Padding" Value="6,0" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsNavigationRow}" Value="True">
+                                                                                <Setter Property="Visibility" Value="Visible" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn Header="Включить" Width="90">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsChecked="{Binding IncludeState.IncludedState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                  IsThreeState="True"
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  ToolTip="Управлять этим параметром через шаблон">
+                                                            <CheckBox.Style>
+                                                                <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource SabCheckBoxStyle}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding ShowIncludeToggle}" Value="False">
+                                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </CheckBox.Style>
+                                                        </CheckBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
+                            </Grid>
+                        </TabItem>
+
                         <TabItem Header="Модель" Style="{StaticResource GraphicsTabItemStyle}"
                                  Content="{Binding GraphicsData.ModelCategories}"
                                  ContentTemplate="{StaticResource CategoryTabTemplate}" />

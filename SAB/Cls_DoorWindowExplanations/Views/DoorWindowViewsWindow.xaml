@@ -414,7 +414,7 @@
                                             <ComboBox x:Name="TitleBlockTypeComboBox"
                                                       Style="{StaticResource SabComboBoxStyle}"
                                                       Margin="0,0,0,12" />
-                                            <TextBlock Text="Тип видового экрана"
+                                            <TextBlock Text="Тип заголовка"
                                                        Style="{StaticResource SabFieldLabelTextStyle}" />
                                             <ComboBox x:Name="ViewportTypeComboBox"
                                                       Style="{StaticResource SabComboBoxStyle}" />

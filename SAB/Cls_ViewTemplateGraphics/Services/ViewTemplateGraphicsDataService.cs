@@ -60,8 +60,10 @@ namespace SAB.ViewTemplateGraphics.Services
             ViewTemplateGraphicsData data = new ViewTemplateGraphicsData();
             data.SourceTemplateIdValue = sourceTemplate.Id.IntegerValue;
             data.SourceTemplateName = sourceTemplate.Name;
+            data.AssignedViewCount = CountAssignedViews(document, sourceTemplate.Id.IntegerValue);
 
             FillTemplateSectionStates(sourceTemplate, data);
+            FillViewProperties(document, sourceTemplate, data);
             FillEditorOptions(document, data);
             if (AreGraphicsOverridesAllowed(sourceTemplate))
             {
@@ -118,6 +120,7 @@ namespace SAB.ViewTemplateGraphics.Services
                 }
 
                 MergeTemplateIntoAggregate(sourceTemplate, aggregate);
+                aggregate.AssignedViewCount += CountAssignedViews(document, sourceTemplate.Id.IntegerValue);
                 mergedTemplateCount++;
             }
 
@@ -168,6 +171,548 @@ namespace SAB.ViewTemplateGraphics.Services
             }
         }
 
+        private static void FillViewProperties(Document document, View sourceTemplate, ViewTemplateGraphicsData data)
+        {
+            HashSet<int> nonControlledParameterIds = GetNonControlledParameterIdValues(sourceTemplate);
+            ICollection<ElementId> templateParameterIds = sourceTemplate.GetTemplateParameterIds();
+            if (templateParameterIds == null)
+            {
+                return;
+            }
+
+            HashSet<int> templateParameterIdValues = new HashSet<int>();
+            foreach (ElementId parameterId in templateParameterIds)
+            {
+                if (parameterId != null)
+                {
+                    templateParameterIdValues.Add(parameterId.IntegerValue);
+                }
+            }
+
+            AddScaleRows(sourceTemplate, data, templateParameterIdValues, nonControlledParameterIds);
+
+            foreach (ElementId parameterId in templateParameterIds)
+            {
+                if (parameterId == null || IsScaleParameter(parameterId.IntegerValue))
+                {
+                    continue;
+                }
+
+                ViewTemplateParameterRow graphicsRow = CreateGraphicsNavigationRow(parameterId.IntegerValue, data);
+                if (graphicsRow != null)
+                {
+                    data.ViewProperties.Add(graphicsRow);
+                    continue;
+                }
+
+                Parameter parameter = FindParameter(sourceTemplate, parameterId.IntegerValue);
+                if (parameter == null || parameter.Definition == null || parameter.StorageType == StorageType.None)
+                {
+                    continue;
+                }
+
+                ViewTemplateParameterValue value = ReadParameterValue(document, parameter);
+                ViewTemplateParameterRow row = new ViewTemplateParameterRow(
+                    parameterId.IntegerValue,
+                    parameter.Definition.Name,
+                    value,
+                    !nonControlledParameterIds.Contains(parameterId.IntegerValue),
+                    !parameter.IsReadOnly);
+                data.ViewProperties.Add(row);
+            }
+
+            FillElementParameterOptions(document, data.ViewProperties);
+        }
+
+        private static void MergeViewProperties(View sourceTemplate, ViewTemplateGraphicsData aggregate)
+        {
+            HashSet<int> nonControlledParameterIds = GetNonControlledParameterIdValues(sourceTemplate);
+            for (int i = 0; i < aggregate.ViewProperties.Count; i++)
+            {
+                ViewTemplateParameterRow row = aggregate.ViewProperties[i];
+                if (row.IsNavigationRow)
+                {
+                    continue;
+                }
+
+                if (row.IsScaleModeRow || row.IsScaleValueRow)
+                {
+                    MergeScaleRow(sourceTemplate, row, nonControlledParameterIds);
+                    continue;
+                }
+
+                Parameter parameter = FindParameter(sourceTemplate, row.ParameterIdValue);
+                if (parameter == null || parameter.StorageType == StorageType.None)
+                {
+                    row.MarkUnavailable();
+                    continue;
+                }
+
+                ViewTemplateParameterValue value = ReadParameterValue(sourceTemplate.Document, parameter);
+                if (value.StorageType == StorageType.ElementId)
+                {
+                    row.AddElementOption(value.ElementIdValue, value.DisplayValue);
+                }
+
+                row.MergeValue(
+                    value,
+                    !nonControlledParameterIds.Contains(row.ParameterIdValue),
+                    !parameter.IsReadOnly);
+            }
+
+            for (int i = 0; i < aggregate.ViewProperties.Count; i++)
+            {
+                if (aggregate.ViewProperties[i].IsScaleModeRow)
+                {
+                    aggregate.ViewProperties[i].RefreshScaleEditorState();
+                    break;
+                }
+            }
+        }
+
+        private static void AddScaleRows(
+            View sourceTemplate,
+            ViewTemplateGraphicsData data,
+            HashSet<int> templateParameterIds,
+            HashSet<int> nonControlledParameterIds)
+        {
+            int scaleValueParameterId = (int)BuiltInParameter.VIEW_SCALE;
+            int metricParameterId = (int)BuiltInParameter.VIEW_SCALE_PULLDOWN_METRIC;
+            int imperialParameterId = (int)BuiltInParameter.VIEW_SCALE_PULLDOWN_IMPERIAL;
+            int scaleModeParameterId = templateParameterIds.Contains(metricParameterId)
+                ? metricParameterId
+                : templateParameterIds.Contains(imperialParameterId)
+                    ? imperialParameterId
+                    : 0;
+
+            if (scaleModeParameterId == 0 || !templateParameterIds.Contains(scaleValueParameterId))
+            {
+                return;
+            }
+
+            int scale = sourceTemplate.Scale;
+            int modeValue = IsStandardScale(scale) ? scale : 0;
+            bool isIncluded = !nonControlledParameterIds.Contains(scaleValueParameterId) &&
+                              !nonControlledParameterIds.Contains(scaleModeParameterId);
+
+            ViewTemplateParameterValue modeParameterValue = new ViewTemplateParameterValue();
+            modeParameterValue.StorageType = StorageType.Integer;
+            modeParameterValue.IntegerValue = modeValue;
+            modeParameterValue.DisplayValue = modeValue == 0 ? "Польз." : "1 : " + modeValue;
+
+            ViewTemplateParameterValue scaleParameterValue = new ViewTemplateParameterValue();
+            scaleParameterValue.StorageType = StorageType.Integer;
+            scaleParameterValue.IntegerValue = scale;
+            scaleParameterValue.DisplayValue = scale.ToString();
+
+            ViewTemplateParameterRow scaleModeRow = new ViewTemplateParameterRow(
+                scaleModeParameterId,
+                "Масштаб вида",
+                modeParameterValue,
+                isIncluded,
+                true);
+            ViewTemplateParameterRow scaleValueRow = new ViewTemplateParameterRow(
+                scaleValueParameterId,
+                "Значение масштаба 1:",
+                scaleParameterValue,
+                isIncluded,
+                true);
+
+            scaleValueRow.ConfigureScaleValue();
+            scaleModeRow.ConfigureScaleMode(scaleValueRow, GetStandardScaleValues());
+            scaleModeRow.AddControlledParameterId(scaleValueParameterId);
+            if (templateParameterIds.Contains(metricParameterId))
+            {
+                scaleModeRow.AddControlledParameterId(metricParameterId);
+            }
+
+            if (templateParameterIds.Contains(imperialParameterId))
+            {
+                scaleModeRow.AddControlledParameterId(imperialParameterId);
+            }
+
+            data.ViewProperties.Add(scaleModeRow);
+            data.ViewProperties.Add(scaleValueRow);
+        }
+
+        private static void MergeScaleRow(
+            View sourceTemplate,
+            ViewTemplateParameterRow row,
+            HashSet<int> nonControlledParameterIds)
+        {
+            int scale = sourceTemplate.Scale;
+            ViewTemplateParameterValue value = new ViewTemplateParameterValue();
+            value.StorageType = StorageType.Integer;
+            value.IntegerValue = row.IsScaleModeRow && !IsStandardScale(scale) ? 0 : scale;
+            value.DisplayValue = row.IsScaleModeRow
+                ? value.IntegerValue == 0 ? "Польз." : "1 : " + value.IntegerValue
+                : scale.ToString();
+
+            bool isIncluded = true;
+            for (int i = 0; i < row.ControlledParameterIdValues.Count; i++)
+            {
+                if (nonControlledParameterIds.Contains(row.ControlledParameterIdValues[i]))
+                {
+                    isIncluded = false;
+                    break;
+                }
+            }
+
+            row.MergeValue(value, isIncluded, true);
+        }
+
+        private static IList<int> GetStandardScaleValues()
+        {
+            return new[] { 1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000, 2000, 5000, 10000 };
+        }
+
+        private static bool IsStandardScale(int scale)
+        {
+            IList<int> values = GetStandardScaleValues();
+            for (int i = 0; i < values.Count; i++)
+            {
+                if (values[i] == scale)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsScaleParameter(int parameterIdValue)
+        {
+            return parameterIdValue == (int)BuiltInParameter.VIEW_SCALE ||
+                   parameterIdValue == (int)BuiltInParameter.VIEW_SCALE_PULLDOWN_METRIC ||
+                   parameterIdValue == (int)BuiltInParameter.VIEW_SCALE_PULLDOWN_IMPERIAL;
+        }
+
+        private static HashSet<int> GetNonControlledParameterIdValues(View viewTemplate)
+        {
+            HashSet<int> result = new HashSet<int>();
+            try
+            {
+                ICollection<ElementId> ids = viewTemplate.GetNonControlledTemplateParameterIds();
+                if (ids != null)
+                {
+                    foreach (ElementId id in ids)
+                    {
+                        if (id != null)
+                        {
+                            result.Add(id.IntegerValue);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Пустой набор оставляет параметры включёнными, как это делает Revit по умолчанию.
+            }
+
+            return result;
+        }
+
+        private static bool IsGraphicsSectionParameter(int parameterIdValue)
+        {
+            return parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_MODEL ||
+                   parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_ANNOTATION ||
+                   parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_ANALYTICAL_MODEL ||
+                   parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_IMPORT ||
+                   parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_FILTERS ||
+                   parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_WORKSETS ||
+                   parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_RVT_LINKS;
+        }
+
+        private static ViewTemplateParameterRow CreateGraphicsNavigationRow(
+            int parameterIdValue,
+            ViewTemplateGraphicsData data)
+        {
+            TemplateSectionState section = null;
+            string name = string.Empty;
+            string navigationTarget = string.Empty;
+            if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_MODEL)
+            {
+                section = data.ModelCategories.Section;
+                name = "Модели: переопределение видимости/графики";
+                navigationTarget = "Модель";
+            }
+            else if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_ANNOTATION)
+            {
+                section = data.AnnotationCategories.Section;
+                name = "Аннотации: переопределение видимости/графики";
+                navigationTarget = "Аннотации";
+            }
+            else if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_ANALYTICAL_MODEL)
+            {
+                section = data.AnalyticalCategories.Section;
+                name = "Аналитические модели: переопределение видимости/графики";
+                navigationTarget = "Аналитика";
+            }
+            else if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_IMPORT)
+            {
+                section = data.ImportedCategories.Section;
+                name = "Импорт: переопределение видимости/графики";
+                navigationTarget = "Импорт";
+            }
+            else if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_FILTERS)
+            {
+                section = data.FiltersSection;
+                name = "Фильтры: переопределение видимости/графики";
+                navigationTarget = "Фильтры";
+            }
+            else if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_WORKSETS)
+            {
+                section = data.WorksetsSection;
+                name = "Рабочие наборы: переопределение видимости/графики";
+                navigationTarget = "Рабочие наборы";
+            }
+            else if (parameterIdValue == (int)BuiltInParameter.VIS_GRAPHICS_RVT_LINKS)
+            {
+                section = data.RevitLinksSection;
+                name = "RVT-связи: переопределение видимости/графики";
+                navigationTarget = "Связанные файлы";
+            }
+
+            if (section == null)
+            {
+                return null;
+            }
+
+            ViewTemplateParameterValue value = new ViewTemplateParameterValue();
+            value.StorageType = StorageType.None;
+            value.DisplayValue = "Изменить...";
+            ViewTemplateParameterRow row = new ViewTemplateParameterRow(
+                parameterIdValue,
+                name,
+                value,
+                section.IsIncluded,
+                false,
+                section);
+            row.ConfigureNavigation(navigationTarget);
+            return row;
+        }
+
+        private static int CountAssignedViews(Document document, int templateIdValue)
+        {
+            int count = 0;
+            FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(typeof(View));
+            foreach (Element element in collector)
+            {
+                View view = element as View;
+                if (view != null && !view.IsTemplate && view.ViewTemplateId != null &&
+                    view.ViewTemplateId.IntegerValue == templateIdValue)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private static Parameter FindParameter(View view, int parameterIdValue)
+        {
+            if (view == null)
+            {
+                return null;
+            }
+
+            foreach (Parameter parameter in view.Parameters)
+            {
+                if (parameter != null && parameter.Id != null && parameter.Id.IntegerValue == parameterIdValue)
+                {
+                    return parameter;
+                }
+            }
+
+            return null;
+        }
+
+        private static ViewTemplateParameterValue ReadParameterValue(Document document, Parameter parameter)
+        {
+            ViewTemplateParameterValue result = new ViewTemplateParameterValue();
+            result.StorageType = parameter.StorageType;
+            result.DisplayValue = GetParameterDisplayValue(document, parameter);
+
+            switch (parameter.StorageType)
+            {
+                case StorageType.Integer:
+                    result.IntegerValue = parameter.AsInteger();
+                    break;
+                case StorageType.Double:
+                    result.DoubleValue = parameter.AsDouble();
+                    break;
+                case StorageType.String:
+                    result.StringValue = parameter.AsString() ?? string.Empty;
+                    break;
+                case StorageType.ElementId:
+                    ElementId elementId = parameter.AsElementId();
+                    result.ElementIdValue = elementId != null
+                        ? elementId.IntegerValue
+                        : ElementId.InvalidElementId.IntegerValue;
+                    break;
+            }
+
+            return result;
+        }
+
+        private static string GetParameterDisplayValue(Document document, Parameter parameter)
+        {
+            if (parameter == null)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                if (parameter.StorageType == StorageType.String)
+                {
+                    return parameter.AsString() ?? string.Empty;
+                }
+
+                if (parameter.StorageType == StorageType.ElementId)
+                {
+                    ElementId id = parameter.AsElementId();
+                    if (id != null && id.IntegerValue > 0 && document != null)
+                    {
+                        Element element = document.GetElement(id);
+                        if (element != null && !string.IsNullOrWhiteSpace(element.Name))
+                        {
+                            return element.Name;
+                        }
+                    }
+                }
+
+                string formatted = parameter.AsValueString();
+                if (!string.IsNullOrWhiteSpace(formatted))
+                {
+                    return formatted;
+                }
+            }
+            catch
+            {
+                // Ниже остаётся безопасное представление сырого значения.
+            }
+
+            switch (parameter.StorageType)
+            {
+                case StorageType.Integer:
+                    return parameter.AsInteger().ToString(System.Globalization.CultureInfo.CurrentCulture);
+                case StorageType.Double:
+                    return parameter.AsDouble().ToString(System.Globalization.CultureInfo.CurrentCulture);
+                case StorageType.ElementId:
+                    ElementId id = parameter.AsElementId();
+                    return id == null || id == ElementId.InvalidElementId ? "<Нет>" : id.IntegerValue.ToString();
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static void FillElementParameterOptions(
+            Document document,
+            ObservableCollection<ViewTemplateParameterRow> rows)
+        {
+            Dictionary<int, ViewTemplateParameterRow> elementRowsByParameterId = new Dictionary<int, ViewTemplateParameterRow>();
+            for (int i = 0; i < rows.Count; i++)
+            {
+                ViewTemplateParameterRow row = rows[i];
+                if (!row.IsElementIdValue)
+                {
+                    continue;
+                }
+
+                elementRowsByParameterId[row.ParameterIdValue] = row;
+                row.AddElementOption(row.SelectedElementIdValue, row.ValueText);
+            }
+
+            if (elementRowsByParameterId.Count == 0)
+            {
+                return;
+            }
+
+            FilteredElementCollector viewCollector = new FilteredElementCollector(document).OfClass(typeof(View));
+            foreach (Element element in viewCollector)
+            {
+                View view = element as View;
+                if (view == null)
+                {
+                    continue;
+                }
+
+                foreach (Parameter parameter in view.Parameters)
+                {
+                    if (parameter == null || parameter.Id == null || parameter.StorageType != StorageType.ElementId)
+                    {
+                        continue;
+                    }
+
+                    ViewTemplateParameterRow row;
+                    if (!elementRowsByParameterId.TryGetValue(parameter.Id.IntegerValue, out row))
+                    {
+                        continue;
+                    }
+
+                    ElementId valueId = parameter.AsElementId();
+                    int idValue = valueId != null
+                        ? valueId.IntegerValue
+                        : ElementId.InvalidElementId.IntegerValue;
+                    row.AddElementOption(idValue, GetParameterDisplayValue(document, parameter));
+                }
+            }
+
+            AddOptionsFromReferencedElementTypes(document, elementRowsByParameterId.Values);
+        }
+
+        private static void AddOptionsFromReferencedElementTypes(
+            Document document,
+            ICollection<ViewTemplateParameterRow> rows)
+        {
+            foreach (ViewTemplateParameterRow row in rows)
+            {
+                HashSet<Type> referencedTypes = new HashSet<Type>();
+                for (int i = 0; i < row.ElementOptions.Count; i++)
+                {
+                    int idValue = row.ElementOptions[i].IdValue;
+                    if (idValue <= 0)
+                    {
+                        continue;
+                    }
+
+                    Element referencedElement = document.GetElement(new ElementId(idValue));
+                    if (referencedElement != null)
+                    {
+                        referencedTypes.Add(referencedElement.GetType());
+                    }
+                }
+
+                foreach (Type referencedType in referencedTypes)
+                {
+                    try
+                    {
+                        int addedCount = 0;
+                        FilteredElementCollector collector = new FilteredElementCollector(document).OfClass(referencedType);
+                        foreach (Element candidate in collector)
+                        {
+                            if (candidate == null || string.IsNullOrWhiteSpace(candidate.Name))
+                            {
+                                continue;
+                            }
+
+                            row.AddElementOption(candidate.Id.IntegerValue, candidate.Name);
+                            addedCount++;
+                            if (addedCount >= 250)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Не все внутренние типы Revit поддерживаются фильтром OfClass.
+                    }
+                }
+            }
+        }
+
         public static bool AreGraphicsOverridesAllowed(View view)
         {
             if (view == null || !view.IsTemplate)
@@ -188,6 +733,7 @@ namespace SAB.ViewTemplateGraphics.Services
         private void MergeTemplateIntoAggregate(View sourceTemplate, ViewTemplateGraphicsData aggregate)
         {
             MergeTemplateSectionStates(sourceTemplate, aggregate);
+            MergeViewProperties(sourceTemplate, aggregate);
 
             if (!AreGraphicsOverridesAllowed(sourceTemplate))
             {

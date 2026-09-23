@@ -20,7 +20,8 @@
     <Grid Margin="18"
           Background="{StaticResource SabBrush.PanelBackground}">
         <StackPanel>
-            <TextBlock Text="Создание видов и листов"
+            <TextBlock x:Name="HeaderTextBlock"
+                       Text="Создание видов и листов"
                        FontSize="16"
                        FontWeight="SemiBold"
                        Foreground="{StaticResource SabBrush.Accent}"

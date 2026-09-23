@@ -56,7 +56,7 @@ namespace SAB.Services.PluginResources
                 return familyFilePaths;
             }
 
-            string[] files = Directory.GetFiles(commandFolderPath, "*.rfa", SearchOption.TopDirectoryOnly);
+            string[] files = Directory.GetFiles(commandFolderPath, "*.rfa", SearchOption.AllDirectories);
             for (int index = 0; index < files.Length; index++)
             {
                 familyFilePaths.Add(files[index]);

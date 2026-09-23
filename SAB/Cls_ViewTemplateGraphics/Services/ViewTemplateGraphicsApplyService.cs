@@ -108,16 +108,22 @@ namespace SAB.ViewTemplateGraphics.Services
         private int ApplyToTemplate(View targetTemplate, ViewTemplateGraphicsData data, IList<string> warnings)
         {
             int changedSettingCount = 0;
+            changedSettingCount += ApplyViewScale(targetTemplate, data.ViewProperties, warnings);
+            changedSettingCount += ApplyViewPropertyValues(targetTemplate, data.ViewProperties, warnings);
+            changedSettingCount += ApplyTemplateSectionStates(targetTemplate, data, warnings);
 
             if (!ViewTemplateGraphicsDataService.AreGraphicsOverridesAllowed(targetTemplate))
             {
-                AddUniqueWarning(
-                    warnings,
-                    "Шаблон «" + targetTemplate.Name + "» (" + targetTemplate.ViewType + ") пропущен: этот тип вида не поддерживает «Переопределение видимости/графики».");
-                return 0;
+                if (data.HasGraphicsChanges)
+                {
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "» (" + targetTemplate.ViewType + "): свойства вида применены, но этот тип вида не поддерживает «Переопределение видимости/графики».");
+                }
+
+                return changedSettingCount;
             }
 
-            changedSettingCount += ApplyTemplateSectionStates(targetTemplate, data);
             changedSettingCount += ApplyCategoryTab(targetTemplate, data.ModelCategories, warnings);
             changedSettingCount += ApplyCategoryTab(targetTemplate, data.AnnotationCategories, warnings);
             changedSettingCount += ApplyCategoryTab(targetTemplate, data.AnalyticalCategories, warnings);
@@ -129,9 +135,180 @@ namespace SAB.ViewTemplateGraphics.Services
             return changedSettingCount;
         }
 
-        private static int ApplyTemplateSectionStates(View targetTemplate, ViewTemplateGraphicsData data)
+        private static int ApplyViewPropertyValues(
+            View targetTemplate,
+            IList<ViewTemplateParameterRow> rows,
+            IList<string> warnings)
         {
-            TemplateSectionState[] sections =
+            int changedSettingCount = 0;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                ViewTemplateParameterRow row = rows[i];
+                if (!row.IsValueModified || row.IsScaleModeRow || row.IsScaleValueRow || row.IsNavigationRow)
+                {
+                    continue;
+                }
+
+                Parameter parameter = FindParameter(targetTemplate, row.ParameterIdValue);
+                if (parameter == null)
+                {
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "»: параметр «" + row.Name + "» отсутствует у этого типа вида.");
+                    continue;
+                }
+
+                if (parameter.IsReadOnly || parameter.StorageType != row.StorageType)
+                {
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "»: значение параметра «" + row.Name + "» недоступно для изменения.");
+                    continue;
+                }
+
+                try
+                {
+                    bool wasSet = SetParameterValue(parameter, row);
+                    if (wasSet)
+                    {
+                        changedSettingCount++;
+                    }
+                    else
+                    {
+                        AddUniqueWarning(
+                            warnings,
+                            "Шаблон «" + targetTemplate.Name + "»: Revit не принял значение «" + row.ValueText + "» для параметра «" + row.Name + "».");
+                    }
+                }
+                catch (Exception exception)
+                {
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "»: параметр «" + row.Name + "» пропущен. " + exception.Message);
+                }
+            }
+
+            return changedSettingCount;
+        }
+
+        private static int ApplyViewScale(
+            View targetTemplate,
+            IList<ViewTemplateParameterRow> rows,
+            IList<string> warnings)
+        {
+            ViewTemplateParameterRow modeRow = null;
+            ViewTemplateParameterRow valueRow = null;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (rows[i].IsScaleModeRow)
+                {
+                    modeRow = rows[i];
+                }
+                else if (rows[i].IsScaleValueRow)
+                {
+                    valueRow = rows[i];
+                }
+            }
+
+            if (modeRow == null || valueRow == null ||
+                (!modeRow.IsValueModified && !valueRow.IsValueModified))
+            {
+                return 0;
+            }
+
+            string mode = (modeRow.ValueText ?? string.Empty).Trim();
+            int requestedScale;
+            if (string.Equals(mode, "Польз.", StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (!int.TryParse(valueRow.ValueText, out requestedScale) || requestedScale <= 0)
+                {
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "»: пользовательский масштаб должен быть целым числом больше нуля.");
+                    return 0;
+                }
+            }
+            else
+            {
+                string normalized = mode.Replace(" ", string.Empty);
+                int separatorIndex = normalized.IndexOf(':');
+                if (separatorIndex < 0 ||
+                    !int.TryParse(normalized.Substring(separatorIndex + 1), out requestedScale) ||
+                    requestedScale <= 0)
+                {
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "»: не удалось определить выбранный масштаб «" + mode + "».");
+                    return 0;
+                }
+            }
+
+            try
+            {
+                targetTemplate.Scale = requestedScale;
+                return 1;
+            }
+            catch (Exception exception)
+            {
+                AddUniqueWarning(
+                    warnings,
+                    "Шаблон «" + targetTemplate.Name + "»: масштаб 1:" + requestedScale + " не применён. " + exception.Message);
+                return 0;
+            }
+        }
+
+        private static bool SetParameterValue(Parameter parameter, ViewTemplateParameterRow row)
+        {
+            switch (parameter.StorageType)
+            {
+                case StorageType.String:
+                    return parameter.Set(row.ValueText ?? string.Empty);
+                case StorageType.ElementId:
+                    if (row.SelectedElementIdValue == ViewTemplateParameterRow.MixedElementIdValue)
+                    {
+                        return false;
+                    }
+
+                    return parameter.Set(new ElementId(row.SelectedElementIdValue));
+                case StorageType.Integer:
+                    if (parameter.SetValueString(row.ValueText ?? string.Empty))
+                    {
+                        return true;
+                    }
+
+                    int integerValue;
+                    return int.TryParse(
+                               row.ValueText,
+                               System.Globalization.NumberStyles.Integer,
+                               System.Globalization.CultureInfo.CurrentCulture,
+                               out integerValue) &&
+                           parameter.Set(integerValue);
+                case StorageType.Double:
+                    return parameter.SetValueString(row.ValueText ?? string.Empty);
+                default:
+                    return false;
+            }
+        }
+
+        private static Parameter FindParameter(View view, int parameterIdValue)
+        {
+            foreach (Parameter parameter in view.Parameters)
+            {
+                if (parameter != null && parameter.Id != null && parameter.Id.IntegerValue == parameterIdValue)
+                {
+                    return parameter;
+                }
+            }
+
+            return null;
+        }
+
+        private static int ApplyTemplateSectionStates(
+            View targetTemplate,
+            ViewTemplateGraphicsData data,
+            IList<string> warnings)
+        {
+            List<TemplateSectionState> sections = new List<TemplateSectionState>
             {
                 data.ModelCategories.Section,
                 data.AnnotationCategories.Section,
@@ -141,9 +318,26 @@ namespace SAB.ViewTemplateGraphics.Services
                 data.WorksetsSection,
                 data.RevitLinksSection
             };
+            Dictionary<TemplateSectionState, IList<int>> controlledIdsBySection = new Dictionary<TemplateSectionState, IList<int>>();
+            for (int i = 0; i < sections.Count; i++)
+            {
+                controlledIdsBySection[sections[i]] = new[] { sections[i].ParameterIdValue };
+            }
+
+            for (int i = 0; i < data.ViewProperties.Count; i++)
+            {
+                ViewTemplateParameterRow row = data.ViewProperties[i];
+                if (row.IsNavigationRow || !row.ShowIncludeToggle)
+                {
+                    continue;
+                }
+
+                sections.Add(row.IncludeState);
+                controlledIdsBySection[row.IncludeState] = row.ControlledParameterIdValues;
+            }
 
             bool hasChanges = false;
-            for (int i = 0; i < sections.Length; i++)
+            for (int i = 0; i < sections.Count; i++)
             {
                 if (sections[i].IsModified)
                 {
@@ -158,6 +352,19 @@ namespace SAB.ViewTemplateGraphics.Services
             }
 
             ICollection<ElementId> existingNonControlledIds = targetTemplate.GetNonControlledTemplateParameterIds();
+            HashSet<int> validParameterIds = new HashSet<int>();
+            ICollection<ElementId> targetParameterIds = targetTemplate.GetTemplateParameterIds();
+            if (targetParameterIds != null)
+            {
+                foreach (ElementId targetParameterId in targetParameterIds)
+                {
+                    if (targetParameterId != null)
+                    {
+                        validParameterIds.Add(targetParameterId.IntegerValue);
+                    }
+                }
+            }
+
             Dictionary<int, ElementId> nonControlledIdsByValue = new Dictionary<int, ElementId>();
             if (existingNonControlledIds != null)
             {
@@ -171,7 +378,7 @@ namespace SAB.ViewTemplateGraphics.Services
             }
 
             int changedSettingCount = 0;
-            for (int i = 0; i < sections.Length; i++)
+            for (int i = 0; i < sections.Count; i++)
             {
                 TemplateSectionState section = sections[i];
                 if (!section.IsModified)
@@ -179,16 +386,38 @@ namespace SAB.ViewTemplateGraphics.Services
                     continue;
                 }
 
-                if (section.IsIncluded)
+                IList<int> controlledParameterIds = controlledIdsBySection[section];
+                bool changedAnyParameter = false;
+                for (int parameterIndex = 0; parameterIndex < controlledParameterIds.Count; parameterIndex++)
                 {
-                    nonControlledIdsByValue.Remove(section.ParameterIdValue);
+                    int parameterIdValue = controlledParameterIds[parameterIndex];
+                    if (!validParameterIds.Contains(parameterIdValue))
+                    {
+                        continue;
+                    }
+
+                    if (section.IsIncluded)
+                    {
+                        nonControlledIdsByValue.Remove(parameterIdValue);
+                    }
+                    else
+                    {
+                        nonControlledIdsByValue[parameterIdValue] = new ElementId(parameterIdValue);
+                    }
+
+                    changedAnyParameter = true;
+                }
+
+                if (changedAnyParameter)
+                {
+                    changedSettingCount++;
                 }
                 else
                 {
-                    nonControlledIdsByValue[section.ParameterIdValue] = new ElementId(section.ParameterIdValue);
+                    AddUniqueWarning(
+                        warnings,
+                        "Шаблон «" + targetTemplate.Name + "»: параметр «" + section.Title + "» не поддерживается этим типом вида.");
                 }
-
-                changedSettingCount++;
             }
 
             List<ElementId> updatedNonControlledIds = new List<ElementId>(nonControlledIdsByValue.Values);

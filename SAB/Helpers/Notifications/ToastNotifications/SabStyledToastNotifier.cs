@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -12,7 +13,6 @@ namespace Helpers.Notifications.ToastNotifications
 {
     public static class SabStyledToastNotifier
     {
-        // Ð‘Ð»Ð¾Ðº Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð¿Ð¾ÐºÐ°Ð·Ð° ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ (ÑÐµÐºÑƒÐ½Ð´Ñ‹)
         private const int DefaultDurationSeconds = 10;
 
         private static readonly object SyncRoot = new object();
@@ -78,7 +78,6 @@ namespace Helpers.Notifications.ToastNotifications
             }
             catch
             {
-                // Ð£Ð²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ðµ Ð½Ðµ Ð´Ð¾Ð»Ð¶Ð½Ð¾ Ð»Ð¾Ð¼Ð°Ñ‚ÑŒ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñƒ Revit.
             }
         }
 
@@ -178,6 +177,53 @@ namespace Helpers.Notifications.ToastNotifications
             AddToast(border, durationSeconds);
         }
 
+        public void ShowDetailedToast(string title, string message, ToastType type, FrameworkElement details, int durationSeconds)
+        {
+            Border border = CreateDetailedToast(title, message, type, details);
+            while (_stackPanel.Children.Count >= 3) _stackPanel.Children.RemoveAt(_stackPanel.Children.Count - 1);
+            AddToast(border, Math.Max(3, Math.Min(60, durationSeconds)));
+        }
+        public static Border CreateDetailedToast(string title, string message, ToastType type, FrameworkElement details)
+        {
+            var foreground = new SolidColorBrush(Color.FromRgb(230, 237, 243));
+            var root = new StackPanel { Margin = new Thickness(12, 10, 12, 10) };
+            var header = new DockPanel();
+            var border = new Border { Width = 414, CornerRadius = new CornerRadius(7), Background = new SolidColorBrush(Color.FromRgb(37, 40, 47)),
+                BorderBrush = new SolidColorBrush(GetAccentColor(type)), BorderThickness = new Thickness(3, 1, 1, 1), Margin = new Thickness(0, 0, 0, 8), Child = root };
+            TextElement.SetForeground(border, foreground);
+            TextElement.SetFontFamily(border, new FontFamily("Segoe UI"));
+            var close = new Button { Content = "\u00D7", Width = 24, Height = 24, Padding = new Thickness(0), FontSize = 17 };
+            DockPanel.SetDock(close, Dock.Right); header.Children.Add(close);
+            close.Click += (s,e) => { var parent = border.Parent as Panel; parent?.Children.Remove(border); };
+            header.Children.Add(new TextBlock { Text = title, FontSize = 13, FontWeight = FontWeights.SemiBold, VerticalAlignment = VerticalAlignment.Center });
+            root.Children.Add(header);
+            var full = new TextBox { Text = message ?? "", IsReadOnly = true, TextWrapping = TextWrapping.Wrap, MaxHeight = 160,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Background = Brushes.Transparent, Foreground = foreground,
+                BorderThickness = new Thickness(0), FontSize = 12, Padding = new Thickness(0,6,0,6) };
+            var preview = new TextBlock { Text = (message ?? "").Replace("\r", " ").Replace("\n", " "), MaxWidth = 344,
+                MaxHeight = 34, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, FontSize = 12 };
+            root.Children.Add(new Expander { Header = preview, Content = full, IsExpanded = false, Foreground = foreground,
+                Margin = new Thickness(0,4,0,4), ToolTip = "Нажмите, чтобы раскрыть полный текст" });
+            root.Children.Add(details);
+            var style = new Style(typeof(Button));
+            style.Setters.Add(new Setter(Control.ForegroundProperty,foreground));
+            style.Setters.Add(new Setter(Control.BackgroundProperty,new SolidColorBrush(Color.FromRgb(55,60,70))));
+            style.Setters.Add(new Setter(Control.BorderBrushProperty,new SolidColorBrush(Color.FromRgb(77,85,98))));
+            style.Setters.Add(new Setter(Control.FontSizeProperty,12.0));
+            var frame = new FrameworkElementFactory(typeof(Border));
+            frame.SetValue(Border.CornerRadiusProperty,new CornerRadius(4));
+            frame.SetValue(Border.BackgroundProperty,new TemplateBindingExtension(Control.BackgroundProperty));
+            frame.SetValue(Border.PaddingProperty,new TemplateBindingExtension(Control.PaddingProperty));
+            var content = new FrameworkElementFactory(typeof(ContentPresenter));
+            content.SetValue(FrameworkElement.HorizontalAlignmentProperty,HorizontalAlignment.Center);
+            content.SetValue(FrameworkElement.VerticalAlignmentProperty,VerticalAlignment.Center);
+            frame.AppendChild(content);
+            style.Setters.Add(new Setter(Control.TemplateProperty,new ControlTemplate(typeof(Button)) { VisualTree=frame }));
+            var disabled = new Trigger { Property=UIElement.IsEnabledProperty, Value=false };
+            disabled.Setters.Add(new Setter(UIElement.OpacityProperty,0.45)); style.Triggers.Add(disabled);
+            border.Resources.Add(typeof(Button),style);
+            return border;
+        }
         private Border CreateToastBorder(ToastType type)
         {
             return new Border
@@ -310,7 +356,6 @@ namespace Helpers.Notifications.ToastNotifications
                 }
                 catch
                 {
-                    // ÐÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ð¿ÑƒÑ‚ÑŒ Ð½Ðµ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð»Ð¾Ð¼Ð°Ñ‚ÑŒ ÑƒÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ.
                 }
             };
 
@@ -321,7 +366,7 @@ namespace Helpers.Notifications.ToastNotifications
         {
             Button closeButton = new Button
             {
-                Content = "Ã—",
+                Content = "\u00D7",
                 Width = 28,
                 Height = 28,
                 Background = Brushes.Transparent,
@@ -356,9 +401,8 @@ namespace Helpers.Notifications.ToastNotifications
             timer.Tick += (sender, args) =>
             {
                 timer.Stop();
-                DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(220));
-                fadeOut.Completed += (sender2, args2) => _stackPanel.Children.Remove(border);
-                border.BeginAnimation(OpacityProperty, fadeOut);
+                border.BeginAnimation(OpacityProperty, null);
+                _stackPanel.Children.Remove(border);
             };
 
             timer.Start();

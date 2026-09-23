@@ -56,6 +56,22 @@ namespace SAB.InteriorElevations.Services.Elevations
             return GetUniqueName(baseName, _usedSheetNames, "_", 2);
         }
 
+        public string GenerateElevationTitleOnSheet(
+            RoomData roomData,
+            int startPointNumber,
+            int endPointNumber,
+            ElevationSettings settings)
+        {
+            return BuildFormulaName(
+                settings != null ? settings.ElevationTitlePart1 : string.Empty,
+                settings != null ? settings.ElevationTitlePart2 : string.Empty,
+                settings != null ? settings.ElevationTitlePart3 : string.Empty,
+                roomData,
+                null,
+                startPointNumber,
+                endPointNumber);
+        }
+
         public string GenerateUniqueSheetNumber(IList<RoomData> roomDataList)
         {
             StringBuilder numberBuilder = new StringBuilder("ELV");
@@ -133,6 +149,13 @@ namespace SAB.InteriorElevations.Services.Elevations
             }
             else
             {
+                value = value.Replace("[Номер помещения]", roomNumber);
+                value = value.Replace("[Имя помещения]", roomName);
+                value = value.Replace("[Начальный угол]", startPointNumber.ToString());
+                value = value.Replace("[Конечный угол]", endPointNumber.ToString());
+                value = value.Replace("[Помещения]", BuildRoomList(roomDataList, roomData));
+
+                // Поддержка старых сохраненных формул до перехода на квадратные скобки.
                 value = value.Replace("{Номер помещения}", roomNumber);
                 value = value.Replace("{Имя помещения}", roomName);
                 value = value.Replace("{Начальный угол}", startPointNumber.ToString());

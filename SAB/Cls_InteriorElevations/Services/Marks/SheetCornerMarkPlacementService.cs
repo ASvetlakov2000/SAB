@@ -13,6 +13,8 @@ namespace SAB.InteriorElevations.Services.Marks
             ViewSheet sheet,
             RoomData roomData,
             ElementId sheetCornerMarkTypeId,
+            bool onlyCornerNumber,
+            bool belowView,
             IList<ElevationViewData> createdViews,
             ViewportPlacementResult placementResult,
             IList<string> warnings)
@@ -45,11 +47,17 @@ namespace SAB.InteriorElevations.Services.Marks
                 return 0;
             }
 
-            if (!symbol.IsActive)
-            {
-                symbol.Activate();
-                document.Regenerate();
-            }
+            FamilySymbol leftSymbol = symbol;
+            FamilySymbol rightSymbol = symbol;
+            TryResolveProjectSpecificSideSymbols(
+                document,
+                symbol,
+                warnings,
+                out leftSymbol,
+                out rightSymbol);
+
+            ActivateSymbol(document, leftSymbol);
+            ActivateSymbol(document, rightSymbol);
 
             Dictionary<long, ElevationViewData> viewDataByViewId = BuildViewDictionary(createdViews);
             int placedCount = 0;
@@ -69,18 +77,93 @@ namespace SAB.InteriorElevations.Services.Marks
                     continue;
                 }
 
-                if (TryPlaceCornerMark(document, sheet, symbol, placedViewport.TopLeft, roomData.RoomNumber, viewData.StartCornerNumber, warnings))
+                XYZ leftPoint = belowView ? placedViewport.BottomLeft : placedViewport.TopLeft;
+                XYZ rightPoint = belowView ? placedViewport.BottomRight : placedViewport.TopRight;
+
+                if (TryPlaceCornerMark(document, sheet, leftSymbol, leftPoint, roomData.RoomNumber, viewData.StartCornerNumber, onlyCornerNumber, warnings))
                 {
                     placedCount++;
                 }
 
-                if (TryPlaceCornerMark(document, sheet, symbol, placedViewport.TopRight, roomData.RoomNumber, viewData.EndCornerNumber, warnings))
+                if (TryPlaceCornerMark(document, sheet, rightSymbol, rightPoint, roomData.RoomNumber, viewData.EndCornerNumber, onlyCornerNumber, warnings))
                 {
                     placedCount++;
                 }
             }
 
             return placedCount;
+        }
+
+        private void TryResolveProjectSpecificSideSymbols(
+            Document document,
+            FamilySymbol selectedSymbol,
+            IList<string> warnings,
+            out FamilySymbol leftSymbol,
+            out FamilySymbol rightSymbol)
+        {
+            leftSymbol = selectedSymbol;
+            rightSymbol = selectedSymbol;
+
+            if (document == null || document.Application == null || selectedSymbol == null || selectedSymbol.Family == null)
+            {
+                return;
+            }
+
+            if (!string.Equals(document.Application.VersionNumber, "2022", StringComparison.Ordinal) ||
+                !string.Equals(selectedSymbol.Family.Name, CornerMarkConstants.ProjectSpecificCornerMarkFamilyName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            FamilySymbol resolvedLeftSymbol = null;
+            FamilySymbol resolvedRightSymbol = null;
+            ISet<ElementId> symbolIds = selectedSymbol.Family.GetFamilySymbolIds();
+            foreach (ElementId symbolId in symbolIds)
+            {
+                FamilySymbol candidate = document.GetElement(symbolId) as FamilySymbol;
+                if (candidate == null)
+                {
+                    continue;
+                }
+
+                if (string.Equals(candidate.Name, CornerMarkConstants.LeftCornerMarkTypeName, StringComparison.OrdinalIgnoreCase))
+                {
+                    resolvedLeftSymbol = candidate;
+                }
+                else if (string.Equals(candidate.Name, CornerMarkConstants.RightCornerMarkTypeName, StringComparison.OrdinalIgnoreCase))
+                {
+                    resolvedRightSymbol = candidate;
+                }
+            }
+
+            if (resolvedLeftSymbol != null)
+            {
+                leftSymbol = resolvedLeftSymbol;
+            }
+
+            if (resolvedRightSymbol != null)
+            {
+                rightSymbol = resolvedRightSymbol;
+            }
+
+            if (resolvedLeftSymbol == null || resolvedRightSymbol == null)
+            {
+                AddWarning(
+                    warnings,
+                    "Для семейства '" + CornerMarkConstants.ProjectSpecificCornerMarkFamilyName +
+                    "' не найдены оба типоразмера 'Left' и 'Right'. Для отсутствующей стороны использован выбранный типоразмер.");
+            }
+        }
+
+        private void ActivateSymbol(Document document, FamilySymbol symbol)
+        {
+            if (document == null || symbol == null || symbol.IsActive)
+            {
+                return;
+            }
+
+            symbol.Activate();
+            document.Regenerate();
         }
 
         private Dictionary<long, ElevationViewData> BuildViewDictionary(IList<ElevationViewData> createdViews)
@@ -112,6 +195,7 @@ namespace SAB.InteriorElevations.Services.Marks
             XYZ placementPoint,
             string roomNumber,
             int cornerNumber,
+            bool onlyCornerNumber,
             IList<string> warnings)
         {
             try
@@ -127,7 +211,10 @@ namespace SAB.InteriorElevations.Services.Marks
                     return false;
                 }
 
-                SetParameter(markInstance, CornerMarkConstants.RoomNumberParameterName, roomNumber, warnings);
+                if (!onlyCornerNumber)
+                {
+                    SetParameter(markInstance, CornerMarkConstants.RoomNumberParameterName, roomNumber, warnings);
+                }
                 SetParameter(markInstance, CornerMarkConstants.CornerNumberParameterName, cornerNumber.ToString(), warnings);
                 return true;
             }
@@ -208,6 +295,16 @@ namespace SAB.InteriorElevations.Services.Marks
             }
 
             return "(" + point.X.ToString("F3") + ", " + point.Y.ToString("F3") + ", " + point.Z.ToString("F3") + ")";
+        }
+
+        private void AddWarning(IList<string> warnings, string message)
+        {
+            if (warnings == null || string.IsNullOrWhiteSpace(message))
+            {
+                return;
+            }
+
+            warnings.Add(message);
         }
     }
 }

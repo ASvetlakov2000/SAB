@@ -214,7 +214,11 @@ namespace SAB.DoorWindowExplanations.Views
             _sectionProjectionDepthTextBox.Text = FormatDouble(settings.SectionProjectionDepthMm);
             _sectionLineOverhangTextBox.Text = FormatDouble(settings.SectionMarkerExtensionMm);
             PopulateNamedComboBox(_titleBlockTypeComboBox, _titleBlockTypes, settings.TitleBlockTypeName);
-            PopulateNamedComboBox(_viewportTypeComboBox, _viewportTypes, settings.ViewportTypeName);
+            PopulateNamedComboBox(
+                _viewportTypeComboBox,
+                _viewportTypes,
+                settings.ViewportTypeIdValue,
+                settings.ViewportTypeName);
             _sheetNumberTextBox.Text = settings.SheetNumber ?? string.Empty;
             _sheetNameTextBox.Text = settings.SheetName ?? string.Empty;
             _viewHorizontalStepTextBox.Text = FormatDouble(settings.ViewHorizontalStepMm);
@@ -240,9 +244,18 @@ namespace SAB.DoorWindowExplanations.Views
             IList<DoorWindowNamedElementItem> items,
             string selectedName)
         {
+            PopulateNamedComboBox(comboBox, items, -1, selectedName);
+        }
+
+        private void PopulateNamedComboBox(
+            ComboBox comboBox,
+            IList<DoorWindowNamedElementItem> items,
+            int selectedIdValue,
+            string selectedName)
+        {
             comboBox.ItemsSource = items;
             DoorWindowRevitDataService dataService = new DoorWindowRevitDataService();
-            comboBox.SelectedItem = dataService.FindNamedItem(items, selectedName);
+            comboBox.SelectedItem = dataService.FindNamedItem(items, selectedIdValue, selectedName);
         }
 
         private void AttachHandlers()
@@ -309,7 +322,14 @@ namespace SAB.DoorWindowExplanations.Views
             settings.FrontViewTemplateName = GetTemplateName(_frontTemplateComboBox);
             settings.SectionViewTemplateName = GetTemplateName(_sectionTemplateComboBox);
             settings.TitleBlockTypeName = GetNamedItemName(_titleBlockTypeComboBox);
-            settings.ViewportTypeName = GetNamedItemName(_viewportTypeComboBox);
+            DoorWindowNamedElementItem selectedViewportType =
+                _viewportTypeComboBox.SelectedItem as DoorWindowNamedElementItem;
+            settings.ViewportTypeName = selectedViewportType != null
+                ? selectedViewportType.Name
+                : string.Empty;
+            settings.ViewportTypeIdValue = selectedViewportType != null && selectedViewportType.Id != null
+                ? selectedViewportType.Id.IntegerValue
+                : -1;
             settings.SheetNumber = (_sheetNumberTextBox.Text ?? string.Empty).Trim();
             settings.SheetName = (_sheetNameTextBox.Text ?? string.Empty).Trim();
             DoorWindowViewTitleAnchorOption viewTitleAnchor =

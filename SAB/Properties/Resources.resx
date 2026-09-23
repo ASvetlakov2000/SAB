@@ -124,6 +124,12 @@
   <data name="AlignPlanCornerMarksCommand_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AlignPlanCornerMarksCommand_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="CreateDoorWindowViews_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CreateDoorWindowViews_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CreateDoorWindowViews_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CreateDoorWindowViews_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="CreateInteriorElevationsCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CreateInteriorElevationsCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -141,6 +147,12 @@
   </data>
   <data name="DeleteViewsAndSheets_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DeleteViewsAndSheets_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="EditViewTemplateGraphics_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EditViewTemplateGraphics_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="EditViewTemplateGraphics_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EditViewTemplateGraphics_32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="ExportTypesSingleFileCommand_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportTypesSingleFileCommand_16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

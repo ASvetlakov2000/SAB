@@ -53,6 +53,7 @@ namespace SAB.DoorWindowExplanations.Models
             ViewTitleAnchor = DoorWindowViewTitleAnchor.BottomLeft;
             ViewTitleOffsetXmm = 0.0;
             ViewTitleOffsetYmm = -5.0;
+            ViewportTypeIdValue = -1;
             SaveSettings = true;
         }
 
@@ -103,6 +104,8 @@ namespace SAB.DoorWindowExplanations.Models
         public string TitleBlockTypeName { get; set; }
 
         public string ViewportTypeName { get; set; }
+
+        public int ViewportTypeIdValue { get; set; }
 
         public string SheetNumber { get; set; }
 
@@ -217,18 +220,26 @@ namespace SAB.DoorWindowExplanations.Models
     public class DoorWindowNamedElementItem
     {
         public DoorWindowNamedElementItem(ElementId id, string name)
+            : this(id, name, name)
+        {
+        }
+
+        public DoorWindowNamedElementItem(ElementId id, string name, string displayName)
         {
             Id = id;
             Name = name ?? string.Empty;
+            DisplayName = displayName ?? Name;
         }
 
         public ElementId Id { get; private set; }
 
         public string Name { get; private set; }
 
+        public string DisplayName { get; private set; }
+
         public override string ToString()
         {
-            return Name;
+            return DisplayName;
         }
     }
 

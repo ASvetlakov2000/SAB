@@ -1,0 +1,12 @@
+﻿Error dialog summary 
+  ' 0:< Предупреждение: Помимо выбранных элементов будут удалены элементы (2) и виды (1).
+  'Вид План этажа : Фунд. стена T.O. будет удален.
+  ' - 1 times 
+  'H 09-Sep-2026 00:14:36.197;   0:< 
+  Jrn.Data  _
+          "Error dialog"  , "0 failures, 0 errors, 1 warnings" 
+  'C 09-Sep-2026 00:14:36.197;   0:< ADialog::doModal start 
+    ' 0:< ::152:: Delta VM: Avail +26 -> 134141318 MB, Used -11 -> 2633 MB, Peak +0 -> 2653 MB; RAM: Avail +1 -> 44054 MB, Used +2 -> 1551 MB, Peak +2 -> 1551 MB 
+    ' 0:< GUI Resource Usage GDI: Avail 8041, Used 1959, User: Used 566 
+    'E 09-Sep-2026 00:14:42.808;   0:< 
+    

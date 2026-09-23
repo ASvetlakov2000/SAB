@@ -79,6 +79,26 @@ namespace SAB.Properties {
                 return ((byte[])(obj));
             }
         }
+
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] CreateDoorWindowViews_16 {
+            get {
+                object obj = ResourceManager.GetObject("CreateDoorWindowViews_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] CreateDoorWindowViews_32 {
+            get {
+                object obj = ResourceManager.GetObject("CreateDoorWindowViews_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
         
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
@@ -136,6 +156,26 @@ namespace SAB.Properties {
         public static byte[] DeleteViewsAndSheets_32 {
             get {
                 object obj = ResourceManager.GetObject("DeleteViewsAndSheets_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] EditViewTemplateGraphics_16 {
+            get {
+                object obj = ResourceManager.GetObject("EditViewTemplateGraphics_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Byte[].
+        /// </summary>
+        public static byte[] EditViewTemplateGraphics_32 {
+            get {
+                object obj = ResourceManager.GetObject("EditViewTemplateGraphics_32", resourceCulture);
                 return ((byte[])(obj));
             }
         }

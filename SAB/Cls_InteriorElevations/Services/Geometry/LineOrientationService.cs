@@ -15,8 +15,9 @@ namespace SAB.InteriorElevations.Services.Geometry
                 return false;
             }
 
-            Room selectedRoom = document.GetElement(roomData.RoomElementId) as Room;
-            if (selectedRoom == null)
+            Room selectedRoom;
+            Transform roomToHost;
+            if (!roomData.TryResolveRoom(document, out selectedRoom, out roomToHost))
             {
                 if (warnings != null)
                 {
@@ -28,7 +29,8 @@ namespace SAB.InteriorElevations.Services.Geometry
 
             double probeDistanceFeet = UnitConversionUtils.MillimetersToFeet(150.0);
             double markerOffsetFeet = UnitConversionUtils.MillimetersToFeet(markerOffsetMm);
-            XYZ roomCenter = TryGetRoomCenter(selectedRoom);
+            Transform hostToRoom = roomToHost.Inverse;
+            XYZ roomCenter = roomToHost.OfPoint(TryGetRoomCenter(selectedRoom));
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -53,8 +55,8 @@ namespace SAB.InteriorElevations.Services.Geometry
                 XYZ probePointA = lineData.MidPoint + normalA * probeDistanceFeet;
                 XYZ probePointB = lineData.MidPoint + normalB * probeDistanceFeet;
 
-                bool isAInside = selectedRoom.IsPointInRoom(probePointA);
-                bool isBInside = selectedRoom.IsPointInRoom(probePointB);
+                bool isAInside = selectedRoom.IsPointInRoom(hostToRoom.OfPoint(probePointA));
+                bool isBInside = selectedRoom.IsPointInRoom(hostToRoom.OfPoint(probePointB));
 
                 XYZ insideNormal;
                 if (isAInside && !isBInside)
@@ -114,10 +116,11 @@ namespace SAB.InteriorElevations.Services.Geometry
             BoundingBoxXYZ roomBox = room.get_BoundingBox(null);
             if (roomBox != null)
             {
-                return new XYZ(
+                XYZ center = new XYZ(
                     (roomBox.Min.X + roomBox.Max.X) / 2.0,
                     (roomBox.Min.Y + roomBox.Max.Y) / 2.0,
                     (roomBox.Min.Z + roomBox.Max.Z) / 2.0);
+                return (roomBox.Transform ?? Transform.Identity).OfPoint(center);
             }
 
             return XYZ.Zero;

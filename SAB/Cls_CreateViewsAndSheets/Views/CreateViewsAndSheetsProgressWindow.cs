@@ -13,7 +13,10 @@ namespace SAB.CreateViewsAndSheets.Views
     public class CreateViewsAndSheetsProgressWindow : Window, IProgress<CreateViewsAndSheetsProgressInfo>
     {
         private readonly List<string> _rotatingMessages;
+        private readonly string _windowTitle;
+        private readonly string _headerText;
 
+        private TextBlock _headerTextBlock;
         private TextBlock _stepTextBlock;
         private TextBlock _percentTextBlock;
         private TextBlock _rotatingMessageTextBlock;
@@ -24,13 +27,23 @@ namespace SAB.CreateViewsAndSheets.Views
         private bool _allowClose;
 
         public CreateViewsAndSheetsProgressWindow()
-            : this(null)
+            : this(null, null, null)
         {
         }
 
         public CreateViewsAndSheetsProgressWindow(IList<string> rotatingMessages)
+            : this(rotatingMessages, null, null)
+        {
+        }
+
+        public CreateViewsAndSheetsProgressWindow(
+            IList<string> rotatingMessages,
+            string windowTitle,
+            string headerText)
         {
             _rotatingMessages = BuildRotatingMessages(rotatingMessages);
+            _windowTitle = windowTitle;
+            _headerText = headerText;
 
             InitializeWindowFromXamlFile();
             Closing += CreateViewsAndSheetsProgressWindow_Closing;
@@ -113,6 +126,7 @@ namespace SAB.CreateViewsAndSheets.Views
                     throw new InvalidOperationException("Не удалось загрузить CreateViewsAndSheetsProgressWindow.xaml.");
                 }
 
+                _headerTextBlock = loadedWindow.FindName("HeaderTextBlock") as TextBlock;
                 _stepTextBlock = loadedWindow.FindName("StepTextBlock") as TextBlock;
                 _percentTextBlock = loadedWindow.FindName("PercentTextBlock") as TextBlock;
                 _rotatingMessageTextBlock = loadedWindow.FindName("RotatingMessageTextBlock") as TextBlock;
@@ -143,6 +157,11 @@ namespace SAB.CreateViewsAndSheets.Views
         private void FindControlsIfNeeded()
         {
             DependencyObject root = Content as DependencyObject;
+            if (_headerTextBlock == null)
+            {
+                _headerTextBlock = FindElementByName<TextBlock>(root, "HeaderTextBlock");
+            }
+
             if (_stepTextBlock == null)
             {
                 _stepTextBlock = FindElementByName<TextBlock>(root, "StepTextBlock");
@@ -171,6 +190,16 @@ namespace SAB.CreateViewsAndSheets.Views
 
         private void ApplyStaticVisualState()
         {
+            if (!string.IsNullOrWhiteSpace(_windowTitle))
+            {
+                Title = _windowTitle;
+            }
+
+            if (_headerTextBlock != null && !string.IsNullOrWhiteSpace(_headerText))
+            {
+                _headerTextBlock.Text = _headerText;
+            }
+
             if (_rotatingMessageBorder != null)
             {
                 _rotatingMessageBorder.Visibility = _rotatingMessages.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

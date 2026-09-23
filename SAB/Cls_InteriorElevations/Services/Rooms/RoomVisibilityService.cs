@@ -6,7 +6,11 @@ namespace SAB.InteriorElevations.Services.Rooms
 {
     public class RoomVisibilityService
     {
-        public void EnsureRoomsAndObjectVisible(Document document, View activeView, IList<string> warnings)
+        public void EnsureRoomsAndObjectVisible(
+            Document document,
+            View activeView,
+            bool enableRoomObjectCategory,
+            IList<string> warnings)
         {
             if (document == null || activeView == null)
             {
@@ -31,13 +35,19 @@ namespace SAB.InteriorElevations.Services.Rooms
                 // Блок включения категории на самом виде и, при наличии, на шаблоне вида.
                 // Это важно, если видимость категории управляется шаблоном.
                 TryShowCategory(activeView, roomsCategory.Id, warnings, "Помещения");
-                TryShowCategory(activeView, roomObjectSubCategory != null ? roomObjectSubCategory.Id : null, warnings, "Помещения / Объект");
+                if (enableRoomObjectCategory)
+                {
+                    TryShowCategory(activeView, roomObjectSubCategory != null ? roomObjectSubCategory.Id : null, warnings, "Помещения / Объект");
+                }
 
                 View viewTemplate = GetViewTemplate(document, activeView);
                 if (viewTemplate != null)
                 {
                     TryShowCategory(viewTemplate, roomsCategory.Id, warnings, "Помещения в шаблоне вида");
-                    TryShowCategory(viewTemplate, roomObjectSubCategory != null ? roomObjectSubCategory.Id : null, warnings, "Помещения / Объект в шаблоне вида");
+                    if (enableRoomObjectCategory)
+                    {
+                        TryShowCategory(viewTemplate, roomObjectSubCategory != null ? roomObjectSubCategory.Id : null, warnings, "Помещения / Объект в шаблоне вида");
+                    }
                 }
 
                 transaction.Commit();

@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.ViewModels;
@@ -21,8 +26,16 @@ namespace SAB.InteriorElevations.Views
 
     public partial class ElevationSettingsWindow : Window
     {
+        private static readonly HashSet<string> ValidFormulaParameters = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "[Номер помещения]",
+            "[Имя помещения]",
+            "[Начальный угол]",
+            "[Конечный угол]",
+            "[Помещения]"
+        };
+
         private readonly ElevationSettingsViewModel _viewModel;
-        private readonly bool _initialMultipleGroupsMode;
         private readonly bool _initialHasSelection;
         private readonly string _initialSelectionStatusText;
         private readonly string _initialWarningInfoText;
@@ -31,39 +44,29 @@ namespace SAB.InteriorElevations.Views
         private Button _cancelButton;
         private Button _pickLinesButton;
         private Button _pickSheetPointButton;
+        private Button _pickCropByExampleButton;
+        private RichTextBox _elevationNameFormulaEditor;
+        private RichTextBox _elevationTitleFormulaEditor;
+        private RichTextBox _sheetNameFormulaEditor;
+        private RichTextBox _roomPlanNameFormulaEditor;
         private Border _selectionStatusBorder;
         private Border _warningInfoBorder;
-        private RadioButton _manualCropRadioButton;
-        private RadioButton _cropByExampleRadioButton;
-        private RadioButton _manualSheetPointRadioButton;
-        private RadioButton _pickSheetPointRadioButton;
-        private RadioButton _singleGroupRadioButton;
-        private RadioButton _multipleGroupsRadioButton;
         private TextBlock _selectionStatusTextBlock;
         private TextBlock _warningInfoTextBlock;
+        private bool _isUpdatingFormulaEditors;
 
         public ElevationSettingsWindow(ElevationSettingsViewModel viewModel)
-            : this(viewModel, false, false, "Линии и помещение не выбраны.", string.Empty)
+            : this(viewModel, false, "Линии и помещение не выбраны.", string.Empty)
         {
         }
 
         public ElevationSettingsWindow(
             ElevationSettingsViewModel viewModel,
-            bool initialMultipleGroupsMode,
-            string initialSelectionStatusText)
-            : this(viewModel, initialMultipleGroupsMode, false, initialSelectionStatusText, string.Empty)
-        {
-        }
-
-        public ElevationSettingsWindow(
-            ElevationSettingsViewModel viewModel,
-            bool initialMultipleGroupsMode,
             bool initialHasSelection,
             string initialSelectionStatusText,
             string initialWarningInfoText)
         {
             _viewModel = viewModel;
-            _initialMultipleGroupsMode = initialMultipleGroupsMode;
             _initialHasSelection = initialHasSelection;
             _initialSelectionStatusText = string.IsNullOrWhiteSpace(initialSelectionStatusText)
                 ? "Линии и помещение не выбраны."
@@ -75,6 +78,7 @@ namespace SAB.InteriorElevations.Views
             // Основной блок инициализации окна: загружаем XAML, назначаем DataContext и подключаем кнопки.
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
+            InitializeFormulaEditors();
             ApplyInitialSelectionUiState();
             AttachButtonHandlers();
         }
@@ -82,14 +86,6 @@ namespace SAB.InteriorElevations.Views
         public ElevationSettings SelectedSettings { get; private set; }
 
         public ElevationSettingsWindowAction RequestedAction { get; private set; }
-
-        public bool IsMultipleGroupsMode
-        {
-            get
-            {
-                return _multipleGroupsRadioButton != null && _multipleGroupsRadioButton.IsChecked == true;
-            }
-        }
 
         private void InitializeWindowFromXamlFile()
         {
@@ -116,14 +112,13 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton = loadedWindow.FindName("CancelButton") as Button;
                 _pickLinesButton = loadedWindow.FindName("PickLinesButton") as Button;
                 _pickSheetPointButton = loadedWindow.FindName("PickSheetPointButton") as Button;
+                _pickCropByExampleButton = loadedWindow.FindName("PickCropByExampleButton") as Button;
+                _elevationNameFormulaEditor = loadedWindow.FindName("ElevationNameFormulaEditor") as RichTextBox;
+                _elevationTitleFormulaEditor = loadedWindow.FindName("ElevationTitleFormulaEditor") as RichTextBox;
+                _sheetNameFormulaEditor = loadedWindow.FindName("SheetNameFormulaEditor") as RichTextBox;
+                _roomPlanNameFormulaEditor = loadedWindow.FindName("RoomPlanNameFormulaEditor") as RichTextBox;
                 _selectionStatusBorder = loadedWindow.FindName("SelectionStatusBorder") as Border;
                 _warningInfoBorder = loadedWindow.FindName("WarningInfoBorder") as Border;
-                _manualCropRadioButton = loadedWindow.FindName("ManualCropRadioButton") as RadioButton;
-                _cropByExampleRadioButton = loadedWindow.FindName("CropByExampleRadioButton") as RadioButton;
-                _manualSheetPointRadioButton = loadedWindow.FindName("ManualSheetPointRadioButton") as RadioButton;
-                _pickSheetPointRadioButton = loadedWindow.FindName("PickSheetPointRadioButton") as RadioButton;
-                _singleGroupRadioButton = loadedWindow.FindName("SingleGroupRadioButton") as RadioButton;
-                _multipleGroupsRadioButton = loadedWindow.FindName("MultipleGroupsRadioButton") as RadioButton;
                 _selectionStatusTextBlock = loadedWindow.FindName("SelectionStatusTextBlock") as TextBlock;
                 _warningInfoTextBlock = loadedWindow.FindName("WarningInfoTextBlock") as TextBlock;
 
@@ -142,8 +137,191 @@ namespace SAB.InteriorElevations.Views
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
 
-                WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationSettingsWindow");
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationSettingsWindow.V2");
             }
+        }
+
+        private void InitializeFormulaEditors()
+        {
+            _elevationNameFormulaEditor = _elevationNameFormulaEditor ??
+                                          FindElementByName<RichTextBox>(Content as DependencyObject, "ElevationNameFormulaEditor");
+            _elevationTitleFormulaEditor = _elevationTitleFormulaEditor ??
+                                           FindElementByName<RichTextBox>(Content as DependencyObject, "ElevationTitleFormulaEditor");
+            _sheetNameFormulaEditor = _sheetNameFormulaEditor ??
+                                      FindElementByName<RichTextBox>(Content as DependencyObject, "SheetNameFormulaEditor");
+            _roomPlanNameFormulaEditor = _roomPlanNameFormulaEditor ??
+                                         FindElementByName<RichTextBox>(Content as DependencyObject, "RoomPlanNameFormulaEditor");
+
+            if (_elevationNameFormulaEditor == null ||
+                _elevationTitleFormulaEditor == null ||
+                _sheetNameFormulaEditor == null ||
+                _roomPlanNameFormulaEditor == null)
+            {
+                throw new InvalidOperationException("Не удалось привязать редакторы формул наименований.");
+            }
+
+            SetFormulaEditorText(_elevationNameFormulaEditor, _viewModel.ElevationNameFormulaText);
+            SetFormulaEditorText(_elevationTitleFormulaEditor, _viewModel.ElevationTitleFormulaText);
+            SetFormulaEditorText(_sheetNameFormulaEditor, _viewModel.SheetNameFormulaText);
+            SetFormulaEditorText(_roomPlanNameFormulaEditor, _viewModel.RoomPlanNameFormulaText);
+
+            AttachFormulaEditor(_elevationNameFormulaEditor);
+            AttachFormulaEditor(_elevationTitleFormulaEditor);
+            AttachFormulaEditor(_sheetNameFormulaEditor);
+            AttachFormulaEditor(_roomPlanNameFormulaEditor);
+        }
+
+        private void AttachFormulaEditor(RichTextBox editor)
+        {
+            editor.TextChanged += FormulaEditor_TextChanged;
+            editor.PreviewKeyDown += FormulaEditor_PreviewKeyDown;
+        }
+
+        private void FormulaEditor_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Return)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void FormulaEditor_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_isUpdatingFormulaEditors)
+            {
+                return;
+            }
+
+            RichTextBox editor = sender as RichTextBox;
+            if (editor == null)
+            {
+                return;
+            }
+
+            int caretOffset = GetCaretTextOffset(editor);
+            string formula = GetFormulaEditorText(editor)
+                .Replace("\r", " ")
+                .Replace("\n", " ");
+
+            if (ReferenceEquals(editor, _elevationNameFormulaEditor))
+            {
+                _viewModel.ElevationNameFormulaText = formula;
+            }
+            else if (ReferenceEquals(editor, _elevationTitleFormulaEditor))
+            {
+                _viewModel.ElevationTitleFormulaText = formula;
+            }
+            else if (ReferenceEquals(editor, _sheetNameFormulaEditor))
+            {
+                _viewModel.SheetNameFormulaText = formula;
+            }
+            else if (ReferenceEquals(editor, _roomPlanNameFormulaEditor))
+            {
+                _viewModel.RoomPlanNameFormulaText = formula;
+            }
+
+            ApplyFormulaHighlighting(editor, formula, caretOffset);
+        }
+
+        private void SetFormulaEditorText(RichTextBox editor, string formula)
+        {
+            string normalizedFormula = formula ?? string.Empty;
+            ApplyFormulaHighlighting(editor, normalizedFormula, normalizedFormula.Length);
+        }
+
+        private void ApplyFormulaHighlighting(RichTextBox editor, string formula, int caretOffset)
+        {
+            _isUpdatingFormulaEditors = true;
+            try
+            {
+                string safeFormula = formula ?? string.Empty;
+                Brush accentBrush = TryFindResource("SabBrush.Accent") as Brush ?? Brushes.DodgerBlue;
+                Brush textBrush = TryFindResource("SabBrush.FormulaText") as Brush ?? Brushes.DarkOrange;
+
+                Paragraph paragraph = new Paragraph();
+                paragraph.Margin = new Thickness(0);
+
+                int textIndex = 0;
+                MatchCollection matches = Regex.Matches(safeFormula, @"\[[^\[\]\r\n]+\]");
+                foreach (Match match in matches)
+                {
+                    if (match.Index > textIndex)
+                    {
+                        Run plainRun = new Run(safeFormula.Substring(textIndex, match.Index - textIndex));
+                        plainRun.Foreground = textBrush;
+                        paragraph.Inlines.Add(plainRun);
+                    }
+
+                    Run parameterRun = new Run(match.Value);
+                    if (ValidFormulaParameters.Contains(match.Value))
+                    {
+                        parameterRun.Foreground = accentBrush;
+                        parameterRun.FontWeight = FontWeights.SemiBold;
+                    }
+                    else
+                    {
+                        parameterRun.Foreground = textBrush;
+                    }
+
+                    paragraph.Inlines.Add(parameterRun);
+                    textIndex = match.Index + match.Length;
+                }
+
+                if (textIndex < safeFormula.Length)
+                {
+                    Run plainRun = new Run(safeFormula.Substring(textIndex));
+                    plainRun.Foreground = textBrush;
+                    paragraph.Inlines.Add(plainRun);
+                }
+
+                editor.Document.Blocks.Clear();
+                editor.Document.Blocks.Add(paragraph);
+                editor.CaretPosition = GetTextPositionAtOffset(
+                    editor.Document,
+                    Math.Max(0, Math.Min(caretOffset, safeFormula.Length)));
+            }
+            finally
+            {
+                _isUpdatingFormulaEditors = false;
+            }
+        }
+
+        private string GetFormulaEditorText(RichTextBox editor)
+        {
+            TextRange range = new TextRange(editor.Document.ContentStart, editor.Document.ContentEnd);
+            return range.Text.TrimEnd('\r', '\n');
+        }
+
+        private int GetCaretTextOffset(RichTextBox editor)
+        {
+            TextRange range = new TextRange(editor.Document.ContentStart, editor.CaretPosition);
+            return range.Text.TrimEnd('\r', '\n').Length;
+        }
+
+        private TextPointer GetTextPositionAtOffset(FlowDocument document, int textOffset)
+        {
+            TextPointer navigator = document.ContentStart;
+            int traversedCharacters = 0;
+            while (navigator != null)
+            {
+                if (navigator.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
+                {
+                    string textRun = navigator.GetTextInRun(LogicalDirection.Forward);
+                    if (traversedCharacters + textRun.Length >= textOffset)
+                    {
+                        TextPointer target = navigator.GetPositionAtOffset(
+                            textOffset - traversedCharacters,
+                            LogicalDirection.Forward);
+                        return target ?? document.ContentEnd;
+                    }
+
+                    traversedCharacters += textRun.Length;
+                }
+
+                navigator = navigator.GetNextContextPosition(LogicalDirection.Forward);
+            }
+
+            return document.ContentEnd;
         }
 
         private void AttachButtonHandlers()
@@ -168,6 +346,11 @@ namespace SAB.InteriorElevations.Views
                 _pickSheetPointButton = FindElementByName<Button>(Content as DependencyObject, "PickSheetPointButton");
             }
 
+            if (_pickCropByExampleButton == null)
+            {
+                _pickCropByExampleButton = FindElementByName<Button>(Content as DependencyObject, "PickCropByExampleButton");
+            }
+
             if (_selectionStatusBorder == null)
             {
                 _selectionStatusBorder = FindElementByName<Border>(Content as DependencyObject, "SelectionStatusBorder");
@@ -176,36 +359,6 @@ namespace SAB.InteriorElevations.Views
             if (_warningInfoBorder == null)
             {
                 _warningInfoBorder = FindElementByName<Border>(Content as DependencyObject, "WarningInfoBorder");
-            }
-
-            if (_manualCropRadioButton == null)
-            {
-                _manualCropRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "ManualCropRadioButton");
-            }
-
-            if (_cropByExampleRadioButton == null)
-            {
-                _cropByExampleRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "CropByExampleRadioButton");
-            }
-
-            if (_manualSheetPointRadioButton == null)
-            {
-                _manualSheetPointRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "ManualSheetPointRadioButton");
-            }
-
-            if (_pickSheetPointRadioButton == null)
-            {
-                _pickSheetPointRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "PickSheetPointRadioButton");
-            }
-
-            if (_singleGroupRadioButton == null)
-            {
-                _singleGroupRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "SingleGroupRadioButton");
-            }
-
-            if (_multipleGroupsRadioButton == null)
-            {
-                _multipleGroupsRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "MultipleGroupsRadioButton");
             }
 
             if (_selectionStatusTextBlock == null)
@@ -222,10 +375,7 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton == null ||
                 _pickLinesButton == null ||
                 _pickSheetPointButton == null ||
-                _manualCropRadioButton == null ||
-                _cropByExampleRadioButton == null ||
-                _manualSheetPointRadioButton == null ||
-                _pickSheetPointRadioButton == null)
+                _pickCropByExampleButton == null)
             {
                 throw new InvalidOperationException("Не удалось привязать кнопки окна настроек.");
             }
@@ -234,22 +384,11 @@ namespace SAB.InteriorElevations.Views
             _cancelButton.Click += CancelButton_Click;
             _pickLinesButton.Click += PickLinesButton_Click;
             _pickSheetPointButton.Click += PickSheetPointButton_Click;
-            _manualCropRadioButton.Click += ManualCropRadioButton_Click;
-            _cropByExampleRadioButton.Click += CropByExampleRadioButton_Click;
+            _pickCropByExampleButton.Click += PickCropByExampleButton_Click;
         }
 
         private void ApplyInitialSelectionUiState()
         {
-            if (_singleGroupRadioButton == null)
-            {
-                _singleGroupRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "SingleGroupRadioButton");
-            }
-
-            if (_multipleGroupsRadioButton == null)
-            {
-                _multipleGroupsRadioButton = FindElementByName<RadioButton>(Content as DependencyObject, "MultipleGroupsRadioButton");
-            }
-
             if (_selectionStatusTextBlock == null)
             {
                 _selectionStatusTextBlock = FindElementByName<TextBlock>(Content as DependencyObject, "SelectionStatusTextBlock");
@@ -268,16 +407,6 @@ namespace SAB.InteriorElevations.Views
             if (_warningInfoBorder == null)
             {
                 _warningInfoBorder = FindElementByName<Border>(Content as DependencyObject, "WarningInfoBorder");
-            }
-
-            if (_singleGroupRadioButton != null)
-            {
-                _singleGroupRadioButton.IsChecked = !_initialMultipleGroupsMode;
-            }
-
-            if (_multipleGroupsRadioButton != null)
-            {
-                _multipleGroupsRadioButton.IsChecked = _initialMultipleGroupsMode;
             }
 
             if (_selectionStatusTextBlock != null)
@@ -350,33 +479,26 @@ namespace SAB.InteriorElevations.Views
             ElevationSettings settings;
             string validationMessage;
 
-            if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
+            if (!_viewModel.TryBuildSettings(out settings, out validationMessage, false))
             {
                 SetWarningInfoText(validationMessage);
                 ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;
             }
 
-            _viewModel.IsSheetPointManualMode = false;
             SelectedSettings = settings;
             RequestedAction = ElevationSettingsWindowAction.PickSheetPoint;
             DialogResult = true;
             Close();
         }
 
-        private void ManualCropRadioButton_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.IsCropManualMode = true;
-        }
-
-        private void CropByExampleRadioButton_Click(object sender, RoutedEventArgs e)
+        private void PickCropByExampleButton_Click(object sender, RoutedEventArgs e)
         {
             ElevationSettings settings;
             string validationMessage;
 
             if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
             {
-                _viewModel.IsCropManualMode = true;
                 SetWarningInfoText(validationMessage);
                 ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;

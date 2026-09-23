@@ -11,6 +11,8 @@ namespace SAB.InteriorElevations.Services.Marks
             Document document,
             ViewPlan planView,
             Room room,
+            ElementId linkInstanceId,
+            Transform roomToHost,
             ElementId roomTagTypeId,
             IList<string> warnings)
         {
@@ -46,8 +48,15 @@ namespace SAB.InteriorElevations.Services.Marks
 
             try
             {
-                UV tagPoint = new UV(roomLocationPoint.Point.X, roomLocationPoint.Point.Y);
-                RoomTag roomTag = document.Create.NewRoomTag(new LinkElementId(room.Id), tagPoint, planView.Id);
+                bool isLinkedRoom = linkInstanceId != null && linkInstanceId != ElementId.InvalidElementId;
+                XYZ hostPoint = isLinkedRoom
+                    ? roomToHost.OfPoint(roomLocationPoint.Point)
+                    : roomLocationPoint.Point;
+                UV tagPoint = new UV(hostPoint.X, hostPoint.Y);
+                LinkElementId roomId = isLinkedRoom
+                    ? new LinkElementId(linkInstanceId, room.Id)
+                    : new LinkElementId(room.Id);
+                RoomTag roomTag = document.Create.NewRoomTag(roomId, tagPoint, planView.Id);
                 if (roomTag == null)
                 {
                     AddWarning(warnings, "Не удалось создать марку помещения на план-схеме.");

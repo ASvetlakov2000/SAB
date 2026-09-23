@@ -143,7 +143,11 @@ namespace SAB.InteriorElevations.Services.Elevations
 
             RoomDetectionService roomDetectionService = new RoomDetectionService();
             string roomSelectionError;
-            bool roomPicked = roomDetectionService.TryPickRoomData(uiDocument, out roomData, out roomSelectionError);
+            bool roomPicked = roomDetectionService.TryPickRoomData(
+                uiDocument,
+                session.Settings != null && session.Settings.PickRoomFromLink,
+                out roomData,
+                out roomSelectionError);
             if (!roomPicked)
             {
                 if (!string.IsNullOrWhiteSpace(roomSelectionError))
@@ -154,7 +158,7 @@ namespace SAB.InteriorElevations.Services.Elevations
                 return false;
             }
 
-            if (!RevitElementIdUtils.AreEqual(roomData.LevelId, session.SourcePlanLevelId))
+            if (!roomData.IsOnHostLevel(uiDocument.Document, session.SourcePlanLevelId))
             {
                 AddWarning(warnings, "Выбранное помещение находится на другом уровне. Выберите помещение на уровне исходного плана.");
                 roomData = null;

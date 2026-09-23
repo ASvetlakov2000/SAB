@@ -34,13 +34,13 @@ namespace SAB.CreateViewsAndSheets.Services
                 throw new InvalidOperationException("Revit API не создал новый лист.");
             }
 
+            // Сначала наследуем параметры листа-образца. Явные значения строки применяются последними.
+            document.Regenerate();
+            CopyParametersFromSourceSheet(document, sourceSheetId, sheet, warnings);
+
             sheet.SheetNumber = sheetNumber;
             sheet.Name = sheetName;
             SetSheetBrowserParameterValues(sheet, sheetBrowserParameterValues, warnings);
-
-            // Блок копирования второстепенных параметров основной надписи с эталонного листа.
-            document.Regenerate();
-            CopyTitleBlockParametersFromSourceSheet(document, sourceSheetId, sheet, warnings);
 
             return sheet;
         }
@@ -178,7 +178,7 @@ namespace SAB.CreateViewsAndSheets.Services
             return parameter.Definition.Name ?? string.Empty;
         }
 
-        private void CopyTitleBlockParametersFromSourceSheet(
+        private void CopyParametersFromSourceSheet(
             Document document,
             ElementId sourceSheetId,
             ViewSheet targetSheet,
@@ -189,6 +189,15 @@ namespace SAB.CreateViewsAndSheets.Services
                 return;
             }
 
+            ViewSheet sourceSheet = document.GetElement(sourceSheetId) as ViewSheet;
+            if (sourceSheet == null)
+            {
+                AddWarning(warnings, "Не удалось скопировать параметры листа: лист-образец не найден.");
+                return;
+            }
+
+            CopyWritableParameterValues(sourceSheet, targetSheet, "листа", warnings);
+
             FamilyInstance sourceTitleBlock = FindTitleBlockInstance(document, sourceSheetId);
             FamilyInstance targetTitleBlock = FindTitleBlockInstance(document, targetSheet.Id);
 
@@ -198,9 +207,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 return;
             }
 
-            CopyParameterValue(sourceTitleBlock, targetTitleBlock, "Формат", warnings);
-            CopyParameterValue(sourceTitleBlock, targetTitleBlock, "Кратность", warnings);
-            CopyParameterValue(sourceTitleBlock, targetTitleBlock, "Книжная ориентация", warnings);
+            CopyWritableParameterValues(sourceTitleBlock, targetTitleBlock, "основной надписи", warnings);
         }
 
         private FamilyInstance FindTitleBlockInstance(Document document, ElementId sheetId)
@@ -226,68 +233,88 @@ namespace SAB.CreateViewsAndSheets.Services
             return null;
         }
 
-        private void CopyParameterValue(
-            FamilyInstance sourceTitleBlock,
-            FamilyInstance targetTitleBlock,
-            string parameterName,
+        private void CopyWritableParameterValues(
+            Element sourceElement,
+            Element targetElement,
+            string elementDescription,
             IList<string> warnings)
         {
-            if (sourceTitleBlock == null || targetTitleBlock == null || string.IsNullOrWhiteSpace(parameterName))
+            if (sourceElement == null || targetElement == null || sourceElement.Parameters == null)
             {
                 return;
             }
 
-            Parameter sourceParameter = FindParameter(sourceTitleBlock, parameterName);
-            Parameter targetParameter = FindParameter(targetTitleBlock, parameterName);
+            foreach (Parameter sourceParameter in sourceElement.Parameters)
+            {
+                if (!CanCopyTemplateParameter(sourceParameter))
+                {
+                    continue;
+                }
 
-            if (sourceParameter == null || targetParameter == null)
-            {
-                AddWarning(warnings, "Параметр основной надписи '" + parameterName + "' не найден на эталонном или созданном листе.");
-                return;
-            }
+                Parameter targetParameter = FindMatchingParameter(targetElement, sourceParameter);
+                if (targetParameter == null ||
+                    targetParameter.IsReadOnly ||
+                    targetParameter.StorageType != sourceParameter.StorageType)
+                {
+                    continue;
+                }
 
-            if (targetParameter.IsReadOnly)
-            {
-                AddWarning(warnings, "Параметр основной надписи '" + parameterName + "' доступен только для чтения.");
-                return;
-            }
-
-            if (sourceParameter.StorageType != targetParameter.StorageType)
-            {
-                AddWarning(warnings, "Параметр основной надписи '" + parameterName + "' имеет разный тип данных на эталонном и созданном листе.");
-                return;
-            }
-
-            try
-            {
-                SetParameterValue(targetParameter, sourceParameter);
-            }
-            catch (Exception exception)
-            {
-                AddWarning(warnings, "Не удалось скопировать параметр основной надписи '" + parameterName + "': " + exception.Message);
+                try
+                {
+                    SetParameterValue(targetParameter, sourceParameter);
+                }
+                catch (Exception exception)
+                {
+                    AddWarning(
+                        warnings,
+                        "Не удалось скопировать параметр " + elementDescription + " '" +
+                        GetParameterName(sourceParameter) + "': " + exception.Message);
+                }
             }
         }
 
-        private Parameter FindParameter(FamilyInstance titleBlockInstance, string parameterName)
+        private bool CanCopyTemplateParameter(Parameter parameter)
         {
-            if (titleBlockInstance == null || string.IsNullOrWhiteSpace(parameterName))
+            if (parameter == null ||
+                parameter.StorageType == StorageType.None ||
+                !parameter.HasValue)
+            {
+                return false;
+            }
+
+            long parameterIdValue = RevitElementIdUtils.GetElementIdValue(parameter.Id);
+            return parameterIdValue != (int)BuiltInParameter.SHEET_NUMBER &&
+                   parameterIdValue != (int)BuiltInParameter.SHEET_NAME &&
+                   parameterIdValue != (int)BuiltInParameter.VIEW_NAME;
+        }
+
+        private Parameter FindMatchingParameter(Element targetElement, Parameter sourceParameter)
+        {
+            if (targetElement == null || sourceParameter == null)
             {
                 return null;
             }
 
-            Parameter parameter = titleBlockInstance.LookupParameter(parameterName);
+            Parameter parameter = FindParameterById(targetElement, sourceParameter.Id);
             if (parameter != null)
             {
                 return parameter;
             }
 
-            FamilySymbol symbol = titleBlockInstance.Symbol;
-            if (symbol == null)
+            string parameterName = GetParameterName(sourceParameter);
+            if (string.IsNullOrWhiteSpace(parameterName))
             {
                 return null;
             }
 
-            return symbol.LookupParameter(parameterName);
+            try
+            {
+                return targetElement.LookupParameter(parameterName);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private void SetParameterValue(Parameter targetParameter, Parameter sourceParameter)

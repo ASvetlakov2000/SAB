@@ -34,11 +34,11 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0">
-                <TextBlock Text="Помещения на одном листе"
+                <TextBlock Text="Несколько помещений за один запуск"
                            FontSize="20"
                            FontWeight="SemiBold"
                            Foreground="{StaticResource SabBrush.Text}" />
-                <TextBlock Text="Для каждой строки выберите линии разверток и помещение. Добавляйте следующие сборки кнопкой «+»."
+                <TextBlock Text="Для каждого помещения выберите линии разверток. Добавляйте следующие помещения кнопкой «+»."
                            Style="{StaticResource SabFieldHintTextStyle}"
                            TextWrapping="Wrap"
                            Margin="0,4,0,0" />

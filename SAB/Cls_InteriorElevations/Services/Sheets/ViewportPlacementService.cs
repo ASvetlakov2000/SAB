@@ -20,9 +20,35 @@ namespace SAB.InteriorElevations.Services.Sheets
             ElementId viewportTypeId,
             IList<string> warnings)
         {
+            return PlaceViewsOnSheet(
+                document,
+                sheet,
+                createdViews,
+                null,
+                layoutSettings,
+                viewportTypeId,
+                warnings);
+        }
+
+        private ViewportPlacementResult PlaceViewsOnSheet(
+            Document document,
+            ViewSheet sheet,
+            IList<ElevationViewData> createdViews,
+            View trailingView,
+            SheetLayoutSettings layoutSettings,
+            ElementId viewportTypeId,
+            IList<string> warnings)
+        {
             ViewportPlacementResult result = new ViewportPlacementResult();
 
-            if (document == null || sheet == null || createdViews == null || layoutSettings == null)
+            if (document == null || sheet == null || layoutSettings == null)
+            {
+                return result;
+            }
+
+            int elevationViewCount = createdViews != null ? createdViews.Count : 0;
+            int totalViewCount = elevationViewCount + (trailingView != null ? 1 : 0);
+            if (totalViewCount == 0)
             {
                 return result;
             }
@@ -40,47 +66,66 @@ namespace SAB.InteriorElevations.Services.Sheets
             double rowTopY = startYFeet;
             int currentIndex = 0;
 
-            while (currentIndex < createdViews.Count)
+            while (currentIndex < totalViewCount)
             {
                 double cursorX = startXFeet;
                 double rowMaxHeight = 0.0;
                 int rowPlacedCount = 0;
 
-                for (int column = 0; column < columnsCount && currentIndex < createdViews.Count; column++)
+                for (int column = 0; column < columnsCount && currentIndex < totalViewCount; column++)
                 {
-                    ElevationViewData elevationViewData = createdViews[currentIndex];
+                    bool isTrailingView = currentIndex >= elevationViewCount;
+                    ElevationViewData elevationViewData = isTrailingView
+                        ? null
+                        : createdViews[currentIndex];
+                    View view = isTrailingView
+                        ? trailingView
+                        : elevationViewData != null ? elevationViewData.ViewSection : null;
+                    string viewName = isTrailingView
+                        ? "план-схема"
+                        : elevationViewData != null ? elevationViewData.ViewName : string.Empty;
                     currentIndex++;
 
-                    if (elevationViewData == null || elevationViewData.ViewSection == null)
+                    if (view == null)
                     {
                         continue;
                     }
 
                     try
                     {
-                        if (!Viewport.CanAddViewToSheet(document, sheet.Id, elevationViewData.ViewSection.Id))
+                        if (!Viewport.CanAddViewToSheet(document, sheet.Id, view.Id))
                         {
                             if (warnings != null)
                             {
-                                warnings.Add("Вид " + elevationViewData.ViewName + " нельзя разместить на листе.");
+                                warnings.Add(
+                                    isTrailingView
+                                        ? "План-схему нельзя разместить на листе."
+                                        : "Вид " + viewName + " нельзя разместить на листе.");
                             }
 
                             continue;
                         }
 
                         // Временное размещение, чтобы получить реальный размер прямоугольника viewport.
-                        Viewport viewport = Viewport.Create(document, sheet.Id, elevationViewData.ViewSection.Id, new XYZ(startXFeet, startYFeet, 0.0));
+                        Viewport viewport = Viewport.Create(document, sheet.Id, view.Id, new XYZ(startXFeet, startYFeet, 0.0));
                         if (viewport == null)
                         {
                             if (warnings != null)
                             {
-                                warnings.Add("Не удалось создать viewport для вида " + elevationViewData.ViewName + ".");
+                                warnings.Add(
+                                    isTrailingView
+                                        ? "Не удалось создать viewport для план-схемы."
+                                        : "Не удалось создать viewport для вида " + viewName + ".");
                             }
 
                             continue;
                         }
 
-                        TryApplyViewportType(viewport, viewportTypeId, warnings);
+                        if (!isTrailingView)
+                        {
+                            TryApplyViewportType(viewport, viewportTypeId, warnings);
+                        }
+
                         document.Regenerate();
 
                         double viewportWidth;
@@ -90,7 +135,10 @@ namespace SAB.InteriorElevations.Services.Sheets
                         {
                             if (warnings != null)
                             {
-                                warnings.Add("Не удалось определить размер viewport для вида " + elevationViewData.ViewName + ".");
+                                warnings.Add(
+                                    isTrailingView
+                                        ? "Не удалось определить размер viewport план-схемы."
+                                        : "Не удалось определить размер viewport для вида " + viewName + ".");
                             }
 
                             continue;
@@ -116,23 +164,33 @@ namespace SAB.InteriorElevations.Services.Sheets
                         {
                             if (warnings != null)
                             {
-                                warnings.Add("Не удалось определить итоговые границы viewport для вида " + elevationViewData.ViewName + ".");
+                                warnings.Add(
+                                    isTrailingView
+                                        ? "Не удалось определить итоговые границы viewport план-схемы."
+                                        : "Не удалось определить итоговые границы viewport для вида " + viewName + ".");
                             }
 
                             continue;
                         }
 
-                        TryPlaceViewportTitle(viewport, finalOutline, layoutSettings, warnings);
+                        if (!isTrailingView)
+                        {
+                            TryPlaceViewportTitle(viewport, finalOutline, layoutSettings, warnings);
+                        }
 
                         PlacedViewportData placedViewportData = new PlacedViewportData();
                         placedViewportData.ViewportId = viewport.Id;
-                        placedViewportData.ViewId = elevationViewData.ViewSection.Id;
+                        placedViewportData.ViewId = view.Id;
                         placedViewportData.Center = viewport.GetBoxCenter();
                         XYZ topLeft;
                         XYZ topRight;
-                        BuildTrueTopCorners(finalOutline, out topLeft, out topRight);
+                        XYZ bottomLeft;
+                        XYZ bottomRight;
+                        BuildTrueCorners(finalOutline, out topLeft, out topRight, out bottomLeft, out bottomRight);
                         placedViewportData.TopLeft = topLeft;
                         placedViewportData.TopRight = topRight;
+                        placedViewportData.BottomLeft = bottomLeft;
+                        placedViewportData.BottomRight = bottomRight;
                         result.PlacedViewports.Add(placedViewportData);
 
                         // В следующую колонку переходим от правой границы текущего viewport + заданный зазор.
@@ -150,7 +208,10 @@ namespace SAB.InteriorElevations.Services.Sheets
                     {
                         if (warnings != null)
                         {
-                            warnings.Add("Не удалось разместить вид " + elevationViewData.ViewName + " на листе: " + exception.Message);
+                            warnings.Add(
+                                isTrailingView
+                                    ? "Не удалось разместить план-схему на листе: " + exception.Message
+                                    : "Не удалось разместить вид " + viewName + " на листе: " + exception.Message);
                         }
                     }
                 }
@@ -181,47 +242,26 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
 
             double nextRowTopFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartYmm);
-            double startXFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartXmm);
-            double gapXFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepXmm);
             double gapYFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StepYmm);
 
             for (int groupIndex = 0; groupIndex < roomViewGroups.Count; groupIndex++)
             {
                 IList<ElevationViewData> roomViews = roomViewGroups[groupIndex];
+                View roomPlanView = roomPlanViews != null && groupIndex < roomPlanViews.Count
+                    ? roomPlanViews[groupIndex]
+                    : null;
                 SheetLayoutSettings groupLayout = CopyLayoutWithStartY(
                     layoutSettings,
                     UnitConversionUtils.FeetToMillimeters(nextRowTopFeet));
-                groupLayout.ColumnsCount = Math.Max(1, roomViews != null ? roomViews.Count : 1);
 
                 ViewportPlacementResult groupResult = PlaceViewsOnSheet(
                     document,
                     sheet,
                     roomViews,
+                    roomPlanView,
                     groupLayout,
                     viewportTypeId,
                     warnings);
-
-                View roomPlanView = roomPlanViews != null && groupIndex < roomPlanViews.Count
-                    ? roomPlanViews[groupIndex]
-                    : null;
-                if (roomPlanView != null)
-                {
-                    double planLeftX = startXFeet;
-                    double rightmostViewportX;
-                    if (TryGetRightmostViewportX(document, groupResult, out rightmostViewportX))
-                    {
-                        planLeftX = rightmostViewportX + gapXFeet;
-                    }
-
-                    TryPlaceAdditionalViewAtPosition(
-                        document,
-                        sheet,
-                        roomPlanView,
-                        planLeftX,
-                        nextRowTopFeet,
-                        groupResult,
-                        warnings);
-                }
 
                 double lowestViewportY;
                 if (TryGetLowestViewportY(document, groupResult, out lowestViewportY))
@@ -371,9 +411,13 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                         XYZ topLeft;
                         XYZ topRight;
-                        BuildTrueTopCorners(finalOutline, out topLeft, out topRight);
+                        XYZ bottomLeft;
+                        XYZ bottomRight;
+                        BuildTrueCorners(finalOutline, out topLeft, out topRight, out bottomLeft, out bottomRight);
                         placedViewportData.TopLeft = topLeft;
                         placedViewportData.TopRight = topRight;
+                        placedViewportData.BottomLeft = bottomLeft;
+                        placedViewportData.BottomRight = bottomRight;
                         placementResult.PlacedViewports.Add(placedViewportData);
                     }
 
@@ -391,39 +435,6 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                 return false;
             }
-        }
-
-        private bool TryGetRightmostViewportX(
-            Document document,
-            ViewportPlacementResult placementResult,
-            out double rightmostX)
-        {
-            rightmostX = double.MinValue;
-            if (document == null || placementResult == null)
-            {
-                return false;
-            }
-
-            for (int index = 0; index < placementResult.PlacedViewports.Count; index++)
-            {
-                PlacedViewportData placedViewportData = placementResult.PlacedViewports[index];
-                if (placedViewportData == null || placedViewportData.ViewportId == null ||
-                    placedViewportData.ViewportId == ElementId.InvalidElementId)
-                {
-                    continue;
-                }
-
-                Viewport viewport = document.GetElement(placedViewportData.ViewportId) as Viewport;
-                Outline outline = viewport != null ? viewport.GetBoxOutline() : null;
-                if (outline == null || outline.MaximumPoint == null)
-                {
-                    continue;
-                }
-
-                rightmostX = Math.Max(rightmostX, outline.MaximumPoint.X);
-            }
-
-            return rightmostX > double.MinValue;
         }
 
         private SheetLayoutSettings CopyLayoutWithStartY(SheetLayoutSettings source, double startYmm)
@@ -748,10 +759,17 @@ namespace SAB.InteriorElevations.Services.Sheets
             return width > 1e-9 && height > 1e-9;
         }
 
-        private void BuildTrueTopCorners(Outline outline, out XYZ topLeft, out XYZ topRight)
+        private void BuildTrueCorners(
+            Outline outline,
+            out XYZ topLeft,
+            out XYZ topRight,
+            out XYZ bottomLeft,
+            out XYZ bottomRight)
         {
             topLeft = XYZ.Zero;
             topRight = XYZ.Zero;
+            bottomLeft = XYZ.Zero;
+            bottomRight = XYZ.Zero;
 
             if (outline == null || outline.MinimumPoint == null || outline.MaximumPoint == null)
             {
@@ -766,10 +784,13 @@ namespace SAB.InteriorElevations.Services.Sheets
 
             double minX = outline.MinimumPoint.X + safePaddingX;
             double maxX = outline.MaximumPoint.X - safePaddingX;
+            double minY = outline.MinimumPoint.Y + safePaddingY;
             double maxY = outline.MaximumPoint.Y - safePaddingY;
 
             topLeft = new XYZ(minX, maxY, 0.0);
             topRight = new XYZ(maxX, maxY, 0.0);
+            bottomLeft = new XYZ(minX, minY, 0.0);
+            bottomRight = new XYZ(maxX, minY, 0.0);
         }
     }
 }

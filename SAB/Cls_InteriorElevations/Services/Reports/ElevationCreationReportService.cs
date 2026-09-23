@@ -12,7 +12,9 @@ namespace SAB.InteriorElevations.Services.Reports
         public void ShowFinalReport(
             int selectedLinesCount,
             ElevationViewCreationResult creationResult,
-            ViewSheet createdSheet,
+            ViewSheet targetSheet,
+            bool sheetWasCreated,
+            bool sheetPlacementRequested,
             int placedViewportCount,
             int placedPlanMarksCount,
             int placedSheetMarksCount,
@@ -30,22 +32,26 @@ namespace SAB.InteriorElevations.Services.Reports
             reportBuilder.AppendLine("Марок углов на плане: " + placedPlanMarksCount);
             reportBuilder.AppendLine("Марок углов на листе: " + placedSheetMarksCount);
 
-            if (createdSheet != null)
+            if (targetSheet != null)
             {
-                reportBuilder.AppendLine("Создан лист: " + createdSheet.SheetNumber + " | " + createdSheet.Name);
+                reportBuilder.AppendLine(
+                    (sheetWasCreated ? "Создан лист: " : "Использован лист: ") +
+                    targetSheet.SheetNumber + " | " + targetSheet.Name);
                 reportBuilder.AppendLine("Размещено видовых экранов: " + placedViewportCount);
             }
             else
             {
-                reportBuilder.AppendLine("Лист: не создан");
+                reportBuilder.AppendLine(sheetPlacementRequested
+                    ? "Лист: не создан или не выбран"
+                    : "Размещение на листе: отключено");
                 reportBuilder.AppendLine("Размещено видовых экранов: 0");
-                if (warnings != null && warnings.Count > 0)
+                if (sheetPlacementRequested && warnings != null && warnings.Count > 0)
                 {
                     reportBuilder.AppendLine("Причина: " + warnings[warnings.Count - 1]);
                 }
             }
 
-            if (createdSheet != null && createdCount > 0 && placedViewportCount == 0 &&
+            if (targetSheet != null && createdCount > 0 && placedViewportCount == 0 &&
                 warnings != null && warnings.Count > 0)
             {
                 reportBuilder.AppendLine("Причина отсутствия видов на листе: " + warnings[warnings.Count - 1]);

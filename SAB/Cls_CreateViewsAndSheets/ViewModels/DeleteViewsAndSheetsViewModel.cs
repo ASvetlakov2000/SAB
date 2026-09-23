@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using SAB.CreateViewsAndSheets.Models;
-using SAB.RoomGeometryTools.Utils;
+using SAB.Helpers.Mvvm;
 
 namespace SAB.CreateViewsAndSheets.ViewModels
 {

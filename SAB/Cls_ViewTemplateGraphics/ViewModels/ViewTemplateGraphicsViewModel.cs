@@ -276,6 +276,23 @@ namespace SAB.ViewTemplateGraphics.ViewModels
             }
         }
 
+        public void FilterViewProperties(string searchText)
+        {
+            string normalized = (searchText ?? string.Empty).Trim();
+            if (GraphicsData == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < GraphicsData.ViewProperties.Count; i++)
+            {
+                ViewTemplateParameterRow row = GraphicsData.ViewProperties[i];
+                row.IsVisibleInList = normalized.Length == 0 ||
+                    (row.Name ?? string.Empty).IndexOf(normalized, StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                    (row.ValueText ?? string.Empty).IndexOf(normalized, StringComparison.CurrentCultureIgnoreCase) >= 0;
+            }
+        }
+
         public void FilterWorksets(string searchText)
         {
             string normalized = (searchText ?? string.Empty).Trim();
@@ -436,6 +453,12 @@ namespace SAB.ViewTemplateGraphics.ViewModels
             if (data == null)
             {
                 return;
+            }
+
+            for (int propertyIndex = 0; propertyIndex < data.ViewProperties.Count; propertyIndex++)
+            {
+                data.ViewProperties[propertyIndex].PropertyChanged += GraphicsItem_PropertyChanged;
+                data.ViewProperties[propertyIndex].IncludeState.PropertyChanged += GraphicsItem_PropertyChanged;
             }
 
             CategoryTabData[] categoryTabs =

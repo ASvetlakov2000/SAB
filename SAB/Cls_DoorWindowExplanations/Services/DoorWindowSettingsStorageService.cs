@@ -7,7 +7,7 @@ namespace SAB.DoorWindowExplanations.Services
 {
     public class DoorWindowSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 5;
+        private const int CurrentSchemaVersion = 6;
         private readonly string _filePath;
 
         public DoorWindowSettingsStorageService()
@@ -47,6 +47,11 @@ namespace SAB.DoorWindowExplanations.Services
                     persisted.Settings.ViewTitleAnchor = defaults.ViewTitleAnchor;
                     persisted.Settings.ViewTitleOffsetXmm = defaults.ViewTitleOffsetXmm;
                     persisted.Settings.ViewTitleOffsetYmm = defaults.ViewTitleOffsetYmm;
+                }
+
+                if (persisted.SchemaVersion < 6)
+                {
+                    persisted.Settings.ViewportTypeIdValue = -1;
                 }
 
                 if (persisted.Settings.TopProjectionDepthMm <= 0.0)

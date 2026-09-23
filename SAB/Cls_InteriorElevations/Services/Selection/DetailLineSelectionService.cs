@@ -110,33 +110,28 @@ namespace SAB.InteriorElevations.Services.Selection
                 return result;
             }
 
-            IList<Reference> pickedReferences;
-            try
-            {
-                pickedReferences = uiDocument.Selection.PickObjects(
-                    ObjectType.Element,
-                    new DetailLineSelectionFilter(activeView.Id),
-                    string.IsNullOrWhiteSpace(statusPrompt)
-                        ? "Выберите линии, вдоль которых будут созданы развертки"
-                        : statusPrompt);
-            }
-            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
-            {
-                result.IsCancelled = true;
-                return result;
-            }
-
-            if (pickedReferences == null || pickedReferences.Count == 0)
-            {
-                result.Warnings.Add("Линии не выбраны.");
-                return result;
-            }
-
             Document document = uiDocument.Document;
+            HashSet<long> selectedLineIds = new HashSet<long>();
+            string basePrompt = string.IsNullOrWhiteSpace(statusPrompt)
+                ? "Выберите линии, вдоль которых будут созданы развертки"
+                : statusPrompt;
 
-            for (int i = 0; i < pickedReferences.Count; i++)
+            while (true)
             {
-                Reference reference = pickedReferences[i];
+                Reference reference;
+                try
+                {
+                    reference = uiDocument.Selection.PickObject(
+                        ObjectType.Element,
+                        new DetailLineSelectionFilter(activeView.Id),
+                        basePrompt + ". Линия №" + (result.Lines.Count + 1) + ". Esc — завершить выбор");
+                }
+                catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+                {
+                    result.IsCancelled = result.Lines.Count == 0;
+                    break;
+                }
+
                 if (reference == null)
                 {
                     continue;
@@ -177,12 +172,21 @@ namespace SAB.InteriorElevations.Services.Selection
                     continue;
                 }
 
+                long lineIdValue = RevitElementIdUtils.GetElementIdValue(detailLine.Id);
+                if (!selectedLineIds.Add(lineIdValue))
+                {
+                    result.Warnings.Add("Линия " + lineIdValue + " уже выбрана и была пропущена.");
+                    continue;
+                }
+
                 result.Lines.Add(detailLine);
             }
 
-            // Важный блок: сохраняем исходный порядок выбора пользователя.
-            // PickObjects возвращает ссылки в последовательности кликов,
-            // и дальнейшая нумерация разверток должна идти именно в этом порядке.
+            if (result.Lines.Count == 0 && !result.IsCancelled)
+            {
+                result.Warnings.Add("Линии не выбраны.");
+            }
+
             return result;
         }
 

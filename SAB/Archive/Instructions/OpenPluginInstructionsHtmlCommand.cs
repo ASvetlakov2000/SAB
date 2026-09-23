@@ -76,8 +76,7 @@ namespace RevitLibraryBuilder.Commands.Regulations
             AddDynamicCandidateDirectories(options);
 
             // Блок явного fallback-пути для локальной рабочей среды.
-            options.CandidateDirectories.Add(@"C:\Users\VB_User\Desktop\C#\ASvetlakov2000\SAB\Docs\PluginInstructions");
-            options.CandidateDirectories.Add(@"C:\Users\VB_User\Desktop\C#\ASvetlakov2000\SAB\SAB\Docs\PluginInstructions");
+            options.CandidateDirectories.Add(@"C:\Users\svetl\Desktop\Codex\Projects\SAB\Docs\PluginInstructions");
 
             // Блок типовых пользовательских путей (для установленных сборок).
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

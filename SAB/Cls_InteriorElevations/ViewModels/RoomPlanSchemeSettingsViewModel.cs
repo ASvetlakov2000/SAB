@@ -22,7 +22,7 @@ namespace SAB.InteriorElevations.ViewModels
             _document = document;
             // Блок предзаполненных значений, которые пользователь может менять в окне.
             NamePart1Text = "План-схема разверток пом. ";
-            NamePart2Text = "{Номер помещения}";
+            NamePart2Text = "[Номер помещения]";
             NamePart3Text = string.Empty;
             CropOffsetMmText = "0";
 

@@ -2249,6 +2249,496 @@ namespace SAB.ViewTemplateGraphics.Models
         }
     }
 
+    public class ViewTemplateParameterValue
+    {
+        public StorageType StorageType { get; set; }
+
+        public string DisplayValue { get; set; }
+
+        public int IntegerValue { get; set; }
+
+        public double DoubleValue { get; set; }
+
+        public string StringValue { get; set; }
+
+        public int ElementIdValue { get; set; }
+
+        public bool IsEquivalentTo(ViewTemplateParameterValue other)
+        {
+            if (other == null || StorageType != other.StorageType)
+            {
+                return false;
+            }
+
+            switch (StorageType)
+            {
+                case StorageType.Integer:
+                    return IntegerValue == other.IntegerValue;
+                case StorageType.Double:
+                    return Math.Abs(DoubleValue - other.DoubleValue) < 1e-9;
+                case StorageType.String:
+                    return string.Equals(StringValue ?? string.Empty, other.StringValue ?? string.Empty, StringComparison.Ordinal);
+                case StorageType.ElementId:
+                    return ElementIdValue == other.ElementIdValue;
+                default:
+                    return string.Equals(DisplayValue ?? string.Empty, other.DisplayValue ?? string.Empty, StringComparison.Ordinal);
+            }
+        }
+    }
+
+    public class ViewTemplateParameterRow : NotifyPropertyChangedBase
+    {
+        public const int MixedElementIdValue = int.MinValue;
+
+        private readonly ViewTemplateParameterValue _baselineValue;
+        private string _valueText;
+        private int _selectedElementIdValue;
+        private bool _isValueMixed;
+        private bool _isValueModified;
+        private bool _isTrackingChanges;
+        private bool _originalWasMixed;
+        private string _originalValueText;
+        private int _originalElementIdValue;
+        private bool _canEditValue;
+        private bool _isVisibleInList;
+        private bool _usesValueOptions;
+        private bool _isNavigationRow;
+        private bool _showIncludeToggle;
+        private bool _isScaleModeRow;
+        private bool _isScaleValueRow;
+        private string _navigationTarget;
+        private ViewTemplateParameterRow _linkedScaleValueRow;
+        private readonly List<int> _controlledParameterIdValues;
+
+        public ViewTemplateParameterRow(
+            int parameterIdValue,
+            string name,
+            ViewTemplateParameterValue value,
+            bool isIncluded,
+            bool canEditValue)
+            : this(parameterIdValue, name, value, isIncluded, canEditValue, null)
+        {
+        }
+
+        public ViewTemplateParameterRow(
+            int parameterIdValue,
+            string name,
+            ViewTemplateParameterValue value,
+            bool isIncluded,
+            bool canEditValue,
+            TemplateSectionState includeState)
+        {
+            ParameterIdValue = parameterIdValue;
+            Name = name ?? string.Empty;
+            _baselineValue = value ?? new ViewTemplateParameterValue();
+            StorageType = _baselineValue.StorageType;
+            _valueText = _baselineValue.DisplayValue ?? string.Empty;
+            _selectedElementIdValue = _baselineValue.ElementIdValue;
+            _canEditValue = canEditValue && StorageType != Autodesk.Revit.DB.StorageType.None;
+            _isVisibleInList = true;
+            _showIncludeToggle = true;
+            _controlledParameterIdValues = new List<int>();
+            _controlledParameterIdValues.Add(parameterIdValue);
+            ElementOptions = new ObservableCollection<NamedElementOption>();
+            ValueOptions = new ObservableCollection<NamedStringOption>();
+            IncludeState = includeState ?? new TemplateSectionState(parameterIdValue, Name);
+            if (includeState == null)
+            {
+                IncludeState.IsIncluded = isIncluded;
+            }
+            IncludeState.PropertyChanged += IncludeState_PropertyChanged;
+        }
+
+        public int ParameterIdValue { get; private set; }
+
+        public string Name { get; private set; }
+
+        public StorageType StorageType { get; private set; }
+
+        public TemplateSectionState IncludeState { get; private set; }
+
+        public ObservableCollection<NamedElementOption> ElementOptions { get; private set; }
+
+        public ObservableCollection<NamedStringOption> ValueOptions { get; private set; }
+
+        public IList<int> ControlledParameterIdValues
+        {
+            get { return _controlledParameterIdValues; }
+        }
+
+        public string ValueText
+        {
+            get { return _valueText ?? string.Empty; }
+            set
+            {
+                string normalized = value ?? string.Empty;
+                if (string.Equals(_valueText, normalized, StringComparison.Ordinal) && !_isValueMixed)
+                {
+                    return;
+                }
+
+                bool wasMixed = _isValueMixed;
+                _isValueMixed = false;
+                _valueText = normalized;
+                OnPropertyChanged("ValueText");
+                if (wasMixed)
+                {
+                    OnPropertyChanged("IsValueMixed");
+                    OnPropertyChanged("HasMixedTemplateValues");
+                }
+
+                UpdateValueModificationState();
+                UpdateLinkedScaleValueRow();
+            }
+        }
+
+        public int SelectedElementIdValue
+        {
+            get { return _selectedElementIdValue; }
+            set
+            {
+                if (_selectedElementIdValue == value && !_isValueMixed)
+                {
+                    return;
+                }
+
+                bool wasMixed = _isValueMixed;
+                _isValueMixed = false;
+                _selectedElementIdValue = value;
+                _valueText = GetElementOptionName(value);
+                OnPropertyChanged("SelectedElementIdValue");
+                OnPropertyChanged("ValueText");
+                if (wasMixed)
+                {
+                    OnPropertyChanged("IsValueMixed");
+                    OnPropertyChanged("HasMixedTemplateValues");
+                }
+
+                UpdateValueModificationState();
+            }
+        }
+
+        public bool CanEditValue
+        {
+            get { return _canEditValue; }
+            private set
+            {
+                if (SetField(ref _canEditValue, value, "CanEditValue"))
+                {
+                    OnPropertyChanged("IsValueReadOnly");
+                }
+            }
+        }
+
+        public bool IsValueReadOnly
+        {
+            get { return !CanEditValue; }
+        }
+
+        public bool IsElementIdValue
+        {
+            get { return StorageType == Autodesk.Revit.DB.StorageType.ElementId; }
+        }
+
+        public bool UsesValueOptions
+        {
+            get { return _usesValueOptions; }
+        }
+
+        public bool IsNavigationRow
+        {
+            get { return _isNavigationRow; }
+        }
+
+        public string NavigationTarget
+        {
+            get { return _navigationTarget ?? string.Empty; }
+        }
+
+        public bool ShowIncludeToggle
+        {
+            get { return _showIncludeToggle; }
+        }
+
+        public bool IsScaleModeRow
+        {
+            get { return _isScaleModeRow; }
+        }
+
+        public bool IsScaleValueRow
+        {
+            get { return _isScaleValueRow; }
+        }
+
+        public bool IsValueMixed
+        {
+            get { return _isValueMixed; }
+        }
+
+        public bool HasMixedTemplateValues
+        {
+            get { return _isValueMixed || IncludeState.IsMixed; }
+        }
+
+        public bool IsValueModified
+        {
+            get { return _isValueModified; }
+        }
+
+        public bool IsModified
+        {
+            get { return IncludeState.IsModified || IsValueModified; }
+        }
+
+        public string StatusText
+        {
+            get
+            {
+                if (IsModified)
+                {
+                    return "Изменено";
+                }
+
+                return HasMixedTemplateValues ? "Разные значения" : string.Empty;
+            }
+        }
+
+        public bool IsVisibleInList
+        {
+            get { return _isVisibleInList; }
+            set { SetField(ref _isVisibleInList, value, "IsVisibleInList"); }
+        }
+
+        public void AddElementOption(int idValue, string name)
+        {
+            for (int i = 0; i < ElementOptions.Count; i++)
+            {
+                if (ElementOptions[i].IdValue == idValue)
+                {
+                    return;
+                }
+            }
+
+            ElementOptions.Add(new NamedElementOption(idValue, name));
+        }
+
+        public void AddControlledParameterId(int parameterIdValue)
+        {
+            if (!_controlledParameterIdValues.Contains(parameterIdValue))
+            {
+                _controlledParameterIdValues.Add(parameterIdValue);
+            }
+        }
+
+        public void ConfigureScaleMode(
+            ViewTemplateParameterRow scaleValueRow,
+            IList<int> standardScaleValues)
+        {
+            _isScaleModeRow = true;
+            _usesValueOptions = true;
+            _linkedScaleValueRow = scaleValueRow;
+            ValueOptions.Clear();
+            ValueOptions.Add(new NamedStringOption("Польз.", "Польз."));
+            if (standardScaleValues != null)
+            {
+                for (int i = 0; i < standardScaleValues.Count; i++)
+                {
+                    string displayValue = "1 : " + standardScaleValues[i];
+                    ValueOptions.Add(new NamedStringOption(displayValue, displayValue));
+                }
+            }
+
+            OnPropertyChanged("UsesValueOptions");
+            OnPropertyChanged("IsScaleModeRow");
+            UpdateLinkedScaleValueRow();
+        }
+
+        public void ConfigureScaleValue()
+        {
+            _isScaleValueRow = true;
+            _showIncludeToggle = false;
+            OnPropertyChanged("IsScaleValueRow");
+            OnPropertyChanged("ShowIncludeToggle");
+        }
+
+        public void ConfigureNavigation(string navigationTarget)
+        {
+            _isNavigationRow = true;
+            _navigationTarget = navigationTarget ?? string.Empty;
+            _canEditValue = false;
+            OnPropertyChanged("IsNavigationRow");
+            OnPropertyChanged("NavigationTarget");
+            OnPropertyChanged("CanEditValue");
+            OnPropertyChanged("IsValueReadOnly");
+        }
+
+        public void SetValueEditingEnabled(bool isEnabled)
+        {
+            CanEditValue = isEnabled && StorageType != Autodesk.Revit.DB.StorageType.None;
+        }
+
+        public void RefreshScaleEditorState()
+        {
+            UpdateLinkedScaleValueRow();
+        }
+
+        public void MergeValue(ViewTemplateParameterValue value, bool isIncluded, bool canEditValue)
+        {
+            IncludeState.MergeValue(isIncluded);
+            CanEditValue = CanEditValue && canEditValue && value != null && value.StorageType == StorageType;
+            if (!_baselineValue.IsEquivalentTo(value))
+            {
+                MarkValueAsMixed();
+            }
+        }
+
+        public void MarkUnavailable()
+        {
+            CanEditValue = false;
+            IncludeState.MergeValue(!IncludeState.IsIncluded);
+            MarkValueAsMixed();
+        }
+
+        public void StartTrackingChanges()
+        {
+            IncludeState.StartTrackingChanges();
+            _originalWasMixed = _isValueMixed;
+            _originalValueText = _valueText ?? string.Empty;
+            _originalElementIdValue = _selectedElementIdValue;
+            _isValueModified = false;
+            _isTrackingChanges = true;
+            OnPropertyChanged("IsValueModified");
+            OnPropertyChanged("IsModified");
+            OnPropertyChanged("StatusText");
+        }
+
+        private void MarkValueAsMixed()
+        {
+            if (_isValueMixed)
+            {
+                return;
+            }
+
+            _isValueMixed = true;
+            _valueText = "Разные значения";
+            if (IsElementIdValue)
+            {
+                _selectedElementIdValue = MixedElementIdValue;
+                AddElementOption(MixedElementIdValue, "Разные значения");
+                OnPropertyChanged("SelectedElementIdValue");
+            }
+            else if (UsesValueOptions)
+            {
+                AddValueOption("Разные значения");
+            }
+
+            OnPropertyChanged("ValueText");
+            OnPropertyChanged("IsValueMixed");
+            OnPropertyChanged("HasMixedTemplateValues");
+            UpdateLinkedScaleValueRow();
+        }
+
+        private void AddValueOption(string value)
+        {
+            for (int i = 0; i < ValueOptions.Count; i++)
+            {
+                if (string.Equals(ValueOptions[i].Value, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+            }
+
+            ValueOptions.Insert(0, new NamedStringOption(value, value));
+        }
+
+        private void UpdateLinkedScaleValueRow()
+        {
+            if (!_isScaleModeRow || _linkedScaleValueRow == null)
+            {
+                return;
+            }
+
+            bool isCustom = string.Equals(ValueText, "Польз.", StringComparison.CurrentCultureIgnoreCase);
+            _linkedScaleValueRow.SetValueEditingEnabled(isCustom);
+            if (isCustom || IsValueMixed)
+            {
+                return;
+            }
+
+            string normalized = (ValueText ?? string.Empty).Replace(" ", string.Empty);
+            int separatorIndex = normalized.IndexOf(':');
+            int scaleValue;
+            if (separatorIndex >= 0 &&
+                int.TryParse(normalized.Substring(separatorIndex + 1), out scaleValue) &&
+                scaleValue > 0)
+            {
+                _linkedScaleValueRow.ValueText = scaleValue.ToString();
+            }
+        }
+
+        private string GetElementOptionName(int idValue)
+        {
+            for (int i = 0; i < ElementOptions.Count; i++)
+            {
+                if (ElementOptions[i].IdValue == idValue)
+                {
+                    return ElementOptions[i].Name;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private void UpdateValueModificationState()
+        {
+            if (!_isTrackingChanges)
+            {
+                return;
+            }
+
+            bool isModified;
+            if (_originalWasMixed)
+            {
+                isModified = !_isValueMixed;
+            }
+            else if (_isValueMixed)
+            {
+                isModified = true;
+            }
+            else if (IsElementIdValue)
+            {
+                isModified = _selectedElementIdValue != _originalElementIdValue;
+            }
+            else
+            {
+                isModified = !string.Equals(_valueText ?? string.Empty, _originalValueText ?? string.Empty, StringComparison.Ordinal);
+            }
+
+            if (_isValueModified != isModified)
+            {
+                _isValueModified = isModified;
+                OnPropertyChanged("IsValueModified");
+                OnPropertyChanged("IsModified");
+                OnPropertyChanged("StatusText");
+            }
+        }
+
+        private void IncludeState_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, "IsModified", StringComparison.Ordinal))
+            {
+                OnPropertyChanged("IsModified");
+                OnPropertyChanged("StatusText");
+            }
+            else if (string.Equals(e.PropertyName, "IsMixed", StringComparison.Ordinal) ||
+                     string.Equals(e.PropertyName, "IncludedState", StringComparison.Ordinal))
+            {
+                OnPropertyChanged("HasMixedTemplateValues");
+                OnPropertyChanged("StatusText");
+            }
+        }
+    }
+
     public class TemplateSelectionItem : NotifyPropertyChangedBase
     {
         private bool _isTarget;
@@ -2314,6 +2804,7 @@ namespace SAB.ViewTemplateGraphics.Models
             Filters = new ObservableCollection<FilterOverrideRow>();
             Worksets = new ObservableCollection<WorksetOverrideRow>();
             RevitLinks = new ObservableCollection<RevitLinkInfo>();
+            ViewProperties = new ObservableCollection<ViewTemplateParameterRow>();
             RevitLinkVisibilityTypes = new ObservableCollection<NamedStringOption>();
             LinePatterns = new ObservableCollection<NamedElementOption>();
             FillPatterns = new ObservableCollection<NamedElementOption>();
@@ -2325,6 +2816,8 @@ namespace SAB.ViewTemplateGraphics.Models
         public int SourceTemplateIdValue { get; set; }
 
         public string SourceTemplateName { get; set; }
+
+        public int AssignedViewCount { get; set; }
 
         public CategoryTabData ModelCategories { get; private set; }
 
@@ -2345,6 +2838,8 @@ namespace SAB.ViewTemplateGraphics.Models
         public ObservableCollection<RevitLinkInfo> RevitLinks { get; private set; }
 
         public TemplateSectionState RevitLinksSection { get; private set; }
+
+        public ObservableCollection<ViewTemplateParameterRow> ViewProperties { get; private set; }
 
         public ObservableCollection<NamedStringOption> RevitLinkVisibilityTypes { get; private set; }
 
@@ -2383,6 +2878,22 @@ namespace SAB.ViewTemplateGraphics.Models
         }
 
         public bool IsDirty
+        {
+            get
+            {
+                for (int i = 0; i < ViewProperties.Count; i++)
+                {
+                    if (ViewProperties[i].IsModified)
+                    {
+                        return true;
+                    }
+                }
+
+                return HasGraphicsChanges;
+            }
+        }
+
+        public bool HasGraphicsChanges
         {
             get
             {
@@ -2429,6 +2940,14 @@ namespace SAB.ViewTemplateGraphics.Models
         public int CountModifiedRows()
         {
             int count = 0;
+            for (int propertyIndex = 0; propertyIndex < ViewProperties.Count; propertyIndex++)
+            {
+                if (!ViewProperties[propertyIndex].IsNavigationRow && ViewProperties[propertyIndex].IsModified)
+                {
+                    count++;
+                }
+            }
+
             CategoryTabData[] categoryTabs =
             {
                 ModelCategories,
@@ -2507,6 +3026,11 @@ namespace SAB.ViewTemplateGraphics.Models
 
         public void StartTrackingChanges()
         {
+            for (int i = 0; i < ViewProperties.Count; i++)
+            {
+                ViewProperties[i].StartTrackingChanges();
+            }
+
             ModelCategories.StartTrackingChanges();
             AnnotationCategories.StartTrackingChanges();
             AnalyticalCategories.StartTrackingChanges();

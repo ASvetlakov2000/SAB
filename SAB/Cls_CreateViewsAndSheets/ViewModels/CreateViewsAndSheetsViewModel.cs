@@ -8,7 +8,7 @@ using System.Windows.Input;
 using Autodesk.Revit.DB;
 using SAB.CreateViewsAndSheets.Models;
 using SAB.InteriorElevations.Utils;
-using SAB.RoomGeometryTools.Utils;
+using SAB.Helpers.Mvvm;
 
 namespace SAB.CreateViewsAndSheets.ViewModels
 {
@@ -2408,7 +2408,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             row.SelectedViewTemplate = null;
             row.SheetNumber = importedRow.SheetNumber ?? string.Empty;
             row.SheetName = importedRow.SheetName ?? string.Empty;
-            ApplyImportedSheetSection(row, importedRow.SectionName);
+            ApplyImportedSheetBrowserParameters(row, importedRow);
 
             row.PropertyChanged += Row_PropertyChanged;
             return row;
@@ -2432,6 +2432,48 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             return (mapping.FloorName ?? string.Empty).Trim();
         }
 
+        private void ApplyImportedSheetBrowserParameters(
+            SheetCreationRowViewModel row,
+            SheetTableImportRow importedRow)
+        {
+            if (row == null)
+            {
+                return;
+            }
+
+            row.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
+            bool hasNamedParameterMatch = false;
+
+            for (int i = 0; i < row.SheetBrowserParameterValues.Count; i++)
+            {
+                SheetBrowserParameterValueViewModel parameterValue = row.SheetBrowserParameterValues[i];
+                if (parameterValue == null || importedRow == null)
+                {
+                    continue;
+                }
+
+                string importedValue;
+                if (!importedRow.TryGetParameterValue(parameterValue.ParameterName, out importedValue))
+                {
+                    continue;
+                }
+
+                parameterValue.Value = importedValue;
+                hasNamedParameterMatch = true;
+            }
+
+            if (!hasNamedParameterMatch)
+            {
+                ApplyImportedSheetSection(row, importedRow != null ? importedRow.SectionName : string.Empty);
+                return;
+            }
+
+            row.SheetBrowserParameterValue =
+                row.SheetBrowserParameterValues.Count > 0 && row.SheetBrowserParameterValues[0] != null
+                    ? row.SheetBrowserParameterValues[0].Value
+                    : string.Empty;
+        }
+
         private void ApplyImportedSheetSection(SheetCreationRowViewModel row, string sectionName)
         {
             if (row == null)
@@ -2443,7 +2485,7 @@ namespace SAB.CreateViewsAndSheets.ViewModels
             row.SheetBrowserParameterValue = cleanSectionName;
             row.EnsureSheetBrowserParameterValues(SheetBrowserParameterLevels);
 
-            // Раздел из таблицы записывается в первый параметр группирования листов.
+            // Обратная совместимость для старых таблиц с общей колонкой "Раздел".
             if (row.SheetBrowserParameterValues.Count > 0 && row.SheetBrowserParameterValues[0] != null)
             {
                 row.SheetBrowserParameterValues[0].Value = cleanSectionName;

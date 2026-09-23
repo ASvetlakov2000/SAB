@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Windows.Data;
 using Autodesk.Revit.DB;
 using SAB.InteriorElevations.Models;
+using SAB.InteriorElevations.Services.Elevations;
 using SAB.InteriorElevations.Services.Marks;
 using SAB.InteriorElevations.Utils;
 
@@ -34,9 +36,28 @@ namespace SAB.InteriorElevations.ViewModels
         }
     }
 
+    public class ElevationNamingPreviewContext
+    {
+        public RoomData RoomData { get; set; }
+
+        public int StartPointNumber { get; set; }
+
+        public int EndPointNumber { get; set; }
+    }
+
+    public class ElevationNamingPreviewItem
+    {
+        public string SequenceText { get; set; }
+
+        public string ViewName { get; set; }
+
+        public string ViewTitle { get; set; }
+    }
+
     public class ElevationSettingsViewModel : INotifyPropertyChanged
     {
         private readonly Document _document;
+        private readonly List<ElevationNamingPreviewContext> _namingPreviewContexts;
 
         private RevitElementOption _selectedElevationViewFamilyType;
         private RevitElementOption _selectedViewTemplate;
@@ -46,13 +67,22 @@ namespace SAB.InteriorElevations.ViewModels
         private RevitElementOption _selectedSheetCornerMarkType;
         private RevitElementOption _selectedRoomPlanViewTemplate;
         private RevitElementOption _selectedRoomPlanRoomTagType;
+        private RevitElementOption _selectedExistingSheet;
         private ViewTitleAnchorOption _selectedViewTitleAnchor;
         private bool _createSheet;
+        private bool _useExistingSheet;
+        private bool _isExistingSheetDropDownOpen;
+        private bool _createRoomPlanScheme;
+        private bool _placeRoomPlanSchemeOnSheet;
         private bool _multipleRoomsOnSheet;
-        private bool _isCropManualMode;
-        private bool _isSheetPointManualMode;
+        private bool _pickRoomFromLink;
+        private bool _cornerMarksOnlyCornerNumber;
+        private bool _sheetCornerMarksBelowView;
         private string _startXmmText;
         private string _startYmmText;
+        private string _existingSheetSearchText;
+        private ElementId _existingRoomPlanViewId = ElementId.InvalidElementId;
+        private string _existingRoomPlanViewName;
 
         public ElevationSettingsViewModel(Document document, ElevationSettings initialSettings = null)
         {
@@ -66,7 +96,10 @@ namespace SAB.InteriorElevations.ViewModels
             SheetCornerMarkTypes = new ObservableCollection<RevitElementOption>();
             RoomPlanViewTemplates = new ObservableCollection<RevitElementOption>();
             RoomPlanRoomTagTypes = new ObservableCollection<RevitElementOption>();
+            ExistingSheets = new ObservableCollection<RevitElementOption>();
             ViewTitleAnchors = new ObservableCollection<ViewTitleAnchorOption>();
+            NamingPreviewItems = new ObservableCollection<ElevationNamingPreviewItem>();
+            _namingPreviewContexts = new List<ElevationNamingPreviewContext>();
 
             // Блок значений по умолчанию, которые пользователь может менять в окне.
             ViewScaleText = "50";
@@ -74,32 +107,36 @@ namespace SAB.InteriorElevations.ViewModels
             BottomOffsetMmText = "0";
             LeftOffsetMmText = "100";
             RightOffsetMmText = "100";
-            _isCropManualMode = true;
             ViewDepthMmText = "3000";
             MarkerOffsetMmText = "250";
+            EnableRoomObjectCategory = true;
             ElevationNamePart1Text = "ELV_r";
-            ElevationNamePart2Text = "{Номер помещения}_{Имя помещения}";
-            ElevationNamePart3Text = "_Elev_{Начальный угол}-{Конечный угол}";
+            ElevationNamePart2Text = "[Номер помещения]_[Имя помещения]";
+            ElevationNamePart3Text = "_Elev_[Начальный угол]-[Конечный угол]";
+            ElevationTitlePart1Text = "Пом. №";
+            ElevationTitlePart2Text = "[Номер помещения] [Имя помещения]. Вид ";
+            ElevationTitlePart3Text = "[Начальный угол]-[Конечный угол]";
 
             ColumnsCountText = "2";
-            _isSheetPointManualMode = true;
             StartXmmText = "150";
             StartYmmText = "200";
             StepXmmText = "180";
             StepYmmText = "140";
             SheetFormatAText = "3";
             SheetNamePart1Text = "Развертки стен пом. ";
-            SheetNamePart2Text = "{Помещения}";
+            SheetNamePart2Text = "[Помещения]";
             SheetNamePart3Text = string.Empty;
             ViewTitleOffsetXmmText = "0";
             ViewTitleOffsetYmmText = "-5";
 
             // Блок настроек план-схемы, интегрированный в окно разверток.
             RoomPlanNamePart1Text = "План-схема разверток пом. ";
-            RoomPlanNamePart2Text = "{Номер помещения}";
+            RoomPlanNamePart2Text = "[Номер помещения]";
             RoomPlanNamePart3Text = string.Empty;
             RoomPlanViewScaleText = "20";
             RoomPlanCropOffsetMmText = "0";
+            _createRoomPlanScheme = true;
+            _placeRoomPlanSchemeOnSheet = true;
 
             LoadElevationViewFamilyTypes();
             LoadViewTemplates();
@@ -109,7 +146,14 @@ namespace SAB.InteriorElevations.ViewModels
             LoadCornerMarkTypes(SheetCornerMarkTypes);
             LoadRoomPlanViewTemplates();
             LoadRoomPlanRoomTagTypes();
+            LoadExistingSheets();
             LoadViewTitleAnchors();
+
+            ExistingSheetsView = CollectionViewSource.GetDefaultView(ExistingSheets);
+            if (ExistingSheetsView != null)
+            {
+                ExistingSheetsView.Filter = FilterExistingSheet;
+            }
 
             _createSheet = TitleBlockTypes.Count > 0 && ViewportTypes.Count > 0;
 
@@ -135,7 +179,28 @@ namespace SAB.InteriorElevations.ViewModels
 
         public ObservableCollection<RevitElementOption> RoomPlanRoomTagTypes { get; private set; }
 
+        public ObservableCollection<RevitElementOption> ExistingSheets { get; private set; }
+
+        public ICollectionView ExistingSheetsView { get; private set; }
+
         public ObservableCollection<ViewTitleAnchorOption> ViewTitleAnchors { get; private set; }
+
+        public ObservableCollection<ElevationNamingPreviewItem> NamingPreviewItems { get; private set; }
+
+        public bool HasNamingPreview
+        {
+            get { return NamingPreviewItems.Count > 0; }
+        }
+
+        public string NamingPreviewStatusText
+        {
+            get
+            {
+                return HasNamingPreview
+                    ? "Пример для первого вида."
+                    : "Выберите линии и помещение — здесь появятся итоговые имена и заголовки.";
+            }
+        }
 
         public RevitElementOption SelectedElevationViewFamilyType
         {
@@ -237,34 +302,6 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string RightOffsetMmText { get; set; }
 
-        public bool IsCropManualMode
-        {
-            get { return _isCropManualMode; }
-            set
-            {
-                if (_isCropManualMode == value)
-                {
-                    return;
-                }
-
-                _isCropManualMode = value;
-                OnPropertyChanged("IsCropManualMode");
-                OnPropertyChanged("IsCropByExampleMode");
-            }
-        }
-
-        public bool IsCropByExampleMode
-        {
-            get { return !IsCropManualMode; }
-            set
-            {
-                if (value)
-                {
-                    IsCropManualMode = false;
-                }
-            }
-        }
-
         public string ViewDepthMmText { get; set; }
 
         public string MarkerOffsetMmText { get; set; }
@@ -275,13 +312,385 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string ElevationNamePart3Text { get; set; }
 
+        public string ElevationNameFormulaText
+        {
+            get { return NormalizeFormulaSyntax((ElevationNamePart1Text ?? string.Empty) + (ElevationNamePart2Text ?? string.Empty) + (ElevationNamePart3Text ?? string.Empty)); }
+            set
+            {
+                ElevationNamePart1Text = NormalizeFormulaSyntax(value);
+                ElevationNamePart2Text = string.Empty;
+                ElevationNamePart3Text = string.Empty;
+                OnPropertyChanged("ElevationNameFormulaText");
+                RefreshNamingPreview();
+            }
+        }
+
+        public string ElevationTitlePart1Text { get; set; }
+
+        public string ElevationTitlePart2Text { get; set; }
+
+        public string ElevationTitlePart3Text { get; set; }
+
+        public string ElevationTitleFormulaText
+        {
+            get { return NormalizeFormulaSyntax((ElevationTitlePart1Text ?? string.Empty) + (ElevationTitlePart2Text ?? string.Empty) + (ElevationTitlePart3Text ?? string.Empty)); }
+            set
+            {
+                ElevationTitlePart1Text = NormalizeFormulaSyntax(value);
+                ElevationTitlePart2Text = string.Empty;
+                ElevationTitlePart3Text = string.Empty;
+                OnPropertyChanged("ElevationTitleFormulaText");
+                RefreshNamingPreview();
+            }
+        }
+
         public bool CreateSheet
         {
             get { return _createSheet; }
             set
             {
+                if (_createSheet == value)
+                {
+                    return;
+                }
+
                 _createSheet = value;
+                if (value)
+                {
+                    _useExistingSheet = false;
+                    ClearExistingRoomPlanViewSelection();
+                }
+
                 OnPropertyChanged("CreateSheet");
+                OnPropertyChanged("UseExistingSheet");
+                OnPropertyChanged("CreateNewSheetMode");
+                OnPropertyChanged("ExistingSheetMode");
+                OnPropertyChanged("PlaceViewsOnSheet");
+                OnPropertyChanged("DoNotPlaceViewsOnSheetMode");
+                OnPropertyChanged("CanPlaceRoomPlanSchemeOnSheet");
+                OnPropertyChanged("PickSheetPointButtonText");
+                OnPropertyChanged("RoomPlanOperationLabel");
+                OnPropertyChanged("RoomPlanModeHint");
+                OnPropertyChanged("CanEditRoomPlanCreationParameters");
+            }
+        }
+
+        public bool UseExistingSheet
+        {
+            get { return _useExistingSheet; }
+            set
+            {
+                if (_useExistingSheet == value)
+                {
+                    return;
+                }
+
+                _useExistingSheet = value;
+                if (value)
+                {
+                    _createSheet = false;
+                }
+                else
+                {
+                    ClearExistingRoomPlanViewSelection();
+                }
+
+                OnPropertyChanged("UseExistingSheet");
+                OnPropertyChanged("CreateSheet");
+                OnPropertyChanged("ExistingSheetMode");
+                OnPropertyChanged("CreateNewSheetMode");
+                OnPropertyChanged("PlaceViewsOnSheet");
+                OnPropertyChanged("DoNotPlaceViewsOnSheetMode");
+                OnPropertyChanged("CanPlaceRoomPlanSchemeOnSheet");
+                OnPropertyChanged("PickSheetPointButtonText");
+                OnPropertyChanged("RoomPlanOperationLabel");
+                OnPropertyChanged("RoomPlanModeHint");
+                OnPropertyChanged("CanEditRoomPlanCreationParameters");
+            }
+        }
+
+        public bool CreateNewSheetMode
+        {
+            get { return CreateSheet; }
+            set
+            {
+                if (value)
+                {
+                    CreateSheet = true;
+                }
+            }
+        }
+
+        public bool ExistingSheetMode
+        {
+            get { return UseExistingSheet; }
+            set
+            {
+                if (value)
+                {
+                    UseExistingSheet = true;
+                }
+            }
+        }
+
+        public bool DoNotPlaceViewsOnSheetMode
+        {
+            get { return !PlaceViewsOnSheet; }
+            set
+            {
+                if (value)
+                {
+                    PlaceViewsOnSheet = false;
+                }
+            }
+        }
+
+        public bool PlaceViewsOnSheet
+        {
+            get { return CreateSheet || UseExistingSheet; }
+            set
+            {
+                if (value)
+                {
+                    if (!CreateSheet && !UseExistingSheet)
+                    {
+                        CreateSheet = true;
+                    }
+                }
+                else
+                {
+                    bool changed = _createSheet || _useExistingSheet;
+                    _createSheet = false;
+                    _useExistingSheet = false;
+                    ClearExistingRoomPlanViewSelection();
+                    if (changed)
+                    {
+                        OnPropertyChanged("CreateSheet");
+                        OnPropertyChanged("UseExistingSheet");
+                        OnPropertyChanged("CreateNewSheetMode");
+                        OnPropertyChanged("ExistingSheetMode");
+                    }
+                }
+
+                OnPropertyChanged("PlaceViewsOnSheet");
+                OnPropertyChanged("DoNotPlaceViewsOnSheetMode");
+                OnPropertyChanged("CanPlaceRoomPlanSchemeOnSheet");
+                OnPropertyChanged("PickSheetPointButtonText");
+                OnPropertyChanged("RoomPlanOperationLabel");
+                OnPropertyChanged("RoomPlanModeHint");
+                OnPropertyChanged("CanEditRoomPlanCreationParameters");
+            }
+        }
+
+        public RevitElementOption SelectedExistingSheet
+        {
+            get { return _selectedExistingSheet; }
+            set
+            {
+                if (ReferenceEquals(_selectedExistingSheet, value))
+                {
+                    return;
+                }
+
+                _selectedExistingSheet = value;
+                ClearExistingRoomPlanViewSelection();
+                if (value != null &&
+                    !string.Equals(_existingSheetSearchText, value.DisplayName, StringComparison.Ordinal))
+                {
+                    _existingSheetSearchText = value.DisplayName;
+                    OnPropertyChanged("ExistingSheetSearchText");
+                }
+
+                OnPropertyChanged("SelectedExistingSheet");
+            }
+        }
+
+        public ElementId ExistingRoomPlanViewId
+        {
+            get { return _existingRoomPlanViewId; }
+        }
+
+        public string ExistingRoomPlanSummary
+        {
+            get
+            {
+                return HasExistingRoomPlanSelection
+                    ? _existingRoomPlanViewName
+                    : "не выбрана";
+            }
+        }
+
+        public bool HasExistingRoomPlanSelection
+        {
+            get
+            {
+                return _existingRoomPlanViewId != null &&
+                       !RevitElementIdUtils.AreEqual(_existingRoomPlanViewId, ElementId.InvalidElementId);
+            }
+        }
+
+        public string PickSheetPointButtonText
+        {
+            get
+            {
+                return UseExistingSheet && CreateRoomPlanScheme
+                    ? "Указать точку и план-схему"
+                    : "Указать на листе";
+            }
+        }
+
+        public string RoomPlanOperationLabel
+        {
+            get
+            {
+                return UseExistingSheet
+                    ? "Добавить марки на существующую план-схему"
+                    : "Создать план-схему помещения";
+            }
+        }
+
+        public string RoomPlanModeHint
+        {
+            get
+            {
+                return UseExistingSheet
+                    ? "После указания точки выберите видовой экран план-схемы на целевом листе. Новый вид плана не создается."
+                    : "Для нового листа план-схема создается отдельно и при необходимости размещается рядом с развертками.";
+            }
+        }
+
+        public string ExistingSheetSearchText
+        {
+            get { return _existingSheetSearchText; }
+            set
+            {
+                if (string.Equals(_existingSheetSearchText, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _existingSheetSearchText = value;
+                if (_selectedExistingSheet != null &&
+                    !string.Equals(value, _selectedExistingSheet.DisplayName, StringComparison.Ordinal))
+                {
+                    _selectedExistingSheet = null;
+                    ClearExistingRoomPlanViewSelection();
+                    OnPropertyChanged("SelectedExistingSheet");
+                }
+
+                OnPropertyChanged("ExistingSheetSearchText");
+                if (ExistingSheetsView != null)
+                {
+                    ExistingSheetsView.Refresh();
+                }
+
+                if (UseExistingSheet)
+                {
+                    IsExistingSheetDropDownOpen = true;
+                }
+            }
+        }
+
+        public bool IsExistingSheetDropDownOpen
+        {
+            get { return _isExistingSheetDropDownOpen; }
+            set
+            {
+                if (_isExistingSheetDropDownOpen == value)
+                {
+                    return;
+                }
+
+                _isExistingSheetDropDownOpen = value;
+                OnPropertyChanged("IsExistingSheetDropDownOpen");
+            }
+        }
+
+        public bool OpenCreatedSheet { get; set; }
+
+        public bool PickRoomFromLink
+        {
+            get { return _pickRoomFromLink; }
+            set
+            {
+                if (_pickRoomFromLink == value)
+                {
+                    return;
+                }
+
+                _pickRoomFromLink = value;
+                OnPropertyChanged("PickRoomFromLink");
+                OnPropertyChanged("PickRoomFromHost");
+            }
+        }
+
+        public bool PickRoomFromHost
+        {
+            get { return !PickRoomFromLink; }
+            set
+            {
+                if (value)
+                {
+                    PickRoomFromLink = false;
+                }
+            }
+        }
+
+        public bool EnableRoomObjectCategory { get; set; }
+
+        public bool CornerMarksWithRoomNumber
+        {
+            get { return !CornerMarksOnlyCornerNumber; }
+            set
+            {
+                if (value)
+                {
+                    CornerMarksOnlyCornerNumber = false;
+                }
+            }
+        }
+
+        public bool CornerMarksOnlyCornerNumber
+        {
+            get { return _cornerMarksOnlyCornerNumber; }
+            set
+            {
+                if (_cornerMarksOnlyCornerNumber == value)
+                {
+                    return;
+                }
+
+                _cornerMarksOnlyCornerNumber = value;
+                OnPropertyChanged("CornerMarksOnlyCornerNumber");
+                OnPropertyChanged("CornerMarksWithRoomNumber");
+            }
+        }
+
+        public bool SheetCornerMarksAboveView
+        {
+            get { return !SheetCornerMarksBelowView; }
+            set
+            {
+                if (value)
+                {
+                    SheetCornerMarksBelowView = false;
+                }
+            }
+        }
+
+        public bool SheetCornerMarksBelowView
+        {
+            get { return _sheetCornerMarksBelowView; }
+            set
+            {
+                if (_sheetCornerMarksBelowView == value)
+                {
+                    return;
+                }
+
+                _sheetCornerMarksBelowView = value;
+                OnPropertyChanged("SheetCornerMarksBelowView");
+                OnPropertyChanged("SheetCornerMarksAboveView");
             }
         }
 
@@ -314,34 +723,6 @@ namespace SAB.InteriorElevations.ViewModels
         }
 
         public string ColumnsCountText { get; set; }
-
-        public bool IsSheetPointManualMode
-        {
-            get { return _isSheetPointManualMode; }
-            set
-            {
-                if (_isSheetPointManualMode == value)
-                {
-                    return;
-                }
-
-                _isSheetPointManualMode = value;
-                OnPropertyChanged("IsSheetPointManualMode");
-                OnPropertyChanged("IsSheetPointPointMode");
-            }
-        }
-
-        public bool IsSheetPointPointMode
-        {
-            get { return !IsSheetPointManualMode; }
-            set
-            {
-                if (value)
-                {
-                    IsSheetPointManualMode = false;
-                }
-            }
-        }
 
         public string StartXmmText
         {
@@ -392,6 +773,18 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string SheetNamePart3Text { get; set; }
 
+        public string SheetNameFormulaText
+        {
+            get { return NormalizeFormulaSyntax((SheetNamePart1Text ?? string.Empty) + (SheetNamePart2Text ?? string.Empty) + (SheetNamePart3Text ?? string.Empty)); }
+            set
+            {
+                SheetNamePart1Text = NormalizeFormulaSyntax(value);
+                SheetNamePart2Text = string.Empty;
+                SheetNamePart3Text = string.Empty;
+                OnPropertyChanged("SheetNameFormulaText");
+            }
+        }
+
         public string ViewTitleOffsetXmmText { get; set; }
 
         public string ViewTitleOffsetYmmText { get; set; }
@@ -402,14 +795,136 @@ namespace SAB.InteriorElevations.ViewModels
 
         public string RoomPlanNamePart3Text { get; set; }
 
+        public string RoomPlanNameFormulaText
+        {
+            get { return NormalizeFormulaSyntax((RoomPlanNamePart1Text ?? string.Empty) + (RoomPlanNamePart2Text ?? string.Empty) + (RoomPlanNamePart3Text ?? string.Empty)); }
+            set
+            {
+                RoomPlanNamePart1Text = NormalizeFormulaSyntax(value);
+                RoomPlanNamePart2Text = string.Empty;
+                RoomPlanNamePart3Text = string.Empty;
+                OnPropertyChanged("RoomPlanNameFormulaText");
+            }
+        }
+
         public string RoomPlanViewScaleText { get; set; }
 
         public string RoomPlanCropOffsetMmText { get; set; }
 
-        public bool TryBuildSettings(out ElevationSettings settings, out string validationMessage)
+        public bool CreateRoomPlanScheme
+        {
+            get { return _createRoomPlanScheme; }
+            set
+            {
+                if (_createRoomPlanScheme == value)
+                {
+                    return;
+                }
+
+                _createRoomPlanScheme = value;
+                if (!value)
+                {
+                    _placeRoomPlanSchemeOnSheet = false;
+                    OnPropertyChanged("PlaceRoomPlanSchemeOnSheet");
+                }
+
+                OnPropertyChanged("CreateRoomPlanScheme");
+                OnPropertyChanged("CanPlaceRoomPlanSchemeOnSheet");
+                OnPropertyChanged("PickSheetPointButtonText");
+                OnPropertyChanged("CanEditRoomPlanCreationParameters");
+            }
+        }
+
+        public bool PlaceRoomPlanSchemeOnSheet
+        {
+            get { return _placeRoomPlanSchemeOnSheet; }
+            set
+            {
+                bool normalizedValue = value && CreateRoomPlanScheme;
+                if (_placeRoomPlanSchemeOnSheet == normalizedValue)
+                {
+                    return;
+                }
+
+                _placeRoomPlanSchemeOnSheet = normalizedValue;
+                OnPropertyChanged("PlaceRoomPlanSchemeOnSheet");
+                OnPropertyChanged("CanPlaceRoomPlanSchemeOnSheet");
+            }
+        }
+
+        public bool CanPlaceRoomPlanSchemeOnSheet
+        {
+            get { return CreateRoomPlanScheme && CreateSheet; }
+        }
+
+        public bool CanEditRoomPlanCreationParameters
+        {
+            get { return CreateRoomPlanScheme && !UseExistingSheet; }
+        }
+
+        public void SetNamingPreviewContexts(IEnumerable<ElevationNamingPreviewContext> contexts)
+        {
+            _namingPreviewContexts.Clear();
+            if (contexts != null)
+            {
+                foreach (ElevationNamingPreviewContext context in contexts)
+                {
+                    if (context != null && context.RoomData != null)
+                    {
+                        _namingPreviewContexts.Add(context);
+                    }
+                }
+            }
+
+            RefreshNamingPreview();
+        }
+
+        private void RefreshNamingPreview()
+        {
+            NamingPreviewItems.Clear();
+            if (_namingPreviewContexts.Count > 0)
+            {
+                ElevationSettings previewSettings = new ElevationSettings();
+                previewSettings.ElevationNamePart1 = ElevationNamePart1Text ?? string.Empty;
+                previewSettings.ElevationNamePart2 = ElevationNamePart2Text ?? string.Empty;
+                previewSettings.ElevationNamePart3 = ElevationNamePart3Text ?? string.Empty;
+                previewSettings.ElevationTitlePart1 = ElevationTitlePart1Text ?? string.Empty;
+                previewSettings.ElevationTitlePart2 = ElevationTitlePart2Text ?? string.Empty;
+                previewSettings.ElevationTitlePart3 = ElevationTitlePart3Text ?? string.Empty;
+
+                ElevationNamingService namingService = new ElevationNamingService(_document);
+                ElevationNamingPreviewContext context = _namingPreviewContexts[0];
+                string roomNumber = string.IsNullOrWhiteSpace(context.RoomData.RoomNumber)
+                    ? "Без номера"
+                    : context.RoomData.RoomNumber;
+
+                ElevationNamingPreviewItem item = new ElevationNamingPreviewItem();
+                item.SequenceText = "Пом. " + roomNumber + " · " +
+                                    context.StartPointNumber + "–" + context.EndPointNumber;
+                item.ViewName = namingService.GenerateUniqueElevationViewName(
+                    context.RoomData,
+                    context.StartPointNumber,
+                    context.EndPointNumber,
+                    previewSettings);
+                item.ViewTitle = namingService.GenerateElevationTitleOnSheet(
+                    context.RoomData,
+                    context.StartPointNumber,
+                    context.EndPointNumber,
+                    previewSettings);
+                NamingPreviewItems.Add(item);
+            }
+
+            OnPropertyChanged("HasNamingPreview");
+            OnPropertyChanged("NamingPreviewStatusText");
+        }
+
+        public bool TryBuildSettings(
+            out ElevationSettings settings,
+            out string validationMessage,
+            bool requireExistingRoomPlanSelection = true)
         {
             settings = null;
-            validationMessage = ValidateInput();
+            validationMessage = ValidateInput(requireExistingRoomPlanSelection);
             if (!string.IsNullOrWhiteSpace(validationMessage))
             {
                 return false;
@@ -431,13 +946,26 @@ namespace SAB.InteriorElevations.ViewModels
             elevationSettings.ElevationNamePart1 = ElevationNamePart1Text ?? string.Empty;
             elevationSettings.ElevationNamePart2 = ElevationNamePart2Text ?? string.Empty;
             elevationSettings.ElevationNamePart3 = ElevationNamePart3Text ?? string.Empty;
+            elevationSettings.ElevationTitlePart1 = ElevationTitlePart1Text ?? string.Empty;
+            elevationSettings.ElevationTitlePart2 = ElevationTitlePart2Text ?? string.Empty;
+            elevationSettings.ElevationTitlePart3 = ElevationTitlePart3Text ?? string.Empty;
 
             elevationSettings.CreateSheet = CreateSheet;
+            elevationSettings.UseExistingSheet = UseExistingSheet;
+            elevationSettings.ExistingSheetId = UseExistingSheet && SelectedExistingSheet != null
+                ? SelectedExistingSheet.Id
+                : ElementId.InvalidElementId;
+            elevationSettings.ExistingRoomPlanViewId = UseExistingSheet && CreateRoomPlanScheme
+                ? ExistingRoomPlanViewId
+                : ElementId.InvalidElementId;
+            elevationSettings.OpenCreatedSheet = OpenCreatedSheet;
             elevationSettings.MultipleRoomsOnSheet = IsMultipleRoomsOnSheet;
+            elevationSettings.PickRoomFromLink = PickRoomFromLink;
+            elevationSettings.EnableRoomObjectCategory = EnableRoomObjectCategory;
             elevationSettings.TitleBlockTypeId = CreateSheet && SelectedTitleBlockType != null
                 ? SelectedTitleBlockType.Id
                 : ElementId.InvalidElementId;
-            elevationSettings.ViewportTypeId = CreateSheet && SelectedViewportType != null
+            elevationSettings.ViewportTypeId = PlaceViewsOnSheet && SelectedViewportType != null
                 ? SelectedViewportType.Id
                 : ElementId.InvalidElementId;
 
@@ -445,7 +973,10 @@ namespace SAB.InteriorElevations.ViewModels
                 ? SelectedPlanCornerMarkType.Id
                 : ElementId.InvalidElementId;
 
-            elevationSettings.SheetCornerMarkTypeId = CreateSheet && SelectedSheetCornerMarkType != null
+            elevationSettings.CornerMarksOnlyCornerNumber = CornerMarksOnlyCornerNumber;
+            elevationSettings.SheetCornerMarksBelowView = SheetCornerMarksBelowView;
+
+            elevationSettings.SheetCornerMarkTypeId = PlaceViewsOnSheet && SelectedSheetCornerMarkType != null
                 ? SelectedSheetCornerMarkType.Id
                 : ElementId.InvalidElementId;
             elevationSettings.SheetFormatAValue = ParseNullableInt(SheetFormatAText);
@@ -467,17 +998,21 @@ namespace SAB.InteriorElevations.ViewModels
             elevationSettings.SheetNamePart3 = SheetNamePart3Text ?? string.Empty;
 
             // Блок параметров план-схемы помещения.
+            elevationSettings.CreateRoomPlanScheme = CreateRoomPlanScheme;
+            elevationSettings.PlaceRoomPlanSchemeOnSheet = CreateRoomPlanScheme &&
+                                                           CreateSheet &&
+                                                           PlaceRoomPlanSchemeOnSheet;
             elevationSettings.RoomPlanNamePart1 = RoomPlanNamePart1Text ?? string.Empty;
             elevationSettings.RoomPlanNamePart2 = RoomPlanNamePart2Text ?? string.Empty;
             elevationSettings.RoomPlanNamePart3 = RoomPlanNamePart3Text ?? string.Empty;
-            elevationSettings.RoomPlanViewTemplateId = SelectedRoomPlanViewTemplate != null
+            elevationSettings.RoomPlanViewTemplateId = !UseExistingSheet && SelectedRoomPlanViewTemplate != null
                 ? SelectedRoomPlanViewTemplate.Id
                 : ElementId.InvalidElementId;
-            elevationSettings.RoomPlanRoomTagTypeId = SelectedRoomPlanRoomTagType != null
+            elevationSettings.RoomPlanRoomTagTypeId = !UseExistingSheet && SelectedRoomPlanRoomTagType != null
                 ? SelectedRoomPlanRoomTagType.Id
                 : ElementId.InvalidElementId;
-            elevationSettings.RoomPlanViewScale = ParseInt(RoomPlanViewScaleText);
-            elevationSettings.RoomPlanCropOffsetMm = ParseDouble(RoomPlanCropOffsetMmText);
+            elevationSettings.RoomPlanViewScale = UseExistingSheet ? 1 : ParseInt(RoomPlanViewScaleText);
+            elevationSettings.RoomPlanCropOffsetMm = UseExistingSheet ? 0.0 : ParseDouble(RoomPlanCropOffsetMmText);
 
             settings = elevationSettings;
             return true;
@@ -493,7 +1028,35 @@ namespace SAB.InteriorElevations.ViewModels
             // Блок переноса координаты листа из внутренних футов Revit в миллиметры окна настроек.
             StartXmmText = FormatDouble(UnitConversionUtils.FeetToMillimeters(sheetPoint.X));
             StartYmmText = FormatDouble(UnitConversionUtils.FeetToMillimeters(sheetPoint.Y));
-            IsSheetPointManualMode = false;
+        }
+
+        public void SetExistingRoomPlanViewSelection(ViewPlan planView)
+        {
+            if (planView == null || !planView.IsValidObject)
+            {
+                ClearExistingRoomPlanViewSelection();
+                return;
+            }
+
+            _existingRoomPlanViewId = planView.Id;
+            _existingRoomPlanViewName = planView.Name;
+            OnPropertyChanged("ExistingRoomPlanViewId");
+            OnPropertyChanged("ExistingRoomPlanSummary");
+            OnPropertyChanged("HasExistingRoomPlanSelection");
+        }
+
+        private void ClearExistingRoomPlanViewSelection()
+        {
+            if (!HasExistingRoomPlanSelection && string.IsNullOrWhiteSpace(_existingRoomPlanViewName))
+            {
+                return;
+            }
+
+            _existingRoomPlanViewId = ElementId.InvalidElementId;
+            _existingRoomPlanViewName = null;
+            OnPropertyChanged("ExistingRoomPlanViewId");
+            OnPropertyChanged("ExistingRoomPlanSummary");
+            OnPropertyChanged("HasExistingRoomPlanSelection");
         }
 
         public void SetCropHeightOffsetsFromExample(double topOffsetMm, double bottomOffsetMm)
@@ -501,12 +1064,11 @@ namespace SAB.InteriorElevations.ViewModels
             // Блок записи значений из вида-примера в те же поля, которые использует основная команда.
             TopOffsetMmText = FormatDouble(Math.Max(0.0, topOffsetMm));
             BottomOffsetMmText = FormatDouble(Math.Max(0.0, bottomOffsetMm));
-            IsCropManualMode = true;
             OnPropertyChanged("TopOffsetMmText");
             OnPropertyChanged("BottomOffsetMmText");
         }
 
-        private string ValidateInput()
+        private string ValidateInput(bool requireExistingRoomPlanSelection)
         {
             if (SelectedElevationViewFamilyType == null)
             {
@@ -567,30 +1129,51 @@ namespace SAB.InteriorElevations.ViewModels
                 return "Формула имени развертки не может быть пустой.";
             }
 
-            if (string.IsNullOrWhiteSpace(RoomPlanNamePart1Text) &&
-                string.IsNullOrWhiteSpace(RoomPlanNamePart2Text) &&
-                string.IsNullOrWhiteSpace(RoomPlanNamePart3Text))
+            if (CreateRoomPlanScheme && !UseExistingSheet)
             {
-                return "Формула имени план-схемы не может быть пустой.";
+                if (string.IsNullOrWhiteSpace(RoomPlanNamePart1Text) &&
+                    string.IsNullOrWhiteSpace(RoomPlanNamePart2Text) &&
+                    string.IsNullOrWhiteSpace(RoomPlanNamePart3Text))
+                {
+                    return "Формула имени план-схемы не может быть пустой.";
+                }
+
+                double roomPlanCropOffset;
+                if (!TryParseDouble(RoomPlanCropOffsetMmText, out roomPlanCropOffset))
+                {
+                    return "Отступ границы обрезки план-схемы должен быть числом (мм).";
+                }
+
+                int roomPlanViewScale;
+                if (!TryParseInt(RoomPlanViewScaleText, out roomPlanViewScale) || roomPlanViewScale <= 0)
+                {
+                    return "Масштаб вида план-схемы должен быть положительным целым числом.";
+                }
             }
 
-            double roomPlanCropOffset;
-            if (!TryParseDouble(RoomPlanCropOffsetMmText, out roomPlanCropOffset))
+            if (PlaceViewsOnSheet)
             {
-                return "Отступ границы обрезки план-схемы должен быть числом (мм).";
-            }
+                if (string.IsNullOrWhiteSpace(ElevationTitlePart1Text) &&
+                    string.IsNullOrWhiteSpace(ElevationTitlePart2Text) &&
+                    string.IsNullOrWhiteSpace(ElevationTitlePart3Text))
+                {
+                    return "Формула заголовка на листе не может быть пустой.";
+                }
 
-            int roomPlanViewScale;
-            if (!TryParseInt(RoomPlanViewScaleText, out roomPlanViewScale) || roomPlanViewScale <= 0)
-            {
-                return "Масштаб вида план-схемы должен быть положительным целым числом.";
-            }
-
-            if (CreateSheet)
-            {
-                if (SelectedTitleBlockType == null)
+                if (CreateSheet && SelectedTitleBlockType == null)
                 {
                     return "Включено создание листа, но не выбран тип основной надписи.";
+                }
+
+                if (UseExistingSheet && SelectedExistingSheet == null)
+                {
+                    return "Выберите существующий лист по номеру или имени.";
+                }
+
+                if (UseExistingSheet && CreateRoomPlanScheme && requireExistingRoomPlanSelection &&
+                    !HasExistingRoomPlanSelection)
+                {
+                    return "Укажите точку размещения и выберите план-схему на существующем листе.";
                 }
 
                 if (SelectedViewTitleAnchor == null)
@@ -598,7 +1181,8 @@ namespace SAB.InteriorElevations.ViewModels
                     return "Не выбрана привязка размещения заголовка развертки.";
                 }
 
-                if (string.IsNullOrWhiteSpace(SheetNamePart1Text) &&
+                if (CreateSheet &&
+                    string.IsNullOrWhiteSpace(SheetNamePart1Text) &&
                     string.IsNullOrWhiteSpace(SheetNamePart2Text) &&
                     string.IsNullOrWhiteSpace(SheetNamePart3Text))
                 {
@@ -875,6 +1459,57 @@ namespace SAB.InteriorElevations.ViewModels
             }
         }
 
+        private void LoadExistingSheets()
+        {
+            List<RevitElementOption> options = new List<RevitElementOption>();
+            FilteredElementCollector collector = new FilteredElementCollector(_document).OfClass(typeof(ViewSheet));
+
+            foreach (Element element in collector)
+            {
+                ViewSheet sheet = element as ViewSheet;
+                if (sheet == null || sheet.IsPlaceholder)
+                {
+                    continue;
+                }
+
+                if (string.Equals(sheet.Name, "SAB-Развертки по линии", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(sheet.SheetNumber, "SAB-Развертки по линии", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                RevitElementOption option = new RevitElementOption();
+                option.Id = sheet.Id;
+                option.DisplayName = sheet.SheetNumber + " — " + sheet.Name;
+                options.Add(option);
+            }
+
+            options.Sort(delegate(RevitElementOption left, RevitElementOption right)
+            {
+                return string.Compare(left.DisplayName, right.DisplayName, StringComparison.OrdinalIgnoreCase);
+            });
+
+            for (int index = 0; index < options.Count; index++)
+            {
+                ExistingSheets.Add(options[index]);
+            }
+        }
+
+        private bool FilterExistingSheet(object item)
+        {
+            RevitElementOption option = item as RevitElementOption;
+            if (option == null)
+            {
+                return false;
+            }
+
+            string searchText = ExistingSheetSearchText;
+            return string.IsNullOrWhiteSpace(searchText) ||
+                   (option.DisplayName ?? string.Empty).IndexOf(
+                       searchText.Trim(),
+                       StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         private void LoadViewportTypes()
         {
             Dictionary<long, RevitElementOption> optionsById = new Dictionary<long, RevitElementOption>();
@@ -1022,6 +1657,10 @@ namespace SAB.InteriorElevations.ViewModels
         private void LoadCornerMarkTypes(ObservableCollection<RevitElementOption> targetCollection)
         {
             List<RevitElementOption> options = new List<RevitElementOption>();
+            RevitElementOption projectSpecificFamilyOption = null;
+            bool hideProjectSpecificSideTypes = _document != null &&
+                _document.Application != null &&
+                string.Equals(_document.Application.VersionNumber, "2022", StringComparison.Ordinal);
 
             FilteredElementCollector collector = new FilteredElementCollector(_document)
                 .OfClass(typeof(FamilySymbol))
@@ -1041,10 +1680,39 @@ namespace SAB.InteriorElevations.ViewModels
                 }
 
                 string familyName = familySymbol.Family != null ? familySymbol.Family.Name : familySymbol.FamilyName;
+                if (hideProjectSpecificSideTypes &&
+                    string.Equals(
+                        familyName,
+                        CornerMarkConstants.ProjectSpecificCornerMarkFamilyName,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    if (projectSpecificFamilyOption == null)
+                    {
+                        projectSpecificFamilyOption = new RevitElementOption();
+                        projectSpecificFamilyOption.Id = familySymbol.Id;
+                        projectSpecificFamilyOption.DisplayName = familyName;
+                    }
+
+                    if (string.Equals(
+                        familySymbol.Name,
+                        CornerMarkConstants.LeftCornerMarkTypeName,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        projectSpecificFamilyOption.Id = familySymbol.Id;
+                    }
+
+                    continue;
+                }
+
                 RevitElementOption option = new RevitElementOption();
                 option.Id = familySymbol.Id;
                 option.DisplayName = familyName + " : " + familySymbol.Name;
                 options.Add(option);
+            }
+
+            if (projectSpecificFamilyOption != null)
+            {
+                options.Add(projectSpecificFamilyOption);
             }
 
             options.Sort(delegate(RevitElementOption left, RevitElementOption right)
@@ -1161,9 +1829,12 @@ namespace SAB.InteriorElevations.ViewModels
                 MarkerOffsetMmText = FormatDouble(initialSettings.MarkerOffsetMm);
             }
 
-            ElevationNamePart1Text = initialSettings.ElevationNamePart1 ?? string.Empty;
-            ElevationNamePart2Text = initialSettings.ElevationNamePart2 ?? string.Empty;
-            ElevationNamePart3Text = initialSettings.ElevationNamePart3 ?? string.Empty;
+            ElevationNamePart1Text = NormalizeFormulaSyntax(initialSettings.ElevationNamePart1);
+            ElevationNamePart2Text = NormalizeFormulaSyntax(initialSettings.ElevationNamePart2);
+            ElevationNamePart3Text = NormalizeFormulaSyntax(initialSettings.ElevationNamePart3);
+            ElevationTitlePart1Text = NormalizeFormulaSyntax(initialSettings.ElevationTitlePart1);
+            ElevationTitlePart2Text = NormalizeFormulaSyntax(initialSettings.ElevationTitlePart2);
+            ElevationTitlePart3Text = NormalizeFormulaSyntax(initialSettings.ElevationTitlePart3);
 
             if (initialSettings.SheetFormatAValue.HasValue)
             {
@@ -1172,7 +1843,12 @@ namespace SAB.InteriorElevations.ViewModels
 
             // Включаем создание листа только если в проекте есть доступные типы основной надписи.
             CreateSheet = initialSettings.CreateSheet && TitleBlockTypes.Count > 0 && ViewportTypes.Count > 0;
+            OpenCreatedSheet = initialSettings.OpenCreatedSheet;
             IsMultipleRoomsOnSheet = initialSettings.MultipleRoomsOnSheet;
+            PickRoomFromLink = initialSettings.PickRoomFromLink;
+            EnableRoomObjectCategory = initialSettings.EnableRoomObjectCategory;
+            CornerMarksOnlyCornerNumber = initialSettings.CornerMarksOnlyCornerNumber;
+            SheetCornerMarksBelowView = initialSettings.SheetCornerMarksBelowView;
             RevitElementOption titleBlockOption = FindOptionById(TitleBlockTypes, initialSettings.TitleBlockTypeId);
             if (titleBlockOption != null)
             {
@@ -1230,22 +1906,24 @@ namespace SAB.InteriorElevations.ViewModels
                 }
             }
 
-            SheetNamePart1Text = initialSettings.SheetNamePart1 ?? string.Empty;
-            SheetNamePart2Text = initialSettings.SheetNamePart2 ?? string.Empty;
-            SheetNamePart3Text = initialSettings.SheetNamePart3 ?? string.Empty;
+            SheetNamePart1Text = NormalizeFormulaSyntax(initialSettings.SheetNamePart1);
+            SheetNamePart2Text = NormalizeFormulaSyntax(initialSettings.SheetNamePart2);
+            SheetNamePart3Text = NormalizeFormulaSyntax(initialSettings.SheetNamePart3);
 
             // Блок восстановления настроек план-схемы.
+            CreateRoomPlanScheme = initialSettings.CreateRoomPlanScheme;
+            PlaceRoomPlanSchemeOnSheet = initialSettings.PlaceRoomPlanSchemeOnSheet;
             if (!string.IsNullOrWhiteSpace(initialSettings.RoomPlanNamePart1))
             {
-                RoomPlanNamePart1Text = initialSettings.RoomPlanNamePart1;
+                RoomPlanNamePart1Text = NormalizeFormulaSyntax(initialSettings.RoomPlanNamePart1);
             }
 
             if (!string.IsNullOrWhiteSpace(initialSettings.RoomPlanNamePart2))
             {
-                RoomPlanNamePart2Text = initialSettings.RoomPlanNamePart2;
+                RoomPlanNamePart2Text = NormalizeFormulaSyntax(initialSettings.RoomPlanNamePart2);
             }
 
-            RoomPlanNamePart3Text = initialSettings.RoomPlanNamePart3 ?? string.Empty;
+            RoomPlanNamePart3Text = NormalizeFormulaSyntax(initialSettings.RoomPlanNamePart3);
             if (initialSettings.RoomPlanViewScale > 0)
             {
                 RoomPlanViewScaleText = initialSettings.RoomPlanViewScale.ToString(CultureInfo.CurrentCulture);
@@ -1293,6 +1971,16 @@ namespace SAB.InteriorElevations.ViewModels
             }
 
             return null;
+        }
+
+        private static string NormalizeFormulaSyntax(string value)
+        {
+            return (value ?? string.Empty)
+                .Replace("{Номер помещения}", "[Номер помещения]")
+                .Replace("{Имя помещения}", "[Имя помещения]")
+                .Replace("{Начальный угол}", "[Начальный угол]")
+                .Replace("{Конечный угол}", "[Конечный угол]")
+                .Replace("{Помещения}", "[Помещения]");
         }
 
         private string FormatDouble(double value)

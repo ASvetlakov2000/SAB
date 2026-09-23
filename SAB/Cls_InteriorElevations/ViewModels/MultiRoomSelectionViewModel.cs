@@ -128,6 +128,9 @@ namespace SAB.InteriorElevations.ViewModels
                     }
 
                     if (RevitElementIdUtils.AreEqual(
+                            previousRow.RoomData.LinkInstanceId,
+                            row.RoomData.LinkInstanceId) &&
+                        RevitElementIdUtils.AreEqual(
                             previousRow.RoomData.RoomElementId,
                             row.RoomData.RoomElementId))
                     {

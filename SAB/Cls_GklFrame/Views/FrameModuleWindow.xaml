@@ -1,0 +1,202 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB — каркас ГКЛ"
+        Width="980"
+        Height="690"
+        MinWidth="880"
+        MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        Background="{DynamicResource SabBrush.WindowBackground}"
+        FontFamily="Segoe UI">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="24,20,24,16">
+            <TextBlock Text="{Binding Heading}"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource SabBrush.Text}" />
+            <TextBlock Margin="0,5,0,0"
+                       FontSize="12"
+                       Foreground="{StaticResource SabBrush.TextSecondary}"
+                       Text="Исходная Basic Wall остаётся нетронутой; каркас создаётся отдельным расчётным Curtain Wall."
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1"
+                      Margin="24,0,24,16"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <Border Style="{StaticResource SabPanelBorderStyle}"
+                            IsEnabled="{Binding IsGenerateMode}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                    <TextBlock Text="▦" Style="{StaticResource SabPanelIconTextStyle}" />
+                                </Border>
+                                <TextBlock Text="Генерация" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                            </StackPanel>
+
+                            <TextBlock Style="{StaticResource SabFieldHintTextStyle}"
+                                       Margin="0,0,0,12"
+                                       TextWrapping="Wrap">
+                                <Run Text="Выбрано стен: " />
+                                <Run Text="{Binding SelectedWallCount}" FontWeight="SemiBold" />
+                            </TextBlock>
+
+                            <TextBlock Text="Максимальный шаг стоек, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <TextBox Text="{Binding StudSpacingText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SabTextBoxStyle}"
+                                     Margin="0,0,0,12" />
+
+                            <CheckBox Content="Обрабатывать все проёмы"
+                                      IsChecked="{Binding ProcessDoors}"
+                                      Style="{StaticResource SabCheckBoxStyle}"
+                                      Margin="0,0,0,12" />
+
+                            <TextBlock Text="Тип расчётного витража" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <ComboBox ItemsSource="{Binding CurtainWallTypes}"
+                                      SelectedItem="{Binding SelectedCurtainWallType}"
+                                      Style="{StaticResource SabComboBoxStyle}"
+                                      Margin="0,0,0,6" />
+                            <TextBlock Text="Тип должен быть Curtain Wall без автоматических U/V grid lines. Граничные импосты плагин назначает сам."
+                                       Style="{StaticResource SabFieldHintTextStyle}"
+                                       Margin="0,0,0,12" />
+
+                            <TextBlock Text="Профили ПС/ПН/ПС_UA подбираются автоматически по толщине сердцевины стены (50/75/100 мм)."
+                                       Style="{StaticResource SabFieldHintTextStyle}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <Border Style="{StaticResource SabPanelBorderStyle}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                                    <TextBlock Text="∑" Style="{StaticResource SabPanelIconTextStyle}" />
+                                </Border>
+                                <TextBlock Text="Расчёт" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                            </StackPanel>
+
+                            <TextBlock Style="{StaticResource SabFieldHintTextStyle}"
+                                       Margin="0,0,0,12">
+                                <Run Text="Найдено расчётных профилей: " />
+                                <Run Text="{Binding CalculationMullionCount}" FontWeight="SemiBold" />
+                            </TextBlock>
+
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Закупочная длина CW, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <ComboBox ItemsSource="{Binding PurchaseLengths}"
+                                              SelectedItem="{Binding SelectedCwPurchaseLength}"
+                                              Style="{StaticResource SabComboBoxStyle}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Закупочная длина UW, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                                    <ComboBox ItemsSource="{Binding PurchaseLengths}"
+                                              SelectedItem="{Binding SelectedUwPurchaseLength}"
+                                              Style="{StaticResource SabComboBoxStyle}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Потери на рез, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <TextBox Text="{Binding CutLossText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SabTextBoxStyle}"
+                                     Margin="0,0,0,12" />
+
+                            <TextBlock Text="Минимальный полезный остаток, мм" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <TextBox Text="{Binding MinimumReusableOffcutText, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource SabTextBoxStyle}"
+                                     Margin="0,0,0,12" />
+
+                            <CheckBox Content="Выполнить раскрой First Fit Decreasing"
+                                      IsChecked="{Binding PerformCutting}"
+                                      Style="{StaticResource SabCheckBoxStyle}"
+                                      Margin="0,0,0,12" />
+
+                            <CheckBox Content="Экспортировать Profiles.csv и CuttingPlan.csv"
+                                      IsChecked="{Binding ExportCsv}"
+                                      Style="{StaticResource SabCheckBoxStyle}"
+                                      Margin="0,0,0,12" />
+
+                            <TextBlock Text="Каталог CSV" Style="{StaticResource SabFieldLabelTextStyle}" />
+                            <TextBox Text="{Binding ExportDirectory, UpdateSourceTrigger=PropertyChanged}"
+                                     IsEnabled="{Binding ExportCsv}"
+                                     Style="{StaticResource SabTextBoxStyle}"
+                                     ToolTip="Каталог для Profiles.csv и CuttingPlan.csv" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource SabValidationPanelStyle}" Margin="0,12,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Проверка" FontWeight="SemiBold" Foreground="{StaticResource SabBrush.Text}" />
+                            <TextBlock Text="{Binding ValidationMessage}"
+                                       Margin="0,6,0,0"
+                                       Foreground="{StaticResource SabBrush.Error}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Margin="0,6,0,0"
+                                       Style="{StaticResource SabFieldHintTextStyle}"
+                                       Text="Элементы длиннее выбранного хлыста не разбиваются автоматически и попадут в предупреждения." />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <Border Grid.Row="2"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                Padding="24,14">
+            <Grid>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Mullion → деталь профиля → закупочный хлыст"
+                               Foreground="{StaticResource SabBrush.TextSecondary}"
+                               FontSize="12" />
+                    <TextBlock Foreground="{StaticResource SabBrush.TextSecondary}" FontSize="11">
+                        <Hyperlink NavigateUri="https://icons8.com/icon/l8SFbtVCyPBx/brick-wall">Иконка Wall — Icons8</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Отмена"
+                            Command="{Binding CancelCommand}"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            MinWidth="110"
+                            Margin="0,0,10,0" />
+                    <Button Content="{Binding ActionText}"
+                            Command="{Binding AcceptCommand}"
+                            Style="{StaticResource SabPrimaryButtonStyle}"
+                            MinWidth="150" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -14,6 +14,7 @@ namespace SAB.InteriorElevations.Services.Marks
             IList<ElevationLineData> elevationLines,
             RoomData roomData,
             ElementId planCornerMarkTypeId,
+            bool onlyCornerNumber,
             IList<string> warnings)
         {
             if (document == null || planView == null || elevationLines == null || roomData == null)
@@ -64,7 +65,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (!placedCornerNumbers.Contains(startCornerNumber) &&
                     !IsPointOccupied(occupiedCornerPoints, lineData.StartPoint, pointToleranceFeet))
                 {
-                    if (TryPlaceCornerMark(document, planView, symbol, lineData.StartPoint, roomData.RoomNumber, startCornerNumber, warnings))
+                    if (TryPlaceCornerMark(document, planView, symbol, lineData.StartPoint, roomData.RoomNumber, startCornerNumber, onlyCornerNumber, warnings))
                     {
                         placedCornerNumbers.Add(startCornerNumber);
                         occupiedCornerPoints.Add(lineData.StartPoint);
@@ -75,7 +76,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (!placedCornerNumbers.Contains(endCornerNumber) &&
                     !IsPointOccupied(occupiedCornerPoints, lineData.EndPoint, pointToleranceFeet))
                 {
-                    if (TryPlaceCornerMark(document, planView, symbol, lineData.EndPoint, roomData.RoomNumber, endCornerNumber, warnings))
+                    if (TryPlaceCornerMark(document, planView, symbol, lineData.EndPoint, roomData.RoomNumber, endCornerNumber, onlyCornerNumber, warnings))
                     {
                         placedCornerNumbers.Add(endCornerNumber);
                         occupiedCornerPoints.Add(lineData.EndPoint);
@@ -118,6 +119,7 @@ namespace SAB.InteriorElevations.Services.Marks
             XYZ placementPoint,
             string roomNumber,
             int cornerNumber,
+            bool onlyCornerNumber,
             IList<string> warnings)
         {
             try
@@ -129,7 +131,10 @@ namespace SAB.InteriorElevations.Services.Marks
                     return false;
                 }
 
-                SetParameter(markInstance, CornerMarkConstants.RoomNumberParameterName, roomNumber, warnings);
+                if (!onlyCornerNumber)
+                {
+                    SetParameter(markInstance, CornerMarkConstants.RoomNumberParameterName, roomNumber, warnings);
+                }
                 SetParameter(markInstance, CornerMarkConstants.CornerNumberParameterName, cornerNumber.ToString(), warnings);
                 return true;
             }

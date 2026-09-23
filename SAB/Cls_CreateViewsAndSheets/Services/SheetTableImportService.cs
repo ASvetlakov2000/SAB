@@ -191,7 +191,7 @@ namespace SAB.CreateViewsAndSheets.Services
             int sheetNameColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.SheetName);
             int floorColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.Floor);
             int sectionColumnIndex = FindHeaderColumnIndex(headerRow, SheetTableHeaderKind.Section);
-            ValidateRequiredColumns(sheetNumberColumnIndex, sheetNameColumnIndex, sectionColumnIndex);
+            ValidateRequiredColumns(sheetNumberColumnIndex, sheetNameColumnIndex);
 
             List<SheetTableImportRow> result = new List<SheetTableImportRow>();
             for (int i = headerRowIndex + 1; i < worksheetRows.Count; i++)
@@ -202,6 +202,7 @@ namespace SAB.CreateViewsAndSheets.Services
                 importRow.SheetName = GetCellValue(worksheetRow, sheetNameColumnIndex);
                 importRow.FloorName = GetCellValue(worksheetRow, floorColumnIndex);
                 importRow.SectionName = GetCellValue(worksheetRow, sectionColumnIndex);
+                PopulateParameterValuesByName(importRow, headerRow, worksheetRow);
 
                 if (IsImportRowEmpty(importRow))
                 {
@@ -231,8 +232,7 @@ namespace SAB.CreateViewsAndSheets.Services
 
                 bool hasSheetNumberHeader = FindHeaderColumnIndex(row, SheetTableHeaderKind.SheetNumber) >= 0;
                 bool hasSheetNameHeader = FindHeaderColumnIndex(row, SheetTableHeaderKind.SheetName) >= 0;
-                bool hasSectionHeader = FindHeaderColumnIndex(row, SheetTableHeaderKind.Section) >= 0;
-                if (hasSheetNumberHeader && hasSheetNameHeader && hasSectionHeader)
+                if (hasSheetNumberHeader && hasSheetNameHeader)
                 {
                     return i;
                 }
@@ -314,7 +314,7 @@ namespace SAB.CreateViewsAndSheets.Services
             return builder.ToString();
         }
 
-        private void ValidateRequiredColumns(int sheetNumberColumnIndex, int sheetNameColumnIndex, int sectionColumnIndex)
+        private void ValidateRequiredColumns(int sheetNumberColumnIndex, int sheetNameColumnIndex)
         {
             List<string> missingColumns = new List<string>();
             if (sheetNumberColumnIndex < 0)
@@ -327,14 +327,27 @@ namespace SAB.CreateViewsAndSheets.Services
                 missingColumns.Add("Имя листа");
             }
 
-            if (sectionColumnIndex < 0)
-            {
-                missingColumns.Add("Раздел");
-            }
-
             if (missingColumns.Count > 0)
             {
                 throw new InvalidDataException("В таблице Excel не найдены обязательные колонки: " + string.Join(", ", missingColumns));
+            }
+        }
+
+        private void PopulateParameterValuesByName(
+            SheetTableImportRow importRow,
+            Dictionary<int, string> headerRow,
+            Dictionary<int, string> worksheetRow)
+        {
+            if (importRow == null || headerRow == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<int, string> headerCell in headerRow)
+            {
+                importRow.SetParameterValue(
+                    headerCell.Value,
+                    GetCellValue(worksheetRow, headerCell.Key));
             }
         }
 

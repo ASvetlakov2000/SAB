@@ -51,7 +51,10 @@ namespace SAB.DoorWindowExplanations.Services
                 settings.ElementVerticalStepMm,
                 UnitTypeId.Millimeters);
 
-            DoorWindowNamedElementItem viewportType = FindItem(viewportTypes, settings.ViewportTypeName);
+            DoorWindowNamedElementItem viewportType = FindItem(
+                viewportTypes,
+                settings.ViewportTypeIdValue,
+                settings.ViewportTypeName);
             ElementId viewportTypeId = viewportType != null ? viewportType.Id : ElementId.InvalidElementId;
 
             double rowTopY = startY;
@@ -158,27 +161,131 @@ namespace SAB.DoorWindowExplanations.Services
             out XYZ pointOnSheet)
         {
             pointOnSheet = null;
-            if (view == null || viewport == null || modelPoint == null ||
-                !view.HasViewTransforms() || !viewport.HasViewportTransforms())
+            if (view == null || viewport == null || modelPoint == null)
             {
                 return false;
             }
 
-            IList<TransformWithBoundary> viewTransforms = view.GetModelToProjectionTransforms();
-            if (viewTransforms == null || viewTransforms.Count == 0 || viewTransforms[0] == null)
+            if (TryGetModelPointOnSheetWithRevit2023Transforms(
+                view,
+                viewport,
+                modelPoint,
+                out pointOnSheet))
+            {
+                return true;
+            }
+
+            return TryGetModelPointOnSheetWithLegacyViewCoordinates(
+                view,
+                viewport,
+                modelPoint,
+                out pointOnSheet);
+        }
+
+        private bool TryGetModelPointOnSheetWithRevit2023Transforms(
+            ViewSection view,
+            Viewport viewport,
+            XYZ modelPoint,
+            out XYZ pointOnSheet)
+        {
+            pointOnSheet = null;
+
+            try
+            {
+                System.Reflection.MethodInfo hasViewTransformsMethod =
+                    view.GetType().GetMethod("HasViewTransforms", Type.EmptyTypes);
+                System.Reflection.MethodInfo hasViewportTransformsMethod =
+                    viewport.GetType().GetMethod("HasViewportTransforms", Type.EmptyTypes);
+                System.Reflection.MethodInfo getViewTransformsMethod =
+                    view.GetType().GetMethod("GetModelToProjectionTransforms", Type.EmptyTypes);
+                System.Reflection.MethodInfo getProjectionToSheetMethod =
+                    viewport.GetType().GetMethod("GetProjectionToSheetTransform", Type.EmptyTypes);
+
+                if (hasViewTransformsMethod == null ||
+                    hasViewportTransformsMethod == null ||
+                    getViewTransformsMethod == null ||
+                    getProjectionToSheetMethod == null ||
+                    !(bool)hasViewTransformsMethod.Invoke(view, null) ||
+                    !(bool)hasViewportTransformsMethod.Invoke(viewport, null))
+                {
+                    return false;
+                }
+
+                System.Collections.IList viewTransforms =
+                    getViewTransformsMethod.Invoke(view, null) as System.Collections.IList;
+                if (viewTransforms == null || viewTransforms.Count == 0 || viewTransforms[0] == null)
+                {
+                    return false;
+                }
+
+                object transformWithBoundary = viewTransforms[0];
+                System.Reflection.MethodInfo getModelToProjectionMethod =
+                    transformWithBoundary.GetType().GetMethod(
+                        "GetModelToProjectionTransform",
+                        Type.EmptyTypes);
+                if (getModelToProjectionMethod == null)
+                {
+                    return false;
+                }
+
+                Transform modelToProjection =
+                    getModelToProjectionMethod.Invoke(transformWithBoundary, null) as Transform;
+                Transform projectionToSheet =
+                    getProjectionToSheetMethod.Invoke(viewport, null) as Transform;
+                if (modelToProjection == null || projectionToSheet == null)
+                {
+                    return false;
+                }
+
+                pointOnSheet = projectionToSheet.OfPoint(modelToProjection.OfPoint(modelPoint));
+                return pointOnSheet != null;
+            }
+            catch (System.Reflection.TargetInvocationException)
+            {
+                return false;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        private bool TryGetModelPointOnSheetWithLegacyViewCoordinates(
+            ViewSection view,
+            Viewport viewport,
+            XYZ modelPoint,
+            out XYZ pointOnSheet)
+        {
+            pointOnSheet = null;
+
+            BoundingBoxUV viewOutline = view.Outline;
+            XYZ viewOrigin = view.Origin;
+            XYZ rightDirection = view.RightDirection;
+            XYZ upDirection = view.UpDirection;
+            XYZ viewportCenter = viewport.GetBoxCenter();
+            if (viewOutline == null ||
+                viewOutline.Min == null ||
+                viewOutline.Max == null ||
+                viewOrigin == null ||
+                rightDirection == null ||
+                upDirection == null ||
+                viewportCenter == null ||
+                view.Scale <= 0)
             {
                 return false;
             }
 
-            Transform modelToProjection = viewTransforms[0].GetModelToProjectionTransform();
-            Transform projectionToSheet = viewport.GetProjectionToSheetTransform();
-            if (modelToProjection == null || projectionToSheet == null)
-            {
-                return false;
-            }
+            XYZ modelOffset = modelPoint - viewOrigin;
+            double pointU = modelOffset.DotProduct(rightDirection) / view.Scale;
+            double pointV = modelOffset.DotProduct(upDirection) / view.Scale;
+            double outlineCenterU = (viewOutline.Min.U + viewOutline.Max.U) / 2.0;
+            double outlineCenterV = (viewOutline.Min.V + viewOutline.Max.V) / 2.0;
 
-            pointOnSheet = projectionToSheet.OfPoint(modelToProjection.OfPoint(modelPoint));
-            return pointOnSheet != null;
+            pointOnSheet = new XYZ(
+                viewportCenter.X + pointU - outlineCenterU,
+                viewportCenter.Y + pointV - outlineCenterV,
+                viewportCenter.Z);
+            return true;
         }
 
         private void ShiftLowerViewsBelowTop(
@@ -212,8 +319,9 @@ namespace SAB.DoorWindowExplanations.Services
 
             double anchorX = minimumX;
             double anchorY = minimumY;
-            if (settings.ViewTitleAnchor == DoorWindowViewTitleAnchor.BottomCenter ||
-                settings.ViewTitleAnchor == DoorWindowViewTitleAnchor.TopCenter)
+            bool isCentered = settings.ViewTitleAnchor == DoorWindowViewTitleAnchor.BottomCenter ||
+                              settings.ViewTitleAnchor == DoorWindowViewTitleAnchor.TopCenter;
+            if (isCentered)
             {
                 anchorX = (minimumX + maximumX) / 2.0;
             }
@@ -238,6 +346,64 @@ namespace SAB.DoorWindowExplanations.Services
                 anchorX + offsetX - minimumX,
                 anchorY + offsetY - minimumY,
                 0.0);
+
+            if (!isCentered)
+            {
+                return;
+            }
+
+            Document document = viewport.Document;
+            if (document == null)
+            {
+                return;
+            }
+
+            document.Regenerate();
+            Outline labelOutline;
+            try
+            {
+                labelOutline = viewport.GetLabelOutline();
+            }
+            catch
+            {
+                // Тип без видимого заголовка не требует центрирования.
+                return;
+            }
+
+            if (labelOutline == null ||
+                labelOutline.MinimumPoint == null ||
+                labelOutline.MaximumPoint == null)
+            {
+                return;
+            }
+
+            double targetCenterX = anchorX + offsetX;
+            double correctionX = CalculateLabelCenterCorrection(labelOutline, targetCenterX);
+            if (Math.Abs(correctionX) <= 1e-9)
+            {
+                return;
+            }
+
+            XYZ currentOffset = viewport.LabelOffset;
+            viewport.LabelOffset = new XYZ(
+                currentOffset.X + correctionX,
+                currentOffset.Y,
+                currentOffset.Z);
+            document.Regenerate();
+        }
+
+        private double CalculateLabelCenterCorrection(Outline labelOutline, double targetCenterX)
+        {
+            if (labelOutline == null ||
+                labelOutline.MinimumPoint == null ||
+                labelOutline.MaximumPoint == null)
+            {
+                return 0.0;
+            }
+
+            double currentLabelCenterX =
+                (labelOutline.MinimumPoint.X + labelOutline.MaximumPoint.X) / 2.0;
+            return targetCenterX - currentLabelCenterX;
         }
 
         private Outline GetViewportOutline(Viewport viewport)
@@ -270,11 +436,7 @@ namespace SAB.DoorWindowExplanations.Services
                 sheet.Id,
                 view.Id,
                 new XYZ(temporaryX, temporaryY, 0.0));
-            if (viewportTypeId != null && viewportTypeId != ElementId.InvalidElementId &&
-                viewport.GetTypeId() != viewportTypeId)
-            {
-                viewport.ChangeTypeId(viewportTypeId);
-            }
+            ApplyViewportType(viewport, viewportTypeId);
 
             document.Regenerate();
 
@@ -287,6 +449,25 @@ namespace SAB.DoorWindowExplanations.Services
             }
 
             return new ViewportLayoutData(viewport, width, height);
+        }
+
+        private void ApplyViewportType(Viewport viewport, ElementId viewportTypeId)
+        {
+            if (viewport == null || viewportTypeId == null || viewportTypeId.IntegerValue < 0)
+            {
+                return;
+            }
+
+            if (!viewport.CanHaveTypeAssigned() || !viewport.IsValidType(viewportTypeId))
+            {
+                throw new InvalidOperationException(
+                    "Выбранный тип заголовка нельзя назначить видовому экрану.");
+            }
+
+            if (viewport.GetTypeId().IntegerValue != viewportTypeId.IntegerValue)
+            {
+                viewport.ChangeTypeId(viewportTypeId);
+            }
         }
 
         private void MoveViewport(Document document, Viewport viewport, XYZ targetCenter)
@@ -346,6 +527,31 @@ namespace SAB.DoorWindowExplanations.Services
             }
 
             return items[0];
+        }
+
+        private DoorWindowNamedElementItem FindItem(
+            IList<DoorWindowNamedElementItem> items,
+            int itemIdValue,
+            string name)
+        {
+            if (items == null || items.Count == 0)
+            {
+                return null;
+            }
+
+            if (itemIdValue >= 0)
+            {
+                for (int index = 0; index < items.Count; index++)
+                {
+                    DoorWindowNamedElementItem item = items[index];
+                    if (item != null && item.Id != null && item.Id.IntegerValue == itemIdValue)
+                    {
+                        return item;
+                    }
+                }
+            }
+
+            return FindItem(items, name);
         }
 
         private string GetUniqueSheetNumber(Document document, string requestedNumber, ElementId currentSheetId)

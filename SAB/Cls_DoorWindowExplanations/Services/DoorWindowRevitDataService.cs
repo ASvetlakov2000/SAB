@@ -80,18 +80,112 @@ namespace SAB.DoorWindowExplanations.Services
                 return result;
             }
 
-            IEnumerable<ElementType> types = new FilteredElementCollector(document)
-                .OfClass(typeof(ElementType))
-                .OfCategory(BuiltInCategory.OST_Viewports)
-                .Cast<ElementType>()
-                .OrderBy(type => type.Name);
+            Dictionary<int, DoorWindowNamedElementItem> itemsById =
+                new Dictionary<int, DoorWindowNamedElementItem>();
 
-            foreach (ElementType type in types)
+            try
             {
-                result.Add(new DoorWindowNamedElementItem(type.Id, type.Name));
+                FilteredElementCollector categoryCollector = new FilteredElementCollector(document)
+                    .OfCategory(BuiltInCategory.OST_Viewports)
+                    .WhereElementIsElementType();
+
+                foreach (Element element in categoryCollector)
+                {
+                    AddViewportTypeItem(element as ElementType, itemsById);
+                }
+            }
+            catch
+            {
+                // В отдельных шаблонах прямой фильтр категории Viewport недоступен.
+            }
+
+            try
+            {
+                FilteredElementCollector fallbackCollector = new FilteredElementCollector(document)
+                    .OfClass(typeof(ElementType))
+                    .WhereElementIsElementType();
+
+                foreach (Element element in fallbackCollector)
+                {
+                    AddViewportTypeItem(element as ElementType, itemsById);
+                }
+            }
+            catch
+            {
+                // В списке останется тип Revit по умолчанию.
+            }
+
+            List<DoorWindowNamedElementItem> collectedItems = itemsById.Values
+                .OrderBy(item => item.DisplayName)
+                .ToList();
+            for (int index = 0; index < collectedItems.Count; index++)
+            {
+                result.Add(collectedItems[index]);
             }
 
             return result;
+        }
+
+        private void AddViewportTypeItem(
+            ElementType viewportType,
+            IDictionary<int, DoorWindowNamedElementItem> itemsById)
+        {
+            if (!IsLikelyViewportType(viewportType) || itemsById == null)
+            {
+                return;
+            }
+
+            int idValue = viewportType.Id.IntegerValue;
+            if (idValue < 0 || itemsById.ContainsKey(idValue))
+            {
+                return;
+            }
+
+            string familyName = viewportType.FamilyName ?? string.Empty;
+            string displayName = string.IsNullOrWhiteSpace(familyName) ||
+                                 string.Equals(familyName, viewportType.Name, System.StringComparison.OrdinalIgnoreCase)
+                ? viewportType.Name
+                : familyName + " : " + viewportType.Name;
+
+            itemsById.Add(
+                idValue,
+                new DoorWindowNamedElementItem(viewportType.Id, viewportType.Name, displayName));
+        }
+
+        private bool IsLikelyViewportType(ElementType elementType)
+        {
+            if (elementType == null)
+            {
+                return false;
+            }
+
+            if (elementType.Category != null &&
+                elementType.Category.Id != null &&
+                elementType.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Viewports)
+            {
+                return true;
+            }
+
+            string categoryName = elementType.Category != null ? elementType.Category.Name : string.Empty;
+            string familyName = elementType.FamilyName ?? string.Empty;
+            string typeName = elementType.Name ?? string.Empty;
+            return ContainsViewportText(categoryName) ||
+                   ContainsViewportText(familyName) ||
+                   ContainsViewportText(typeName);
+        }
+
+        private bool ContainsViewportText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return false;
+            }
+
+            string normalized = text.Trim().ToLowerInvariant();
+            return normalized.Contains("viewport") ||
+                   normalized.Contains("view title") ||
+                   normalized.Contains("видовой экран") ||
+                   normalized.Contains("заголовок вида");
         }
 
         public DoorWindowViewTemplateItem FindTemplate(
@@ -132,6 +226,31 @@ namespace SAB.DoorWindowExplanations.Services
             }
 
             return items[0];
+        }
+
+        public DoorWindowNamedElementItem FindNamedItem(
+            IList<DoorWindowNamedElementItem> items,
+            int itemIdValue,
+            string itemName)
+        {
+            if (items == null || items.Count == 0)
+            {
+                return null;
+            }
+
+            if (itemIdValue >= 0)
+            {
+                for (int index = 0; index < items.Count; index++)
+                {
+                    DoorWindowNamedElementItem item = items[index];
+                    if (item != null && item.Id != null && item.Id.IntegerValue == itemIdValue)
+                    {
+                        return item;
+                    }
+                }
+            }
+
+            return FindNamedItem(items, itemName);
         }
     }
 }

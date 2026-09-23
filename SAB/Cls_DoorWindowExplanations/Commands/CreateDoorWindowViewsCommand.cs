@@ -5,6 +5,8 @@ using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Helpers.Notifications.ToastNotifications;
+using SAB.CreateViewsAndSheets.Models;
+using SAB.CreateViewsAndSheets.Views;
 using SAB.DoorWindowExplanations.Models;
 using SAB.DoorWindowExplanations.Services;
 using SAB.DoorWindowExplanations.Services.Reports;
@@ -19,6 +21,7 @@ namespace SAB.DoorWindowExplanations.Commands
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
+            CreateViewsAndSheetsProgressWindow progressWindow = null;
             try
             {
                 UIApplication uiApplication = commandData != null ? commandData.Application : null;
@@ -78,6 +81,14 @@ namespace SAB.DoorWindowExplanations.Commands
 
                 DoorWindowBatchCreationResult batchResult = new DoorWindowBatchCreationResult();
                 HashSet<string> reservedViewNames = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
+                int totalProgressSteps = selections.Count + 2;
+                progressWindow = ShowCreationProgressWindow(uiApplication, totalProgressSteps);
+                ReportProgress(
+                    progressWindow,
+                    0,
+                    totalProgressSteps,
+                    "Подготовка",
+                    "Готовим имена и геометрию видов.");
                 using (Transaction transaction = new Transaction(document, "SAB Экспликации дверей и окон"))
                 {
                     transaction.Start();
@@ -98,6 +109,12 @@ namespace SAB.DoorWindowExplanations.Commands
                             templates,
                             viewNames);
                         batchResult.ViewGroups.Add(group);
+                        ReportProgress(
+                            progressWindow,
+                            i + 1,
+                            totalProgressSteps,
+                            "Создание видов",
+                            "Элемент " + (i + 1) + " из " + selections.Count + ".");
                     }
 
                     DoorWindowSheetPlacementService sheetPlacementService = new DoorWindowSheetPlacementService();
@@ -107,8 +124,23 @@ namespace SAB.DoorWindowExplanations.Commands
                         titleBlockTypes,
                         viewportTypes,
                         batchResult.ViewGroups);
+                    ReportProgress(
+                        progressWindow,
+                        selections.Count + 1,
+                        totalProgressSteps,
+                        "Размещение",
+                        "Виды размещены на общем листе.");
                     transaction.Commit();
+                    ReportProgress(
+                        progressWindow,
+                        totalProgressSteps,
+                        totalProgressSteps,
+                        "Готово",
+                        "Изменения сохранены.");
                 }
+
+                CloseProgressWindow(progressWindow);
+                progressWindow = null;
 
                 if (settings.SaveSettings)
                 {
@@ -153,6 +185,91 @@ namespace SAB.DoorWindowExplanations.Commands
                     "Не удалось создать виды и лист.\n\n" + exception.Message,
                     15);
                 return Result.Failed;
+            }
+            finally
+            {
+                CloseProgressWindow(progressWindow);
+            }
+        }
+
+        private CreateViewsAndSheetsProgressWindow ShowCreationProgressWindow(
+            UIApplication uiApplication,
+            int totalSteps)
+        {
+            CreateViewsAndSheetsProgressWindow progressWindow = null;
+            try
+            {
+                progressWindow = new CreateViewsAndSheetsProgressWindow(
+                    BuildCreationProgressMessages(),
+                    CommandTitle,
+                    "Создание экспликаций дверей и окон");
+                SetRevitOwner(progressWindow, uiApplication);
+                progressWindow.Show();
+                ReportProgress(
+                    progressWindow,
+                    0,
+                    Math.Max(1, totalSteps),
+                    "Подготовка",
+                    "Запуск создания видов.");
+                return progressWindow;
+            }
+            catch (Exception exception)
+            {
+                CloseProgressWindow(progressWindow);
+                ToastNotifier.ShowWarning(
+                    CommandTitle,
+                    "Не удалось открыть окно прогресса. Создание будет продолжено: " + exception.Message);
+                return null;
+            }
+        }
+
+        private IList<string> BuildCreationProgressMessages()
+        {
+            return new List<string>
+            {
+                "Создаём вид сверху, фасад и разрез для каждого элемента.",
+                "Выравниваем виды и готовим компоновку листа.",
+                "Размещаем заголовки и проверяем границы видов."
+            };
+        }
+
+        private void ReportProgress(
+            CreateViewsAndSheetsProgressWindow progressWindow,
+            int currentStep,
+            int totalSteps,
+            string stage,
+            string details)
+        {
+            if (progressWindow == null)
+            {
+                return;
+            }
+
+            progressWindow.Report(new CreateViewsAndSheetsProgressInfo
+            {
+                CurrentStep = currentStep,
+                TotalSteps = Math.Max(1, totalSteps),
+                ProcessedItems = currentStep,
+                TotalItems = totalSteps,
+                Stage = stage,
+                Details = details
+            });
+        }
+
+        private void CloseProgressWindow(CreateViewsAndSheetsProgressWindow progressWindow)
+        {
+            if (progressWindow == null)
+            {
+                return;
+            }
+
+            try
+            {
+                progressWindow.AllowCloseAndClose();
+            }
+            catch
+            {
+                // Окно прогресса не должно влиять на результат команды.
             }
         }
 

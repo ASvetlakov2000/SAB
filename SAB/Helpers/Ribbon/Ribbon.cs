@@ -24,14 +24,15 @@ namespace SAB.Helpers
              string tooltip,
              string commandClass,
              string iconLPath,
-             string iconSPath)
+             string iconSPath,
+             bool useGrayIcons = false)
         {
             PushButtonData buttonData = new PushButtonData(name, tooltip, Assembly.GetExecutingAssembly().Location, commandClass)
             {
                 Name = name,
                 ToolTip = tooltip,
-                LargeImage = GetEmbeddedImage(iconLPath),
-                Image = GetEmbeddedImage(iconSPath)
+                LargeImage = GetEmbeddedImage(iconLPath, useGrayIcons),
+                Image = GetEmbeddedImage(iconSPath, useGrayIcons)
             };
 
             PushButton pushButton = ribbonPanel.AddItem(buttonData) as PushButton;
@@ -53,14 +54,16 @@ namespace SAB.Helpers
             string tooltip,
             string commandClass,
             string iconLPath,
-            string iconSPath)
+            string iconSPath,
+            bool smallIcon = false,
+            bool useGrayIcons = false)
         {
             PushButtonData buttonData = new PushButtonData(name, tooltip, Assembly.GetExecutingAssembly().Location, commandClass)
             {
                 Name = name,
                 ToolTip = tooltip,
-                LargeImage = GetEmbeddedImage(iconLPath),
-                Image = GetEmbeddedImage(iconSPath)
+                LargeImage = GetEmbeddedImage(smallIcon ? iconSPath : iconLPath, useGrayIcons),
+                Image = GetEmbeddedImage(iconSPath, useGrayIcons)
             };
 
             pullDownButton.AddPushButton(buttonData);
@@ -71,15 +74,39 @@ namespace SAB.Helpers
         ///</summary>
         /// <param name="resourcePath">Путь к изображению.</param>
         /// <returns>null</returns>>
-        public static ImageSource GetEmbeddedImage(string resourcePath)
+        public static ImageSource GetEmbeddedImage(string resourcePath, bool useGrayColor = false)
         {
             var assembly = Assembly.GetExecutingAssembly();
             using (var stream = assembly.GetManifestResourceStream(resourcePath))
             {
                 if (stream != null)
                 {
-                    var decoder = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
-                    return decoder.Frames[0];
+                    var decoder = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                    BitmapSource frame = decoder.Frames[0];
+                    if (useGrayColor)
+                    {
+                        frame = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, null, 0);
+                    }
+                    // Ribbon sizes are WPF device-independent units. A 32px PNG at 72 DPI
+                    // otherwise occupies 42.7 units and is clipped by a 32-unit control.
+                    int stride = (frame.PixelWidth * frame.Format.BitsPerPixel + 7) / 8;
+                    byte[] pixels = new byte[stride * frame.PixelHeight];
+                    frame.CopyPixels(pixels, stride, 0);
+                    if (useGrayColor)
+                    {
+                        // Preserve the original silhouette and transparency while replacing
+                        // the timer's pink accent with a neutral ribbon color.
+                        for (int pixel = 0; pixel < pixels.Length; pixel += 4)
+                        {
+                            pixels[pixel] = 112;
+                            pixels[pixel + 1] = 112;
+                            pixels[pixel + 2] = 112;
+                        }
+                    }
+                    var image = BitmapSource.Create(frame.PixelWidth, frame.PixelHeight, 96, 96,
+                        frame.Format, frame.Palette, pixels, stride);
+                    image.Freeze();
+                    return image;
                 }
             }
             return null;

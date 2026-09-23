@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.UI;
+using SAB.GklFrame;
 using SAB.Helpers;
 using SAB.SyncReminder;
 using System;
@@ -9,14 +10,15 @@ namespace SAB
     {
         private const string RibbonTabName = "SAB";
         private const string RibbonPanelName = "Библиотека";
-        private const string RegulationsPanelName = "Регламент";
+        private const string SettingsPanelName = "Настройки";
+        private const string AlbumPanelName = "Альбом";
+        private const string GraphicsPanelName = "Графика";
         private const string InteriorElevationsPanelName = "Развертки";
         private const string DoorWindowExplanationsPanelName = "Экспликации";
-        private const string RoomsPanelName = "Помещения";
-        private const string InfoPanelName = "Инфо";
-        private const string StructurePanelName = "Листы";
+        private const string FramePanelName = FrameModuleConstants.RibbonPanelName;
 
         private SyncReminderController _syncReminderController;
+        private Notifications.NotificationController _notificationController;
 
         internal static SyncReminderController CurrentSyncReminderController { get; private set; }
 
@@ -32,26 +34,18 @@ namespace SAB
                 // Вкладка уже существует.
             }
 
-            RibbonPanel infoPanel = application.CreateRibbonPanel(RibbonTabName, InfoPanelName);
-            RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
-            RibbonPanel regulationsPanel = application.CreateRibbonPanel(RibbonTabName, RegulationsPanelName);
+            // Порядок создания панелей определяет их порядок на вкладке Revit.
+            RibbonPanel settingsPanel = application.CreateRibbonPanel(RibbonTabName, SettingsPanelName);
+            RibbonPanel albumPanel = application.CreateRibbonPanel(RibbonTabName, AlbumPanelName);
+            RibbonPanel graphicsPanel = application.CreateRibbonPanel(RibbonTabName, GraphicsPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
             RibbonPanel doorWindowExplanationsPanel = application.CreateRibbonPanel(RibbonTabName, DoorWindowExplanationsPanelName);
-            RibbonPanel roomsPanel = application.CreateRibbonPanel(RibbonTabName, RoomsPanelName);
-            RibbonPanel structurePanel = application.CreateRibbonPanel(RibbonTabName, StructurePanelName);
+            RibbonPanel framePanel = application.CreateRibbonPanel(RibbonTabName, FramePanelName);
+            RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
 
-
-            /// Блок кнопок с инструкциями.
+            // Настройки.
             Ribbon.AddPushButtonSingle(
-                infoPanel,
-                "SAB_OpenPluginInstructionsHtml",
-                "Инструкции",
-                "RevitLibraryBuilder.Commands.Regulations.OpenPluginInstructionsHtmlCommand",
-                "SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png",
-                "SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png");
-
-            Ribbon.AddPushButtonSingle(
-                infoPanel,
+                settingsPanel,
                 "SAB_SyncReminderSettings",
                 "Таймер\nсинхронизации",
                 "SAB.SyncReminder.SyncReminderSettingsCommand",
@@ -69,45 +63,65 @@ namespace SAB
                 "SAB.Resources.ExportTypesSingleFileCommand_16.png");
 
 
-            /// Блок кнопок регламентов и инструкций в HTML.
-            // Блок кнопок регламентов и инструкций в HTML.
+            // Создание и удаление видов и листов.
+            var albumButton = (SplitButton)albumPanel.AddItem(
+                new SplitButtonData("SAB_ViewsAndSheets", "Альбом"));
+            albumButton.IsSynchronizedWithCurrentItem = false;
+            Ribbon.AddPushButtonToSplit(
+                albumButton,
+                "SAB_CreateViewsAndSheets",
+                "Создать виды\nи листы",
+                "SAB.CreateViewsAndSheets.Commands.CreateViewsAndSheetsCommand",
+                "SAB.Resources.CreateViewsAndSheets_32.png",
+                "SAB.Resources.CreateViewsAndSheets_16.png");
+
+            Ribbon.AddPushButtonToSplit(
+                albumButton,
+                "SAB_DeleteViewsAndSheets",
+                "Удалить виды\nи листы",
+                "SAB.CreateViewsAndSheets.Commands.DeleteViewsAndSheetsCommand",
+                "SAB.Resources.DeleteViewsAndSheets_32.png",
+                "SAB.Resources.DeleteViewsAndSheets_16.png");
+
+            // Графика.
             Ribbon.AddPushButtonSingle(
-                regulationsPanel,
-                "SAB_OpenNamingStandardsHtml",
-                "Стандарты \nНаименования",
-                "RevitLibraryBuilder.Commands.Regulations.OpenNamingStandardsHtmlCommand",
-                "SAB.Resources.OpenNamingStandardsHtmlCommand_32.png",
-                "SAB.Resources.OpenNamingStandardsHtmlCommand_16.png");
+                graphicsPanel,
+                "SAB_EditViewTemplateGraphics",
+                "Редактор\nшаблонов",
+                "SAB.ViewTemplateGraphics.Commands.EditViewTemplateGraphicsCommand",
+                "SAB.Resources.EditViewTemplateGraphics_32.png",
+                "SAB.Resources.EditViewTemplateGraphics_16.png");
 
-
-
-            // Блок кнопок для плагина внутренних разверток.
-            Ribbon.AddPushButtonSingle(
-                interiorElevationsPanel,
+            // Развертки.
+            var interiorElevationsButton = (SplitButton)interiorElevationsPanel.AddItem(
+                new SplitButtonData("SAB_InteriorElevations", "Развертки"));
+            interiorElevationsButton.IsSynchronizedWithCurrentItem = false;
+            Ribbon.AddPushButtonToSplit(
+                interiorElevationsButton,
                 "SAB_CreateInteriorElevations",
                 "Создать развертки\nпо линии",
                 "SAB.InteriorElevations.Commands.CreateInteriorElevationsCommand",
                 "SAB.Resources.CreateInteriorElevationsCommand_32.png",
                 "SAB.Resources.CreateInteriorElevationsCommand_16.png");
 
-            Ribbon.AddPushButtonSingle(
-                interiorElevationsPanel,
+            Ribbon.AddPushButtonToSplit(
+                interiorElevationsButton,
                 "SAB_FlipElevation180ByLine",
                 "Разворот\nразвертки 180",
                 "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",
                 "SAB.Resources.FlipElevation180ByLineCommand_32.png",
                 "SAB.Resources.FlipElevation180ByLineCommand_16.png");
 
-            Ribbon.AddPushButtonSingle(
-                interiorElevationsPanel,
+            Ribbon.AddPushButtonToSplit(
+                interiorElevationsButton,
                 "SAB_MoveInteriorElevationViewports",
                 "Перенос видов\nна след. лист",
                 "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
                 "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png",
                 "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png");
 
-            Ribbon.AddPushButtonSingle(
-                interiorElevationsPanel,
+            Ribbon.AddPushButtonToSplit(
+                interiorElevationsButton,
                 "SAB_AlignPlanCornerMarks",
                 "Выровнять марки\nуглов",
                 "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
@@ -121,52 +135,50 @@ namespace SAB
                 "SAB_CreateDoorWindowViews",
                 "Экспликации\nдверей и окон",
                 "SAB.DoorWindowExplanations.Commands.CreateDoorWindowViewsCommand",
-                "SAB.Resources.CreateInteriorElevationsCommand_32.png",
-                "SAB.Resources.CreateInteriorElevationsCommand_16.png");
+                "SAB.Resources.CreateDoorWindowViews_32.png",
+                "SAB.Resources.CreateDoorWindowViews_16.png");
 
+            // Каркас.
+            var frameButton = (SplitButton)framePanel.AddItem(
+                new SplitButtonData("SAB_GklFrame", FramePanelName));
+            frameButton.IsSynchronizedWithCurrentItem = false;
+            Ribbon.AddPushButtonToSplit(
+                frameButton,
+                "SAB_GenerateGklFrame",
+                FrameModuleConstants.GenerateCommandText,
+                "SAB.GklFrame.Commands.GenerateGklFrameCommand",
+                "SAB.Resources.GklFrameWall_32.png",
+                "SAB.Resources.GklFrameWall_16.png");
 
-            // Блок кнопок для проверки геометрии помещений.
-            Ribbon.AddPushButtonSingle(
-                roomsPanel,
-                "SAB_OpenRoomGeometryTools",
-                "Проверка геометрии\nпомещений",
-                "SAB.RoomGeometryTools.Commands.OpenRoomGeometryToolsCommand",
-                "SAB.Resources.GenerateDashboardCommand_32.png",
-                "SAB.Resources.GenerateDashboardCommand_16.png");
-
-
-            /// Блок кнопок для структуры проекта.
-            Ribbon.AddPushButtonSingle(
-            structurePanel,
-                "SAB_CreateViewsAndSheets",
-                "Создать виды\nи листы",
-                "SAB.CreateViewsAndSheets.Commands.CreateViewsAndSheetsCommand",
-                "SAB.Resources.CreateViewsAndSheets_32.png",
-                "SAB.Resources.CreateViewsAndSheets_16.png");
-
-            Ribbon.AddPushButtonSingle(
-            structurePanel,
-                "SAB_DeleteViewsAndSheets",
-                "Удалить виды\nи листы",
-                "SAB.CreateViewsAndSheets.Commands.DeleteViewsAndSheetsCommand",
-                "SAB.Resources.DeleteViewsAndSheets_32.png",
-                "SAB.Resources.DeleteViewsAndSheets_16.png");
-
-            Ribbon.AddPushButtonSingle(
-            structurePanel,
-                "SAB_EditViewTemplateGraphics",
-                "Редактор шаблонов\nвидов",
-                "SAB.ViewTemplateGraphics.Commands.EditViewTemplateGraphicsCommand",
-                "SAB.Resources.CreateViewsAndSheets_32.png",
-                "SAB.Resources.CreateViewsAndSheets_16.png");
+            Ribbon.AddPushButtonToSplit(
+                frameButton,
+                "SAB_CalculateGklFrame",
+                FrameModuleConstants.CalculateCommandText,
+                "SAB.GklFrame.Commands.CalculateGklFrameCommand",
+                "SAB.Resources.SyncReminderSettings_32.png",
+                "SAB.Resources.SyncReminderSettings_16.png",
+                useGrayIcons: true);
 
             StartSyncReminder(application);
+            try
+            {
+                _notificationController = new Notifications.NotificationController();
+                _notificationController.Start(application, settingsPanel);
+            }
+            catch (Exception exception)
+            {
+                _notificationController?.Stop(application);
+                _notificationController = null;
+                TaskDialog.Show("SAB — Уведомления", "Не удалось запустить обработчик уведомлений:\n" + exception.Message);
+            }
 
             return Result.Succeeded;
         }
 
         public Result OnShutdown(UIControlledApplication application)
         {
+            _notificationController?.Stop(application);
+            _notificationController = null;
             StopSyncReminder();
             return Result.Succeeded;
         }

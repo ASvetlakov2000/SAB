@@ -2,7 +2,9 @@ param(
     [string]$BinFolder = "..\SAB\bin\Debug",
     [string]$SyncReminderBinFolder = "",
     [string]$OutputFolder = ".\output",
-    [string]$InstallerVersion = ""
+    [string]$InstallerVersion = "",
+    [ValidateSet("2022", "2023", "2024")]
+    [string[]]$Years = @("2023", "2024")
 )
 
 Set-StrictMode -Version Latest
@@ -161,7 +163,8 @@ $installerArguments = @(
     "--root", "$repositoryRoot",
     "--bin", "$binRootPath",
     "--out", "$outputRootPath",
-    "--version", "$InstallerVersion"
+    "--version", "$InstallerVersion",
+    "--years", ($Years -join ",")
 )
 
 if ((-not [string]::IsNullOrWhiteSpace($syncReminderBinRootPath)) -and
@@ -181,11 +184,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "WixSharp installer build failed."
 }
 
-$msi2023 = Join-Path $outputRootPath "SAB_Revit_2023.msi"
-$msi2024 = Join-Path $outputRootPath "SAB_Revit_2024.msi"
-
-if (-not (Test-Path -LiteralPath $msi2023) -or -not (Test-Path -LiteralPath $msi2024)) {
-    throw "One or more MSI files were not generated."
+foreach ($year in $Years) {
+    $msiPath = Join-Path $outputRootPath "SAB_Revit_$year.msi"
+    if (-not (Test-Path -LiteralPath $msiPath)) {
+        throw "MSI file was not generated: $msiPath"
+    }
 }
 
 Write-Host ""

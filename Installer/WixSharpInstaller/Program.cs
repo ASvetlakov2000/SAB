@@ -13,9 +13,13 @@ namespace WixSharpInstaller
     internal static class Program
     {
         // Блок констант для стабильных UpgradeCode.
+        private const string UpgradeCode2022 = "A87CFB65-1F2D-4E1D-A489-421B8E649063";
         private const string UpgradeCode2023 = "F9D69961-6B30-4C1E-A469-0CC9C31EFD8E";
         private const string UpgradeCode2024 = "D7A573D9-4A9A-42A1-8D0D-F552AEEA6B87";
         private const string FamiliesRootFolderName = "Families for Plugin";
+        private const string InteriorElevationsCommandFolderName = "CreateInteriorElevationsCommand";
+        private const string InteriorElevations2022FolderName = "2022";
+        private const string InteriorElevationsSharedFolderName = "2023-2024";
         private const string FamiliesManifestFileName = "families.manifest.tsv";
         private const string FamiliesInstallerStagingFolderName = "_families_for_installer";
         private const string SyncReminderFolderName = "SyncReminderTest";
@@ -34,6 +38,8 @@ namespace WixSharpInstaller
                 string syncReminderBinFolder = GetOption(options, "--sync-reminder-bin", string.Empty);
                 string outputFolder = GetOption(options, "--out", Path.GetFullPath(Path.Combine(repositoryRoot, "Installer", "output")));
                 string explicitVersion = GetOptionRaw(options, "--version", string.Empty);
+                List<string> targetYears = ParseTargetYears(
+                    GetOptionRaw(options, "--years", "2023,2024"));
 
                 if (!Directory.Exists(binFolder))
                 {
@@ -46,17 +52,15 @@ namespace WixSharpInstaller
                     throw new FileNotFoundException("SAB.dll was not found in bin folder.", assemblyPath);
                 }
 
-                string addin2023Path = Path.Combine(repositoryRoot, "SAB_2023.addin");
-                string addin2024Path = Path.Combine(repositoryRoot, "SAB_2024.addin");
-
-                if (!IOFile.Exists(addin2023Path))
+                foreach (string targetYear in targetYears)
                 {
-                    throw new FileNotFoundException("SAB_2023.addin was not found.", addin2023Path);
-                }
-
-                if (!IOFile.Exists(addin2024Path))
-                {
-                    throw new FileNotFoundException("SAB_2024.addin was not found.", addin2024Path);
+                    string addinPath = Path.Combine(repositoryRoot, "SAB_" + targetYear + ".addin");
+                    if (!IOFile.Exists(addinPath))
+                    {
+                        throw new FileNotFoundException(
+                            "SAB_" + targetYear + ".addin was not found.",
+                            addinPath);
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(syncReminderBinFolder))
@@ -68,25 +72,18 @@ namespace WixSharpInstaller
 
                 Version installerVersion = ResolveInstallerVersion(assemblyPath, explicitVersion);
 
-                BuildInstallerForYear(
-                    year: "2023",
-                    addinPath: addin2023Path,
-                    repositoryRoot: repositoryRoot,
-                    binFolder: binFolder,
-                    syncReminderBinFolder: syncReminderBinFolder,
-                    outputFolder: outputFolder,
-                    upgradeCode: new Guid(UpgradeCode2023),
-                    version: installerVersion);
-
-                BuildInstallerForYear(
-                    year: "2024",
-                    addinPath: addin2024Path,
-                    repositoryRoot: repositoryRoot,
-                    binFolder: binFolder,
-                    syncReminderBinFolder: syncReminderBinFolder,
-                    outputFolder: outputFolder,
-                    upgradeCode: new Guid(UpgradeCode2024),
-                    version: installerVersion);
+                foreach (string targetYear in targetYears)
+                {
+                    BuildInstallerForYear(
+                        year: targetYear,
+                        addinPath: Path.Combine(repositoryRoot, "SAB_" + targetYear + ".addin"),
+                        repositoryRoot: repositoryRoot,
+                        binFolder: binFolder,
+                        syncReminderBinFolder: syncReminderBinFolder,
+                        outputFolder: outputFolder,
+                        upgradeCode: GetUpgradeCode(targetYear),
+                        version: installerVersion);
+                }
 
                 Console.WriteLine("MSI build completed:");
                 Console.WriteLine(outputFolder);
@@ -140,10 +137,11 @@ namespace WixSharpInstaller
 
             pluginFiles.Add(pluginInstructionsDirectory);
 
-            string familiesSourcePath = ResolveFamiliesForPluginSourcePath(repositoryRoot, binFolder);
+            string familiesSourcePath = ResolveFamiliesForPluginSourcePath(repositoryRoot, binFolder, year);
             string familiesInstallerSourcePath = PrepareFamiliesForInstallerSourcePath(
                 familiesSourcePath,
-                outputFolder);
+                outputFolder,
+                year);
             Dir familiesForPluginDirectory = BuildContentDirectory(
                 familiesInstallerSourcePath,
                 FamiliesRootFolderName);
@@ -290,15 +288,31 @@ namespace WixSharpInstaller
         }
 
         // Блок выбора папки Families for Plugin для установки рядом с DLL.
-        private static string ResolveFamiliesForPluginSourcePath(string repositoryRoot, string binFolder)
+        private static string ResolveFamiliesForPluginSourcePath(
+            string repositoryRoot,
+            string binFolder,
+            string year)
         {
             List<string> candidates = new List<string>();
-            candidates.Add(Path.Combine(repositoryRoot, "SAB", FamiliesRootFolderName));
             candidates.Add(Path.Combine(binFolder, FamiliesRootFolderName));
+            if (year != "2022")
+            {
+                candidates.Add(Path.Combine(repositoryRoot, "SAB", FamiliesRootFolderName));
+            }
 
             foreach (string candidate in candidates)
             {
-                if (Directory.Exists(candidate) && DirectoryHasFiles(candidate))
+                string versionFolderName = year == "2022"
+                    ? InteriorElevations2022FolderName
+                    : InteriorElevationsSharedFolderName;
+                string versionFamilyPath = Path.Combine(
+                    candidate,
+                    InteriorElevationsCommandFolderName,
+                    versionFolderName);
+
+                if (Directory.Exists(candidate) &&
+                    Directory.Exists(versionFamilyPath) &&
+                    Directory.GetFiles(versionFamilyPath, "*.rfa", SearchOption.TopDirectoryOnly).Length > 0)
                 {
                     return candidate;
                 }
@@ -347,7 +361,10 @@ namespace WixSharpInstaller
 
         // Блок подготовки семейств к упаковке: MSI получает только ASCII-имена файлов.
         // Оригинальные русские имена сохраняются в UTF-8 манифесте и восстанавливаются перед загрузкой в Revit.
-        private static string PrepareFamiliesForInstallerSourcePath(string familiesSourcePath, string outputFolder)
+        private static string PrepareFamiliesForInstallerSourcePath(
+            string familiesSourcePath,
+            string outputFolder,
+            string year)
         {
             if (string.IsNullOrWhiteSpace(familiesSourcePath) || !Directory.Exists(familiesSourcePath))
             {
@@ -371,7 +388,8 @@ namespace WixSharpInstaller
                 stagingRootPath,
                 string.Empty,
                 manifestLines,
-                usedPackageRelativePaths);
+                usedPackageRelativePaths,
+                year);
 
             string manifestPath = Path.Combine(stagingRootPath, FamiliesManifestFileName);
             IOFile.WriteAllLines(manifestPath, manifestLines.ToArray(), new UTF8Encoding(true));
@@ -384,7 +402,8 @@ namespace WixSharpInstaller
             string stagingRootPath,
             string relativeDirectoryPath,
             List<string> manifestLines,
-            HashSet<string> usedPackageRelativePaths)
+            HashSet<string> usedPackageRelativePaths,
+            string year)
         {
             string targetDirectoryPath = string.IsNullOrWhiteSpace(relativeDirectoryPath)
                 ? stagingRootPath
@@ -397,6 +416,16 @@ namespace WixSharpInstaller
 
             foreach (string filePath in files)
             {
+                if (string.Equals(
+                        relativeDirectoryPath,
+                        InteriorElevationsCommandFolderName,
+                        StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(Path.GetExtension(filePath), ".rfa", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        "Interior elevation families must be in the 2022 or 2023-2024 folder: " + filePath);
+                }
+
                 string originalFileName = Path.GetFileName(filePath);
                 string originalRelativePath = CombineRelativePath(relativeDirectoryPath, originalFileName);
                 string packageFileName = originalFileName;
@@ -426,6 +455,22 @@ namespace WixSharpInstaller
             foreach (string directoryPath in directories)
             {
                 string directoryName = Path.GetFileName(directoryPath);
+                if (string.Equals(
+                        relativeDirectoryPath,
+                        InteriorElevationsCommandFolderName,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    string expectedFolderName = year == "2022"
+                        ? InteriorElevations2022FolderName
+                        : InteriorElevationsSharedFolderName;
+                    if ((string.Equals(directoryName, InteriorElevations2022FolderName, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(directoryName, InteriorElevationsSharedFolderName, StringComparison.OrdinalIgnoreCase)) &&
+                        !string.Equals(directoryName, expectedFolderName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+                }
+
                 string childRelativeDirectoryPath = CombineRelativePath(relativeDirectoryPath, directoryName);
 
                 CopyFamiliesDirectoryForInstaller(
@@ -433,7 +478,8 @@ namespace WixSharpInstaller
                     stagingRootPath,
                     childRelativeDirectoryPath,
                     manifestLines,
-                    usedPackageRelativePaths);
+                    usedPackageRelativePaths,
+                    year);
             }
         }
 
@@ -723,6 +769,59 @@ namespace WixSharpInstaller
             }
 
             return defaultValue;
+        }
+
+        private static List<string> ParseTargetYears(string rawYears)
+        {
+            List<string> result = new List<string>();
+            string[] values = (rawYears ?? string.Empty).Split(',');
+
+            foreach (string value in values)
+            {
+                string year = (value ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(year))
+                {
+                    continue;
+                }
+
+                if (year != "2022" && year != "2023" && year != "2024")
+                {
+                    throw new InvalidOperationException(
+                        "Unsupported Revit year: " + year + ". Expected 2022, 2023, or 2024.");
+                }
+
+                if (!result.Contains(year))
+                {
+                    result.Add(year);
+                }
+            }
+
+            if (result.Count == 0)
+            {
+                throw new InvalidOperationException("At least one Revit year must be specified.");
+            }
+
+            return result;
+        }
+
+        private static Guid GetUpgradeCode(string year)
+        {
+            if (year == "2022")
+            {
+                return new Guid(UpgradeCode2022);
+            }
+
+            if (year == "2023")
+            {
+                return new Guid(UpgradeCode2023);
+            }
+
+            if (year == "2024")
+            {
+                return new Guid(UpgradeCode2024);
+            }
+
+            throw new InvalidOperationException("Unsupported Revit year: " + year);
         }
 
     }

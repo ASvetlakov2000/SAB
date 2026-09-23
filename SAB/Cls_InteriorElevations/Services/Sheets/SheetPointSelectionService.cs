@@ -25,9 +25,11 @@ namespace SAB.InteriorElevations.Services.Sheets
             ElevationSettings settings,
             IList<string> warnings,
             out XYZ pickedPoint,
+            out ViewPlan pickedExistingRoomPlanView,
             out bool wasCancelled)
         {
             pickedPoint = null;
+            pickedExistingRoomPlanView = null;
             wasCancelled = false;
 
             if (uiDocument == null)
@@ -54,15 +56,23 @@ namespace SAB.InteriorElevations.Services.Sheets
                 returnView = document.ActiveView;
             }
 
-            if (settings == null ||
-                settings.TitleBlockTypeId == null ||
-                settings.TitleBlockTypeId == ElementId.InvalidElementId)
+            if (settings == null)
             {
-                AddWarning(warnings, "Для выбора координаты должен быть выбран тип основной надписи.");
+                AddWarning(warnings, "Не заданы параметры выбора координаты на листе.");
                 return false;
             }
 
-            ViewSheet coordinateSelectionSheet = CreateCoordinateSelectionSheet(document, settings, warnings);
+            bool usesExistingSheet = settings.UseExistingSheet;
+            ViewSheet coordinateSelectionSheet = usesExistingSheet
+                ? document.GetElement(settings.ExistingSheetId) as ViewSheet
+                : CreateCoordinateSelectionSheet(document, settings, warnings);
+
+            if (usesExistingSheet && coordinateSelectionSheet == null)
+            {
+                AddWarning(warnings, "Выбранный существующий лист не найден в документе.");
+                return false;
+            }
+
             if (coordinateSelectionSheet == null)
             {
                 return false;
@@ -76,7 +86,38 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                 pickedPoint = uiDocument.Selection.PickPoint(
                     ObjectSnapTypes.None,
-                    "Укажите стартовую точку размещения разверток на листе.");
+                    "Укажите стартовую точку размещения нового комплекта разверток на листе.");
+
+                if (pickedPoint != null && usesExistingSheet && settings.CreateRoomPlanScheme)
+                {
+                    try
+                    {
+                        Reference viewportReference = uiDocument.Selection.PickObject(
+                            ObjectType.Element,
+                            new PlanViewportOnSheetSelectionFilter(document, coordinateSelectionSheet.Id),
+                            "Выберите видовой экран существующей план-схемы на этом листе.");
+
+                        Viewport selectedViewport = viewportReference != null
+                            ? document.GetElement(viewportReference.ElementId) as Viewport
+                            : null;
+                        pickedExistingRoomPlanView = selectedViewport != null
+                            ? document.GetElement(selectedViewport.ViewId) as ViewPlan
+                            : null;
+
+                        if (pickedExistingRoomPlanView == null)
+                        {
+                            AddWarning(
+                                warnings,
+                                "Точка размещения сохранена, но видовой экран план-схемы не выбран.");
+                        }
+                    }
+                    catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+                    {
+                        AddWarning(
+                            warnings,
+                            "Точка размещения сохранена. Выбор план-схемы отменен — укажите точку и план-схему еще раз.");
+                    }
+                }
 
                 return pickedPoint != null;
             }
@@ -92,7 +133,12 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
             finally
             {
-                RestoreSourceViewAndCloseSheetView(uiDocument, returnView, coordinateSelectionSheet, warnings);
+                RestoreSourceViewAndCloseSheetView(
+                    uiDocument,
+                    returnView,
+                    coordinateSelectionSheet,
+                    !usesExistingSheet,
+                    warnings);
             }
         }
 
@@ -142,6 +188,7 @@ namespace SAB.InteriorElevations.Services.Sheets
             UIDocument uiDocument,
             View returnView,
             ViewSheet coordinateSelectionSheet,
+            bool closeSheetView,
             IList<string> warnings)
         {
             if (uiDocument == null)
@@ -151,7 +198,8 @@ namespace SAB.InteriorElevations.Services.Sheets
 
             bool sourceViewRestored = TryRestoreSourceView(uiDocument, returnView, warnings);
 
-            if (sourceViewRestored && coordinateSelectionSheet != null && coordinateSelectionSheet.IsValidObject)
+            if (sourceViewRestored && closeSheetView &&
+                coordinateSelectionSheet != null && coordinateSelectionSheet.IsValidObject)
             {
                 TryCloseOpenUIView(uiDocument, coordinateSelectionSheet.Id, warnings);
             }
@@ -258,6 +306,40 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
 
             warnings.Add(warning);
+        }
+
+        private sealed class PlanViewportOnSheetSelectionFilter : ISelectionFilter
+        {
+            private readonly Document _document;
+            private readonly ElementId _sheetId;
+
+            public PlanViewportOnSheetSelectionFilter(Document document, ElementId sheetId)
+            {
+                _document = document;
+                _sheetId = sheetId;
+            }
+
+            public bool AllowElement(Element element)
+            {
+                Viewport viewport = element as Viewport;
+                if (viewport == null || _document == null || _sheetId == null)
+                {
+                    return false;
+                }
+
+                if (!RevitElementIdUtils.AreEqual(viewport.SheetId, _sheetId))
+                {
+                    return false;
+                }
+
+                ViewPlan planView = _document.GetElement(viewport.ViewId) as ViewPlan;
+                return planView != null && !planView.IsTemplate;
+            }
+
+            public bool AllowReference(Reference reference, XYZ position)
+            {
+                return false;
+            }
         }
     }
 }
