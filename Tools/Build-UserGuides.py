@@ -389,7 +389,7 @@ def section(id_, title, body, soft=False):
 def shell(title, panel, intro, nav, body):
     return f'''<!doctype html>
 <html lang="ru">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="assets/template.css"><title>SAB — {e(title)}</title></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="assets/template.css"><link rel="stylesheet" href="assets/compact.css"><title>SAB — {e(title)}</title></head>
 <body>
 <nav class="globalnav" aria-label="SAB"><div class="globalnav__inner"><a class="globalnav__brand" href="{INDEX}">SAB</a><span class="globalnav__divider" aria-hidden="true"></span><div class="globalnav__links"><a href="{INDEX}">Все инструкции</a><a href="#procedure">Начать работу</a><a href="#check">Проверка</a></div></div></nav>
 <nav class="localnav" aria-label="Навигация по инструкции"><div class="localnav__inner"><a class="localnav__title" href="#top">{e(title)}</a><div class="localnav__links">{nav}</div></div></nav>

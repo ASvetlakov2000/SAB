@@ -20,12 +20,38 @@ const { pathToFileURL, fileURLToPath } = require('url');
   }
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   let checks = 0;
+  const density = [];
   try {
     for (const width of [1440, 390]) {
       const page = await browser.newPage({ viewport: { width, height: 1000 }, deviceScaleFactor: 1 });
       for (const file of files) {
         const errors = []; page.on('pageerror', e => errors.push(e.message));
         await page.goto(pathToFileURL(path.join(folder, file)).href); await page.waitForLoadState('load');
+        const compact = page.locator('link[href="assets/compact.css"]');
+        if (await compact.count() !== 1) throw Error(file + ': compact styles missing');
+        // Compare identical content with and without the density override.
+        const measure = () => page.evaluate(() => ({
+          height: document.documentElement.scrollHeight,
+          width: document.documentElement.scrollWidth,
+          font: parseFloat(getComputedStyle(document.body).fontSize)
+        }));
+        await compact.evaluate(n => n.disabled = true);
+        const before = await measure();
+        await page.locator('details').evaluateAll(nodes => nodes.forEach(n => n.open = true));
+        const beforeExpanded = await measure();
+        await compact.evaluate(n => n.disabled = false);
+        await page.waitForFunction(() => {
+          const sheet = document.querySelector('link[href="assets/compact.css"]').sheet;
+          return sheet && !sheet.disabled;
+        });
+        const afterExpanded = await measure();
+        if (afterExpanded.width > width + 1) throw Error(file + ': expanded scenario overflow at ' + width);
+        await page.locator('details').evaluateAll(nodes => nodes.forEach(n => n.open = false));
+        const after = await measure();
+        if (after.font < 17 || after.height > before.height * 0.85 || afterExpanded.height > beforeExpanded.height * 0.9) throw Error(file + ': insufficient compaction or unreadable body type at ' + width + ' ' + JSON.stringify({before, after, beforeExpanded, afterExpanded}));
+        density.push({file, width, before: before.height, after: after.height,
+          reduction: Math.round(100 * (1 - after.height / before.height)),
+          expandedBefore: beforeExpanded.height, expandedAfter: afterExpanded.height});
         const state = await page.evaluate(() => ({
           width: innerWidth, scroll: document.documentElement.scrollWidth,
           ids: [...document.querySelectorAll('[id]')].map(n => n.id),
@@ -49,11 +75,16 @@ const { pathToFileURL, fileURLToPath } = require('url');
         if (file === 'SAB_HTML_Instruktsii.html') {
           const catalog = await page.locator('.index-link').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
           if (catalog.length !== 22 || new Set(catalog).size !== 22 || files.some(f => f !== file && !catalog.includes(f))) throw Error('Catalog does not cover every current guide');
+          const columns = await page.locator('.index-list').first().evaluate(n => getComputedStyle(n).gridTemplateColumns.split(' ').length);
+          if (columns !== (width >= 1000 ? 2 : 1)) throw Error('Wrong catalog column count');
         } else {
           for (const id of ['requirements', 'procedure', 'check', 'errors']) if (!state.ids.includes(id)) throw Error(file + ': missing user workflow section ' + id);
         }
         const guide = file.includes('Zapolnenie');
-        if (guide || file === 'SAB_HTML_Instruktsii.html') await page.screenshot({ path: path.join(output, `${guide ? 'guide' : 'index'}-${width}.png`), fullPage: !guide });
+        if (guide || file === 'SAB_HTML_Instruktsii.html') {
+          await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+          await page.screenshot({ path: path.join(output, `${guide ? 'guide' : 'index'}-${width}.png`) });
+        }
         if (guide) {
           await page.locator('#scenarios').screenshot({ path: path.join(output, `scenarios-${width}.png`) });
           const summary = page.locator('#scenario-manual summary'); await summary.focus(); await page.keyboard.press('Enter');
@@ -72,6 +103,8 @@ const { pathToFileURL, fileURLToPath } = require('url');
       }
       await page.close();
     }
+    fs.writeFileSync(path.join(output, 'density.json'), JSON.stringify(density, null, 2));
+    for (const item of density.filter(n => /Instruktsii|Zapolnenie/.test(n.file))) console.log('DENSITY:', item.file, item.width, `${item.before} → ${item.after} px (-${item.reduction}%)`);
     console.log('All', checks, 'HTML viewport checks passed.');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exit(1); });

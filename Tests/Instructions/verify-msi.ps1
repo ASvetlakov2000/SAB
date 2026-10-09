@@ -21,9 +21,11 @@ foreach ($year in @('2022', '2023', '2024')) {
             throw "$year MSI: missing or outdated guide $($guide.Name)"
         }
     }
-    foreach ($required in @('SAB.dll', 'Nice3point.Revit.Toolkit.dll', 'template.css')) {
+    foreach ($required in @('SAB.dll', 'Nice3point.Revit.Toolkit.dll', 'template.css', 'compact.css')) {
         if (!$files.ContainsKey($required)) { throw "$year MSI: missing $required" }
     }
+    $compactStyle = Get-Item -LiteralPath (Join-Path $docs 'assets\compact.css')
+    if ($files['compact.css'] -ne $compactStyle.Length) { throw "$year MSI: outdated compact styles" }
     # The dashboard has its own runtime HTML template; it is not a user guide.
     $html = @($files.Keys | Where-Object { $_.EndsWith('.html') -and $_ -ne 'dashboard_template.html' })
     if ($html.Count -ne 23 -or @($html | Where-Object { !$_.StartsWith('SAB_HTML_') }).Count -gt 0) {
