@@ -106,6 +106,8 @@ namespace SAB.ParameterTools
             switch (RuleEngine.Source(profile, rule))
             {
                 case RuleValueSource.Constant: return Resolution.Known(rule.Constant);
+                case RuleValueSource.ManualChoice:
+                    return rule.ManualValues.Contains(rule.LastManualValue) ? Resolution.Known(rule.LastManualValue) : Resolution.Unknown("Не выбрано значение перед записью.");
                 case RuleValueSource.Level: return RuleEngine.Level(profile, LevelId(ui, profile, e, source, chosenLevel));
                 case RuleValueSource.Room:
                     return rule.Source == RuleValueSource.ByGroup && rule.Group == ParameterGroup.Zone
@@ -115,6 +117,18 @@ namespace SAB.ParameterTools
                             : Resolution.Unknown("У элемента не сохранён ручной выбор корпуса. Откройте «Настройки параметров» → «Источники» → «Корпуса для ручного выбора» → «Выбрать корпус».");
                 case RuleValueSource.ElementParameter:
                     return read(rule.ElementParameter);
+                case RuleValueSource.Mapping:
+                    Resolution input;
+                    switch (rule.MappingInput)
+                    {
+                        case MappingInput.ElementLevel: input = Resolution.Known(LevelService.ElementLevel(e)?.Name); break;
+                        case MappingInput.ElementParameter: input = read(rule.MappingParameter); break;
+                        case MappingInput.RoomNumber: input = RoomValue(room, RoomField.Number, null); break;
+                        case MappingInput.RoomName: input = RoomValue(room, RoomField.Name, null); break;
+                        case MappingInput.RoomParameter: input = RoomValue(room, RoomField.Parameter, rule.MappingParameter); break;
+                        default: return Resolution.Unknown("Источник сопоставления не поддерживается.");
+                    }
+                    return RuleEngine.Map(rule, input);
                 default: return Resolution.Unknown("Неизвестная группа правила.");
             }
         }
@@ -194,8 +208,8 @@ namespace SAB.ParameterTools
         {
             var ui = app.ActiveUIDocument; var doc = ui.Document; var profile = RequireProfile(doc);
             var rules = profile.Rules.Where(r => r.Enabled && (corpus == null || RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus)).ToList();
-            if (corpus != null && (!rules.Any() || !profile.Corpora.Contains(corpus)))
-                throw new InvalidOperationException("Выбор корпуса доступен в режиме «Вручную».");
+            if (corpus != null && !rules.Any()) throw new InvalidOperationException("Не включено правило с источником «Корпус вручную». Выберите этот источник в настройках правила.");
+            if (corpus != null && !profile.Corpora.Contains(corpus)) throw new InvalidOperationException("Выбранный корпус отсутствует в списке этой модели. Проверьте названия корпусов в настройках.");
             if (rules.Count == 0) throw new InvalidOperationException("Не включены правила для этой команды.");
             var targets = Targets(ui, profile, true, captured);
             int targetCount = targets.Count;
@@ -212,6 +226,23 @@ namespace SAB.ParameterTools
             targets = targets.Where(e => perElement[e.Id].Count > 0 && !issues.Any(i => i.ElementId == e.Id)).ToList();
             if (targets.Count == 0) { issues.AddRange(GroupIssues(groupSkips)); if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Правила не применены"); else UI.Toast.Show(app.MainWindowHandle, "Выделенные элементы не подходят под категории и условия правил."); return; }
             var relevantRules = targets.SelectMany(e => perElement[e.Id]).Distinct().ToList();
+            bool manualSelection = relevantRules.Any(r => RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus || RuleEngine.Source(profile, r) == RuleValueSource.ManualChoice);
+            if (corpus == null && relevantRules.Any(r => RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus))
+            {
+                var choice = new UI.CorpusChoiceWindow(profile.Corpora, profile.LastCorpus);
+                new System.Windows.Interop.WindowInteropHelper(choice).Owner = app.MainWindowHandle;
+                if (choice.ShowDialog() != true) return;
+                corpus = choice.Corpus;
+            }
+            foreach (var rule in relevantRules.Where(r => RuleEngine.Source(profile, r) == RuleValueSource.ManualChoice))
+            {
+                var choice = new UI.ModelSourceWindow("Выбрать значение: " + rule.Target.Name,
+                    "Значение применяется к подходящим элементам текущего выделения. Последний выбор запоминается в модели.",
+                    rule.ManualValues.Select(v => new UI.ModelSourceChoice { Id = v, Name = v }).ToList(), rule.LastManualValue);
+                new System.Windows.Interop.WindowInteropHelper(choice).Owner = app.MainWindowHandle;
+                if (choice.ShowDialog() != true) return;
+                rule.LastManualValue = choice.SelectedId;
+            }
             string chosenLevel = ChooseLevel(ui, profile, targets, relevantRules);
             var roomResults = new Dictionary<ElementId, RoomResult>();
             bool needsRoom = NeedsRoom(profile, relevantRules);
@@ -241,8 +272,8 @@ namespace SAB.ParameterTools
             }
             else
             {
-                var resolver = needsRoom ? new RoomResolver(UIDocumentContext.From(ui)) : null;
-                foreach (var target in targets) roomResults[target.Id] = resolver == null || !NeedsRoom(profile, perElement[target.Id]) ? new RoomResult() : resolver.Resolve(target);
+                using (var resolver = needsRoom ? new RoomResolver(UIDocumentContext.From(ui), profile.DoorRoomSide) : null)
+                    foreach (var target in targets) roomResults[target.Id] = resolver == null || !NeedsRoom(profile, perElement[target.Id]) ? new RoomResult() : resolver.Resolve(target);
             }
             var applied = rules.ToDictionary(r => r.Id, r => new HashSet<string>());
             int success = 0, written = 0;
@@ -287,7 +318,13 @@ namespace SAB.ParameterTools
                                 if (!value.Expected.Success) throw new InvalidOperationException(value.Expected.Error);
                                 Catalog.ValidateWrite(parameter, value.Expected.Value);
                             }
-                            catch (Exception ex) { issues.Add(WriteProblem(element, value.Rule, parameter, value.Expected.Value, ex)); continue; }
+                            catch (Exception ex)
+                            {
+                                var issue = WriteProblem(element, value.Rule, parameter, value.Expected.Value, ex);
+                                if (RuleEngine.UsesRoom(profile, value.Rule) && !string.IsNullOrWhiteSpace(resolved.Technical))
+                                    issue.Technical += "\nОпределение помещения:\n" + resolved.Technical;
+                                issues.Add(issue); continue;
+                            }
                             using (var sub = new SubTransaction(doc))
                             {
                                 sub.Start();
@@ -321,6 +358,19 @@ namespace SAB.ParameterTools
                                 }
                             }
                     }
+                    if (manualSelection)
+                        using (var remember = new SubTransaction(doc))
+                        {
+                            remember.Start();
+                            try {
+                                if (corpus != null) profile.LastCorpus = corpus;
+                                Storage.Save(doc, profile);
+                                if (remember.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Revit отменил сохранение последнего выбора.");
+                            } catch (Exception ex) {
+                                if (remember.GetStatus() == TransactionStatus.Started) remember.RollBack();
+                                issues.Add(new Issue { Element = "Настройки модели", Parameter = "Последний ручной выбор", Reason = "Последний выбор не запомнен: " + ex.Message, Technical = ex.ToString() });
+                            }
+                        }
                     committed = transaction.Commit() == TransactionStatus.Committed;
                 }
                 catch (Exception ex)
@@ -343,9 +393,8 @@ namespace SAB.ParameterTools
             if (committed && corpus != null) ParameterToolsModule.Host.SetCorpus(doc, corpus);
             string summary = (committed ? "Обработано элементов: " : "Операция отменена. Обработано элементов: ") + success + " из " + targetCount + ". Записей параметров: " + written;
             if (groupSkips.Parameters.Count > 0) summary += "\nПропущено параметров в группах: " + groupSkips.Parameters.Count + ". Причины — в отчёте.";
-            foreach (var rule in rules)
-                if (applied[rule.Id].Count > 0) summary += "\n" + rule.Target.Name + " (" + rule.Target.Identity + "): " + string.Join("; ", applied[rule.Id].OrderBy(v => v).Take(5))
-                    + (applied[rule.Id].Count > 5 ? " … (значений: " + applied[rule.Id].Count + ")" : "");
+            var writtenNames = rules.Where(r => applied[r.Id].Count > 0).Select(r => r.Target.Name).Distinct().ToList();
+            if (writtenNames.Count > 0) summary += "\nЗаполненные параметры:\n" + string.Join("\n", writtenNames);
             UI.Toast.Show(app.MainWindowHandle, summary, 8);
             if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Результат заполнения");
         }
@@ -393,7 +442,7 @@ namespace SAB.ParameterTools
                 throw new InvalidOperationException("Во вкладке «Правила» выберите источник «Корпус вручную» хотя бы для одного правила.");
             if (app.ActiveUIDocument.Selection.GetElementIds().Count == 0)
                 throw new InvalidOperationException("Сначала выделите элементы для назначения корпуса.");
-            var window = new UI.CorpusChoiceWindow(profile.Corpora);
+            var window = new UI.CorpusChoiceWindow(profile.Corpora, profile.LastCorpus);
             new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;
             if (window.ShowDialog() == true) Fill(app, window.Corpus);
         }

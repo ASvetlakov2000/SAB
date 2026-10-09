@@ -65,12 +65,24 @@ internal static class Program
         var status = (TextBlock)settingsType.GetField("_status", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window);
         tabs.SelectedIndex = 0;
         window.UpdateLayout(); window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
-        var targetPicker = Find<ComboBox>(ruleGrid);
-        if (targetPicker == null || targetPicker.ItemTemplate == null || targetPicker.ActualHeight < 62 || targetPicker.VerticalContentAlignment != VerticalAlignment.Center) throw new Exception("Parameter metadata or vertical alignment are incorrect.");
+        var parameterPicker = Find<SAB.ParameterTools.UI.ParameterPicker>(ruleGrid);
+        var targetPicker = Find<ComboBox>(parameterPicker);
+        if (targetPicker == null || !targetPicker.IsEditable || targetPicker.ItemTemplate == null || parameterPicker.ActualHeight < 86) throw new Exception("Searchable parameter metadata is missing.");
+        targetPicker.ApplyTemplate();
+        var editor = (TextBox)targetPicker.Template.FindName("PART_EditableTextBox",targetPicker);
+        var originalTarget = edited.Rules[0].Target;
+        editor.Text = "номер"; window.UpdateLayout();
+        if (targetPicker.Items.Count == 0 || targetPicker.Items.Cast<ParameterRef>().Any(p => p.Name.IndexOf("номер", StringComparison.OrdinalIgnoreCase)<0)) throw new Exception("Parameter substring filtering failed.");
+        if (edited.Rules[0].Target.SharedGuid != originalTarget.SharedGuid) throw new Exception("Typing a query changed the target without choosing a parameter.");
+        targetPicker.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, PresentationSource.FromVisual(window), 0, Key.Escape) { RoutedEvent=Keyboard.PreviewKeyDownEvent });
+        if (!window.IsVisible || targetPicker.IsDropDownOpen || edited.Rules[0].Target.SharedGuid!=originalTarget.SharedGuid) throw new Exception("Escape should close parameter search without closing settings or changing the target.");
         if (FindButton(window, "Инструкция") == null || FindButton(window, "Настроить источник") == null) throw new Exception("Instructions or source navigation are missing.");
         targetPicker.SelectedItem = parameters.Last();
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         if (edited.Rules[0].Target.SharedGuid != parameters.Last().SharedGuid) throw new Exception("Same-name parameter picker lost identity.");
+        var metadata=FindAll<TextBlock>(parameterPicker).ToList();
+        if (!metadata.Any(t => t.Text==parameters.Last().Identity && ((SolidColorBrush)t.Foreground).Color==Colors.Black)
+            || !metadata.Any(t => t.Text==parameters.Last().GroupBehavior && ((SolidColorBrush)t.Foreground).Color==Color.FromRgb(180,35,24))) throw new Exception("GUID or group status colors are incorrect.");
         Render(window, Path.Combine(folder, "same-name-parameter.png"));
         targetPicker.SelectedItem = parameters[0];
         ruleGrid.SelectedIndex = 3;
@@ -79,6 +91,21 @@ internal static class Program
         if (tabs.SelectedIndex != 1 || (string)settingsType.GetField("_sourceRuleId", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(window) != edited.Rules[3].Id)
             throw new Exception("Configure source did not open the selected rule.");
         tabs.SelectedIndex = 0;
+        edited.Rules[0].Source = RuleValueSource.Mapping; edited.Rules[0].MappingInput = MappingInput.RoomParameter;
+        edited.Rules[0].MappingParameter = parameters[0]; edited.Rules[0].Mappings.Add(new ValueMapping { Key="Секция А",Value="1" });
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); tabs.SelectedIndex=2; window.UpdateLayout();
+        if (!Equals(((TabItem)tabs.Items[2]).Header,"Значения и сопоставления") || edited.Levels[0].Value!="1" || edited.Rules[0].MappingParameter==null) throw new Exception("Unified values tab lost legacy levels or mapped source parameter.");
+        if (FindButton(window,"Добавить соответствие")==null) throw new Exception("Mapping table editing is missing.");
+        var mappingPanel=(StackPanel)settingsType.GetField("_valuesPanel",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(window);
+        var mappingGrid=Find<DataGrid>(mappingPanel);
+        if (mappingGrid.Columns[0].ActualWidth<150 || mappingGrid.Columns[1].ActualWidth<150) throw new Exception("Mapping columns collapsed inside the scrollable panel.");
+        Render(window,Path.Combine(folder,"values-and-mappings.png"));
+        edited.Rules[0].Source=RuleValueSource.ManualChoice; edited.Rules[0].ManualValues.AddRange(new[]{"0","1","Корпус 3"}); edited.Rules[0].LastManualValue="1";
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); settingsType.GetMethod("RefreshValues",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(window,null); window.UpdateLayout();
+        if (FindButton(window,"Добавить значение")==null) throw new Exception("Manual value list editor is missing.");
+        Render(window,Path.Combine(folder,"manual-values.png"));
+        edited.Rules[0].Source = RuleValueSource.Room;
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); tabs.SelectedIndex=0;
         window.Width = window.MinWidth; window.Height = window.MinHeight; window.UpdateLayout();
         if (ruleGrid.Columns.Sum(c => c.ActualWidth) > ruleGrid.ActualWidth) throw new Exception("Rules require horizontal scrolling at the minimum window width.");
         Render(window, Path.Combine(folder, "settings-min.png"));
@@ -115,6 +142,17 @@ internal static class Program
         FindButton(row, "×").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         if (corpora.Count != 5) throw new Exception("Inline corpus delete failed.");
+        string configurationPath=Path.Combine(folder,"configuration.json");
+        settingsType.GetMethod("ExportConfiguration",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(window,new object[]{configurationPath});
+        edited.Rules[2].Constant="123";
+        settingsType.GetMethod("ImportConfiguration",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(window,new object[]{configurationPath});
+        edited=(Profile)settingsType.GetProperty("Profile",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(window);
+        if (edited.Rules[2].Constant!="0" || edited.Corpora.Count!=5 || edited.Levels[0].Value!="1") throw new Exception("Configuration roundtrip lost constants, corpus list or levels.");
+        var beforeInvalidImport=edited; string invalidPath=Path.Combine(folder,"invalid-configuration.json"); File.WriteAllText(invalidPath,"{\"Version\":999}");
+        try { settingsType.GetMethod("ImportConfiguration",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(window,new object[]{invalidPath}); throw new Exception("Invalid import was accepted."); }
+        catch(TargetInvocationException) { }
+        if (!ReferenceEquals(beforeInvalidImport,settingsType.GetProperty("Profile",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(window))) throw new Exception("Invalid import replaced settings.");
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         settingsType.GetMethod("Save", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(window, null);
         if (window.IsVisible) throw new Exception("Valid settings could not be saved: " + status.Text);
         window.Close();
@@ -122,11 +160,12 @@ internal static class Program
         var choicesType = typeof(Profile).Assembly.GetType("SAB.ParameterTools.UI.ModelSourceChoice");
         var sourceChoices = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(choicesType));
         foreach (var level in profile.Levels) { var choice = Activator.CreateInstance(choicesType); choicesType.GetProperty("Id").SetValue(choice, level.LevelUniqueId); choicesType.GetProperty("Name").SetValue(choice, level.LevelName + " → этаж " + level.Value); sourceChoices.Add(choice); }
-        var levelWindow = (Window)Activator.CreateInstance(sourceType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { "Выбрать уровень", "Уровень не определён. Выберите заполненный уровень из матрицы.", sourceChoices }, null);
+        var levelWindow = (Window)Activator.CreateInstance(sourceType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { "Выбрать уровень", "Уровень не определён. Выберите заполненный уровень из матрицы.", sourceChoices, "a" }, null);
         levelWindow.WindowStartupLocation = WindowStartupLocation.Manual; levelWindow.Left = -10000; levelWindow.Top = -10000; levelWindow.Show(); levelWindow.UpdateLayout();
+        if (Find<ListBox>(levelWindow).SelectedItem==null) throw new Exception("Last manual choice was not preselected.");
         Find<TextBox>(levelWindow).Text = "Первый"; if (Find<ListBox>(levelWindow).Items.Count != 1) throw new Exception("Model source search failed.");
         Render(levelWindow, Path.Combine(folder, "3d-level-picker.png")); levelWindow.Close();
-        var corpus = (Window)Activator.CreateInstance(typeof(Profile).Assembly.GetType("SAB.ParameterTools.UI.CorpusChoiceWindow"), BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { profile.Corpora }, null); corpus.WindowStartupLocation = WindowStartupLocation.Manual;
+        var corpus = (Window)Activator.CreateInstance(typeof(Profile).Assembly.GetType("SAB.ParameterTools.UI.CorpusChoiceWindow"), BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { profile.Corpora, profile.Corpora[0] }, null); corpus.WindowStartupLocation = WindowStartupLocation.Manual;
         corpus.Left = -10000; corpus.Top = -10000; corpus.Show(); corpus.UpdateLayout(); Render(corpus, Path.Combine(folder, "manual-corpus.png")); corpus.Close();
         var checkType = typeof(Profile).Assembly.GetType("SAB.ParameterTools.UI.CheckCategoriesWindow");
         var check = (Window)Activator.CreateInstance(checkType, BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] { categories }, null);
@@ -208,6 +247,11 @@ internal static class Program
         if (obj is T) return (T)obj;
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++) { var result = Find<T>(VisualTreeHelper.GetChild(obj, i)); if (result != null) return result; }
         return null;
+    }
+    private static System.Collections.Generic.IEnumerable<T> FindAll<T>(DependencyObject obj) where T:DependencyObject
+    {
+        if (obj is T item) yield return item;
+        for(int i=0;i<VisualTreeHelper.GetChildrenCount(obj);i++) foreach(var child in FindAll<T>(VisualTreeHelper.GetChild(obj,i))) yield return child;
     }
     private static Button FindButton(DependencyObject obj, string content)
     {

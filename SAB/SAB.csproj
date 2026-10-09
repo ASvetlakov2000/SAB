@@ -107,6 +107,8 @@
     <Compile Include="Cls_ParameterTools\Commands.cs" />
     <Compile Include="Cls_ParameterTools\Core\Models.cs" />
     <Compile Include="Cls_ParameterTools\Core\RuleEngine.cs" />
+    <Compile Include="Cls_ParameterTools\Core\RoomEvidence.cs" />
+    <Compile Include="Cls_ParameterTools\Core\ConfigurationTransfer.cs" />
     <Compile Include="Cls_ParameterTools\HighlightService.cs" />
     <Compile Include="Cls_ParameterTools\ViewFilterService.cs" />
     <Compile Include="Cls_ParameterTools\Ids.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Cls_ParameterTools\RuntimeHost.cs" />
     <Compile Include="Cls_ParameterTools\Storage.cs" />
     <Compile Include="Cls_ParameterTools\UI\SettingsWindow.cs" />
+    <Compile Include="Cls_ParameterTools\UI\ParameterPicker.cs" />
     <Compile Include="Cls_ParameterTools\UI\CategorySelectionControl.cs" />
     <Compile Include="Cls_ParameterTools\UI\SmallWindows.cs" />
     <Compile Include="Cls_ParameterTools\Workflow.cs" />

@@ -55,9 +55,12 @@ MSBuild.exe SAB\SAB.csproj /t:Rebuild /p:Configuration=Release /p:RevitVersion=2
 
 ```powershell
 dotnet run --project Tests\ParameterTools\ParameterTools.Tests.csproj --configuration Release
+dotnet run --project Tests\ParameterTools.RoomResolution\ParameterTools.RoomResolution.Tests.csproj --configuration Release
 ```
 
 Проверки ядра и WPF вне Revit не заменяют проверку записи в реальной модели.
+Проверки RoomResolution используют подмены API с простой геометрией и не проверяют ядро Revit.
+Конфигурации параметров можно передавать через экспорт/импорт JSON в окне настроек.
 
 - [Запись параметров, группы и диагностика](Docs/PluginInstructions/ParameterTools.md)
 - [Сценарии проверки параметров](Docs/ParameterTools_Acceptance.md)

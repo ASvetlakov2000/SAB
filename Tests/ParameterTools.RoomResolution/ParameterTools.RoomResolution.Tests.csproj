@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../SAB/Cls_ParameterTools/RoomResolver.cs" Link="RoomResolver.cs" />
+    <Compile Include="../../SAB/Cls_ParameterTools/Core/Models.cs" Link="Models.cs" />
+    <Compile Include="../../SAB/Cls_ParameterTools/Core/RuleEngine.cs" Link="RuleEngine.cs" />
+    <Compile Include="../../SAB/Cls_ParameterTools/Core/RoomEvidence.cs" Link="RoomEvidence.cs" />
+  </ItemGroup>
+</Project>

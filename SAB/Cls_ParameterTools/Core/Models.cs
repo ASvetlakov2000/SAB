@@ -8,7 +8,14 @@ namespace SAB.ParameterTools.Core
     public enum RoomField { Number, Name, Parameter }
     public enum LevelSource { ActivePlan, Element }
     public enum RoomSourceMode { ManualPick, Automatic }
-    public enum RuleValueSource { ByGroup, Room, Level, Constant, ManualCorpus, ElementParameter }
+    public enum DoorRoomSide { RequireUnique, FromRoom, ToRoom }
+    public enum RuleValueSource { ByGroup, Room, Level, Constant, ManualCorpus, ElementParameter, Mapping, ManualChoice }
+    public enum MappingInput { ElementLevel, ElementParameter, RoomNumber, RoomName, RoomParameter }
+    public sealed class ValueMapping
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
     public enum CheckStatus { Valid, Missing, Mismatch, Unresolved, Unavailable }
     public enum ConditionOperator { Equals, NotEquals, Contains, StartsWith, Greater, GreaterOrEqual, Less, LessOrEqual, Empty, Filled }
     public sealed class RuleCondition
@@ -55,6 +62,12 @@ namespace SAB.ParameterTools.Core
         public RoomField RoomField { get; set; }
         public ParameterRef RoomParameter { get; set; }
         public ParameterRef ElementParameter { get; set; }
+        public MappingInput MappingInput { get; set; }
+        public ParameterRef MappingParameter { get; set; }
+        public bool MappingIgnoreCase { get; set; } = true;
+        public List<ValueMapping> Mappings { get; set; } = new List<ValueMapping>();
+        public List<string> ManualValues { get; set; } = new List<string>();
+        public string LastManualValue { get; set; }
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         private void Changed(string name) { PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name)); }
         public override string ToString() { return (EntityName ?? RuleEngine.Entity(Group)) + " → " + (Target?.Name ?? "параметр не выбран"); }
@@ -83,6 +96,8 @@ namespace SAB.ParameterTools.Core
         public ZoneSource ZoneSource { get; set; } = ZoneSource.Room;
         public LevelSource LevelSource { get; set; } = LevelSource.ActivePlan;
         public RoomSourceMode RoomSourceMode { get; set; } = RoomSourceMode.ManualPick;
+        public DoorRoomSide DoorRoomSide { get; set; } = DoorRoomSide.RequireUnique;
+        public string LastCorpus { get; set; }
         public ParameterRef RoomCorpusParameter { get; set; }
         public List<string> Corpora { get; set; } = new List<string> { "Корпус 1", "Корпус 2", "Корпус 3" };
         public List<Rule> Rules { get; set; } = new List<Rule>();

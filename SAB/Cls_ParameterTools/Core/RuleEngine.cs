@@ -18,6 +18,8 @@ namespace SAB.ParameterTools.Core
                         Enabled = rule.Enabled, Required = rule.Required, Group = rule.Group, Source = rule.Source,
                         Constant = rule.Constant, EntityName = rule.EntityName, RoomField = rule.RoomField,
                         RoomParameter = rule.RoomParameter, ElementParameter = rule.ElementParameter,
+                        MappingInput = rule.MappingInput, MappingParameter = rule.MappingParameter, Mappings = rule.Mappings, MappingIgnoreCase = rule.MappingIgnoreCase,
+                        ManualValues = rule.ManualValues, LastManualValue = rule.LastManualValue,
                         Conditions = rule.Conditions, CategoryIds = rule.CategoryIds, Expression = rule.Expression,
                         AnyCondition = rule.AnyCondition, CaseSensitive = rule.CaseSensitive, Tolerance = rule.Tolerance });
                     rule.Conditions = new List<RuleCondition>(); rule.CategoryIds = new List<int>();
@@ -50,7 +52,31 @@ namespace SAB.ParameterTools.Core
         public static bool SameParameter(ParameterRef a, ParameterRef b)
         { return a != null && b != null && (!string.IsNullOrEmpty(a.SharedGuid) && !string.IsNullOrEmpty(b.SharedGuid) ? string.Equals(a.SharedGuid, b.SharedGuid, StringComparison.OrdinalIgnoreCase) : a.Id == b.Id); }
         public static bool UsesRoom(Profile p, Rule r)
-        { return Source(p, r) == RuleValueSource.Room || System.Text.RegularExpressions.Regex.IsMatch(r.Expression ?? "", @"\{room\.(number|name)\}"); }
+        { return Source(p, r) == RuleValueSource.Room || Source(p, r) == RuleValueSource.Mapping && MappingUsesRoom(r)
+            || System.Text.RegularExpressions.Regex.IsMatch(r.Expression ?? "", @"\{room\.(number|name)\}"); }
+        public static bool MappingUsesRoom(Rule r)
+        { return r.MappingInput == MappingInput.RoomNumber || r.MappingInput == MappingInput.RoomName || r.MappingInput == MappingInput.RoomParameter; }
+        public static Resolution Map(Rule rule, Resolution input)
+        {
+            if (!input.Success) return input;
+            var rows = rule.Mappings.Where(m => string.Equals((m.Key ?? "").Trim(), input.Value.Trim(),
+                rule.MappingIgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)).ToList();
+            if (rows.Count != 1) return Resolution.Unknown("Сопоставление для «" + input.Value + "» " + (rows.Count == 0 ? "не найдено" : "неоднозначно")
+                + ". Проверьте таблицу для «" + rule.Target?.Name + "» во вкладке «Значения и сопоставления».");
+            return Resolution.Known(rows[0].Value);
+        }
+        public static IEnumerable<string> MappingErrors(Rule r)
+        {
+            if (!Enum.IsDefined(typeof(MappingInput), r.MappingInput)) yield return "Неизвестный источник сопоставления.";
+            if ((r.MappingInput == MappingInput.ElementParameter || r.MappingInput == MappingInput.RoomParameter) && r.MappingParameter == null)
+                yield return "Выберите исходный параметр сопоставления.";
+            if (r.MappingInput == MappingInput.ElementParameter && SameParameter(r.Target, r.MappingParameter))
+                yield return "Исходный и заполняемый параметры сопоставления должны различаться.";
+            if (r.Mappings.Count == 0) yield return "Добавьте хотя бы одну строку сопоставления.";
+            if (r.Mappings.Any(m => string.IsNullOrWhiteSpace(m.Key) || string.IsNullOrWhiteSpace(m.Value))) yield return "Заполните обе ячейки каждой строки сопоставления или удалите пустые строки.";
+            if (r.Mappings.GroupBy(m => (m.Key ?? "").Trim(), r.MappingIgnoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal).Any(g => g.Count() > 1))
+                yield return "Исходные значения сопоставления должны различаться.";
+        }
         public static bool UsesLevel(Profile p, Rule r)
         { return Source(p, r) == RuleValueSource.Level || (r.Expression ?? "").Contains("{level}"); }
         public static bool TryNumber(string text, out double number)
@@ -93,6 +119,7 @@ namespace SAB.ParameterTools.Core
             if (!Enum.IsDefined(typeof(ZoneSource), p.ZoneSource)) yield return "Источник зоны пока не поддерживается.";
             if (!Enum.IsDefined(typeof(LevelSource), p.LevelSource)) yield return "Источник уровня не поддерживается.";
             if (!Enum.IsDefined(typeof(RoomSourceMode), p.RoomSourceMode)) yield return "Способ определения помещения не поддерживается.";
+            if (!Enum.IsDefined(typeof(DoorRoomSide), p.DoorRoomSide)) yield return "Сторона дверей и окон не поддерживается.";
             var rules = p.Rules.Where(r => r.Enabled).ToList();
             if (rules.Any(r => string.IsNullOrWhiteSpace(r.Id)) || rules.GroupBy(r => r.Id).Any(g => g.Count() > 1)) yield return "Идентификаторы правил повреждены или повторяются. Удалите и заново добавьте проблемные строки.";
             if (rules.Any(r => Source(p, r) == RuleValueSource.ManualCorpus) && (p.Corpora.Count == 0 || p.Corpora.Any(string.IsNullOrWhiteSpace) ||
@@ -112,6 +139,10 @@ namespace SAB.ParameterTools.Core
                 if (!Enum.IsDefined(typeof(ParameterGroup), r.Group)) yield return "Группа правила не поддерживается.";
                 if (!Enum.IsDefined(typeof(RuleValueSource), r.Source)) yield return "Источник значения не поддерживается.";
                 if (Source(p, r) == RuleValueSource.Constant && string.IsNullOrWhiteSpace(r.Constant)) yield return "Не задано значение для ручного заполнения.";
+                if (Source(p, r) == RuleValueSource.ManualChoice && (r.ManualValues.Count == 0 || r.ManualValues.Any(string.IsNullOrWhiteSpace)
+                    || r.ManualValues.Select(v => v.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Count() != r.ManualValues.Count))
+                    yield return "«Значения и сопоставления», «" + r.Target?.Name + "»: задайте непустой список различных значений для выбора перед записью.";
+                if (Source(p, r) == RuleValueSource.Mapping) foreach (var error in MappingErrors(r)) yield return "«Значения и сопоставления», «" + r.Target?.Name + "»: " + error;
                 if (Source(p, r) == RuleValueSource.Room && !Enum.IsDefined(typeof(RoomField), r.RoomField)) yield return "Поле помещения не поддерживается.";
                 if (Source(p, r) == RuleValueSource.Room && r.RoomField == RoomField.Parameter && r.RoomParameter == null && !(r.Source == RuleValueSource.ByGroup && r.Group == ParameterGroup.Zone))
                     yield return "Не выбран параметр источника помещения.";
@@ -214,7 +245,9 @@ namespace SAB.ParameterTools.Core
                 foreach (var rule in needed.ToList())
                 {
                     foreach (var other in rules.Where(r =>
-                        Source(profile, rule) == RuleValueSource.ElementParameter && (rule.Expression ?? "").Contains("{value}") && SameParameter(r.Target, rule.ElementParameter) ||
+                        (Source(profile, rule) == RuleValueSource.ElementParameter && SameParameter(r.Target, rule.ElementParameter)
+                        || Source(profile, rule) == RuleValueSource.Mapping && rule.MappingInput == MappingInput.ElementParameter && SameParameter(r.Target, rule.MappingParameter))
+                        && (rule.Expression ?? "").Contains("{value}") ||
                         !string.IsNullOrWhiteSpace(r.Target?.Name) && (rule.Expression ?? "").Contains("{param:" + r.Target.Name + "}"))) changed |= needed.Add(other);
                 }
             } while (changed);
