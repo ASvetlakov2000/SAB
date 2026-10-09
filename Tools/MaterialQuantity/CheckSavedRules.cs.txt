@@ -1,0 +1,38 @@
+// Read-only Revit MCP diagnostic for material counting rules.
+Guid ruleId = new Guid("eb5427cb-7280-40d5-ae6b-7ff70321922d");
+var materials = new FilteredElementCollector(document)
+    .OfClass(typeof(Material))
+    .Cast<Material>()
+    .ToList();
+
+var values = materials
+    .Select(material => new
+    {
+        Material = material,
+        Parameter = material.get_Parameter(ruleId)
+    })
+    .Where(item => item.Parameter != null)
+    .Select(item => new Dictionary<string, object>
+    {
+        { "id", item.Material.Id.IntegerValue },
+        { "name", item.Material.Name },
+        { "value", item.Parameter.AsString() ?? "" },
+        { "readOnly", item.Parameter.IsReadOnly }
+    })
+    .ToList();
+
+return new Dictionary<string, object>
+{
+    { "document", document.Title },
+    { "materialCount", materials.Count },
+    { "materialsWithRuleParameter", values.Count },
+    { "materialsWithSavedRule", values.Count(item => !string.IsNullOrWhiteSpace((string)item["value"])) },
+    { "savedValues", values
+        .Where(item => !string.IsNullOrWhiteSpace((string)item["value"]))
+        .GroupBy(item => (string)item["value"])
+        .ToDictionary(group => group.Key, group => group.Count()) },
+    { "sample", values
+        .Where(item => !string.IsNullOrWhiteSpace((string)item["value"]))
+        .Take(20)
+        .ToList() }
+};

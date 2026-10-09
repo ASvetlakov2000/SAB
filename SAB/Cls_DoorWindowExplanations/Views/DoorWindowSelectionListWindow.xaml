@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="SAB Список дверей и окон"
+        Title="SAB Список дверей, окон и витражей"
         Width="980"
         Height="620"
         MinWidth="900"
@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="20,18,20,14">
-            <TextBlock Text="Список дверей и окон"
+            <TextBlock Text="Список дверей, окон и витражей"
                        Style="{StaticResource SabWindowTitleTextStyle}" />
             <TextBlock Text="Соберите элементы несколькими заходами. Порядок списка определяет размещение строк сверху вниз на общем листе."
                        Style="{StaticResource SabWindowSubtitleTextStyle}"
@@ -57,29 +57,38 @@
                               AutoGenerateColumns="False"
                               SelectionMode="Extended"
                               SelectionUnit="FullRow"
-                              IsReadOnly="True"
+                              IsReadOnly="False"
                               CanUserAddRows="False"
                               HeadersVisibility="Column"
                               BorderThickness="0">
                         <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Header="Развернуть фасад"
+                                                    Binding="{Binding ReverseFrontSide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    Width="125"
+                                                    MinWidth="115" />
                             <DataGridTextColumn Header="ID"
                                                 Binding="{Binding ElementIdText}"
+                                                IsReadOnly="True"
                                                 Width="80"
                                                 MinWidth="70" />
                             <DataGridTextColumn Header="Категория"
                                                 Binding="{Binding CategoryName}"
+                                                IsReadOnly="True"
                                                 Width="130"
                                                 MinWidth="110" />
                             <DataGridTextColumn Header="Семейство"
                                                 Binding="{Binding FamilyName}"
+                                                IsReadOnly="True"
                                                 Width="*"
                                                 MinWidth="180" />
                             <DataGridTextColumn Header="Тип"
                                                 Binding="{Binding TypeName}"
+                                                IsReadOnly="True"
                                                 Width="*"
                                                 MinWidth="160" />
                             <DataGridTextColumn Header="Источник"
                                                 Binding="{Binding SourceName}"
+                                                IsReadOnly="True"
                                                 Width="1.2*"
                                                 MinWidth="180" />
                         </DataGrid.Columns>
@@ -90,7 +99,7 @@
                         Style="{StaticResource SabValidationPanelStyle}"
                         Margin="0,12,0,0">
                     <TextBlock x:Name="SelectionStatusTextBlock"
-                               Text="Список пуст. Нажмите «Добавить двери и окна»."
+                               Text="Список пуст. Добавьте элементы кликами или выделите их рамкой."
                                TextWrapping="Wrap"
                                Foreground="{StaticResource SabBrush.TextSecondary}" />
                 </Border>
@@ -105,18 +114,25 @@
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button x:Name="AddButton"
-                            Content="Добавить двери и окна"
-                            Width="190"
+                            Content="Добавить кликами"
+                            ToolTip="Точечный выбор в рабочей модели или в связи"
+                            Width="150"
+                            Style="{StaticResource SabOutlineButtonStyle}"
+                            Margin="0,0,8,0" />
+                    <Button x:Name="AddByRectangleButton"
+                            Content="Добавить рамкой"
+                            ToolTip="Добавить все двери, окна и витражи рабочей модели внутри рамки"
+                            Width="160"
                             Style="{StaticResource SabOutlineButtonStyle}"
                             Margin="0,0,8,0" />
                     <Button x:Name="RemoveButton"
                             Content="Удалить выбранные"
-                            Width="160"
+                            Width="145"
                             Style="{StaticResource SabNeutralButtonStyle}"
                             Margin="0,0,8,0" />
                     <Button x:Name="ClearButton"
                             Content="Очистить список"
-                            Width="140"
+                            Width="130"
                             Style="{StaticResource SabNeutralButtonStyle}" />
                 </StackPanel>
 

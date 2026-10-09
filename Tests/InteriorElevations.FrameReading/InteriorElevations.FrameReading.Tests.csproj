@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Sheets/SheetWorkspaceService.cs" Link="SheetWorkspaceService.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Sheets/SheetFrameDetectionService.cs" Link="SheetFrameDetectionService.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Sheets/SheetLayoutGeometry.cs" Link="SheetLayoutGeometry.cs" />
+  </ItemGroup>
+</Project>

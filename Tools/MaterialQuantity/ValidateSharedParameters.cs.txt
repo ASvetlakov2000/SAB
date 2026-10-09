@@ -1,0 +1,20 @@
+// Read-only validation of the draft file; restores Revit's previous setting.
+var application = document.Application;
+string previous = application.SharedParametersFilename;
+try
+{
+    application.SharedParametersFilename = @"C:\Users\svetl\Desktop\Codex\Projects\SAB\SAB\Cls_MaterialQuantity\SharedParameters\SAB_ОбщиеПараметры.txt";
+    DefinitionFile file = application.OpenSharedParameterFile();
+    if (file == null) return "Revit could not open the shared parameter file";
+    var result = new List<string>();
+    foreach (DefinitionGroup group in file.Groups)
+    {
+        foreach (Definition definition in group.Definitions)
+            result.Add(group.Name + ": " + definition.Name);
+    }
+    return result;
+}
+finally
+{
+    application.SharedParametersFilename = previous;
+}

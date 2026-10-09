@@ -61,11 +61,15 @@ namespace SAB.InteriorElevations.Commands
 
                 ToastNotifier.ShowInfo(
                     "SAB Развертки",
-                    "Выберите линию детализации, по которой создавалась выбранная развертка.");
+                    "Выберите исходную или заново нарисованную прямую линию разворота.");
 
-                DetailLine sourceDetailLine;
+                CurveElement flipReferenceLine;
                 string lineSelectionError;
-                if (!flipService.TryPickSourceDetailLine(uiDocument, out sourceDetailLine, out lineSelectionError))
+                if (!flipService.TryPickReferenceLine(
+                    uiDocument,
+                    activeView,
+                    out flipReferenceLine,
+                    out lineSelectionError))
                 {
                     if (!string.IsNullOrWhiteSpace(lineSelectionError))
                     {
@@ -86,7 +90,7 @@ namespace SAB.InteriorElevations.Commands
                         document,
                         activeView,
                         targetElevationView,
-                        sourceDetailLine,
+                        flipReferenceLine,
                         targetViewport,
                         warnings);
 

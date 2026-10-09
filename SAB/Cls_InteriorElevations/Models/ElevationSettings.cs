@@ -22,6 +22,10 @@ namespace SAB.InteriorElevations.Models
 
         public double MarkerOffsetMm { get; set; }
 
+        public double GridTopExtensionPaperMm { get; set; }
+
+        public double GridBottomExtensionPaperMm { get; set; }
+
         public string ElevationNamePart1 { get; set; }
 
         public string ElevationNamePart2 { get; set; }

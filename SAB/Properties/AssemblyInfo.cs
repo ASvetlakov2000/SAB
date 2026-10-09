@@ -29,5 +29,11 @@ using System.Runtime.InteropServices;
 //      Номер сборки
 //      Редакция
 //
-[assembly: AssemblyVersion("1.0.0.0")]
+#if REVIT2024
+[assembly: AssemblyVersion("1.0.2024.1")]
+#elif REVIT2023
+[assembly: AssemblyVersion("1.0.2023.1")]
+#else
+[assembly: AssemblyVersion("1.0.2022.1")]
+#endif
 [assembly: AssemblyFileVersion("1.0.0.0")]

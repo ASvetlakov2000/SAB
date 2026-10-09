@@ -17,8 +17,11 @@ namespace SAB.CreateViewsAndSheets.Views
         private readonly string _headerText;
 
         private TextBlock _headerTextBlock;
+        private TextBlock _stageTextBlock;
+        private TextBlock _detailsTextBlock;
         private TextBlock _stepTextBlock;
         private TextBlock _percentTextBlock;
+        private TextBlock _countersTextBlock;
         private TextBlock _rotatingMessageTextBlock;
         private Border _rotatingMessageBorder;
         private ProgressBar _mainProgressBar;
@@ -127,8 +130,11 @@ namespace SAB.CreateViewsAndSheets.Views
                 }
 
                 _headerTextBlock = loadedWindow.FindName("HeaderTextBlock") as TextBlock;
+                _stageTextBlock = loadedWindow.FindName("StageTextBlock") as TextBlock;
+                _detailsTextBlock = loadedWindow.FindName("DetailsTextBlock") as TextBlock;
                 _stepTextBlock = loadedWindow.FindName("StepTextBlock") as TextBlock;
                 _percentTextBlock = loadedWindow.FindName("PercentTextBlock") as TextBlock;
+                _countersTextBlock = loadedWindow.FindName("CountersTextBlock") as TextBlock;
                 _rotatingMessageTextBlock = loadedWindow.FindName("RotatingMessageTextBlock") as TextBlock;
                 _rotatingMessageBorder = loadedWindow.FindName("RotatingMessageBorder") as Border;
                 _mainProgressBar = loadedWindow.FindName("MainProgressBar") as ProgressBar;
@@ -167,9 +173,24 @@ namespace SAB.CreateViewsAndSheets.Views
                 _stepTextBlock = FindElementByName<TextBlock>(root, "StepTextBlock");
             }
 
+            if (_stageTextBlock == null)
+            {
+                _stageTextBlock = FindElementByName<TextBlock>(root, "StageTextBlock");
+            }
+
+            if (_detailsTextBlock == null)
+            {
+                _detailsTextBlock = FindElementByName<TextBlock>(root, "DetailsTextBlock");
+            }
+
             if (_percentTextBlock == null)
             {
                 _percentTextBlock = FindElementByName<TextBlock>(root, "PercentTextBlock");
+            }
+
+            if (_countersTextBlock == null)
+            {
+                _countersTextBlock = FindElementByName<TextBlock>(root, "CountersTextBlock");
             }
 
             if (_rotatingMessageTextBlock == null)
@@ -221,13 +242,71 @@ namespace SAB.CreateViewsAndSheets.Views
 
             if (_stepTextBlock != null)
             {
-                _stepTextBlock.Text = "Шаг " + currentStep + " из " + totalSteps;
+                int totalItems = progressInfo.TotalItems > 0 ? progressInfo.TotalItems : totalSteps;
+                int processedItems = Clamp(progressInfo.ProcessedItems, 0, totalItems);
+                _stepTextBlock.Text = "Выполнено " + processedItems + " из " + totalItems;
             }
 
             if (_percentTextBlock != null)
             {
                 _percentTextBlock.Text = Math.Round(percent).ToString("0") + "%";
             }
+
+            if (_stageTextBlock != null)
+            {
+                _stageTextBlock.Text = string.IsNullOrWhiteSpace(progressInfo.Stage)
+                    ? "Выполнение операции"
+                    : progressInfo.Stage;
+            }
+
+            if (_detailsTextBlock != null)
+            {
+                _detailsTextBlock.Text = string.IsNullOrWhiteSpace(progressInfo.Details)
+                    ? "Операция выполняется."
+                    : progressInfo.Details;
+            }
+
+            ApplyCounters(progressInfo);
+        }
+
+        private void ApplyCounters(CreateViewsAndSheetsProgressInfo progressInfo)
+        {
+            if (_countersTextBlock == null)
+            {
+                return;
+            }
+
+            string counters = progressInfo.Counters;
+            if (string.IsNullOrWhiteSpace(counters))
+            {
+                List<string> parts = new List<string>();
+                if (progressInfo.CreatedItems > 0)
+                {
+                    parts.Add("Создано: " + progressInfo.CreatedItems);
+                }
+
+                if (progressInfo.UpdatedItems > 0)
+                {
+                    parts.Add("Обновлено: " + progressInfo.UpdatedItems);
+                }
+
+                if (progressInfo.SkippedItems > 0)
+                {
+                    parts.Add("Пропущено: " + progressInfo.SkippedItems);
+                }
+
+                if (progressInfo.FailedItems > 0)
+                {
+                    parts.Add("Ошибок: " + progressInfo.FailedItems);
+                }
+
+                counters = string.Join("  ·  ", parts);
+            }
+
+            _countersTextBlock.Text = counters ?? string.Empty;
+            _countersTextBlock.Visibility = string.IsNullOrWhiteSpace(counters)
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
         private void StartRotatingMessages()

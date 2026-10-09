@@ -126,6 +126,28 @@ namespace SAB.DoorWindowExplanations.Services
             return result;
         }
 
+        public IList<DoorWindowNamedElementItem> GetLinearDimensionTypes(Document document)
+        {
+            List<DoorWindowNamedElementItem> result = new List<DoorWindowNamedElementItem>();
+            if (document == null)
+            {
+                return result;
+            }
+
+            IEnumerable<DimensionType> types = new FilteredElementCollector(document)
+                .OfClass(typeof(DimensionType))
+                .Cast<DimensionType>()
+                .Where(type => type.StyleType == DimensionStyleType.Linear)
+                .OrderBy(type => type.Name);
+
+            foreach (DimensionType type in types)
+            {
+                result.Add(new DoorWindowNamedElementItem(type.Id, type.Name));
+            }
+
+            return result;
+        }
+
         private void AddViewportTypeItem(
             ElementType viewportType,
             IDictionary<int, DoorWindowNamedElementItem> itemsById)

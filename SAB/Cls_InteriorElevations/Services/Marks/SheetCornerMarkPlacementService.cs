@@ -80,12 +80,12 @@ namespace SAB.InteriorElevations.Services.Marks
                 XYZ leftPoint = belowView ? placedViewport.BottomLeft : placedViewport.TopLeft;
                 XYZ rightPoint = belowView ? placedViewport.BottomRight : placedViewport.TopRight;
 
-                if (TryPlaceCornerMark(document, sheet, leftSymbol, leftPoint, roomData.RoomNumber, viewData.StartCornerNumber, onlyCornerNumber, warnings))
+                if (TryPlaceCornerMark(document, sheet, leftSymbol, leftPoint, roomData.RoomNumber, viewData.StartCornerNumber, onlyCornerNumber, warnings, placedViewport.SheetAnnotationIds))
                 {
                     placedCount++;
                 }
 
-                if (TryPlaceCornerMark(document, sheet, rightSymbol, rightPoint, roomData.RoomNumber, viewData.EndCornerNumber, onlyCornerNumber, warnings))
+                if (TryPlaceCornerMark(document, sheet, rightSymbol, rightPoint, roomData.RoomNumber, viewData.EndCornerNumber, onlyCornerNumber, warnings, placedViewport.SheetAnnotationIds))
                 {
                     placedCount++;
                 }
@@ -104,13 +104,15 @@ namespace SAB.InteriorElevations.Services.Marks
             leftSymbol = selectedSymbol;
             rightSymbol = selectedSymbol;
 
-            if (document == null || document.Application == null || selectedSymbol == null || selectedSymbol.Family == null)
+            if (document == null || selectedSymbol == null || selectedSymbol.Family == null)
             {
                 return;
             }
 
-            if (!string.Equals(document.Application.VersionNumber, "2022", StringComparison.Ordinal) ||
-                !string.Equals(selectedSymbol.Family.Name, CornerMarkConstants.ProjectSpecificCornerMarkFamilyName, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(
+                    selectedSymbol.Family.Name,
+                    CornerMarkConstants.ProjectSpecificCornerMarkFamilyName,
+                    StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -196,7 +198,8 @@ namespace SAB.InteriorElevations.Services.Marks
             string roomNumber,
             int cornerNumber,
             bool onlyCornerNumber,
-            IList<string> warnings)
+            IList<string> warnings,
+            IList<ElementId> createdIds)
         {
             try
             {
@@ -211,11 +214,21 @@ namespace SAB.InteriorElevations.Services.Marks
                     return false;
                 }
 
+                createdIds.Add(markInstance.Id);
                 if (!onlyCornerNumber)
                 {
                     SetParameter(markInstance, CornerMarkConstants.RoomNumberParameterName, roomNumber, warnings);
                 }
                 SetParameter(markInstance, CornerMarkConstants.CornerNumberParameterName, cornerNumber.ToString(), warnings);
+
+                document.Regenerate();
+                LocationPoint locationPoint = markInstance.Location as LocationPoint;
+                if (locationPoint != null && placementPoint != null &&
+                    locationPoint.Point.DistanceTo(placementPoint) > 1e-9)
+                {
+                    locationPoint.Point = placementPoint;
+                }
+
                 return true;
             }
             catch (Exception exception)

@@ -8,6 +8,8 @@ namespace SAB.InteriorElevations.Services.Marks
 {
     public class PlanCornerMarkPlacementService
     {
+        private bool _visibilityParametersWarningAdded;
+
         public int PlacePlanCornerMarks(
             Document document,
             ViewPlan planView,
@@ -44,6 +46,106 @@ namespace SAB.InteriorElevations.Services.Marks
                 document.Regenerate();
             }
 
+            _visibilityParametersWarningAdded = false;
+            if (IsSmartPlanCornerMarkFamily(symbol))
+            {
+                int smartPlacedCount = PlaceSmartPlanCornerMarks(
+                    document,
+                    planView,
+                    elevationLines,
+                    roomData,
+                    symbol,
+                    onlyCornerNumber,
+                    warnings);
+                if (smartPlacedCount > 0)
+                {
+                    return smartPlacedCount;
+                }
+            }
+
+            return PlaceLegacyPlanCornerMarks(
+                document,
+                planView,
+                elevationLines,
+                roomData,
+                symbol,
+                onlyCornerNumber,
+                warnings);
+        }
+
+        private int PlaceSmartPlanCornerMarks(
+            Document document,
+            ViewPlan planView,
+            IList<ElevationLineData> elevationLines,
+            RoomData roomData,
+            FamilySymbol symbol,
+            bool onlyCornerNumber,
+            IList<string> warnings)
+        {
+            PlanCornerMarkLayoutService layoutService = new PlanCornerMarkLayoutService();
+            PlanCornerMarkLayoutSettings layoutSettings = new PlanCornerMarkLayoutSettings();
+            PlanCornerMarkLayoutResult layoutResult = layoutService.Calculate(
+                elevationLines,
+                planView.RightDirection,
+                planView.UpDirection,
+                planView.Scale,
+                layoutSettings,
+                warnings);
+
+            if (layoutResult == null || layoutResult.Placements.Count == 0)
+            {
+                return 0;
+            }
+
+            int placedCount = 0;
+            HashSet<int> placedCornerNumbers = new HashSet<int>();
+            List<XYZ> occupiedCornerPoints = new List<XYZ>();
+            double pointToleranceFeet = UnitConversionUtils.MillimetersToFeet(1.0);
+
+            for (int index = 0; index < layoutResult.Placements.Count; index++)
+            {
+                PlanCornerMarkLayoutItem placement = layoutResult.Placements[index];
+                if (placement == null || placement.CornerPoint == null || placement.FamilyOriginPoint == null)
+                {
+                    continue;
+                }
+
+                if (placedCornerNumbers.Contains(placement.CornerNumber) ||
+                    IsPointOccupied(occupiedCornerPoints, placement.CornerPoint, pointToleranceFeet))
+                {
+                    continue;
+                }
+
+                if (TryPlaceCornerMark(
+                    document,
+                    planView,
+                    symbol,
+                    placement.FamilyOriginPoint,
+                    roomData.RoomNumber,
+                    placement.CornerNumber,
+                    onlyCornerNumber,
+                    placement,
+                    warnings))
+                {
+                    placedCornerNumbers.Add(placement.CornerNumber);
+                    occupiedCornerPoints.Add(placement.CornerPoint);
+                    placedCount++;
+                }
+            }
+
+            return placedCount;
+        }
+
+        private int PlaceLegacyPlanCornerMarks(
+            Document document,
+            ViewPlan planView,
+            IList<ElevationLineData> elevationLines,
+            RoomData roomData,
+            FamilySymbol symbol,
+            bool onlyCornerNumber,
+            IList<string> warnings)
+        {
+
             int placedCount = 0;
             HashSet<int> placedCornerNumbers = new HashSet<int>();
             List<XYZ> occupiedCornerPoints = new List<XYZ>();
@@ -65,7 +167,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (!placedCornerNumbers.Contains(startCornerNumber) &&
                     !IsPointOccupied(occupiedCornerPoints, lineData.StartPoint, pointToleranceFeet))
                 {
-                    if (TryPlaceCornerMark(document, planView, symbol, lineData.StartPoint, roomData.RoomNumber, startCornerNumber, onlyCornerNumber, warnings))
+                    if (TryPlaceCornerMark(document, planView, symbol, lineData.StartPoint, roomData.RoomNumber, startCornerNumber, onlyCornerNumber, null, warnings))
                     {
                         placedCornerNumbers.Add(startCornerNumber);
                         occupiedCornerPoints.Add(lineData.StartPoint);
@@ -76,7 +178,7 @@ namespace SAB.InteriorElevations.Services.Marks
                 if (!placedCornerNumbers.Contains(endCornerNumber) &&
                     !IsPointOccupied(occupiedCornerPoints, lineData.EndPoint, pointToleranceFeet))
                 {
-                    if (TryPlaceCornerMark(document, planView, symbol, lineData.EndPoint, roomData.RoomNumber, endCornerNumber, onlyCornerNumber, warnings))
+                    if (TryPlaceCornerMark(document, planView, symbol, lineData.EndPoint, roomData.RoomNumber, endCornerNumber, onlyCornerNumber, null, warnings))
                     {
                         placedCornerNumbers.Add(endCornerNumber);
                         occupiedCornerPoints.Add(lineData.EndPoint);
@@ -120,6 +222,7 @@ namespace SAB.InteriorElevations.Services.Marks
             string roomNumber,
             int cornerNumber,
             bool onlyCornerNumber,
+            PlanCornerMarkLayoutItem placement,
             IList<string> warnings)
         {
             try
@@ -136,6 +239,18 @@ namespace SAB.InteriorElevations.Services.Marks
                     SetParameter(markInstance, CornerMarkConstants.RoomNumberParameterName, roomNumber, warnings);
                 }
                 SetParameter(markInstance, CornerMarkConstants.CornerNumberParameterName, cornerNumber.ToString(), warnings);
+
+                if (placement != null && !TryApplyPlanOrientation(markInstance, placement.Orientation))
+                {
+                    LocationPoint locationPoint = markInstance.Location as LocationPoint;
+                    if (locationPoint != null && placement.CornerPoint != null)
+                    {
+                        locationPoint.Point = placement.CornerPoint;
+                    }
+
+                    AddVisibilityParametersWarning(warnings);
+                }
+
                 return true;
             }
             catch (Exception exception)
@@ -145,6 +260,98 @@ namespace SAB.InteriorElevations.Services.Marks
                     "Ошибка размещения марки угла на плане (угол " + cornerNumber + "): " + exception.Message);
                 return false;
             }
+        }
+
+        private bool IsSmartPlanCornerMarkFamily(FamilySymbol symbol)
+        {
+            if (symbol == null)
+            {
+                return false;
+            }
+
+            string familyName = symbol.Family != null
+                ? symbol.Family.Name
+                : symbol.FamilyName;
+            return string.Equals(
+                familyName,
+                CornerMarkConstants.PlanCornerMarkFamilyName,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool TryApplyPlanOrientation(
+            FamilyInstance markInstance,
+            PlanCornerMarkOrientation orientation)
+        {
+            if (markInstance == null)
+            {
+                return false;
+            }
+
+            string[] parameterNames =
+            {
+                CornerMarkConstants.PlanCornerVisibilityUpperLeftParameterName,
+                CornerMarkConstants.PlanCornerVisibilityUpperRightParameterName,
+                CornerMarkConstants.PlanCornerVisibilityLowerLeftParameterName,
+                CornerMarkConstants.PlanCornerVisibilityLowerRightParameterName
+            };
+
+            Parameter[] parameters = new Parameter[parameterNames.Length];
+            for (int index = 0; index < parameterNames.Length; index++)
+            {
+                Parameter parameter = markInstance.LookupParameter(parameterNames[index]);
+                if (parameter == null || parameter.IsReadOnly || parameter.StorageType != StorageType.Integer)
+                {
+                    return false;
+                }
+
+                parameters[index] = parameter;
+            }
+
+            int visibleParameterIndex = GetVisibilityParameterIndex(orientation);
+            try
+            {
+                for (int index = 0; index < parameters.Length; index++)
+                {
+                    parameters[index].Set(index == visibleParameterIndex ? 1 : 0);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private int GetVisibilityParameterIndex(PlanCornerMarkOrientation orientation)
+        {
+            switch (orientation)
+            {
+                case PlanCornerMarkOrientation.TipUpperLeft:
+                    return 0;
+                case PlanCornerMarkOrientation.TipUpperRight:
+                    return 1;
+                case PlanCornerMarkOrientation.TipLowerLeft:
+                    return 2;
+                case PlanCornerMarkOrientation.TipLowerRight:
+                    return 3;
+                default:
+                    return 0;
+            }
+        }
+
+        private void AddVisibilityParametersWarning(IList<string> warnings)
+        {
+            if (_visibilityParametersWarningAdded)
+            {
+                return;
+            }
+
+            _visibilityParametersWarningAdded = true;
+            AddWarning(
+                warnings,
+                "В семействе '" + CornerMarkConstants.PlanCornerMarkFamilyName +
+                "' не найдены доступные параметры S1, S2, S3 и S4. Марки размещены резервно непосредственно в углах.");
         }
 
         private void SetParameter(FamilyInstance markInstance, string parameterName, string value, IList<string> warnings)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
@@ -11,6 +12,7 @@ namespace SAB.InteriorElevations.Services.Elevations
     public class ElevationFlipService
     {
         private const double DirectionEpsilon = 1e-9;
+        private const double PlanarToleranceFeet = 1e-6;
         private const double ParallelDotThreshold = 0.20;
 
         /// <summary>
@@ -72,17 +74,19 @@ namespace SAB.InteriorElevations.Services.Elevations
         }
 
         /// <summary>
-        /// Ð’Ñ‹Ð±Ð¾Ñ€ Ð¸ÑÑ…Ð¾Ð´Ð½Ð¾Ð¹ Ð»Ð¸Ð½Ð¸Ð¸ Ð´ÐµÑ‚Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸, Ð¿Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð±Ñ‹Ð»Ð° Ð¿Ð¾ÑÑ‚Ñ€Ð¾ÐµÐ½Ð° Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚ÐºÐ°.
+        /// Выбирает исходную линию или заменяющую ее линию, нарисованную после удаления исходной.
+        /// Видозависимая линия должна принадлежать активному плану; модельные линии также поддерживаются.
         /// </summary>
-        public bool TryPickSourceDetailLine(
+        public bool TryPickReferenceLine(
             UIDocument uiDocument,
-            out DetailLine detailLine,
+            View activeView,
+            out CurveElement referenceLine,
             out string errorMessage)
         {
-            detailLine = null;
+            referenceLine = null;
             errorMessage = string.Empty;
 
-            if (uiDocument == null || uiDocument.Document == null)
+            if (uiDocument == null || uiDocument.Document == null || activeView == null)
             {
                 errorMessage = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚ Revit.";
                 return false;
@@ -92,8 +96,8 @@ namespace SAB.InteriorElevations.Services.Elevations
             {
                 Reference pickedReference = uiDocument.Selection.PickObject(
                     ObjectType.Element,
-                    new DetailLineSelectionFilter(),
-                    "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð»Ð¸Ð½Ð¸ÑŽ, Ð¿Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ ÑÐ¾Ð·Ð´Ð°Ð²Ð°Ð»Ð°ÑÑŒ Ñ€Ð°Ð·Ð²ÐµÑ€Ñ‚ÐºÐ°");
+                    new ReferenceLineSelectionFilter(activeView.Id),
+                    "Выберите исходную или заново нарисованную прямую линию разворота");
 
                 if (pickedReference == null)
                 {
@@ -102,17 +106,30 @@ namespace SAB.InteriorElevations.Services.Elevations
                 }
 
                 Element pickedElement = uiDocument.Document.GetElement(pickedReference);
-                detailLine = pickedElement as DetailLine;
-                if (detailLine == null)
+                referenceLine = pickedElement as CurveElement;
+                if (referenceLine == null)
                 {
-                    errorMessage = "Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸Ð½Ð¸ÐµÐ¹ Ð´ÐµÑ‚Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸.";
+                    errorMessage = "Выбранный элемент не является линией.";
                     return false;
                 }
 
-                Line sourceLine = TryGetStraightLine(detailLine);
+                if (referenceLine.ViewSpecific &&
+                    !RevitElementIdUtils.AreEqual(referenceLine.OwnerViewId, activeView.Id))
+                {
+                    errorMessage = "Выбранная линия находится не на активном плане.";
+                    return false;
+                }
+
+                Line sourceLine = TryGetStraightLine(referenceLine);
                 if (sourceLine == null || sourceLine.Length <= DirectionEpsilon)
                 {
-                    errorMessage = "Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð°Ñ Ð»Ð¸Ð½Ð¸Ñ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¼ Ð¿Ñ€ÑÐ¼Ñ‹Ð¼ Ð¾Ñ‚Ñ€ÐµÐ·ÐºÐ¾Ð¼.";
+                    errorMessage = "Выбранная линия должна быть прямым отрезком ненулевой длины.";
+                    return false;
+                }
+
+                if (Math.Abs(sourceLine.GetEndPoint(1).Z - sourceLine.GetEndPoint(0).Z) > PlanarToleranceFeet)
+                {
+                    errorMessage = "Линия разворота должна лежать в плоскости активного плана.";
                     return false;
                 }
 
@@ -133,12 +150,13 @@ namespace SAB.InteriorElevations.Services.Elevations
             Document document,
             View planView,
             ViewSection sourceElevationView,
-            DetailLine sourceDetailLine,
+            CurveElement referenceLine,
             Viewport sourceViewport,
             IList<string> warnings)
         {
             ElevationFlipResult result = new ElevationFlipResult();
             ViewStateSnapshot sourceViewState = CaptureViewState(sourceElevationView);
+            ViewportStateSnapshot sourceViewportState = CaptureViewportState(sourceViewport);
 
             if (document == null)
             {
@@ -152,9 +170,9 @@ namespace SAB.InteriorElevations.Services.Elevations
                 return result;
             }
 
-            if (sourceDetailLine == null)
+            if (referenceLine == null)
             {
-                result.Message = "ÐÐµ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð° Ð¸ÑÑ…Ð¾Ð´Ð½Ð°Ñ Ð»Ð¸Ð½Ð¸Ñ Ð´ÐµÑ‚Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸.";
+                result.Message = "Не выбрана линия разворота.";
                 return result;
             }
 
@@ -167,7 +185,9 @@ namespace SAB.InteriorElevations.Services.Elevations
             {
                 result.Message = "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð½Ð°Ð¹Ñ‚Ð¸ ElevationMarker Ð´Ð»Ñ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð³Ð¾ Ñ„Ð°ÑÐ°Ð´Ð°.";
                 return result;
-            }XYZ lineDirection = GetLineDirectionXY(sourceDetailLine);
+            }
+
+            XYZ lineDirection = GetLineDirectionXY(referenceLine);
             XYZ currentDirection = GetHorizontalDirection(sourceElevationView.ViewDirection);
             if (lineDirection.GetLength() <= DirectionEpsilon || currentDirection.GetLength() <= DirectionEpsilon)
             {
@@ -175,9 +195,17 @@ namespace SAB.InteriorElevations.Services.Elevations
                 return result;
             }
 
+            if (Math.Abs(lineDirection.DotProduct(currentDirection)) > ParallelDotThreshold)
+            {
+                result.Message =
+                    "Выбранная линия не соответствует развертке. " +
+                    "Нарисуйте линию параллельно исходной линии создания развертки.";
+                return result;
+            }
+
             // Ð‘Ð»Ð¾Ðº 2. ÐžÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ ÑÑ†ÐµÐ½Ð°Ñ€Ð¸Ð¹: Ð½Ð°ÑÑ‚Ð¾ÑÑ‰ÐµÐµ Ð·ÐµÑ€ÐºÐ°Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¼Ð°Ñ€ÐºÐµÑ€Ð°
             // Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¹ Ð»Ð¸Ð½Ð¸Ð¸ (Ð½Ðµ Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚).
-            bool mirrored = TryMirrorMarkerBySourceLine(document, marker.Id, sourceDetailLine, warnings);
+            bool mirrored = TryMirrorMarkerBySourceLine(document, marker.Id, referenceLine, warnings);
 
             // ÐŸÐ¾ÑÐ»Ðµ Ð·ÐµÑ€ÐºÐ°Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð³ÐµÐ¾Ð¼ÐµÑ‚Ñ€Ð¸ÑŽ Ð²Ð¸Ð´Ð°.
             document.Regenerate();
@@ -195,30 +223,15 @@ namespace SAB.InteriorElevations.Services.Elevations
                     warnings,
                     "Ð—ÐµÑ€ÐºÐ°Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¼Ð°Ñ€ÐºÐµÑ€Ð° Ð²Ñ‹Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ Ð½Ðµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ. ÐŸÑ€Ð¸Ð¼ÐµÐ½ÐµÐ½ fallback-Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚ Ð²Ð¾ÐºÑ€ÑƒÐ³ Ð¼Ð°Ñ€ÐºÐµÑ€Ð°.");
 
-                XYZ targetDirection;
-                double perpendicularCheck = Math.Abs(lineDirection.DotProduct(currentDirection));
-                if (perpendicularCheck > ParallelDotThreshold)
+                XYZ targetDirection = ReflectDirectionByLine(currentDirection, lineDirection);
+                if (targetDirection.GetLength() <= DirectionEpsilon)
                 {
-                    // Ð•ÑÐ»Ð¸ Ð»Ð¸Ð½Ð¸Ñ ÑÐ²Ð½Ð¾ Ð½Ðµ ÑÐ¾Ð²Ð¿Ð°Ð´Ð°ÐµÑ‚ Ñ Ð¾Ð¶Ð¸Ð´Ð°ÐµÐ¼Ð¾Ð¹ Ð³ÐµÐ¾Ð¼ÐµÑ‚Ñ€Ð¸ÐµÐ¹ Ñ„Ð°ÑÐ°Ð´Ð°,
-                    // Ð´ÐµÐ»Ð°ÐµÐ¼ Ð³Ð°Ñ€Ð°Ð½Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚ Ð½Ð° 180Â° Ð¸ Ñ„Ð¸ÐºÑÐ¸Ñ€ÑƒÐµÐ¼ Ð¿Ñ€ÐµÐ´ÑƒÐ¿Ñ€ÐµÐ¶Ð´ÐµÐ½Ð¸Ðµ.
                     targetDirection = -currentDirection;
-                    AddWarning(
-                        warnings,
-                        "Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð°Ñ Ð»Ð¸Ð½Ð¸Ñ Ð½Ðµ Ð¿ÐµÑ€Ð¿ÐµÐ½Ð´Ð¸ÐºÑƒÐ»ÑÑ€Ð½Ð° Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸ÑŽ Ñ„Ð°ÑÐ°Ð´Ð°. " +
-                        "Ð’Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½ Ð³Ð°Ñ€Ð°Ð½Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ñ€Ð°Ð·Ð²Ð¾Ñ€Ð¾Ñ‚ Ð½Ð° 180Â° Ð²Ð¾ÐºÑ€ÑƒÐ³ Ð¼Ð°Ñ€ÐºÐµÑ€Ð°.");
-                }
-                else
-                {
-                    targetDirection = ReflectDirectionByLine(currentDirection, lineDirection);
-                    if (targetDirection.GetLength() <= DirectionEpsilon)
-                    {
-                        targetDirection = -currentDirection;
-                    }
                 }
 
                 XYZ rotationBasePoint;
                 string rotationPointSource;
-                if (!TryResolveMarkerRotationBasePoint(document, planView, marker, sourceDetailLine, sourceElevationView, out rotationBasePoint, out rotationPointSource))
+                if (!TryResolveMarkerRotationBasePoint(document, planView, marker, referenceLine, sourceElevationView, out rotationBasePoint, out rotationPointSource))
                 {
                     result.Message = "Зеркалирование не выполнено, а fallback-поворот невозможен: не найдена точка вращения маркера.";
                     return result;
@@ -273,11 +286,15 @@ namespace SAB.InteriorElevations.Services.Elevations
                     sourceElevationView,
                     sourceViewport,
                     sourceViewState,
+                    sourceViewportState,
                     warnings,
                     out replacementView,
                     out replacementViewport))
                 {
-                    result.Message = "Фасад зеркалирован, но не удалось создать и разместить новый вид на листе.";
+                    string reason = warnings != null && warnings.Count > 0
+                        ? " " + warnings[warnings.Count - 1]
+                        : string.Empty;
+                    result.Message = "Не удалось создать и разместить повернутый вид на листе." + reason;
                     result.IsSuccess = false;
                     return result;
                 }
@@ -293,6 +310,12 @@ namespace SAB.InteriorElevations.Services.Elevations
             // Принудительно восстанавливаем параметры исходного вида после операции,
             // чтобы масштаб/детализация/стиль отображения не менялись.
             ApplyViewState(sourceElevationView, sourceViewState, warnings);
+            document.Regenerate();
+            if (!DoesCropMatch(sourceElevationView, sourceViewState))
+            {
+                result.Message = "Не удалось сохранить исходную границу обрезки вида; поворот отменен.";
+                return result;
+            }
 
             result.IsSuccess = true;
             result.Message = "Фасад успешно зеркалирован на 180°.";
@@ -302,15 +325,15 @@ namespace SAB.InteriorElevations.Services.Elevations
         private bool TryMirrorMarkerBySourceLine(
             Document document,
             ElementId markerId,
-            DetailLine sourceDetailLine,
+            CurveElement referenceLine,
             IList<string> warnings)
         {
-            if (document == null || markerId == null || markerId == ElementId.InvalidElementId || sourceDetailLine == null)
+            if (document == null || markerId == null || markerId == ElementId.InvalidElementId || referenceLine == null)
             {
                 return false;
             }
 
-            Line sourceLine = TryGetStraightLine(sourceDetailLine);
+            Line sourceLine = TryGetStraightLine(referenceLine);
             if (sourceLine == null || sourceLine.Length <= DirectionEpsilon)
             {
                 AddWarning(warnings, "Ð—ÐµÑ€ÐºÐ°Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð½ÐµÐ²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾: Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð°Ñ Ð»Ð¸Ð½Ð¸Ñ Ð½Ðµ ÑÐ²Ð»ÑÐµÑ‚ÑÑ ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ð¼ Ð¿Ñ€ÑÐ¼Ñ‹Ð¼ Ð¾Ñ‚Ñ€ÐµÐ·ÐºÐ¾Ð¼.");
@@ -377,7 +400,7 @@ namespace SAB.InteriorElevations.Services.Elevations
             Document document,
             View planView,
             ElevationMarker marker,
-            DetailLine sourceDetailLine,
+            CurveElement referenceLine,
             ViewSection sourceElevationView,
             out XYZ point,
             out string sourceDescription)
@@ -429,7 +452,7 @@ namespace SAB.InteriorElevations.Services.Elevations
             }
 
             // Ð’Ð°Ñ€Ð¸Ð°Ð½Ñ‚ 5. Ð¡ÐµÑ€ÐµÐ´Ð¸Ð½Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¹ Ð¸ÑÑ…Ð¾Ð´Ð½Ð¾Ð¹ Ð»Ð¸Ð½Ð¸Ð¸.
-            Line sourceLine = TryGetStraightLine(sourceDetailLine);
+            Line sourceLine = TryGetStraightLine(referenceLine);
             if (sourceLine != null)
             {
                 XYZ start = sourceLine.GetEndPoint(0);
@@ -491,6 +514,7 @@ namespace SAB.InteriorElevations.Services.Elevations
             ViewSection sourceElevationView,
             Viewport sourceViewport,
             ViewStateSnapshot sourceViewState,
+            ViewportStateSnapshot sourceViewportState,
             IList<string> warnings,
             out ViewSection replacementView,
             out Viewport replacementViewport)
@@ -510,8 +534,15 @@ namespace SAB.InteriorElevations.Services.Elevations
                 return false;
             }
 
-            XYZ sourceCenter = sourceViewport.GetBoxCenter();
-            ElementId sourceViewportTypeId = sourceViewport.GetTypeId();
+            XYZ sourceCenter = sourceViewportState != null && sourceViewportState.BoxCenter != null
+                ? sourceViewportState.BoxCenter
+                : sourceViewport.GetBoxCenter();
+            ElementId sourceViewportTypeId = sourceViewportState != null
+                ? sourceViewportState.TypeId
+                : sourceViewport.GetTypeId();
+            ViewportTitleSnapshot sourceTitleState = sourceViewportState != null
+                ? sourceViewportState.TitleState
+                : CaptureViewportTitleState(sourceViewport);
             string sourceViewName = sourceElevationView.Name;
 
             // Ð‘Ð»Ð¾Ðº Ð´ÑƒÐ±Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ñ„Ð°ÑÐ°Ð´Ð° Ñ Ð´ÐµÑ‚Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸ÐµÐ¹.
@@ -563,6 +594,14 @@ namespace SAB.InteriorElevations.Services.Elevations
                 AddWarning(warnings, "ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð¿Ñ€Ð¸Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ ÑÑ…ÐµÐ¼Ñƒ Ð¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ð½Ð¸Ñ: " + renameException.Message);
             }
 
+            ApplyViewState(replacementView, sourceViewState, warnings);
+            document.Regenerate();
+            if (!DoesCropMatch(replacementView, sourceViewState))
+            {
+                AddWarning(warnings, "Граница обрезки нового вида не совпала с исходной; поворот отменен.");
+                return false;
+            }
+
             if (!Viewport.CanAddViewToSheet(document, sourceSheet.Id, replacementView.Id))
             {
                 AddWarning(warnings, "ÐÐ¾Ð²Ñ‹Ð¹ Ñ„Ð°ÑÐ°Ð´ Ð½ÐµÐ»ÑŒÐ·Ñ Ñ€Ð°Ð·Ð¼ÐµÑÑ‚Ð¸Ñ‚ÑŒ Ð½Ð° Ð¸ÑÑ…Ð¾Ð´Ð½Ð¾Ð¼ Ð»Ð¸ÑÑ‚Ðµ.");
@@ -579,12 +618,17 @@ namespace SAB.InteriorElevations.Services.Elevations
                 }
 
                 TryApplyViewportType(replacementViewport, sourceViewportTypeId);
-
-                // Восстанавливаем ключевые настройки вида на новом фасаде.
-                ApplyViewState(replacementView, sourceViewState, warnings);
+                document.Regenerate();
+                if (sourceCenter != null &&
+                    replacementViewport.GetBoxCenter().DistanceTo(sourceCenter) > DirectionEpsilon)
+                {
+                    replacementViewport.SetBoxCenter(sourceCenter);
+                }
 
                 document.Delete(sourceViewport.Id);
                 document.Delete(sourceElevationView.Id);
+                document.Regenerate();
+                RestoreViewportTitleState(document, replacementViewport, sourceTitleState, warnings);
                 return true;
             }
             catch (Exception placementException)
@@ -800,17 +844,17 @@ namespace SAB.InteriorElevations.Services.Elevations
             return viewSection.ViewType == ViewType.Elevation;
         }
 
-        private Line TryGetStraightLine(DetailLine detailLine)
+        private Line TryGetStraightLine(CurveElement curveElement)
         {
-            if (detailLine == null)
+            if (curveElement == null)
             {
                 return null;
             }
 
-            Curve curve = detailLine.GeometryCurve;
+            Curve curve = curveElement.GeometryCurve;
             if (curve == null)
             {
-                LocationCurve locationCurve = detailLine.Location as LocationCurve;
+                LocationCurve locationCurve = curveElement.Location as LocationCurve;
                 if (locationCurve != null)
                 {
                     curve = locationCurve.Curve;
@@ -820,9 +864,9 @@ namespace SAB.InteriorElevations.Services.Elevations
             return curve as Line;
         }
 
-        private XYZ GetLineDirectionXY(DetailLine detailLine)
+        private XYZ GetLineDirectionXY(CurveElement curveElement)
         {
-            Line line = TryGetStraightLine(detailLine);
+            Line line = TryGetStraightLine(curveElement);
             if (line == null)
             {
                 return XYZ.Zero;
@@ -958,6 +1002,178 @@ namespace SAB.InteriorElevations.Services.Elevations
             }
         }
 
+        private ViewportStateSnapshot CaptureViewportState(Viewport viewport)
+        {
+            if (viewport == null || !viewport.IsValidObject)
+            {
+                return null;
+            }
+
+            return new ViewportStateSnapshot
+            {
+                BoxCenter = viewport.GetBoxCenter(),
+                TypeId = viewport.GetTypeId(),
+                TitleState = CaptureViewportTitleState(viewport)
+            };
+        }
+
+        private ViewportTitleSnapshot CaptureViewportTitleState(Viewport viewport)
+        {
+            ViewportTitleSnapshot snapshot = new ViewportTitleSnapshot();
+            if (viewport == null)
+            {
+                return snapshot;
+            }
+
+            try
+            {
+                Outline outline = viewport.GetBoxOutline();
+                XYZ labelOffset = viewport.LabelOffset;
+                if (outline != null && outline.MinimumPoint != null && labelOffset != null)
+                {
+                    snapshot.HasLabelPosition = true;
+                    snapshot.LabelSheetPosition = new XYZ(
+                        outline.MinimumPoint.X + labelOffset.X,
+                        outline.MinimumPoint.Y + labelOffset.Y,
+                        0.0);
+                }
+            }
+            catch
+            {
+                snapshot.HasLabelPosition = false;
+            }
+
+            try
+            {
+                snapshot.LabelLineLength = viewport.LabelLineLength;
+                snapshot.HasLabelLineLength = true;
+            }
+            catch
+            {
+                snapshot.HasLabelLineLength = false;
+            }
+
+            try
+            {
+                snapshot.Rotation = viewport.Rotation;
+                snapshot.HasRotation = true;
+            }
+            catch
+            {
+                snapshot.HasRotation = false;
+            }
+
+            XYZ labelOutlineMinimum;
+            if (TryGetViewportLabelMinimum(viewport, out labelOutlineMinimum))
+            {
+                snapshot.LabelOutlineMinimum = labelOutlineMinimum;
+            }
+
+            return snapshot;
+        }
+
+        private bool TryGetViewportLabelMinimum(Viewport viewport, out XYZ minimum)
+        {
+            minimum = null;
+            if (viewport == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                MethodInfo method = typeof(Viewport).GetMethod("GetLabelOutline", Type.EmptyTypes);
+                Outline outline = method != null ? method.Invoke(viewport, null) as Outline : null;
+                minimum = outline != null ? outline.MinimumPoint : null;
+                return minimum != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void RestoreViewportTitleState(
+            Document document,
+            Viewport viewport,
+            ViewportTitleSnapshot snapshot,
+            IList<string> warnings)
+        {
+            if (viewport == null || snapshot == null)
+            {
+                return;
+            }
+
+            if (snapshot.HasRotation)
+            {
+                try
+                {
+                    viewport.Rotation = snapshot.Rotation;
+                }
+                catch (Exception exception)
+                {
+                    AddWarning(warnings, "Не удалось восстановить поворот видового экрана: " + exception.Message);
+                }
+            }
+
+            if (document != null)
+            {
+                document.Regenerate();
+            }
+
+            if (snapshot.HasLabelPosition && snapshot.LabelSheetPosition != null)
+            {
+                try
+                {
+                    Outline outline = viewport.GetBoxOutline();
+                    if (outline != null && outline.MinimumPoint != null)
+                    {
+                        viewport.LabelOffset = new XYZ(
+                            snapshot.LabelSheetPosition.X - outline.MinimumPoint.X,
+                            snapshot.LabelSheetPosition.Y - outline.MinimumPoint.Y,
+                            0.0);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    AddWarning(warnings, "Не удалось восстановить положение заголовка вида: " + exception.Message);
+                }
+            }
+
+            if (snapshot.HasLabelLineLength)
+            {
+                try
+                {
+                    viewport.LabelLineLength = snapshot.LabelLineLength;
+                }
+                catch (Exception exception)
+                {
+                    AddWarning(warnings, "Не удалось восстановить длину линии заголовка вида: " + exception.Message);
+                }
+            }
+
+            if (snapshot.LabelOutlineMinimum != null && document != null)
+            {
+                try
+                {
+                    document.Regenerate();
+                    XYZ actualMinimum;
+                    if (TryGetViewportLabelMinimum(viewport, out actualMinimum))
+                    {
+                        XYZ correction = snapshot.LabelOutlineMinimum - actualMinimum;
+                        if (correction.GetLength() > DirectionEpsilon)
+                        {
+                            viewport.LabelOffset = viewport.LabelOffset + correction;
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    AddWarning(warnings, "Не удалось точно восстановить заголовок вида: " + exception.Message);
+                }
+            }
+        }
+
         private void AddWarning(IList<string> warnings, string warningText)
         {
             if (warnings == null || string.IsNullOrWhiteSpace(warningText))
@@ -980,6 +1196,41 @@ namespace SAB.InteriorElevations.Services.Elevations
             snapshot.ViewTemplateId = viewSection.ViewTemplateId;
             snapshot.DetailLevel = viewSection.DetailLevel;
             snapshot.DisplayStyle = viewSection.DisplayStyle;
+
+            try
+            {
+                BoundingBoxXYZ cropBox = viewSection.CropBox;
+                if (cropBox != null && cropBox.Min != null && cropBox.Max != null)
+                {
+                    snapshot.HasCropBox = true;
+                    snapshot.CropBoxMin = cropBox.Min;
+                    snapshot.CropBoxMax = cropBox.Max;
+                    snapshot.CropBoxActive = viewSection.CropBoxActive;
+                    snapshot.CropBoxVisible = viewSection.CropBoxVisible;
+                }
+
+            }
+            catch
+            {
+                snapshot.HasCropBox = false;
+            }
+
+            try
+            {
+                ViewCropRegionShapeManager cropManager = viewSection.GetCropRegionShapeManager();
+                if (cropManager != null && cropManager.ShapeSet)
+                {
+                    IList<CurveLoop> cropShapes = cropManager.GetCropShape();
+                    if (cropShapes != null && cropShapes.Count == 1)
+                    {
+                        snapshot.CropShape = cropShapes[0];
+                    }
+                }
+            }
+            catch
+            {
+                snapshot.CropShape = null;
+            }
 
             Parameter farClipParameter = viewSection.get_Parameter(BuiltInParameter.VIEWER_BOUND_OFFSET_FAR);
             if (farClipParameter != null && farClipParameter.StorageType == StorageType.Double)
@@ -1055,6 +1306,74 @@ namespace SAB.InteriorElevations.Services.Elevations
                     AddWarning(warnings, "Не удалось восстановить глубину проецирования вида: " + ex.Message);
                 }
             }
+
+            if (snapshot.HasCropBox)
+            {
+                try
+                {
+                    BoundingBoxXYZ currentCropBox = viewSection.CropBox;
+                    if (currentCropBox != null)
+                    {
+                        BoundingBoxXYZ restoredCropBox = new BoundingBoxXYZ();
+                        restoredCropBox.Transform = currentCropBox.Transform;
+                        restoredCropBox.Min = new XYZ(
+                            snapshot.CropBoxMin.X,
+                            snapshot.CropBoxMin.Y,
+                            currentCropBox.Min.Z);
+                        restoredCropBox.Max = new XYZ(
+                            snapshot.CropBoxMax.X,
+                            snapshot.CropBoxMax.Y,
+                            currentCropBox.Max.Z);
+                        viewSection.CropBox = restoredCropBox;
+                        viewSection.CropBoxActive = snapshot.CropBoxActive;
+                        viewSection.CropBoxVisible = snapshot.CropBoxVisible;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddWarning(warnings, "Не удалось восстановить границу обрезки вида: " + ex.Message);
+                }
+            }
+
+            if (snapshot.CropShape != null)
+            {
+                try
+                {
+                    ViewCropRegionShapeManager cropManager = viewSection.GetCropRegionShapeManager();
+                    if (cropManager != null && cropManager.CanHaveShape)
+                    {
+                        cropManager.SetCropShape(snapshot.CropShape);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AddWarning(warnings, "Не удалось восстановить форму обрезки вида: " + ex.Message);
+                }
+            }
+        }
+
+        private bool DoesCropMatch(ViewSection viewSection, ViewStateSnapshot snapshot)
+        {
+            if (viewSection == null || snapshot == null || !snapshot.HasCropBox)
+            {
+                return true;
+            }
+
+            try
+            {
+                BoundingBoxXYZ cropBox = viewSection.CropBox;
+                const double toleranceFeet = 1e-4;
+                return cropBox != null &&
+                    Math.Abs(cropBox.Min.X - snapshot.CropBoxMin.X) <= toleranceFeet &&
+                    Math.Abs(cropBox.Max.X - snapshot.CropBoxMax.X) <= toleranceFeet &&
+                    Math.Abs(cropBox.Min.Y - snapshot.CropBoxMin.Y) <= toleranceFeet &&
+                    Math.Abs(cropBox.Max.Y - snapshot.CropBoxMax.Y) <= toleranceFeet &&
+                    viewSection.CropBoxActive == snapshot.CropBoxActive;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private class ViewStateSnapshot
@@ -1070,6 +1389,44 @@ namespace SAB.InteriorElevations.Services.Elevations
             public bool HasFarClipOffset { get; set; }
 
             public double FarClipOffset { get; set; }
+
+            public bool HasCropBox { get; set; }
+
+            public XYZ CropBoxMin { get; set; }
+
+            public XYZ CropBoxMax { get; set; }
+
+            public bool CropBoxActive { get; set; }
+
+            public bool CropBoxVisible { get; set; }
+
+            public CurveLoop CropShape { get; set; }
+        }
+
+        private class ViewportStateSnapshot
+        {
+            public XYZ BoxCenter { get; set; }
+
+            public ElementId TypeId { get; set; }
+
+            public ViewportTitleSnapshot TitleState { get; set; }
+        }
+
+        private class ViewportTitleSnapshot
+        {
+            public bool HasLabelPosition { get; set; }
+
+            public XYZ LabelSheetPosition { get; set; }
+
+            public XYZ LabelOutlineMinimum { get; set; }
+
+            public bool HasLabelLineLength { get; set; }
+
+            public double LabelLineLength { get; set; }
+
+            public bool HasRotation { get; set; }
+
+            public ViewportRotation Rotation { get; set; }
         }
 
         private class PlanElevationSelectionFilter : ISelectionFilter
@@ -1109,11 +1466,40 @@ namespace SAB.InteriorElevations.Services.Elevations
             }
         }
 
-        private class DetailLineSelectionFilter : ISelectionFilter
+        private class ReferenceLineSelectionFilter : ISelectionFilter
         {
+            private readonly ElementId _activeViewId;
+
+            public ReferenceLineSelectionFilter(ElementId activeViewId)
+            {
+                _activeViewId = activeViewId;
+            }
+
             public bool AllowElement(Element element)
             {
-                return element is DetailLine;
+                CurveElement curveElement = element as CurveElement;
+                if (curveElement == null)
+                {
+                    return false;
+                }
+
+                if (curveElement.ViewSpecific &&
+                    !RevitElementIdUtils.AreEqual(curveElement.OwnerViewId, _activeViewId))
+                {
+                    return false;
+                }
+
+                Curve curve = curveElement.GeometryCurve;
+                if (curve == null)
+                {
+                    LocationCurve locationCurve = curveElement.Location as LocationCurve;
+                    curve = locationCurve != null ? locationCurve.Curve : null;
+                }
+
+                Line line = curve as Line;
+                return line != null &&
+                    line.Length > DirectionEpsilon &&
+                    Math.Abs(line.GetEndPoint(1).Z - line.GetEndPoint(0).Z) <= PlanarToleranceFeet;
             }
 
             public bool AllowReference(Reference reference, XYZ position)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Interop;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -17,7 +18,7 @@ namespace SAB.DoorWindowExplanations.Commands
     [Transaction(TransactionMode.Manual)]
     public class CreateDoorWindowViewsCommand : IExternalCommand
     {
-        private const string CommandTitle = "SAB Экспликации дверей и окон";
+        private const string CommandTitle = "SAB Экспликации дверей, окон и витражей";
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -46,13 +47,8 @@ namespace SAB.DoorWindowExplanations.Commands
                 IList<DoorWindowViewTemplateItem> templates = dataService.GetSectionViewTemplates(document);
                 IList<DoorWindowNamedElementItem> titleBlockTypes = dataService.GetTitleBlockTypes(document);
                 IList<DoorWindowNamedElementItem> viewportTypes = dataService.GetViewportTypes(document);
+                IList<DoorWindowNamedElementItem> dimensionTypes = dataService.GetLinearDimensionTypes(document);
                 dataService.GetSectionViewFamilyTypeId(document);
-                if (titleBlockTypes.Count == 0)
-                {
-                    ToastNotifier.ShowWarning(CommandTitle, "В проекте не найден ни один тип основной надписи.");
-                    return Result.Cancelled;
-                }
-
                 DoorWindowParameterService parameterService = new DoorWindowParameterService();
                 IList<string> parameterNames = CollectParameterNames(parameterService, selections);
                 DoorWindowSettingsStorageService storageService = new DoorWindowSettingsStorageService();
@@ -64,7 +60,8 @@ namespace SAB.DoorWindowExplanations.Commands
                     templates,
                     parameterNames,
                     titleBlockTypes,
-                    viewportTypes);
+                    viewportTypes,
+                    dimensionTypes);
                 SetRevitOwner(settingsWindow, uiApplication);
 
                 bool? dialogResult = settingsWindow.ShowDialog();
@@ -74,14 +71,32 @@ namespace SAB.DoorWindowExplanations.Commands
                 }
 
                 DoorWindowViewSettings settings = settingsWindow.SelectedSettings;
+                if (settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication && titleBlockTypes.Count == 0)
+                {
+                    ToastNotifier.ShowWarning(CommandTitle, "В проекте не найден ни один тип основной надписи.");
+                    return Result.Cancelled;
+                }
+
+                XYZ interiorReferencePoint = null;
+                if (settings.CurtainWallFrontSideMode == CurtainWallFrontSideMode.AwayFromInteriorPoint &&
+                    selections.Any(item => item != null && item.IsCurtainWall))
+                {
+                    ToastNotifier.ShowInfo(
+                        CommandTitle,
+                        "Укажите одну точку внутри здания. От неё плагин определит наружную лицевую сторону каждого витража.");
+                    interiorReferencePoint = uiDocument.Selection.PickPoint(
+                        "SAB: укажите точку внутри здания для ориентации фасадов витражей");
+                }
+
                 IList<DoorWindowOrientedBounds> bounds = PrepareBounds(
                     uiDocument,
                     selections,
-                    settings);
+                    settings,
+                    interiorReferencePoint);
 
                 DoorWindowBatchCreationResult batchResult = new DoorWindowBatchCreationResult();
                 HashSet<string> reservedViewNames = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
-                int totalProgressSteps = selections.Count + 2;
+                int totalProgressSteps = selections.Count + (settings.CreateElementImages ? 3 : 2);
                 progressWindow = ShowCreationProgressWindow(uiApplication, totalProgressSteps);
                 ReportProgress(
                     progressWindow,
@@ -89,26 +104,56 @@ namespace SAB.DoorWindowExplanations.Commands
                     totalProgressSteps,
                     "Подготовка",
                     "Готовим имена и геометрию видов.");
-                using (Transaction transaction = new Transaction(document, "SAB Экспликации дверей и окон"))
+                using (Transaction transaction = new Transaction(document, "SAB Экспликации дверей, окон и витражей"))
                 {
                     transaction.Start();
                     DoorWindowNamingService namingService = new DoorWindowNamingService();
                     DoorWindowViewCreationService viewCreationService = new DoorWindowViewCreationService();
+                    DoorWindowViewIsolationService isolationService = new DoorWindowViewIsolationService();
+                    DoorWindowDimensionService dimensionService = new DoorWindowDimensionService();
 
                     for (int i = 0; i < selections.Count; i++)
                     {
+                        DoorWindowViewSettings itemSettings = settings.Clone();
+                        if (selections[i].IsCurtainWall)
+                        {
+                            itemSettings.ElevationSide = DoorWindowElevationSide.Front;
+                        }
+
                         IList<string> viewNames = namingService.BuildUniqueNames(
                             document,
                             selections[i],
-                            settings,
+                            itemSettings,
                             reservedViewNames);
                         DoorWindowViewCreationResult group = viewCreationService.CreateViews(
                             document,
                             bounds[i],
-                            settings,
+                            itemSettings,
                             templates,
                             viewNames);
                         batchResult.ViewGroups.Add(group);
+                        document.Regenerate();
+                        bool isolateCurrentElement = selections[i].IsCurtainWall ||
+                                                     settings.IsolateSelectedElement;
+                        if (isolateCurrentElement)
+                        {
+                            isolationService.IsolateSelection(
+                                selections[i],
+                                group,
+                                batchResult.Warnings);
+                            document.Regenerate();
+                        }
+
+                        if (settings.CreateFrontDimensions && group.FrontView != null)
+                        {
+                            batchResult.DimensionsCreated += dimensionService.CreateFrontDimensions(
+                                document,
+                                selections[i],
+                                bounds[i],
+                                group.FrontView,
+                                itemSettings,
+                                batchResult.Warnings);
+                        }
                         ReportProgress(
                             progressWindow,
                             i + 1,
@@ -117,26 +162,61 @@ namespace SAB.DoorWindowExplanations.Commands
                             "Элемент " + (i + 1) + " из " + selections.Count + ".");
                     }
 
-                    DoorWindowSheetPlacementService sheetPlacementService = new DoorWindowSheetPlacementService();
-                    batchResult.Sheet = sheetPlacementService.CreateSheetAndPlaceViews(
-                        document,
-                        settings,
-                        titleBlockTypes,
-                        viewportTypes,
-                        batchResult.ViewGroups);
+                    if (settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication)
+                    {
+                        DoorWindowSheetPlacementService sheetPlacementService = new DoorWindowSheetPlacementService();
+                        batchResult.Sheet = sheetPlacementService.CreateSheetAndPlaceViews(
+                            document,
+                            settings,
+                            titleBlockTypes,
+                            viewportTypes,
+                            batchResult.ViewGroups);
+                    }
                     ReportProgress(
                         progressWindow,
                         selections.Count + 1,
                         totalProgressSteps,
                         "Размещение",
-                        "Виды размещены на общем листе.");
+                        settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication
+                            ? "Виды размещены на общем листе."
+                            : "Технические виды подготовлены без создания листа.");
                     transaction.Commit();
+                    ReportProgress(
+                        progressWindow,
+                        selections.Count + 2,
+                        totalProgressSteps,
+                        settings.CreateElementImages ? "Подготовка PNG" : "Готово",
+                        settings.CreateElementImages
+                            ? (settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication
+                                ? "Виды и лист сохранены. Экспортируем изображения."
+                                : "Виды сохранены. Экспортируем изображения.")
+                            : "Изменения сохранены.");
+                }
+
+                if (settings.CreateElementImages)
+                {
+                    try
+                    {
+                        DoorWindowImageService imageService = new DoorWindowImageService();
+                        imageService.ExportAndAssignImages(
+                            document,
+                            selections,
+                            batchResult.ViewGroups,
+                            settings,
+                            batchResult);
+                    }
+                    catch (Exception imageException)
+                    {
+                        batchResult.Warnings.Add(
+                            "Экспорт изображений завершён не полностью: " + imageException.Message);
+                    }
+
                     ReportProgress(
                         progressWindow,
                         totalProgressSteps,
                         totalProgressSteps,
                         "Готово",
-                        "Изменения сохранены.");
+                        "PNG экспортированы, доступные параметры изображений заполнены.");
                 }
 
                 CloseProgressWindow(progressWindow);
@@ -168,6 +248,21 @@ namespace SAB.DoorWindowExplanations.Commands
                     catch
                     {
                         // Невозможность открыть лист не отменяет уже созданные элементы.
+                    }
+                }
+                else if (batchResult.ViewGroups.Count > 0)
+                {
+                    try
+                    {
+                        ViewSection createdView = batchResult.ViewGroups[0].GetSingleView(settings.SingleViewKind);
+                        if (createdView != null)
+                        {
+                            uiDocument.ActiveView = createdView;
+                        }
+                    }
+                    catch
+                    {
+                        // Невозможность открыть технический вид не отменяет результат.
                     }
                 }
 
@@ -202,7 +297,7 @@ namespace SAB.DoorWindowExplanations.Commands
                 progressWindow = new CreateViewsAndSheetsProgressWindow(
                     BuildCreationProgressMessages(),
                     CommandTitle,
-                    "Создание экспликаций дверей и окон");
+                    "Создание экспликаций дверей, окон и витражей");
                 SetRevitOwner(progressWindow, uiApplication);
                 progressWindow.Show();
                 ReportProgress(
@@ -228,8 +323,10 @@ namespace SAB.DoorWindowExplanations.Commands
             return new List<string>
             {
                 "Создаём вид сверху, фасад и разрез для каждого элемента.",
+                "Наносим габариты и цепочки импостов на фасадные виды.",
                 "Выравниваем виды и готовим компоновку листа.",
-                "Размещаем заголовки и проверяем границы видов."
+                "Размещаем заголовки и проверяем границы видов.",
+                "Экспортируем готовые фасады в PNG и записываем изображения в параметры."
             };
         }
 
@@ -307,13 +404,28 @@ namespace SAB.DoorWindowExplanations.Commands
                         // Escape при выборе возвращает пользователя в окно накопителя.
                     }
                 }
+
+                if (window.RequestedAction == DoorWindowSelectionListAction.AddElementsByRectangle)
+                {
+                    try
+                    {
+                        IList<DoorWindowSelectionData> picked =
+                            selectionService.PickDoorsAndWindowsByRectangle(uiDocument);
+                        AddUniqueSelections(selections, picked);
+                    }
+                    catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+                    {
+                        // Escape при выборе рамкой возвращает пользователя в окно накопителя.
+                    }
+                }
             }
         }
 
         private IList<DoorWindowOrientedBounds> PrepareBounds(
             UIDocument uiDocument,
             IList<DoorWindowSelectionData> selections,
-            DoorWindowViewSettings settings)
+            DoorWindowViewSettings settings,
+            XYZ interiorReferencePoint)
         {
             List<DoorWindowOrientedBounds> result = new List<DoorWindowOrientedBounds>();
             DoorWindowGeometryService geometryService = new DoorWindowGeometryService();
@@ -324,6 +436,7 @@ namespace SAB.DoorWindowExplanations.Commands
             for (int i = 0; i < selections.Count; i++)
             {
                 DoorWindowSelectionData selection = selections[i];
+                geometryService.PopulateCoordinateSystem(selection, settings, interiorReferencePoint);
                 if (settings.BoundsSourceMode == DoorWindowBoundsSourceMode.ManualFrontContour)
                 {
                     ToastNotifier.ShowInfo(

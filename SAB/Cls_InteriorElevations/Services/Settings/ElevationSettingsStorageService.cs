@@ -9,14 +9,60 @@ namespace SAB.InteriorElevations.Services.Settings
 {
     public class ElevationSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 11;
+        private const int CurrentSchemaVersion = 14;
         private readonly string _settingsFilePath;
+        private readonly string _markPreferencesFilePath;
 
         public ElevationSettingsStorageService()
         {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string settingsDirectory = Path.Combine(appDataPath, "SAB", "InteriorElevations");
             _settingsFilePath = Path.Combine(settingsDirectory, "elevation-settings.json");
+            _markPreferencesFilePath = Path.Combine(settingsDirectory, "mark-preferences.json");
+        }
+
+        public ElevationMarkPreferences LoadMarkPreferences()
+        {
+            if (!File.Exists(_markPreferencesFilePath))
+            {
+                return null;
+            }
+
+            PersistedMarkPreferences persisted = JsonConvert.DeserializeObject<PersistedMarkPreferences>(
+                File.ReadAllText(_markPreferencesFilePath));
+            if (persisted == null)
+            {
+                return null;
+            }
+
+            return new ElevationMarkPreferences
+            {
+                OnlyCornerNumber = persisted.OnlyCornerNumber,
+                BelowView = persisted.BelowView,
+                PlanMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persisted.PlanMarkTypeIdValue),
+                SheetMarkTypeId = RevitElementIdUtils.CreateElementIdFromLong(persisted.SheetMarkTypeIdValue)
+            };
+        }
+
+        public void SaveMarkPreferences(ElevationMarkPreferences preferences)
+        {
+            if (preferences == null)
+            {
+                return;
+            }
+
+            string directory = Path.GetDirectoryName(_markPreferencesFilePath);
+            Directory.CreateDirectory(directory);
+            PersistedMarkPreferences persisted = new PersistedMarkPreferences
+            {
+                OnlyCornerNumber = preferences.OnlyCornerNumber,
+                BelowView = preferences.BelowView,
+                PlanMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(preferences.PlanMarkTypeId),
+                SheetMarkTypeIdValue = RevitElementIdUtils.GetElementIdValue(preferences.SheetMarkTypeId)
+            };
+            File.WriteAllText(
+                _markPreferencesFilePath,
+                JsonConvert.SerializeObject(persisted, Formatting.Indented));
         }
 
         public ElevationSettings LoadSettings()
@@ -78,6 +124,12 @@ namespace SAB.InteriorElevations.Services.Settings
             settings.RightOffsetMm = persistedSettings.RightOffsetMm;
             settings.ViewDepthMm = persistedSettings.ViewDepthMm;
             settings.MarkerOffsetMm = persistedSettings.MarkerOffsetMm;
+            settings.GridTopExtensionPaperMm = persistedSettings.SchemaVersion >= 12
+                ? persistedSettings.GridTopExtensionPaperMm
+                : 5.0;
+            settings.GridBottomExtensionPaperMm = persistedSettings.SchemaVersion >= 12
+                ? persistedSettings.GridBottomExtensionPaperMm
+                : 15.0;
             if (persistedSettings.SchemaVersion >= 5)
             {
                 settings.ElevationNamePart1 = persistedSettings.ElevationNamePart1 ?? string.Empty;
@@ -122,10 +174,14 @@ namespace SAB.InteriorElevations.Services.Settings
 
             settings.SheetLayoutSettings = new SheetLayoutSettings();
             settings.SheetLayoutSettings.ColumnsCount = persistedSettings.ColumnsCount;
+            settings.SheetLayoutSettings.UseAutomaticPlacement = persistedSettings.SchemaVersion < 13 || persistedSettings.UseAutomaticPlacement;
             settings.SheetLayoutSettings.StartXmm = persistedSettings.StartXmm;
             settings.SheetLayoutSettings.StartYmm = persistedSettings.StartYmm;
             settings.SheetLayoutSettings.StepXmm = persistedSettings.StepXmm;
             settings.SheetLayoutSettings.StepYmm = persistedSettings.StepYmm;
+            settings.SheetLayoutSettings.UseManualRoomPlanPosition = persistedSettings.SchemaVersion >= 14 && persistedSettings.UseManualRoomPlanPosition;
+            settings.SheetLayoutSettings.RoomPlanOffsetRightMm = persistedSettings.RoomPlanOffsetRightMm;
+            settings.SheetLayoutSettings.RoomPlanOffsetBottomMm = persistedSettings.RoomPlanOffsetBottomMm;
             settings.SheetLayoutSettings.ViewTitleAnchor = persistedSettings.SchemaVersion >= 5
                 ? persistedSettings.ViewTitleAnchor
                 : ViewTitleAnchor.BottomLeft;
@@ -181,6 +237,8 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.RightOffsetMm = settings.RightOffsetMm;
             persistedSettings.ViewDepthMm = settings.ViewDepthMm;
             persistedSettings.MarkerOffsetMm = settings.MarkerOffsetMm;
+            persistedSettings.GridTopExtensionPaperMm = settings.GridTopExtensionPaperMm;
+            persistedSettings.GridBottomExtensionPaperMm = settings.GridBottomExtensionPaperMm;
             persistedSettings.ElevationNamePart1 = settings.ElevationNamePart1 ?? string.Empty;
             persistedSettings.ElevationNamePart2 = settings.ElevationNamePart2 ?? string.Empty;
             persistedSettings.ElevationNamePart3 = settings.ElevationNamePart3 ?? string.Empty;
@@ -204,10 +262,14 @@ namespace SAB.InteriorElevations.Services.Settings
 
             SheetLayoutSettings sheetLayoutSettings = settings.SheetLayoutSettings ?? new SheetLayoutSettings();
             persistedSettings.ColumnsCount = sheetLayoutSettings.ColumnsCount;
+            persistedSettings.UseAutomaticPlacement = sheetLayoutSettings.UseAutomaticPlacement;
             persistedSettings.StartXmm = sheetLayoutSettings.StartXmm;
             persistedSettings.StartYmm = sheetLayoutSettings.StartYmm;
             persistedSettings.StepXmm = sheetLayoutSettings.StepXmm;
             persistedSettings.StepYmm = sheetLayoutSettings.StepYmm;
+            persistedSettings.UseManualRoomPlanPosition = sheetLayoutSettings.UseManualRoomPlanPosition;
+            persistedSettings.RoomPlanOffsetRightMm = sheetLayoutSettings.RoomPlanOffsetRightMm;
+            persistedSettings.RoomPlanOffsetBottomMm = sheetLayoutSettings.RoomPlanOffsetBottomMm;
             persistedSettings.ViewTitleAnchor = sheetLayoutSettings.ViewTitleAnchor;
             persistedSettings.ViewTitleOffsetXmm = sheetLayoutSettings.ViewTitleOffsetXmm;
             persistedSettings.ViewTitleOffsetYmm = sheetLayoutSettings.ViewTitleOffsetYmm;
@@ -251,6 +313,10 @@ namespace SAB.InteriorElevations.Services.Settings
 
             public double MarkerOffsetMm { get; set; }
 
+            public double GridTopExtensionPaperMm { get; set; }
+
+            public double GridBottomExtensionPaperMm { get; set; }
+
             public string ElevationNamePart1 { get; set; }
 
             public string ElevationNamePart2 { get; set; }
@@ -291,6 +357,8 @@ namespace SAB.InteriorElevations.Services.Settings
 
             public int ColumnsCount { get; set; }
 
+            public bool UseAutomaticPlacement { get; set; }
+
             public double StartXmm { get; set; }
 
             public double StartYmm { get; set; }
@@ -298,6 +366,10 @@ namespace SAB.InteriorElevations.Services.Settings
             public double StepXmm { get; set; }
 
             public double StepYmm { get; set; }
+
+            public bool UseManualRoomPlanPosition { get; set; }
+            public double RoomPlanOffsetRightMm { get; set; }
+            public double RoomPlanOffsetBottomMm { get; set; }
 
             public ViewTitleAnchor ViewTitleAnchor { get; set; }
 
@@ -328,6 +400,17 @@ namespace SAB.InteriorElevations.Services.Settings
             public int RoomPlanViewScale { get; set; }
 
             public double RoomPlanCropOffsetMm { get; set; }
+        }
+
+        private class PersistedMarkPreferences
+        {
+            public bool OnlyCornerNumber { get; set; }
+
+            public bool BelowView { get; set; }
+
+            public long PlanMarkTypeIdValue { get; set; }
+
+            public long SheetMarkTypeIdValue { get; set; }
         }
     }
 }

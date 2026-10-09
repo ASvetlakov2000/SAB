@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using Autodesk.Revit.DB;
 using SAB.DoorWindowExplanations.Models;
@@ -19,7 +20,16 @@ namespace SAB.DoorWindowExplanations.Views
         private readonly IList<string> _parameterNames;
         private readonly IList<DoorWindowNamedElementItem> _titleBlockTypes;
         private readonly IList<DoorWindowNamedElementItem> _viewportTypes;
+        private readonly IList<DoorWindowNamedElementItem> _dimensionTypes;
 
+        private RadioButton _fullExplicationRadioButton;
+        private RadioButton _imageOnlyRadioButton;
+        private ComboBox _singleViewKindComboBox;
+        private ComboBox _curtainWallFrontSideModeComboBox;
+        private FrameworkElement _topViewSettingsPanel;
+        private FrameworkElement _frontViewSettingsPanel;
+        private FrameworkElement _sectionViewSettingsPanel;
+        private FrameworkElement _sheetSettingsPanel;
         private TextBlock _elementSummaryTextBlock;
         private RadioButton _automaticBoundsRadioButton;
         private RadioButton _manualBoundsRadioButton;
@@ -54,6 +64,20 @@ namespace SAB.DoorWindowExplanations.Views
         private ComboBox _viewTitleAnchorComboBox;
         private TextBox _viewTitleOffsetXTextBox;
         private TextBox _viewTitleOffsetYTextBox;
+        private ToggleButton _isolateSelectedElementToggleButton;
+        private CheckBox _createFrontDimensionsCheckBox;
+        private ComboBox _dimensionTypeComboBox;
+        private TextBox _detailedDimensionOffsetTextBox;
+        private TextBox _overallDimensionOffsetTextBox;
+        private TextBox _sideDetailedDimensionOffsetTextBox;
+        private TextBox _sideOverallDimensionOffsetTextBox;
+        private ComboBox _horizontalDimensionSideComboBox;
+        private ComboBox _verticalDimensionSideComboBox;
+        private TextBox _dimensionTextHeightTextBox;
+        private CheckBox _createElementImagesCheckBox;
+        private TextBox _curtainWallImageParameterTextBox;
+        private TextBox _doorWindowTypeImageParameterTextBox;
+        private TextBox _imageHeightPaperMmTextBox;
         private CheckBox _saveSettingsCheckBox;
         private TextBlock _validationTextBlock;
         private Button _createButton;
@@ -65,18 +89,20 @@ namespace SAB.DoorWindowExplanations.Views
             IList<DoorWindowViewTemplateItem> templates,
             IList<string> parameterNames,
             IList<DoorWindowNamedElementItem> titleBlockTypes,
-            IList<DoorWindowNamedElementItem> viewportTypes)
+            IList<DoorWindowNamedElementItem> viewportTypes,
+            IList<DoorWindowNamedElementItem> dimensionTypes)
         {
             _selections = selections ?? throw new ArgumentNullException(nameof(selections));
             if (_selections.Count == 0)
             {
-                throw new ArgumentException("Список дверей и окон пуст.", nameof(selections));
+                throw new ArgumentException("Список дверей, окон и витражей пуст.", nameof(selections));
             }
 
             _templates = templates ?? new List<DoorWindowViewTemplateItem>();
             _parameterNames = parameterNames ?? new List<string>();
             _titleBlockTypes = titleBlockTypes ?? new List<DoorWindowNamedElementItem>();
             _viewportTypes = viewportTypes ?? new List<DoorWindowNamedElementItem>();
+            _dimensionTypes = dimensionTypes ?? new List<DoorWindowNamedElementItem>();
 
             InitializeWindowFromXamlFile();
             BindControls();
@@ -111,6 +137,14 @@ namespace SAB.DoorWindowExplanations.Views
                     throw new InvalidOperationException("Не удалось загрузить DoorWindowViewsWindow.xaml.");
                 }
 
+                _fullExplicationRadioButton = loadedWindow.FindName("FullExplicationRadioButton") as RadioButton;
+                _imageOnlyRadioButton = loadedWindow.FindName("ImageOnlyRadioButton") as RadioButton;
+                _singleViewKindComboBox = loadedWindow.FindName("SingleViewKindComboBox") as ComboBox;
+                _curtainWallFrontSideModeComboBox = loadedWindow.FindName("CurtainWallFrontSideModeComboBox") as ComboBox;
+                _topViewSettingsPanel = loadedWindow.FindName("TopViewSettingsPanel") as FrameworkElement;
+                _frontViewSettingsPanel = loadedWindow.FindName("FrontViewSettingsPanel") as FrameworkElement;
+                _sectionViewSettingsPanel = loadedWindow.FindName("SectionViewSettingsPanel") as FrameworkElement;
+                _sheetSettingsPanel = loadedWindow.FindName("SheetSettingsPanel") as FrameworkElement;
                 _elementSummaryTextBlock = loadedWindow.FindName("ElementSummaryTextBlock") as TextBlock;
                 _automaticBoundsRadioButton = loadedWindow.FindName("AutomaticBoundsRadioButton") as RadioButton;
                 _manualBoundsRadioButton = loadedWindow.FindName("ManualBoundsRadioButton") as RadioButton;
@@ -145,6 +179,20 @@ namespace SAB.DoorWindowExplanations.Views
                 _viewTitleAnchorComboBox = loadedWindow.FindName("ViewTitleAnchorComboBox") as ComboBox;
                 _viewTitleOffsetXTextBox = loadedWindow.FindName("ViewTitleOffsetXTextBox") as TextBox;
                 _viewTitleOffsetYTextBox = loadedWindow.FindName("ViewTitleOffsetYTextBox") as TextBox;
+                _isolateSelectedElementToggleButton = loadedWindow.FindName("IsolateSelectedElementToggleButton") as ToggleButton;
+                _createFrontDimensionsCheckBox = loadedWindow.FindName("CreateFrontDimensionsCheckBox") as CheckBox;
+                _dimensionTypeComboBox = loadedWindow.FindName("DimensionTypeComboBox") as ComboBox;
+                _detailedDimensionOffsetTextBox = loadedWindow.FindName("DetailedDimensionOffsetTextBox") as TextBox;
+                _overallDimensionOffsetTextBox = loadedWindow.FindName("OverallDimensionOffsetTextBox") as TextBox;
+                _sideDetailedDimensionOffsetTextBox = loadedWindow.FindName("SideDetailedDimensionOffsetTextBox") as TextBox;
+                _sideOverallDimensionOffsetTextBox = loadedWindow.FindName("SideOverallDimensionOffsetTextBox") as TextBox;
+                _horizontalDimensionSideComboBox = loadedWindow.FindName("HorizontalDimensionSideComboBox") as ComboBox;
+                _verticalDimensionSideComboBox = loadedWindow.FindName("VerticalDimensionSideComboBox") as ComboBox;
+                _dimensionTextHeightTextBox = loadedWindow.FindName("DimensionTextHeightTextBox") as TextBox;
+                _createElementImagesCheckBox = loadedWindow.FindName("CreateElementImagesCheckBox") as CheckBox;
+                _curtainWallImageParameterTextBox = loadedWindow.FindName("CurtainWallImageParameterTextBox") as TextBox;
+                _doorWindowTypeImageParameterTextBox = loadedWindow.FindName("DoorWindowTypeImageParameterTextBox") as TextBox;
+                _imageHeightPaperMmTextBox = loadedWindow.FindName("ImageHeightPaperMmTextBox") as TextBox;
                 _saveSettingsCheckBox = loadedWindow.FindName("SaveSettingsCheckBox") as CheckBox;
                 _validationTextBlock = loadedWindow.FindName("ValidationTextBlock") as TextBlock;
                 _createButton = loadedWindow.FindName("CreateButton") as Button;
@@ -167,12 +215,26 @@ namespace SAB.DoorWindowExplanations.Views
 
         private void BindControls()
         {
-            if (_createButton == null || _cancelButton == null || _automaticBoundsRadioButton == null ||
+            if (_createButton == null || _cancelButton == null ||
+                _fullExplicationRadioButton == null || _imageOnlyRadioButton == null ||
+                _singleViewKindComboBox == null || _curtainWallFrontSideModeComboBox == null ||
+                _topViewSettingsPanel == null || _frontViewSettingsPanel == null ||
+                _sectionViewSettingsPanel == null || _sheetSettingsPanel == null ||
+                _automaticBoundsRadioButton == null ||
                 _manualBoundsRadioButton == null || _frontElevationSideRadioButton == null ||
                 _backElevationSideRadioButton == null || _positionParameterComboBox == null ||
                 _titleBlockTypeComboBox == null || _viewportTypeComboBox == null ||
                 _viewTitleAnchorComboBox == null || _viewTitleOffsetXTextBox == null ||
-                _viewTitleOffsetYTextBox == null)
+                _viewTitleOffsetYTextBox == null || _isolateSelectedElementToggleButton == null ||
+                _createFrontDimensionsCheckBox == null ||
+                _dimensionTypeComboBox == null || _detailedDimensionOffsetTextBox == null ||
+                _overallDimensionOffsetTextBox == null ||
+                _sideDetailedDimensionOffsetTextBox == null || _sideOverallDimensionOffsetTextBox == null ||
+                _horizontalDimensionSideComboBox == null ||
+                _verticalDimensionSideComboBox == null || _dimensionTextHeightTextBox == null ||
+                _createElementImagesCheckBox == null ||
+                _curtainWallImageParameterTextBox == null || _doorWindowTypeImageParameterTextBox == null ||
+                _imageHeightPaperMmTextBox == null)
             {
                 throw new InvalidOperationException("Не удалось привязать элементы окна настроек.");
             }
@@ -180,6 +242,12 @@ namespace SAB.DoorWindowExplanations.Views
 
         private void Populate(DoorWindowViewSettings settings)
         {
+            _fullExplicationRadioButton.IsChecked = settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication;
+            _imageOnlyRadioButton.IsChecked = settings.WorkflowMode == DoorWindowWorkflowMode.ImageOnly;
+            _singleViewKindComboBox.SelectedIndex = (int)settings.SingleViewKind;
+            _curtainWallFrontSideModeComboBox.SelectedIndex = settings.CurtainWallFrontSideMode == CurtainWallFrontSideMode.AwayFromInteriorPoint
+                ? 0
+                : settings.CurtainWallFrontSideMode == CurtainWallFrontSideMode.RevitExterior ? 1 : 2;
             _elementSummaryTextBlock.Text = BuildSelectionSummary();
             _automaticBoundsRadioButton.IsChecked = settings.BoundsSourceMode == DoorWindowBoundsSourceMode.Automatic;
             _manualBoundsRadioButton.IsChecked = settings.BoundsSourceMode == DoorWindowBoundsSourceMode.ManualFrontContour;
@@ -226,10 +294,40 @@ namespace SAB.DoorWindowExplanations.Views
             PopulateViewTitleAnchorComboBox(settings.ViewTitleAnchor);
             _viewTitleOffsetXTextBox.Text = FormatDouble(settings.ViewTitleOffsetXmm);
             _viewTitleOffsetYTextBox.Text = FormatDouble(settings.ViewTitleOffsetYmm);
+            bool onlyCurtainWalls = _selections.Count > 0;
+            for (int selectionIndex = 0; selectionIndex < _selections.Count; selectionIndex++)
+            {
+                if (_selections[selectionIndex] == null || !_selections[selectionIndex].IsCurtainWall)
+                {
+                    onlyCurtainWalls = false;
+                    break;
+                }
+            }
+
+            _isolateSelectedElementToggleButton.IsChecked = onlyCurtainWalls
+                ? true
+                : settings.IsolateSelectedElement;
+            _isolateSelectedElementToggleButton.IsEnabled = !onlyCurtainWalls;
+            _createFrontDimensionsCheckBox.IsChecked = settings.CreateFrontDimensions;
+            PopulateNamedComboBox(
+                _dimensionTypeComboBox,
+                _dimensionTypes,
+                settings.DimensionTypeIdValue,
+                settings.DimensionTypeName);
+            _detailedDimensionOffsetTextBox.Text = FormatDouble(settings.DetailedDimensionOffsetPaperMm);
+            _overallDimensionOffsetTextBox.Text = FormatDouble(settings.OverallDimensionOffsetPaperMm);
+            _sideDetailedDimensionOffsetTextBox.Text = FormatDouble(settings.SideDetailedDimensionOffsetPaperMm);
+            _sideOverallDimensionOffsetTextBox.Text = FormatDouble(settings.SideOverallDimensionOffsetPaperMm);
+            _horizontalDimensionSideComboBox.SelectedIndex = (int)settings.HorizontalDimensionSide;
+            _verticalDimensionSideComboBox.SelectedIndex = (int)settings.VerticalDimensionSide;
+            _dimensionTextHeightTextBox.Text = FormatDouble(settings.DimensionTextHeightMm);
+            _createElementImagesCheckBox.IsChecked = settings.CreateElementImages;
+            _curtainWallImageParameterTextBox.Text = settings.CurtainWallInstanceImageParameterName ?? string.Empty;
+            _doorWindowTypeImageParameterTextBox.Text = settings.DoorWindowTypeImageParameterName ?? string.Empty;
+            _imageHeightPaperMmTextBox.Text = FormatDouble(settings.ImageHeightPaperMm);
             _saveSettingsCheckBox.IsChecked = settings.SaveSettings;
             UpdateManualModeState();
-            _validationTextBlock.Text = "Будет создано видов: " + (_selections.Count * 3) +
-                                        " · элементов на листе: " + _selections.Count + ".";
+            UpdateWorkflowState();
         }
 
         private void PopulateTemplateComboBox(ComboBox comboBox, string selectedName)
@@ -264,6 +362,9 @@ namespace SAB.DoorWindowExplanations.Views
             _cancelButton.Click += CancelButton_Click;
             _automaticBoundsRadioButton.Click += BoundsModeRadioButton_Click;
             _manualBoundsRadioButton.Click += BoundsModeRadioButton_Click;
+            _fullExplicationRadioButton.Click += WorkflowModeChanged;
+            _imageOnlyRadioButton.Click += WorkflowModeChanged;
+            _singleViewKindComboBox.SelectionChanged += WorkflowModeChanged;
         }
 
         private void DoorWindowViewsWindow_Loaded(object sender, RoutedEventArgs e)
@@ -280,6 +381,40 @@ namespace SAB.DoorWindowExplanations.Views
         private void UpdateManualModeState()
         {
             _manualPlanDepthTextBox.IsEnabled = _manualBoundsRadioButton.IsChecked == true;
+        }
+
+        private void WorkflowModeChanged(object sender, RoutedEventArgs e)
+        {
+            UpdateWorkflowState();
+        }
+
+        private void UpdateWorkflowState()
+        {
+            bool imageOnly = _imageOnlyRadioButton.IsChecked == true;
+            _singleViewKindComboBox.IsEnabled = imageOnly;
+            if (imageOnly)
+            {
+                _createElementImagesCheckBox.IsChecked = true;
+            }
+            _createElementImagesCheckBox.IsEnabled = !imageOnly;
+            bool hasFrontView = !imageOnly || _singleViewKindComboBox.SelectedIndex <= 0;
+            _createFrontDimensionsCheckBox.IsEnabled = hasFrontView;
+            _topViewSettingsPanel.Visibility = !imageOnly || _singleViewKindComboBox.SelectedIndex == 1
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
+            _frontViewSettingsPanel.Visibility = !imageOnly || _singleViewKindComboBox.SelectedIndex <= 0
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
+            _sectionViewSettingsPanel.Visibility = !imageOnly || _singleViewKindComboBox.SelectedIndex == 2
+                ? System.Windows.Visibility.Visible
+                : System.Windows.Visibility.Collapsed;
+            _sheetSettingsPanel.Visibility = imageOnly
+                ? System.Windows.Visibility.Collapsed
+                : System.Windows.Visibility.Visible;
+            int viewCount = imageOnly ? _selections.Count : _selections.Count * 3;
+            _validationTextBlock.Text = imageOnly
+                ? "Будет создано технических видов: " + viewCount + " · лист не создаётся."
+                : "Будет создано видов: " + viewCount + " · элементов на листе: " + _selections.Count + ".";
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
@@ -308,6 +443,19 @@ namespace SAB.DoorWindowExplanations.Views
             settings = new DoorWindowViewSettings();
             message = string.Empty;
 
+            settings.WorkflowMode = _imageOnlyRadioButton.IsChecked == true
+                ? DoorWindowWorkflowMode.ImageOnly
+                : DoorWindowWorkflowMode.FullExplication;
+            settings.SingleViewKind = _singleViewKindComboBox.SelectedIndex == 1
+                ? DoorWindowSingleViewKind.Top
+                : _singleViewKindComboBox.SelectedIndex == 2
+                    ? DoorWindowSingleViewKind.Section
+                    : DoorWindowSingleViewKind.Front;
+            settings.CurtainWallFrontSideMode = _curtainWallFrontSideModeComboBox.SelectedIndex == 1
+                ? CurtainWallFrontSideMode.RevitExterior
+                : _curtainWallFrontSideModeComboBox.SelectedIndex == 2
+                    ? CurtainWallFrontSideMode.RevitInterior
+                    : CurtainWallFrontSideMode.AwayFromInteriorPoint;
             settings.BoundsSourceMode = _manualBoundsRadioButton.IsChecked == true
                 ? DoorWindowBoundsSourceMode.ManualFrontContour
                 : DoorWindowBoundsSourceMode.Automatic;
@@ -338,6 +486,24 @@ namespace SAB.DoorWindowExplanations.Views
                 ? viewTitleAnchor.Value
                 : DoorWindowViewTitleAnchor.BottomLeft;
             settings.SaveSettings = _saveSettingsCheckBox.IsChecked == true;
+            settings.IsolateSelectedElement = _isolateSelectedElementToggleButton.IsChecked == true;
+            settings.CreateFrontDimensions = _createFrontDimensionsCheckBox.IsChecked == true &&
+                                             (settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication ||
+                                              settings.SingleViewKind == DoorWindowSingleViewKind.Front);
+            DoorWindowNamedElementItem selectedDimensionType =
+                _dimensionTypeComboBox.SelectedItem as DoorWindowNamedElementItem;
+            settings.DimensionTypeName = selectedDimensionType != null
+                ? selectedDimensionType.Name
+                : string.Empty;
+            settings.DimensionTypeIdValue = selectedDimensionType != null && selectedDimensionType.Id != null
+                ? selectedDimensionType.Id.IntegerValue
+                : -1;
+            settings.CreateElementImages = settings.WorkflowMode == DoorWindowWorkflowMode.ImageOnly ||
+                                           _createElementImagesCheckBox.IsChecked == true;
+            settings.CurtainWallInstanceImageParameterName =
+                (_curtainWallImageParameterTextBox.Text ?? string.Empty).Trim();
+            settings.DoorWindowTypeImageParameterName =
+                (_doorWindowTypeImageParameterTextBox.Text ?? string.Empty).Trim();
 
             if (string.IsNullOrWhiteSpace(settings.TopViewNameFormula) ||
                 string.IsNullOrWhiteSpace(settings.FrontViewNameFormula) ||
@@ -347,13 +513,15 @@ namespace SAB.DoorWindowExplanations.Views
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(settings.TitleBlockTypeName))
+            if (settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication &&
+                string.IsNullOrWhiteSpace(settings.TitleBlockTypeName))
             {
                 message = "Выберите тип основной надписи для общего листа.";
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(settings.SheetNumber) || string.IsNullOrWhiteSpace(settings.SheetName))
+            if (settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication &&
+                (string.IsNullOrWhiteSpace(settings.SheetNumber) || string.IsNullOrWhiteSpace(settings.SheetName)))
             {
                 message = "Заполните номер и имя общего листа.";
                 return false;
@@ -396,6 +564,11 @@ namespace SAB.DoorWindowExplanations.Views
             double elementVerticalStep;
             double viewTitleOffsetX;
             double viewTitleOffsetY;
+            double detailedDimensionOffset;
+            double overallDimensionOffset;
+            double sideDetailedDimensionOffset;
+            double sideOverallDimensionOffset;
+            double dimensionTextHeight;
             if (!TryReadNonNegative(_widthOffsetTextBox, "общий боковой офсет", out widthOffset, out message) ||
                 !TryReadNonNegative(_planDepthOffsetTextBox, "офсет глубины плана", out planDepthOffset, out message) ||
                 !TryReadNonNegative(_frontVerticalOffsetTextBox, "вертикальный офсет фронта", out frontVerticalOffset, out message) ||
@@ -413,7 +586,12 @@ namespace SAB.DoorWindowExplanations.Views
                 !TryReadPositive(_viewHorizontalStepTextBox, "зазор между видами", out viewHorizontalStep, out message) ||
                 !TryReadPositive(_elementVerticalStepTextBox, "зазор между элементами", out elementVerticalStep, out message) ||
                 !TryReadNumber(_viewTitleOffsetXTextBox, "смещение заголовка X", out viewTitleOffsetX, out message) ||
-                !TryReadNumber(_viewTitleOffsetYTextBox, "смещение заголовка Y", out viewTitleOffsetY, out message))
+                !TryReadNumber(_viewTitleOffsetYTextBox, "смещение заголовка Y", out viewTitleOffsetY, out message) ||
+                !TryReadNonNegative(_detailedDimensionOffsetTextBox, "отступ цепочки импостов", out detailedDimensionOffset, out message) ||
+                !TryReadNonNegative(_overallDimensionOffsetTextBox, "отступ общего габарита", out overallDimensionOffset, out message) ||
+                !TryReadNonNegative(_sideDetailedDimensionOffsetTextBox, "отступ боковой цепочки импостов", out sideDetailedDimensionOffset, out message) ||
+                !TryReadNonNegative(_sideOverallDimensionOffsetTextBox, "отступ бокового общего габарита", out sideOverallDimensionOffset, out message) ||
+                !TryReadNonNegative(_dimensionTextHeightTextBox, "высота текста размера", out dimensionTextHeight, out message))
             {
                 return false;
             }
@@ -432,6 +610,51 @@ namespace SAB.DoorWindowExplanations.Views
             settings.ElementVerticalStepMm = elementVerticalStep;
             settings.ViewTitleOffsetXmm = viewTitleOffsetX;
             settings.ViewTitleOffsetYmm = viewTitleOffsetY;
+            settings.DetailedDimensionOffsetPaperMm = detailedDimensionOffset;
+            settings.OverallDimensionOffsetPaperMm = overallDimensionOffset;
+            settings.SideDetailedDimensionOffsetPaperMm = sideDetailedDimensionOffset;
+            settings.SideOverallDimensionOffsetPaperMm = sideOverallDimensionOffset;
+            if (overallDimensionOffset < detailedDimensionOffset)
+            {
+                message = "Отступ позиции 2 снизу / сверху должен быть не меньше отступа позиции 1.";
+                return false;
+            }
+
+            if (sideOverallDimensionOffset < sideDetailedDimensionOffset)
+            {
+                message = "Отступ позиции 2 слева / справа должен быть не меньше отступа позиции 1.";
+                return false;
+            }
+
+            settings.DimensionTextHeightMm = dimensionTextHeight;
+            settings.HorizontalDimensionSide = _horizontalDimensionSideComboBox.SelectedIndex == 1
+                ? DoorWindowHorizontalDimensionSide.Top
+                : DoorWindowHorizontalDimensionSide.Bottom;
+            settings.VerticalDimensionSide = _verticalDimensionSideComboBox.SelectedIndex == 1
+                ? DoorWindowVerticalDimensionSide.Right
+                : DoorWindowVerticalDimensionSide.Left;
+
+            double imageHeightPaperMm;
+            if (!TryReadRange(_imageHeightPaperMmTextBox, "высота изображения на листе", 10.0, 500.0,
+                out imageHeightPaperMm, out message))
+            {
+                return false;
+            }
+
+            settings.ImageHeightPaperMm = imageHeightPaperMm;
+            if (settings.CreateFrontDimensions && selectedDimensionType == null)
+            {
+                message = "Выберите тип линейного размера.";
+                return false;
+            }
+
+            if (settings.CreateElementImages &&
+                (string.IsNullOrWhiteSpace(settings.CurtainWallInstanceImageParameterName) ||
+                 string.IsNullOrWhiteSpace(settings.DoorWindowTypeImageParameterName)))
+            {
+                message = "Заполните имена параметров изображений для витражей, окон и дверей.";
+                return false;
+            }
 
             message = "Настройки корректны.";
             return true;
@@ -578,6 +801,7 @@ namespace SAB.DoorWindowExplanations.Views
 
             int doors = 0;
             int windows = 0;
+            int curtainWalls = 0;
             int linked = 0;
             for (int i = 0; i < _selections.Count; i++)
             {
@@ -592,8 +816,11 @@ namespace SAB.DoorWindowExplanations.Views
                     linked++;
                 }
 
-                if (item.Element != null && item.Element.Category != null &&
-                    item.Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows)
+                if (item.IsCurtainWall)
+                {
+                    curtainWalls++;
+                }
+                else if (item.IsWindow)
                 {
                     windows++;
                 }
@@ -604,7 +831,8 @@ namespace SAB.DoorWindowExplanations.Views
             }
 
             return "Выбрано элементов: " + _selections.Count +
-                   "\nДверей: " + doors + " · окон: " + windows + " · из связей: " + linked;
+                   "\nДверей: " + doors + " · окон: " + windows +
+                   " · витражей: " + curtainWalls + " · из связей: " + linked;
         }
 
         private class DoorWindowViewTitleAnchorOption

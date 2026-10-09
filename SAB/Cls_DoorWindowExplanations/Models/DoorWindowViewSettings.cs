@@ -16,6 +16,38 @@ namespace SAB.DoorWindowExplanations.Models
         Back = 1
     }
 
+    public enum DoorWindowWorkflowMode
+    {
+        FullExplication = 0,
+        ImageOnly = 1
+    }
+
+    public enum DoorWindowSingleViewKind
+    {
+        Front = 0,
+        Top = 1,
+        Section = 2
+    }
+
+    public enum CurtainWallFrontSideMode
+    {
+        RevitExterior = 0,
+        RevitInterior = 1,
+        AwayFromInteriorPoint = 2
+    }
+
+    public enum DoorWindowHorizontalDimensionSide
+    {
+        Bottom = 0,
+        Top = 1
+    }
+
+    public enum DoorWindowVerticalDimensionSide
+    {
+        Left = 0,
+        Right = 1
+    }
+
     public enum DoorWindowViewTitleAnchor
     {
         BottomLeft = 0,
@@ -28,6 +60,9 @@ namespace SAB.DoorWindowExplanations.Models
     {
         public DoorWindowViewSettings()
         {
+            WorkflowMode = DoorWindowWorkflowMode.FullExplication;
+            SingleViewKind = DoorWindowSingleViewKind.Front;
+            CurtainWallFrontSideMode = CurtainWallFrontSideMode.AwayFromInteriorPoint;
             BoundsSourceMode = DoorWindowBoundsSourceMode.Automatic;
             ElevationSide = DoorWindowElevationSide.Front;
             TopViewNameFormula = "{Категория}_{Позиция}_Сверху";
@@ -47,15 +82,36 @@ namespace SAB.DoorWindowExplanations.Models
             SectionProjectionDepthMm = 500.0;
             SectionMarkerExtensionMm = 50.0;
             SheetNumber = "ЭД-1";
-            SheetName = "Экспликации дверей и окон";
+            SheetName = "Экспликации дверей, окон и витражей";
             ViewHorizontalStepMm = 120.0;
             ElementVerticalStepMm = 100.0;
             ViewTitleAnchor = DoorWindowViewTitleAnchor.BottomLeft;
             ViewTitleOffsetXmm = 0.0;
             ViewTitleOffsetYmm = -5.0;
             ViewportTypeIdValue = -1;
+            IsolateSelectedElement = true;
+            CreateFrontDimensions = true;
+            DetailedDimensionOffsetPaperMm = 8.0;
+            OverallDimensionOffsetPaperMm = 15.0;
+            SideDetailedDimensionOffsetPaperMm = 8.0;
+            SideOverallDimensionOffsetPaperMm = 15.0;
+            HorizontalDimensionSide = DoorWindowHorizontalDimensionSide.Bottom;
+            VerticalDimensionSide = DoorWindowVerticalDimensionSide.Left;
+            DimensionTypeIdValue = -1;
+            DimensionTextHeightMm = 0.0;
+            CreateElementImages = true;
+            CurtainWallInstanceImageParameterName = "SAB_IMG_Эземпляр";
+            DoorWindowTypeImageParameterName = "SAB_IMG_Тип";
+            ImagePixelSize = 2000;
+            ImageHeightPaperMm = 80.0;
             SaveSettings = true;
         }
+
+        public DoorWindowWorkflowMode WorkflowMode { get; set; }
+
+        public DoorWindowSingleViewKind SingleViewKind { get; set; }
+
+        public CurtainWallFrontSideMode CurtainWallFrontSideMode { get; set; }
 
         public DoorWindowBoundsSourceMode BoundsSourceMode { get; set; }
 
@@ -121,6 +177,38 @@ namespace SAB.DoorWindowExplanations.Models
 
         public double ViewTitleOffsetYmm { get; set; }
 
+        public bool IsolateSelectedElement { get; set; }
+
+        public bool CreateFrontDimensions { get; set; }
+
+        public string DimensionTypeName { get; set; }
+
+        public int DimensionTypeIdValue { get; set; }
+
+        public double DimensionTextHeightMm { get; set; }
+
+        public double DetailedDimensionOffsetPaperMm { get; set; }
+
+        public double OverallDimensionOffsetPaperMm { get; set; }
+
+        public double SideDetailedDimensionOffsetPaperMm { get; set; }
+
+        public double SideOverallDimensionOffsetPaperMm { get; set; }
+
+        public DoorWindowHorizontalDimensionSide HorizontalDimensionSide { get; set; }
+
+        public DoorWindowVerticalDimensionSide VerticalDimensionSide { get; set; }
+
+        public bool CreateElementImages { get; set; }
+
+        public string CurtainWallInstanceImageParameterName { get; set; }
+
+        public string DoorWindowTypeImageParameterName { get; set; }
+
+        public int ImagePixelSize { get; set; }
+
+        public double ImageHeightPaperMm { get; set; }
+
         public bool SaveSettings { get; set; }
 
         public DoorWindowViewSettings Clone()
@@ -149,6 +237,8 @@ namespace SAB.DoorWindowExplanations.Models
 
         public XYZ FacingDirection { get; set; }
 
+        public bool ReverseFrontSide { get; set; }
+
         public string CategoryName { get; set; }
 
         public string FamilyName { get; set; }
@@ -160,6 +250,29 @@ namespace SAB.DoorWindowExplanations.Models
         public bool IsLinked
         {
             get { return LinkInstance != null; }
+        }
+
+        public bool IsCurtainWall
+        {
+            get { return Element is Wall && ((Wall)Element).CurtainGrid != null; }
+        }
+
+        public bool IsWindow
+        {
+            get
+            {
+                return Element != null && Element.Category != null &&
+                       Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Windows;
+            }
+        }
+
+        public bool IsDoor
+        {
+            get
+            {
+                return Element != null && Element.Category != null &&
+                       Element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Doors;
+            }
         }
 
         public string DisplayName
@@ -276,7 +389,38 @@ namespace SAB.DoorWindowExplanations.Models
 
         public IList<ViewSection> GetViews()
         {
-            return new[] { TopView, FrontView, SectionView };
+            List<ViewSection> views = new List<ViewSection>();
+            if (TopView != null)
+            {
+                views.Add(TopView);
+            }
+
+            if (FrontView != null)
+            {
+                views.Add(FrontView);
+            }
+
+            if (SectionView != null)
+            {
+                views.Add(SectionView);
+            }
+
+            return views;
+        }
+
+        public ViewSection GetSingleView(DoorWindowSingleViewKind viewKind)
+        {
+            if (viewKind == DoorWindowSingleViewKind.Top)
+            {
+                return TopView;
+            }
+
+            if (viewKind == DoorWindowSingleViewKind.Section)
+            {
+                return SectionView;
+            }
+
+            return FrontView;
         }
     }
 
@@ -285,10 +429,22 @@ namespace SAB.DoorWindowExplanations.Models
         public DoorWindowBatchCreationResult()
         {
             ViewGroups = new List<DoorWindowViewCreationResult>();
+            Warnings = new List<string>();
+            ExportedImagePaths = new List<string>();
         }
 
         public IList<DoorWindowViewCreationResult> ViewGroups { get; private set; }
 
         public ViewSheet Sheet { get; set; }
+
+        public int DimensionsCreated { get; set; }
+
+        public int ImagesAssigned { get; set; }
+
+        public IList<string> Warnings { get; private set; }
+
+        public IList<string> ExportedImagePaths { get; private set; }
+
+        public string ImageOutputFolder { get; set; }
     }
 }

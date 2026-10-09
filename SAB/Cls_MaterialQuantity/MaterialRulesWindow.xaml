@@ -1,0 +1,160 @@
+<Window x:Class="SAB.MaterialQuantity.MaterialRulesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB — параметры материалов"
+        Width="1100" Height="700" MinWidth="920" MinHeight="560"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip"
+        FontFamily="Segoe UI" FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../UI/Styles/SABWindowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource SabBrush.WindowBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,18,20,14">
+            <TextBlock Text="Параметры материалов" Style="{StaticResource SabWindowTitleTextStyle}" />
+            <TextBlock Text="Задайте правила подсчёта и обновите ведомости материалов по слоям."
+                       Style="{StaticResource SabWindowSubtitleTextStyle}" Margin="0,4,0,0" />
+        </StackPanel>
+
+        <Grid x:Name="MainContent" Grid.Row="1" Margin="20,0,20,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <Border Style="{StaticResource SabPanelBorderStyle}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Поиск и фильтр" Style="{StaticResource SabPanelHeaderTextStyle}" Margin="0,0,0,14" />
+                        <TextBlock Text="Название материала" Style="{StaticResource SabFieldLabelTextStyle}" />
+                        <TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource SabTextBoxStyle}" Margin="0,0,0,12" />
+                        <TextBlock Text="Показать" Style="{StaticResource SabFieldLabelTextStyle}" />
+                        <ComboBox ItemsSource="{Binding FilterChoices}" SelectedItem="{Binding Filter}"
+                                  Style="{StaticResource SabComboBoxStyle}" Margin="0,0,0,12" />
+                        <Button Content="{Binding UsedMaterialsButtonText}" Click="ToggleUsedMaterialsClick"
+                                Style="{StaticResource SabNeutralButtonStyle}" />
+                        <TextBlock Text="По умолчанию показаны материалы слоёв размещённых стен, перекрытий, потолков и кровель."
+                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                   TextWrapping="Wrap" Margin="0,10,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource SabPanelBorderStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Для выделенных" Style="{StaticResource SabPanelHeaderTextStyle}" Margin="0,0,0,14" />
+                        <TextBlock Text="Единица подсчёта" Style="{StaticResource SabFieldLabelTextStyle}" />
+                        <ComboBox ItemsSource="{Binding BulkChoices}" SelectedItem="{Binding BulkRule}"
+                                  Style="{StaticResource SabComboBoxStyle}" Margin="0,0,0,12" />
+                        <Button Content="Назначить выделенным" Click="ApplyBulkClick"
+                                Style="{StaticResource SabNeutralButtonStyle}" />
+                        <TextBlock Text="{Binding Message}" Style="{StaticResource SabFieldHintTextStyle}"
+                                   Margin="0,12,0,0" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <Border Grid.Column="2" Style="{StaticResource SabDataGridContainerBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="14,12,14,10">
+                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                            <TextBlock Text="≡" Style="{StaticResource SabPanelIconTextStyle}" />
+                        </Border>
+                        <TextBlock Text="Материалы проекта" Style="{StaticResource SabPanelHeaderTextStyle}" />
+                    </StackPanel>
+
+                    <DataGrid x:Name="MaterialsGrid" Grid.Row="1"
+                              ItemsSource="{Binding VisibleRows}"
+                              Style="{StaticResource SabDataGridStyle}"
+                              BorderThickness="0" SelectionMode="Extended" SelectionUnit="FullRow"
+                              CanUserResizeColumns="False" CanUserSortColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Материал" Binding="{Binding Name}"
+                                                Width="*" MinWidth="180" IsReadOnly="True"
+                                                ElementStyle="{StaticResource SabDataGridTextBlockStyle}" />
+                            <DataGridTextColumn Header="Сейчас" Binding="{Binding CurrentRule}"
+                                                Width="120" IsReadOnly="True"
+                                                ElementStyle="{StaticResource SabDataGridTextBlockStyle}" />
+                            <DataGridTemplateColumn Header="Новое правило" Width="140">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.UnitChoices, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                  SelectedItem="{Binding Rule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Style="{StaticResource SabDataGridComboBoxStyle}"
+                                                  Margin="8,4" ToolTip="{Binding Rule}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Итог" Binding="{Binding Result}"
+                                                Width="90" IsReadOnly="True"
+                                                ElementStyle="{StaticResource SabDataGridTextBlockStyle}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}" BorderThickness="0,1,0,0">
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel x:Name="ProgressPanel" Grid.Row="0" Grid.ColumnSpan="2"
+                            Visibility="Collapsed" Margin="0,0,0,10">
+                    <TextBlock x:Name="ProgressStatusText"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource SabBrush.Text}"
+                               TextWrapping="Wrap" Margin="0,0,0,3" />
+                    <TextBlock x:Name="ProgressDetailsText"
+                               Style="{StaticResource SabFieldHintTextStyle}"
+                               TextWrapping="Wrap" Margin="0,0,0,6" />
+                    <ProgressBar x:Name="UpdateProgressBar" Minimum="0" Maximum="100"
+                                 Height="6" Value="0" Margin="0,0,0,5" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="ProgressItemsText" Grid.Column="0"
+                                   Style="{StaticResource SabFieldHintTextStyle}" />
+                        <TextBlock x:Name="ProgressCountersText" Grid.Column="1"
+                                   Style="{StaticResource SabFieldHintTextStyle}"
+                                   Margin="12,0,0,0" />
+                    </Grid>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Status}"
+                           Style="{StaticResource SabFieldHintTextStyle}" VerticalAlignment="Center" />
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="CancelButton" Content="Отмена" Click="CancelClick"
+                            Style="{StaticResource SabNeutralButtonStyle}" Width="110" Margin="0,0,8,0" />
+                    <Button x:Name="SaveRulesButton" Content="Сохранить правила" Click="SaveRulesClick"
+                            Style="{StaticResource SabNeutralButtonStyle}" Width="150" Margin="0,0,8,0" />
+                    <Button x:Name="UpdateButton" Content="Пересчитать материалы" Click="UpdateClick"
+                            Style="{StaticResource SabPrimaryButtonStyle}" Width="180" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

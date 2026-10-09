@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.UI;
+using Autodesk.Revit.UI;
 using SAB.GklFrame;
 using SAB.Helpers;
 using SAB.SyncReminder;
@@ -11,8 +11,9 @@ namespace SAB
         private const string RibbonTabName = "SAB";
         private const string RibbonPanelName = "Библиотека";
         private const string SettingsPanelName = "Настройки";
-        private const string AlbumPanelName = "Альбом";
-        private const string GraphicsPanelName = "Графика";
+        private const string AlbumPanelName = "Альбом и графика";
+        private const string MaterialsPanelName = "Материалы и ведомости";
+        private const string ParametersPanelName = "Параметры";
         private const string InteriorElevationsPanelName = "Развертки";
         private const string DoorWindowExplanationsPanelName = "Экспликации";
         private const string FramePanelName = FrameModuleConstants.RibbonPanelName;
@@ -24,6 +25,7 @@ namespace SAB
 
         public Result OnStartup(UIControlledApplication application)
         {
+            SAB.UI.SabWindowBehaviorService.Initialize();
             // Блок создания вкладки SAB
             try
             {
@@ -36,12 +38,13 @@ namespace SAB
 
             // Порядок создания панелей определяет их порядок на вкладке Revit.
             RibbonPanel settingsPanel = application.CreateRibbonPanel(RibbonTabName, SettingsPanelName);
+            RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
             RibbonPanel albumPanel = application.CreateRibbonPanel(RibbonTabName, AlbumPanelName);
-            RibbonPanel graphicsPanel = application.CreateRibbonPanel(RibbonTabName, GraphicsPanelName);
+            RibbonPanel materialsPanel = application.CreateRibbonPanel(RibbonTabName, MaterialsPanelName);
+            RibbonPanel parametersPanel = application.CreateRibbonPanel(RibbonTabName, ParametersPanelName);
             RibbonPanel interiorElevationsPanel = application.CreateRibbonPanel(RibbonTabName, InteriorElevationsPanelName);
             RibbonPanel doorWindowExplanationsPanel = application.CreateRibbonPanel(RibbonTabName, DoorWindowExplanationsPanelName);
             RibbonPanel framePanel = application.CreateRibbonPanel(RibbonTabName, FramePanelName);
-            RibbonPanel libraryPanel = application.CreateRibbonPanel(RibbonTabName, RibbonPanelName);
 
             // Настройки.
             Ribbon.AddPushButtonSingle(
@@ -66,7 +69,7 @@ namespace SAB
             // Создание и удаление видов и листов.
             var albumButton = (SplitButton)albumPanel.AddItem(
                 new SplitButtonData("SAB_ViewsAndSheets", "Альбом"));
-            albumButton.IsSynchronizedWithCurrentItem = false;
+            albumButton.IsSynchronizedWithCurrentItem = true;
             Ribbon.AddPushButtonToSplit(
                 albumButton,
                 "SAB_CreateViewsAndSheets",
@@ -85,48 +88,59 @@ namespace SAB
 
             // Графика.
             Ribbon.AddPushButtonSingle(
-                graphicsPanel,
+                albumPanel,
                 "SAB_EditViewTemplateGraphics",
                 "Редактор\nшаблонов",
                 "SAB.ViewTemplateGraphics.Commands.EditViewTemplateGraphicsCommand",
                 "SAB.Resources.EditViewTemplateGraphics_32.png",
                 "SAB.Resources.EditViewTemplateGraphics_16.png");
 
-            // Развертки.
-            var interiorElevationsButton = (SplitButton)interiorElevationsPanel.AddItem(
-                new SplitButtonData("SAB_InteriorElevations", "Развертки"));
-            interiorElevationsButton.IsSynchronizedWithCurrentItem = false;
-            Ribbon.AddPushButtonToSplit(
-                interiorElevationsButton,
+            // Материалы и ведомости.
+            materialsPanel.AddItem(new PushButtonData(
+                "SAB_MaterialQuantity_EditRules", "Пересчет\nматериалов",
+                typeof(MainPanel).Assembly.Location, "SAB.MaterialQuantity.EditMaterialRulesCommand")
+            {
+                ToolTip = "Пересчет материалов",
+                LargeImage = Ribbon.GetMaterialQuantityImage(32),
+                Image = Ribbon.GetMaterialQuantityImage(16)
+            });
+
+            // Области заливки: настройки и выполнение в одном окне.
+            Ribbon.AddPushButtonSingle(
+                albumPanel,
+                "SAB_FilledRegionFromMaterial_Settings",
+                "Области заливки\nиз материала",
+                "SAB.FilledRegionFromMaterial.SettingsCommand",
+                "SAB.Resources.FilledRegionCreate_32.png",
+                "SAB.Resources.FilledRegionCreate_16.png");
+
+            // Развертки: основная команда, три инструмента и две команды оформления.
+            Ribbon.AddPushButtonSingle(
+                interiorElevationsPanel,
                 "SAB_CreateInteriorElevations",
                 "Создать развертки\nпо линии",
                 "SAB.InteriorElevations.Commands.CreateInteriorElevationsCommand",
                 "SAB.Resources.CreateInteriorElevationsCommand_32.png",
                 "SAB.Resources.CreateInteriorElevationsCommand_16.png");
 
-            Ribbon.AddPushButtonToSplit(
-                interiorElevationsButton,
-                "SAB_FlipElevation180ByLine",
-                "Разворот\nразвертки 180",
-                "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",
-                "SAB.Resources.FlipElevation180ByLineCommand_32.png",
-                "SAB.Resources.FlipElevation180ByLineCommand_16.png");
+            interiorElevationsPanel.AddStackedItems(
+                Ribbon.CreatePushButtonData("SAB_FlipElevation180ByLine", "Повернуть на 180°",
+                    "SAB.InteriorElevations.Commands.FlipElevation180ByLineCommand",
+                    "SAB.Resources.FlipElevation180ByLineCommand_32.png", "SAB.Resources.FlipElevation180ByLineCommand_16.png"),
+                Ribbon.CreatePushButtonData("SAB_AdjustElevationCrop", "Границы видов",
+                    "SAB.InteriorElevations.Commands.AdjustElevationCropCommand",
+                    "SAB.Resources.CreateInteriorElevationsCommand_32.png", "SAB.Resources.CreateInteriorElevationsCommand_16.png"),
+                Ribbon.CreatePushButtonData("SAB_MoveInteriorElevationViewports", "На следующий лист",
+                    "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
+                    "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png", "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png"));
 
-            Ribbon.AddPushButtonToSplit(
-                interiorElevationsButton,
-                "SAB_MoveInteriorElevationViewports",
-                "Перенос видов\nна след. лист",
-                "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
-                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png",
-                "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png");
-
-            Ribbon.AddPushButtonToSplit(
-                interiorElevationsButton,
-                "SAB_AlignPlanCornerMarks",
-                "Выровнять марки\nуглов",
-                "SAB.InteriorElevations.Commands.AlignPlanCornerMarksCommand",
-                "SAB.Resources.AlignPlanCornerMarksCommand_32.png",
-                "SAB.Resources.AlignPlanCornerMarksCommand_16.png");
+            interiorElevationsPanel.AddStackedItems(
+                Ribbon.CreatePushButtonData("SAB_DecorateInteriorElevations", "Оформить развертки",
+                    "SAB.InteriorElevations.Commands.DecorateInteriorElevationsCommand",
+                    "SAB.Resources.CreateInteriorElevationsCommand_32.png", "SAB.Resources.CreateInteriorElevationsCommand_16.png", 24),
+                Ribbon.CreatePushButtonData("SAB_ConfigureElevationDecorationCatalog", "Настройки оформления",
+                    "SAB.InteriorElevations.Commands.ConfigureElevationDecorationCatalogCommand",
+                    "SAB.Resources.CreateInteriorElevationsCommand_32.png", "SAB.Resources.CreateInteriorElevationsCommand_16.png", 24));
 
 
             // Блок создания ортогональных видов для экспликаций дверей и окон.
@@ -141,7 +155,7 @@ namespace SAB
             // Каркас.
             var frameButton = (SplitButton)framePanel.AddItem(
                 new SplitButtonData("SAB_GklFrame", FramePanelName));
-            frameButton.IsSynchronizedWithCurrentItem = false;
+            frameButton.IsSynchronizedWithCurrentItem = true;
             Ribbon.AddPushButtonToSplit(
                 frameButton,
                 "SAB_GenerateGklFrame",
@@ -158,6 +172,16 @@ namespace SAB
                 "SAB.Resources.SyncReminderSettings_32.png",
                 "SAB.Resources.SyncReminderSettings_16.png",
                 useGrayIcons: true);
+
+            try
+            {
+                ParameterTools.ParameterToolsModule.Start(application, parametersPanel);
+            }
+            catch (Exception exception)
+            {
+                ParameterTools.ParameterToolsModule.Stop(application);
+                TaskDialog.Show("SAB — Параметры", "Не удалось запустить модуль параметров:\n" + exception.Message);
+            }
 
             StartSyncReminder(application);
             try
@@ -177,6 +201,7 @@ namespace SAB
 
         public Result OnShutdown(UIControlledApplication application)
         {
+            ParameterTools.ParameterToolsModule.Stop(application);
             _notificationController?.Stop(application);
             _notificationController = null;
             StopSyncReminder();

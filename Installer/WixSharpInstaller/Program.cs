@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Linq;
 using WixSharp;
 using IOFile = System.IO.File;
 using WxsFile = WixSharp.File;
@@ -25,6 +27,9 @@ namespace WixSharpInstaller
         private const string SyncReminderFolderName = "SyncReminderTest";
         private const string SyncReminderAssemblyFileName = "SyncReminderTest.dll";
         private const string SyncReminderAddinFileName = "SyncReminderTest.addin";
+        private const string MaterialQuantityAddinFileName = "SAB.MaterialQuantity.addin";
+        private const string FilledRegionAddinFileName = "FilledRegionFromMaterial.addin";
+        private const string ParameterToolsAddinFileName = "SAB.ParameterTools.addin";
 
         private static int Main(string[] args)
         {
@@ -210,6 +215,7 @@ namespace WixSharpInstaller
                 AllowSameVersionUpgrades = true,
                 DowngradeErrorMessage = "A newer version of SAB is already installed."
             };
+            project.WixSourceGenerated += AddLegacyManifestMigration;
 
             // Block to keep installer build deterministic for same source structure.
             project.ResolveWildCards();
@@ -222,6 +228,119 @@ namespace WixSharpInstaller
             {
                 throw new InvalidOperationException("MSI was not generated: " + expectedMsiPath);
             }
+        }
+
+        private static void AddLegacyManifestMigration(XDocument document)
+        {
+            XElement mainAddinFile = document
+                .Descendants()
+                .FirstOrDefault(element =>
+                {
+                    if (element.Name.LocalName != "File")
+                    {
+                        return false;
+                    }
+
+                    string sourceName = Path.GetFileName((string)element.Attribute("Source"));
+                    return sourceName.StartsWith("SAB_", StringComparison.OrdinalIgnoreCase) &&
+                           sourceName.EndsWith(".addin", StringComparison.OrdinalIgnoreCase);
+                });
+
+            XElement component = mainAddinFile == null
+                ? null
+                : mainAddinFile.Ancestors().FirstOrDefault(element => element.Name.LocalName == "Component");
+            if (component == null)
+            {
+                throw new InvalidOperationException(
+                    "Could not locate the main SAB manifest component for legacy add-in cleanup.");
+            }
+
+            AddRemoveFileBeforeInstall(component, MaterialQuantityAddinFileName);
+            AddRemoveFileBeforeInstall(component, FilledRegionAddinFileName);
+            AddRemoveFileBeforeInstall(component, ParameterToolsAddinFileName);
+
+            string year = Path.GetFileNameWithoutExtension(
+                Path.GetFileName((string)mainAddinFile.Attribute("Source")))
+                .Substring("SAB_".Length);
+            AddLegacyPluginFolderCleanup(
+                document,
+                year,
+                "SAB.MaterialQuantity",
+                "MaterialQuantity");
+            AddLegacyPluginFolderCleanup(
+                document,
+                year,
+                "FilledRegionFromMaterial",
+                "FilledRegionFromMaterial");
+        }
+
+        private static void AddRemoveFileBeforeInstall(XElement component, string fileName)
+        {
+            XNamespace wixNamespace = component.Name.Namespace;
+            component.Add(new XElement(
+                wixNamespace + "RemoveFile",
+                new XAttribute("Id", CreateWixIdentifier("RemoveLegacyManifest", fileName)),
+                new XAttribute("Name", fileName),
+                new XAttribute("On", "install")));
+        }
+
+        private static void AddLegacyPluginFolderCleanup(
+            XDocument document,
+            string year,
+            string folderName,
+            string identity)
+        {
+            XElement installDirectory = document
+                .Descendants()
+                .FirstOrDefault(element =>
+                    element.Name.LocalName == "Directory" &&
+                    string.Equals((string)element.Attribute("Id"), "INSTALLDIR", StringComparison.Ordinal));
+            XElement feature = document
+                .Descendants()
+                .FirstOrDefault(element => element.Name.LocalName == "Feature");
+            if (installDirectory == null || feature == null)
+            {
+                throw new InvalidOperationException(
+                    "Could not locate the installer directory or feature for legacy folder cleanup.");
+            }
+
+            XNamespace wixNamespace = installDirectory.Name.Namespace;
+            string directoryId = CreateWixIdentifier("LegacyDir", year + "_" + identity);
+            string componentId = CreateWixIdentifier("CleanupLegacy", year + "_" + identity);
+
+            XElement cleanupComponent = new XElement(
+                wixNamespace + "Component",
+                new XAttribute("Id", componentId),
+                new XAttribute("Guid", "*"),
+                new XAttribute("Bitness", "always64"),
+                new XElement(
+                    wixNamespace + "RemoveFile",
+                    new XAttribute("Id", CreateWixIdentifier("RemoveLegacyFiles", year + "_" + identity)),
+                    new XAttribute("Name", "*"),
+                    new XAttribute("On", "install")),
+                new XElement(
+                    wixNamespace + "RemoveFolder",
+                    new XAttribute("Id", CreateWixIdentifier("RemoveLegacyFolder", year + "_" + identity)),
+                    new XAttribute("On", "install")),
+                new XElement(
+                    wixNamespace + "RegistryKey",
+                    new XAttribute("Root", "HKCU"),
+                    new XAttribute("Key", @"Software\SAB\InstallerCleanup"),
+                    new XElement(
+                        wixNamespace + "RegistryValue",
+                        new XAttribute("Name", componentId),
+                        new XAttribute("Value", "1"),
+                        new XAttribute("Type", "integer"),
+                        new XAttribute("KeyPath", "yes"))));
+
+            installDirectory.Add(new XElement(
+                wixNamespace + "Directory",
+                new XAttribute("Id", directoryId),
+                new XAttribute("Name", folderName),
+                cleanupComponent));
+            feature.Add(new XElement(
+                wixNamespace + "ComponentRef",
+                new XAttribute("Id", componentId)));
         }
 
         // Блок выбора фактической папки Docs\PluginInstructions.

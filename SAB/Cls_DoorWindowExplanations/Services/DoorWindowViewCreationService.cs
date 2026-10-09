@@ -70,30 +70,43 @@ namespace SAB.DoorWindowExplanations.Services
             DoorWindowViewCreationResult result = new DoorWindowViewCreationResult();
             result.ModelAlignmentPoint = bounds.Origin +
                                          XYZ.BasisZ * ((bounds.MinHeight + bounds.MaxHeight) / 2.0);
-            result.TopView = ViewSection.CreateSection(document, sectionTypeId, topBox);
-            result.TopView.Name = viewNames[0];
-            ApplyViewSettings(
-                document,
-                result.TopView,
-                settings.TopViewScale,
-                FindTemplateId(templates, settings.TopViewTemplateName));
+            bool createAll = settings.WorkflowMode == DoorWindowWorkflowMode.FullExplication;
+            if (createAll || settings.SingleViewKind == DoorWindowSingleViewKind.Top)
+            {
+                result.TopView = ViewSection.CreateSection(document, sectionTypeId, topBox);
+                result.TopView.Name = viewNames[0];
+                ApplyViewSettings(
+                    document,
+                    result.TopView,
+                    settings.TopViewScale,
+                    FindTemplateId(templates, settings.TopViewTemplateName),
+                    settings.IsolateSelectedElement);
+            }
 
-            result.FrontView = ViewSection.CreateSection(document, sectionTypeId, frontBox);
-            result.FrontView.Name = viewNames[1];
-            ApplyViewSettings(
-                document,
-                result.FrontView,
-                settings.FrontViewScale,
-                FindTemplateId(templates, settings.FrontViewTemplateName));
-            DisableAnnotationCrop(result.FrontView);
+            if (createAll || settings.SingleViewKind == DoorWindowSingleViewKind.Front)
+            {
+                result.FrontView = ViewSection.CreateSection(document, sectionTypeId, frontBox);
+                result.FrontView.Name = viewNames[1];
+                ApplyViewSettings(
+                    document,
+                    result.FrontView,
+                    settings.FrontViewScale,
+                    FindTemplateId(templates, settings.FrontViewTemplateName),
+                    settings.IsolateSelectedElement);
+                DisableAnnotationCrop(result.FrontView);
+            }
 
-            result.SectionView = ViewSection.CreateSection(document, sectionTypeId, sectionBox);
-            result.SectionView.Name = viewNames[2];
-            ApplyViewSettings(
-                document,
-                result.SectionView,
-                settings.SectionViewScale,
-                FindTemplateId(templates, settings.SectionViewTemplateName));
+            if (createAll || settings.SingleViewKind == DoorWindowSingleViewKind.Section)
+            {
+                result.SectionView = ViewSection.CreateSection(document, sectionTypeId, sectionBox);
+                result.SectionView.Name = viewNames[2];
+                ApplyViewSettings(
+                    document,
+                    result.SectionView,
+                    settings.SectionViewScale,
+                    FindTemplateId(templates, settings.SectionViewTemplateName),
+                    settings.IsolateSelectedElement);
+            }
 
             return result;
         }
@@ -215,7 +228,12 @@ namespace SAB.DoorWindowExplanations.Services
             return box;
         }
 
-        private void ApplyViewSettings(Document document, ViewSection view, int scale, ElementId templateId)
+        private void ApplyViewSettings(
+            Document document,
+            ViewSection view,
+            int scale,
+            ElementId templateId,
+            bool isolateSelectedElement)
         {
             view.Scale = scale;
             view.CropBoxActive = true;
@@ -227,7 +245,10 @@ namespace SAB.DoorWindowExplanations.Services
                 return;
             }
 
-            ApplyDoorsAndWindowsOnlyVisibility(document, view);
+            if (isolateSelectedElement)
+            {
+                ApplyDoorsAndWindowsOnlyVisibility(document, view);
+            }
         }
 
         private void ApplyDoorsAndWindowsOnlyVisibility(Document document, View view)
@@ -242,6 +263,11 @@ namespace SAB.DoorWindowExplanations.Services
                 int categoryId = category.Id.IntegerValue;
                 bool keepVisible = categoryId == (int)BuiltInCategory.OST_Doors ||
                                    categoryId == (int)BuiltInCategory.OST_Windows ||
+                                   categoryId == (int)BuiltInCategory.OST_Walls ||
+                                   categoryId == (int)BuiltInCategory.OST_CurtainWallPanels ||
+                                   categoryId == (int)BuiltInCategory.OST_CurtainWallMullions ||
+                                   categoryId == (int)BuiltInCategory.OST_CurtainGrids ||
+                                   categoryId == (int)BuiltInCategory.OST_CurtainGridsWall ||
                                    categoryId == (int)BuiltInCategory.OST_RvtLinks;
 
                 try

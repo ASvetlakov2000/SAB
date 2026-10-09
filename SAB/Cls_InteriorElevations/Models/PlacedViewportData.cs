@@ -1,9 +1,14 @@
 using Autodesk.Revit.DB;
+using System.Collections.Generic;
 
 namespace SAB.InteriorElevations.Models
 {
     public class PlacedViewportData
     {
+        public ElementId SheetId { get; set; }
+
+        public List<ElementId> SheetAnnotationIds { get; private set; } = new List<ElementId>();
+
         public ElementId ViewportId { get; set; }
 
         public ElementId ViewId { get; set; }

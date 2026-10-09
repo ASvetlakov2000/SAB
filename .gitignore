@@ -366,3 +366,6 @@ FodyWeavers.xsd
 Installer/.tools/
 Installer/.wxs/
 Installer/output/
+
+# Local build verification, extracted installers, and recovery snapshots
+/outputs/

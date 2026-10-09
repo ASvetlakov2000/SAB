@@ -15,6 +15,12 @@ namespace SAB.Services.PluginResources
         private const string FamiliesManifestFileName = "families.manifest.tsv";
         private const string FamilyCacheRootFolderName = "SAB";
         private const string FamilyCacheFolderName = "FamilyCache";
+        private static readonly HashSet<string> ManagedFamiliesToReload =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "SAB_Марка угла_План",
+                "SAB_Марка угла_Развертки"
+            };
 
         public IList<string> GetCommandFamilyFilePaths(Type commandType)
         {
@@ -248,7 +254,8 @@ namespace SAB.Services.PluginResources
                 FileInfo targetInfo = new FileInfo(targetFilePath);
 
                 if (sourceInfo.Length != targetInfo.Length ||
-                    sourceInfo.LastWriteTimeUtc > targetInfo.LastWriteTimeUtc)
+                    sourceInfo.LastWriteTimeUtc > targetInfo.LastWriteTimeUtc ||
+                    !FilesHaveSameContent(sourceFilePath, targetFilePath))
                 {
                     shouldCopy = true;
                 }
@@ -261,6 +268,32 @@ namespace SAB.Services.PluginResources
 
             File.Copy(sourceFilePath, targetFilePath, true);
             File.SetLastWriteTimeUtc(targetFilePath, File.GetLastWriteTimeUtc(sourceFilePath));
+        }
+
+        private bool FilesHaveSameContent(string firstFilePath, string secondFilePath)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            using (FileStream firstStream = File.OpenRead(firstFilePath))
+            using (FileStream secondStream = File.OpenRead(secondFilePath))
+            {
+                byte[] firstHash = sha256.ComputeHash(firstStream);
+                byte[] secondHash = sha256.ComputeHash(secondStream);
+
+                if (firstHash.Length != secondHash.Length)
+                {
+                    return false;
+                }
+
+                for (int index = 0; index < firstHash.Length; index++)
+                {
+                    if (firstHash[index] != secondHash[index])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
 
         private void TryLoadFamilyIfNeeded(
@@ -281,19 +314,33 @@ namespace SAB.Services.PluginResources
             string familyName = Path.GetFileNameWithoutExtension(familyFilePath);
             AddDebug(debugMessages, "Ожидаемое имя семейства: " + familyName);
 
-            if (FamilyExists(document, familyName))
+            bool familyAlreadyExists = FamilyExists(document, familyName);
+            bool isRevit2022 = document.Application != null &&
+                string.Equals(document.Application.VersionNumber, "2022", StringComparison.OrdinalIgnoreCase);
+            bool reloadManagedFamily = isRevit2022 && ManagedFamiliesToReload.Contains(familyName);
+            if (familyAlreadyExists && !reloadManagedFamily)
             {
                 AddDebug(debugMessages, "Семейство уже есть в документе.");
                 return;
             }
 
             Family loadedFamily;
-            bool loaded = document.LoadFamily(familyFilePath, out loadedFamily);
+            bool loaded = familyAlreadyExists
+                ? document.LoadFamily(familyFilePath, new ManagedFamilyLoadOptions(), out loadedFamily)
+                : document.LoadFamily(familyFilePath, out loadedFamily);
             AddDebug(debugMessages, "LoadFamily: " + loaded);
             AddDebug(debugMessages, "Загруженное семейство: " + (loadedFamily != null ? loadedFamily.Name : "<null>"));
 
             if (!loaded || loadedFamily == null)
             {
+                if (familyAlreadyExists && FamilyExists(document, familyName))
+                {
+                    AddDebug(
+                        debugMessages,
+                        "Семейство уже загружено; Revit не потребовалось обновлять его повторно.");
+                    return;
+                }
+
                 AddWarning(warnings, "Семейство не было загружено: " + familyName);
             }
         }
@@ -321,6 +368,26 @@ namespace SAB.Services.PluginResources
             }
 
             return false;
+        }
+
+        private class ManagedFamilyLoadOptions : IFamilyLoadOptions
+        {
+            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
+            {
+                overwriteParameterValues = true;
+                return true;
+            }
+
+            public bool OnSharedFamilyFound(
+                Family sharedFamily,
+                bool familyInUse,
+                out FamilySource source,
+                out bool overwriteParameterValues)
+            {
+                source = FamilySource.Family;
+                overwriteParameterValues = true;
+                return true;
+            }
         }
 
         private string GetFamiliesRootFolderPath()

@@ -1,0 +1,161 @@
+// Read-only Revit MCP code. The client calls it with transactionMode="none".
+Func<Element, List<Dictionary<string, string>>> readParameters = element =>
+{
+    var values = new List<Dictionary<string, string>>();
+    foreach (Parameter parameter in element.Parameters)
+    {
+        if (parameter == null || parameter.Definition == null) continue;
+        string raw = null;
+        try
+        {
+            switch (parameter.StorageType)
+            {
+                case StorageType.String:
+                    raw = parameter.AsString();
+                    break;
+                case StorageType.Integer:
+                    raw = parameter.AsInteger().ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case StorageType.Double:
+                    raw = parameter.AsDouble().ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case StorageType.ElementId:
+                    ElementId id = parameter.AsElementId();
+                    raw = id == null ? null : id.IntegerValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+            }
+            string display = parameter.AsValueString();
+            if (string.IsNullOrWhiteSpace(raw) && string.IsNullOrWhiteSpace(display)) continue;
+            values.Add(new Dictionary<string, string>
+            {
+                { "name", parameter.Definition.Name },
+                { "raw", raw ?? "" },
+                { "display", display ?? "" },
+                { "storage", parameter.StorageType.ToString() },
+                { "guid", parameter.IsShared ? parameter.GUID.ToString() : "" }
+            });
+        }
+        catch { /* Ignore a parameter that Revit cannot read in this context. */ }
+    }
+    return values;
+};
+
+var categories = new List<BuiltInCategory>
+{
+    BuiltInCategory.OST_Walls,
+    BuiltInCategory.OST_Floors,
+    BuiltInCategory.OST_Ceilings,
+    BuiltInCategory.OST_Roofs
+};
+var hosts = new FilteredElementCollector(document)
+    .WherePasses(new ElementMulticategoryFilter(categories))
+    .WhereElementIsNotElementType()
+    .ToElements();
+var types = new List<Dictionary<string, object>>();
+var uses = new List<Dictionary<string, object>>();
+var extraUses = new Dictionary<string, Dictionary<string, object>>();
+var materialIds = new HashSet<int>();
+var layerMaterialsByType = new Dictionary<int, HashSet<int>>();
+
+foreach (var group in hosts.GroupBy(host => host.GetTypeId().IntegerValue))
+{
+    Element sample = group.First();
+    var hostType = document.GetElement(sample.GetTypeId()) as HostObjAttributes;
+    if (hostType == null) continue;
+    CompoundStructure compound = hostType.GetCompoundStructure();
+    var typeRow = new Dictionary<string, object>
+    {
+        { "category", sample.Category == null ? "" : sample.Category.Name },
+        { "typeId", hostType.Id.IntegerValue },
+        { "typeName", hostType.Name },
+        { "instanceCount", group.Count() },
+        { "hasCompound", compound != null },
+        { "parameters", readParameters(hostType) }
+    };
+    types.Add(typeRow);
+    if (compound == null) continue;
+    layerMaterialsByType[hostType.Id.IntegerValue] = new HashSet<int>();
+    IList<CompoundStructureLayer> layers = compound.GetLayers();
+    for (int index = 0; index < layers.Count; index++)
+    {
+        CompoundStructureLayer layer = layers[index];
+        Material material = document.GetElement(layer.MaterialId) as Material;
+        if (material == null) continue;
+        materialIds.Add(material.Id.IntegerValue);
+        layerMaterialsByType[hostType.Id.IntegerValue].Add(material.Id.IntegerValue);
+        uses.Add(new Dictionary<string, object>
+        {
+            { "category", typeRow["category"] },
+            { "typeId", hostType.Id.IntegerValue },
+            { "typeName", hostType.Name },
+            { "instanceCount", group.Count() },
+            { "layerIndex", index + 1 },
+            { "layerFunction", layer.Function.ToString() },
+            { "thicknessMm", UnitUtils.ConvertFromInternalUnits(layer.Width, UnitTypeId.Millimeters) },
+            { "materialId", material.Id.IntegerValue }
+        });
+    }
+}
+
+foreach (Element host in hosts)
+{
+    int typeId = host.GetTypeId().IntegerValue;
+    HashSet<int> layerIds;
+    if (!layerMaterialsByType.TryGetValue(typeId, out layerIds)) layerIds = new HashSet<int>();
+    foreach (bool painted in new[] { false, true })
+    {
+        ICollection<ElementId> ids;
+        try { ids = host.GetMaterialIds(painted); }
+        catch { continue; }
+        foreach (ElementId id in ids)
+        {
+            if (id == null || id == ElementId.InvalidElementId || layerIds.Contains(id.IntegerValue)) continue;
+            Material material = document.GetElement(id) as Material;
+            if (material == null) continue;
+            materialIds.Add(id.IntegerValue);
+            string kind = painted ? "Окраска" : "Геометрия вне слоёв";
+            string key = typeId + "|" + id.IntegerValue + "|" + kind;
+            Dictionary<string, object> row;
+            if (!extraUses.TryGetValue(key, out row))
+            {
+                Element type = document.GetElement(host.GetTypeId());
+                row = new Dictionary<string, object>
+                {
+                    { "category", host.Category == null ? "" : host.Category.Name },
+                    { "typeId", typeId },
+                    { "typeName", type == null ? "" : type.Name },
+                    { "materialId", id.IntegerValue },
+                    { "kind", kind },
+                    { "instanceCount", 0 }
+                };
+                extraUses.Add(key, row);
+            }
+            row["instanceCount"] = (int)row["instanceCount"] + 1;
+        }
+    }
+}
+
+var materials = materialIds.OrderBy(id => id)
+    .Select(id => document.GetElement(new ElementId(id)) as Material)
+    .Where(material => material != null)
+    .Select(material => new Dictionary<string, object>
+    {
+        { "id", material.Id.IntegerValue },
+        { "uniqueId", material.UniqueId },
+        { "name", material.Name },
+        { "materialClass", material.MaterialClass ?? "" },
+        { "materialCategory", material.MaterialCategory ?? "" },
+        { "parameters", readParameters(material) }
+    }).ToList();
+
+return new Dictionary<string, object>
+{
+    { "title", document.Title },
+    { "path", document.PathName ?? "" },
+    { "categories", categories.Select(item => item.ToString()).ToArray() },
+    { "hostCount", hosts.Count },
+    { "types", types },
+    { "uses", uses },
+    { "extraUses", extraUses.Values.ToList() },
+    { "materials", materials }
+};

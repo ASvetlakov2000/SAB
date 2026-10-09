@@ -10,6 +10,45 @@ namespace SAB.Helpers
     ///</summary>
     internal static class Ribbon
     {
+        internal static PushButtonData CreatePushButtonData(string name, string text, string commandClass,
+            string iconLPath, string iconSPath, int iconSize = 16)
+        {
+            ImageSource image = GetEmbeddedImage(iconSize > 16 ? iconLPath : iconSPath);
+            if (image != null && iconSize != 16)
+            {
+                var drawing = new DrawingImage(new ImageDrawing(image, new System.Windows.Rect(0, 0, iconSize, iconSize)));
+                drawing.Freeze(); image = drawing;
+            }
+            return new PushButtonData(name, text, Assembly.GetExecutingAssembly().Location, commandClass)
+            {
+                ToolTip = text,
+                LargeImage = GetEmbeddedImage(iconLPath),
+                Image = image
+            };
+        }
+
+        internal static ImageSource GetMaterialQuantityImage(int size)
+        {
+            var drawing = new DrawingGroup();
+            using (var context = drawing.Open())
+            {
+                context.DrawRectangle(Brushes.Transparent, null, new System.Windows.Rect(0, 0, 32, 32));
+                // Keep the badge area transparent so the ribbon background shows through.
+                context.PushClip(new CombinedGeometry(GeometryCombineMode.Exclude,
+                    new RectangleGeometry(new System.Windows.Rect(0, 0, 32, 32)),
+                    new RectangleGeometry(new System.Windows.Rect(18, 18, 14, 14))));
+                context.DrawImage(GetEmbeddedImage("SAB.Resources.MaterialDataSheet_" + size + ".png"),
+                    new System.Windows.Rect(0, 0, 32, 32));
+                context.Pop();
+                context.DrawImage(GetEmbeddedImage("SAB.Resources.MaterialLayers_32.png"),
+                    new System.Windows.Rect(17, 17, 15, 15));
+            }
+            drawing.Transform = new ScaleTransform(size / 32.0, size / 32.0);
+            var image = new DrawingImage(drawing);
+            image.Freeze();
+            return image;
+        }
+
         ///<summary>
         /// Метод для добавления простой кнопки в панель. Одна самостоятельная кнопка
         /// Кнопка в составе выпадающего списка

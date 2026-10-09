@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SAB Создание видов и листов"
         Height="760"
@@ -61,7 +61,7 @@
                 </Grid>
             </Button>
 
-            <ScrollViewer x:Name="SettingsDrawerPanel"
+            <ScrollViewer Style="{StaticResource SabFormScrollViewerStyle}" x:Name="SettingsDrawerPanel"
                           Grid.Column="1"
                           Width="0"
                           Margin="0,0,20,0"
@@ -974,7 +974,7 @@
                                            TextAlignment="Center" />
                             </Border>
 
-                            <ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer Style="{StaticResource SabFormScrollViewerStyle}" Grid.Column="3" VerticalScrollBarVisibility="Auto">
                                 <TextBlock Text="{Binding ValidationSummary}"
                                            Foreground="{Binding ValidationSummaryForeground}"
                                            FontSize="13"

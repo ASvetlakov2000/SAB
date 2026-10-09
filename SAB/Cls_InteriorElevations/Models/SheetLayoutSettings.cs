@@ -5,11 +5,14 @@
         BottomLeft = 0,
         BottomCenter = 1,
         BottomRight = 2,
-        TopCenter = 3
+        TopCenter = 3,
+        TopLeft = 4
     }
 
     public class SheetLayoutSettings
     {
+        public bool UseAutomaticPlacement { get; set; } = true;
+
         public int ColumnsCount { get; set; }
 
         public double StartXmm { get; set; }
@@ -19,6 +22,10 @@
         public double StepXmm { get; set; }
 
         public double StepYmm { get; set; }
+
+        public bool UseManualRoomPlanPosition { get; set; }
+        public double RoomPlanOffsetRightMm { get; set; }
+        public double RoomPlanOffsetBottomMm { get; set; }
 
         public ViewTitleAnchor ViewTitleAnchor { get; set; }
 

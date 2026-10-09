@@ -1,5 +1,9 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Fonts.xaml" />
+    </ResourceDictionary.MergedDictionaries>
     <SolidColorBrush x:Key="SabBrush.WindowBackground" Color="#F7F8FA" />
     <SolidColorBrush x:Key="SabBrush.PanelBackground" Color="#FFFFFF" />
     <SolidColorBrush x:Key="SabBrush.TableHeaderBackground" Color="#F5F7FA" />
@@ -222,6 +226,10 @@
     </Style>
 
     <Style x:Key="SabTextBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="CaretBrush" Value="{StaticResource SabBrush.Accent}" />
+        <Setter Property="SelectionBrush" Value="{StaticResource SabBrush.Accent}" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="8,0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -246,6 +254,9 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Error}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
@@ -281,28 +292,25 @@
                         BorderBrush="{StaticResource SabBrush.BorderWeak}"
                         BorderThickness="1,0,0,0"
                         CornerRadius="0,5,5,0">
-                    <Path x:Name="Arrow"
-                          Width="8"
-                          Height="5"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center"
-                          Fill="{StaticResource SabBrush.TextSecondary}"
-                          Data="M 0 0 L 4 5 L 8 0 Z" />
+                    <ui:SymbolIcon x:Name="Arrow" Symbol="ChevronDown12" FontSize="12"
+                                   Width="12" Height="12" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource SabBrush.TextSecondary}" />
                 </Border>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
-                <Setter TargetName="Arrow" Property="Fill" Value="{StaticResource SabBrush.Accent}" />
+                <Setter TargetName="Arrow" Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
-                <Setter TargetName="Arrow" Property="Fill" Value="{StaticResource SabBrush.Accent}" />
+                <Setter TargetName="Arrow" Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter TargetName="Root" Property="Background" Value="{StaticResource SabBrush.DisabledBackground}" />
-                <Setter TargetName="Arrow" Property="Fill" Value="{StaticResource SabBrush.DisabledText}" />
+                <Setter TargetName="Arrow" Property="Foreground" Value="{StaticResource SabBrush.DisabledText}" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -333,6 +341,8 @@
     </Style>
 
     <Style x:Key="SabComboBoxStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -367,6 +377,10 @@
                                           IsHitTestVisible="False" />
 
                         <TextBox x:Name="PART_EditableTextBox"
+                                 Height="Auto"
+                                 Padding="0"
+                                 FocusVisualStyle="{x:Null}"
+                                 Validation.ErrorTemplate="{x:Null}"
                                  Margin="9,0,34,0"
                                  VerticalAlignment="Center"
                                  Background="Transparent"
@@ -405,6 +419,9 @@
                         </Trigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="DropDownToggle" Property="BorderBrush" Value="{StaticResource SabBrush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="Validation.HasError" Value="True">
+                            <Setter TargetName="DropDownToggle" Property="BorderBrush" Value="{StaticResource SabBrush.Error}" />
                         </Trigger>
                         <Trigger Property="HasItems" Value="False">
                             <Setter TargetName="PART_Popup" Property="MinHeight" Value="34" />
@@ -457,11 +474,6 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Setter Property="RenderTransform">
-            <Setter.Value>
-                <ScaleTransform ScaleX="1" ScaleY="1" />
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RadioButton}">
@@ -496,46 +508,6 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <EventTrigger RoutedEvent="MouseEnter">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" Duration="0:0:0.09" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" Duration="0:0:0.09" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="MouseLeave">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.11" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.11" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.985" Duration="0:0:0.07" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.985" Duration="0:0:0.07" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="PreviewMouseLeftButtonUp">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" Duration="0:0:0.09" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" Duration="0:0:0.09" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="ToggleButton.Checked">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.025" Duration="0:0:0.11" AutoReverse="True" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.025" Duration="0:0:0.11" AutoReverse="True" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
         </Style.Triggers>
     </Style>
 
@@ -568,11 +540,6 @@
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
-        <Setter Property="RenderTransform">
-            <Setter.Value>
-                <ScaleTransform ScaleX="1" ScaleY="1" />
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -638,54 +605,6 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <EventTrigger RoutedEvent="MouseEnter">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" Duration="0:0:0.09" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" Duration="0:0:0.09" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="MouseLeave">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.11" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.11" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.985" Duration="0:0:0.07" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.985" Duration="0:0:0.07" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="PreviewMouseLeftButtonUp">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.01" Duration="0:0:0.09" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.01" Duration="0:0:0.09" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="ToggleButton.Checked">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.025" Duration="0:0:0.11" AutoReverse="True" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.025" Duration="0:0:0.11" AutoReverse="True" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="ToggleButton.Unchecked">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.025" Duration="0:0:0.11" AutoReverse="True" />
-                        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.025" Duration="0:0:0.11" AutoReverse="True" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
         </Style.Triggers>
     </Style>
 
@@ -889,6 +808,34 @@
         <Setter Property="BorderBrush" Value="{StaticResource SabBrush.BorderWeak}" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridCell}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <!-- A cell owns focus only until an editor takes it. -->
+                        <Border x:Name="CellFocus" BorderBrush="{StaticResource SabBrush.Accent}"
+                                BorderThickness="1" CornerRadius="5" IsHitTestVisible="False"
+                                Visibility="Collapsed" Margin="2" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="CellFocus" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEditing" Value="True">
+                            <Setter TargetName="CellFocus" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Cursor" Value="Arrow" />
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
@@ -1127,4 +1074,175 @@
     </Style>
 
     <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource SabScrollBarStyle}" />
+
+    <!-- Shared chrome for compact SAB tool windows. -->
+    <Style x:Key="SabWindowFrameStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.WindowBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <Style x:Key="SabWindowChromeButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="42" />
+        <Setter Property="MinWidth" Value="42" />
+        <Setter Property="Height" Value="31" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.TextSecondary}" />
+        <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="ChromeButtonRoot"
+                            Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ChromeButtonRoot"
+                                    Property="Background"
+                                    Value="{StaticResource SabBrush.AccentLight}" />
+                            <Setter Property="Foreground" Value="{StaticResource SabBrush.Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ChromeButtonRoot" Property="Opacity" Value="0.72" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SabWindowCloseButtonStyle"
+           TargetType="{x:Type Button}"
+           BasedOn="{StaticResource SabWindowChromeButtonStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SabBrush.Error}" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SabLayeredTabSurfaceStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style x:Key="SabLayeredSettingsGroupStyle" TargetType="{x:Type GroupBox}">
+        <Setter Property="Background" Value="{StaticResource SabBrush.PanelBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SabBrush.BorderWeak}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type GroupBox}">
+                    <Border x:Name="Card"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8"
+                            SnapsToDevicePixels="True">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#1F2937"
+                                              BlurRadius="8"
+                                              ShadowDepth="1"
+                                              Opacity="0.06" />
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Margin="16,0,16,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="2*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0"
+                                        Height="3"
+                                        VerticalAlignment="Top"
+                                        Background="{StaticResource SabBrush.Accent}"
+                                        CornerRadius="0" />
+                            </Grid>
+
+                            <ContentPresenter Grid.Row="1"
+                                              Margin="16,14,16,0"
+                                              ContentSource="Header"
+                                              HorizontalAlignment="Stretch"
+                                              RecognizesAccessKey="True"
+                                              TextElement.Foreground="{StaticResource SabBrush.Text}"
+                                              TextElement.FontSize="16"
+                                              TextElement.FontWeight="SemiBold" />
+
+                            <ContentPresenter Grid.Row="2"
+                                              Margin="16,10,16,16"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Card" Property="Opacity" Value="0.62" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Form scrolling reserves a gutter; table/editor scrollers keep their native templates. -->
+    <Style x:Key="SabFormScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                            Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            CanContentScroll="{TemplateBinding CanContentScroll}" />
+                        <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Margin="12,0,0,0"
+                            Orientation="Vertical" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}"
+                            ViewportSize="{TemplateBinding ViewportHeight}" Value="{TemplateBinding VerticalOffset}"
+                            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                        <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Row="1" Margin="0,10,0,0"
+                            Orientation="Horizontal" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}"
+                            ViewportSize="{TemplateBinding ViewportWidth}" Value="{TemplateBinding HorizontalOffset}"
+                            Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Also cover programmatically created SAB dialogs and plain fields. -->
+    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource SabTextBoxStyle}" />
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource SabComboBoxStyle}" />
+    <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource SabDataGridStyle}" />
+    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource SabDataGridCellStyle}" />
+    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource SabOutlineButtonStyle}" />
+    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource SabCheckBoxStyle}" />
+    <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource SabRadioButtonStyle}" />
+    <Style TargetType="{x:Type Expander}" BasedOn="{StaticResource SabPanelExpanderStyle}" />
 </ResourceDictionary>

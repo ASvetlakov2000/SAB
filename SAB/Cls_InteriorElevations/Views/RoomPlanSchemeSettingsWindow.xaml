@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SAB План-схемы разверток помещений"
         Height="560"
@@ -40,7 +40,7 @@
                     <TextBlock Text="Настройки план-схемы помещения" Style="{StaticResource SabPanelHeaderTextStyle}" />
                 </StackPanel>
 
-                <ScrollViewer Grid.Row="1"
+                <ScrollViewer Style="{StaticResource SabFormScrollViewerStyle}" Grid.Row="1"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,0,14,0">

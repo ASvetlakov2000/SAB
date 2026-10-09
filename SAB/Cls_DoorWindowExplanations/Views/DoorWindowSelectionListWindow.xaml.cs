@@ -16,7 +16,8 @@ namespace SAB.DoorWindowExplanations.Views
     {
         Cancel = 0,
         AddElements = 1,
-        Continue = 2
+        AddElementsByRectangle = 2,
+        Continue = 3
     }
 
     public partial class DoorWindowSelectionListWindow : Window
@@ -25,6 +26,7 @@ namespace SAB.DoorWindowExplanations.Views
         private DataGrid _selectionDataGrid;
         private TextBlock _selectionStatusTextBlock;
         private Button _addButton;
+        private Button _addByRectangleButton;
         private Button _removeButton;
         private Button _clearButton;
         private Button _cancelButton;
@@ -70,6 +72,7 @@ namespace SAB.DoorWindowExplanations.Views
                 _selectionDataGrid = loadedWindow.FindName("SelectionDataGrid") as DataGrid;
                 _selectionStatusTextBlock = loadedWindow.FindName("SelectionStatusTextBlock") as TextBlock;
                 _addButton = loadedWindow.FindName("AddButton") as Button;
+                _addByRectangleButton = loadedWindow.FindName("AddByRectangleButton") as Button;
                 _removeButton = loadedWindow.FindName("RemoveButton") as Button;
                 _clearButton = loadedWindow.FindName("ClearButton") as Button;
                 _cancelButton = loadedWindow.FindName("CancelButton") as Button;
@@ -93,7 +96,8 @@ namespace SAB.DoorWindowExplanations.Views
         private void BindControls()
         {
             if (_selectionDataGrid == null || _selectionStatusTextBlock == null ||
-                _addButton == null || _removeButton == null || _clearButton == null ||
+                _addButton == null || _addByRectangleButton == null ||
+                _removeButton == null || _clearButton == null ||
                 _cancelButton == null || _continueButton == null)
             {
                 throw new InvalidOperationException("Не удалось привязать элементы окна списка.");
@@ -103,6 +107,7 @@ namespace SAB.DoorWindowExplanations.Views
         private void AttachHandlers()
         {
             _addButton.Click += AddButton_Click;
+            _addByRectangleButton.Click += AddByRectangleButton_Click;
             _removeButton.Click += RemoveButton_Click;
             _clearButton.Click += ClearButton_Click;
             _cancelButton.Click += CancelButton_Click;
@@ -118,6 +123,12 @@ namespace SAB.DoorWindowExplanations.Views
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             RequestedAction = DoorWindowSelectionListAction.AddElements;
+            Close();
+        }
+
+        private void AddByRectangleButton_Click(object sender, RoutedEventArgs e)
+        {
+            RequestedAction = DoorWindowSelectionListAction.AddElementsByRectangle;
             Close();
         }
 
@@ -158,7 +169,7 @@ namespace SAB.DoorWindowExplanations.Views
         {
             if (_items.Count == 0)
             {
-                _selectionStatusTextBlock.Text = "Добавьте хотя бы одну дверь или окно.";
+                _selectionStatusTextBlock.Text = "Добавьте хотя бы одну дверь, окно или витраж.";
                 return;
             }
 
@@ -189,9 +200,9 @@ namespace SAB.DoorWindowExplanations.Views
             }
 
             _selectionStatusTextBlock.Text = _items.Count == 0
-                ? "Список пуст. Нажмите «Добавить двери и окна»."
+                ? "Список пуст. Добавьте элементы кликами или выделите их рамкой."
                 : "Элементов: " + _items.Count + " · из связей: " + linkedCount +
-                  " · будет создано видов: " + (_items.Count * 3);
+                  " · количество видов задаётся на следующем шаге";
         }
     }
 }

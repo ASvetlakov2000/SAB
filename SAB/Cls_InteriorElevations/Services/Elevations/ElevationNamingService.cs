@@ -90,6 +90,25 @@ namespace SAB.InteriorElevations.Services.Elevations
             return GetUniqueName(baseNumber, _usedSheetNumbers, "-", 2);
         }
 
+        public string GenerateUniqueSheetPartName(string baseName, int part)
+        {
+            return GetUniqueName(RevitNameUtils.SanitizeName(baseName + " — Часть " + part, "Развертки — Часть " + part),
+                _usedSheetNames, "_", 2);
+        }
+
+        public string GenerateUniqueSheetPartNumber(string baseNumber, int part)
+        {
+            return GetUniqueName(RevitNameUtils.SanitizeName(baseNumber + "-" + part.ToString("00"), "ELV-" + part.ToString("00")),
+                _usedSheetNumbers, "-", 2);
+        }
+
+        public string GenerateUniquePlanCopyName(string sourceName, int part, Document document = null)
+        {
+            CollectExistingNames(document);
+            return GetUniqueName(RevitNameUtils.SanitizeName(sourceName + " — Часть " + part, "План-схема — Часть " + part),
+                _usedViewNames, "_", 2);
+        }
+
         private string BuildFormulaName(
             string part1,
             string part2,

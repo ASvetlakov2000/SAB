@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +14,19 @@ namespace SAB.UI
     public static class SabWindowAnimationService
     {
         private const double PlacementOptionsExpandedMaxHeight = 520.0;
+        public static bool Enabled { get; set; } = true;
+        private static bool CanAnimate { get { return Enabled && SystemParameters.ClientAreaAnimation; } }
+        private static readonly DependencyProperty WindowAnimationAttachedProperty =
+            DependencyProperty.RegisterAttached("WindowAnimationAttached", typeof(bool),
+                typeof(SabWindowAnimationService), new PropertyMetadata(false));
+
+        public static void AnimateWindowEntrance(Window window)
+        {
+            if (!CanAnimate || window == null) return;
+            DoubleAnimation animation = CreateDoubleAnimation(1.0, 150);
+            animation.From = 0.85;
+            window.BeginAnimation(UIElement.OpacityProperty, animation, HandoffBehavior.SnapshotAndReplace);
+        }
 
         private static readonly DependencyProperty ButtonAnimationStateProperty =
             DependencyProperty.RegisterAttached(
@@ -38,11 +51,13 @@ namespace SAB.UI
 
         public static void AttachWindowAnimations(Window window)
         {
-            if (window == null)
+            if (window == null || (bool)window.GetValue(WindowAnimationAttachedProperty))
             {
                 return;
             }
 
+            window.SetValue(WindowAnimationAttachedProperty, true);
+            window.AddHandler(Selector.SelectionChangedEvent, new SelectionChangedEventHandler(Tab_SelectionChanged));
             window.Dispatcher.BeginInvoke(
                 new Action(delegate
                 {
@@ -53,19 +68,48 @@ namespace SAB.UI
                 DispatcherPriority.ContextIdle);
         }
 
+        public static void AttachControlAnimations(FrameworkElement control)
+        {
+            ButtonBase button = control as ButtonBase;
+            if (button != null) AttachButtonAnimation(button);
+            Expander expander = control as Expander;
+            if (expander != null) AttachExpanderAnimations(expander);
+        }
+
+        private static void Tab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabControl tabs = e.OriginalSource as TabControl;
+            if (tabs == null) return;
+            tabs.Dispatcher.BeginInvoke(new Action(delegate
+            {
+                if (!tabs.IsLoaded || tabs.Template == null) return;
+                tabs.ApplyTemplate();
+                ContentPresenter presenter = tabs.Template.FindName("PART_SelectedContentHost", tabs) as ContentPresenter;
+                if (presenter != null)
+                {
+                    AttachButtonAnimations(presenter);
+                    AttachExpanderAnimations(presenter);
+                    AttachDataGridAnimations(presenter);
+                    PulseElement(presenter);
+                }
+            }), DispatcherPriority.Render);
+        }
+
         public static void PulseElement(FrameworkElement element)
         {
-            if (element == null || !element.IsVisible)
+            if (element == null || !element.IsVisible || !CanAnimate)
             {
                 return;
             }
 
             TranslateTransform translateTransform = EnsureTranslateTransform(element);
-            element.Opacity = 0.72;
-            translateTransform.Y = 2.0;
+            double opacity = (double)element.GetAnimationBaseValue(UIElement.OpacityProperty);
+            double offset = (double)translateTransform.GetAnimationBaseValue(TranslateTransform.YProperty);
 
-            DoubleAnimation opacityAnimation = CreateDoubleAnimation(1.0, 170);
-            DoubleAnimation yAnimation = CreateDoubleAnimation(0.0, 170);
+            DoubleAnimation opacityAnimation = CreateDoubleAnimation(opacity, 170);
+            DoubleAnimation yAnimation = CreateDoubleAnimation(offset, 170);
+            opacityAnimation.From = opacity * 0.86;
+            yAnimation.From = offset + 2.0;
 
             element.BeginAnimation(UIElement.OpacityProperty, opacityAnimation, HandoffBehavior.SnapshotAndReplace);
             translateTransform.BeginAnimation(TranslateTransform.YProperty, yAnimation, HandoffBehavior.SnapshotAndReplace);
@@ -73,13 +117,16 @@ namespace SAB.UI
 
         public static void PulseButton(ButtonBase button)
         {
-            if (button == null || !button.IsVisible || !button.IsEnabled)
+            if (button == null || !button.IsVisible || !button.IsEnabled || !CanAnimate)
             {
                 return;
             }
 
             ScaleTransform scaleTransform = EnsureScaleTransform(button);
+            scaleTransform.ScaleX = 1.0;
+            scaleTransform.ScaleY = 1.0;
             DoubleAnimation scaleUpAnimation = CreateDoubleAnimation(1.025, 95);
+            scaleUpAnimation.From = 1.0;
             scaleUpAnimation.AutoReverse = true;
 
             scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleUpAnimation, HandoffBehavior.SnapshotAndReplace);
@@ -104,7 +151,12 @@ namespace SAB.UI
             double targetMaxHeight = useSourceSheetViewportPlacement ? 0.0 : PlacementOptionsExpandedMaxHeight;
             double targetY = useSourceSheetViewportPlacement ? -8.0 : 0.0;
 
-            if (!animate)
+            // Commit layout once; animate only the revealed surface, never MaxHeight.
+            panel.BeginAnimation(FrameworkElement.MaxHeightProperty, null);
+            panel.MaxHeight = targetMaxHeight;
+            panel.SetCurrentValue(UIElement.OpacityProperty, targetOpacity);
+            translateTransform.Y = targetY;
+            if (!animate || !CanAnimate)
             {
                 panel.BeginAnimation(UIElement.OpacityProperty, null);
                 panel.BeginAnimation(FrameworkElement.MaxHeightProperty, null);
@@ -116,29 +168,24 @@ namespace SAB.UI
                 return;
             }
 
-            int durationMilliseconds = useSourceSheetViewportPlacement ? 150 : 230;
-
-            DoubleAnimation opacityAnimation = CreateDoubleAnimation(targetOpacity, durationMilliseconds);
-            DoubleAnimation heightAnimation = CreateDoubleAnimation(targetMaxHeight, durationMilliseconds);
-            DoubleAnimation yAnimation = CreateDoubleAnimation(targetY, durationMilliseconds);
-
-            panel.BeginAnimation(UIElement.OpacityProperty, opacityAnimation, HandoffBehavior.SnapshotAndReplace);
-            panel.BeginAnimation(FrameworkElement.MaxHeightProperty, heightAnimation, HandoffBehavior.SnapshotAndReplace);
-            translateTransform.BeginAnimation(TranslateTransform.YProperty, yAnimation, HandoffBehavior.SnapshotAndReplace);
+            panel.BeginAnimation(UIElement.OpacityProperty, null);
+            translateTransform.BeginAnimation(TranslateTransform.YProperty, null);
+            if (!useSourceSheetViewportPlacement) PulseElement(panel);
         }
 
         private static void AttachButtonAnimations(DependencyObject root)
         {
-            IList<Button> buttons = FindVisualChildren<Button>(root);
+            IList<ButtonBase> buttons = FindVisualChildren<ButtonBase>(root);
             for (int i = 0; i < buttons.Count; i++)
             {
                 AttachButtonAnimation(buttons[i]);
             }
         }
 
-        private static void AttachButtonAnimation(Button button)
+        private static void AttachButtonAnimation(ButtonBase button)
         {
-            if (button == null || GetButtonAnimationState(button) != null)
+            if (button == null || button is RepeatButton || button.TemplatedParent is ComboBox ||
+                button.TemplatedParent is Expander || GetButtonAnimationState(button) != null)
             {
                 return;
             }
@@ -151,12 +198,15 @@ namespace SAB.UI
             button.MouseLeave += Button_MouseLeave;
             button.PreviewMouseLeftButtonDown += Button_PreviewMouseLeftButtonDown;
             button.PreviewMouseLeftButtonUp += Button_PreviewMouseLeftButtonUp;
+            button.LostMouseCapture += Button_LostMouseCapture;
+            button.IsEnabledChanged += Button_IsEnabledChanged;
+            button.Click += Button_Click;
             button.Unloaded += Button_Unloaded;
         }
 
         private static void Button_MouseEnter(object sender, MouseEventArgs e)
         {
-            Button button = sender as Button;
+            ButtonBase button = sender as ButtonBase;
             if (button == null || !button.IsEnabled)
             {
                 return;
@@ -167,7 +217,7 @@ namespace SAB.UI
 
         private static void Button_MouseLeave(object sender, MouseEventArgs e)
         {
-            Button button = sender as Button;
+            ButtonBase button = sender as ButtonBase;
             if (button == null)
             {
                 return;
@@ -178,7 +228,7 @@ namespace SAB.UI
 
         private static void Button_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Button button = sender as Button;
+            ButtonBase button = sender as ButtonBase;
             if (button == null || !button.IsEnabled)
             {
                 return;
@@ -189,18 +239,33 @@ namespace SAB.UI
 
         private static void Button_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Button button = sender as Button;
+            ButtonBase button = sender as ButtonBase;
             if (button == null || !button.IsEnabled)
             {
                 return;
             }
 
-            AnimateButtonScale(button, button.IsMouseOver ? 1.012 : 1.0, 90);
+            AnimateButtonScale(button, 1.0, 90);
+        }
+
+        private static void Button_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            AnimateButtonScale(sender as ButtonBase, 1.0, 90);
+        }
+
+        private static void Button_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(bool)e.NewValue) AnimateButtonScale(sender as ButtonBase, 1.0, 0);
+        }
+
+        private static void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (ReferenceEquals(sender, e.OriginalSource)) PulseButton(sender as ButtonBase);
         }
 
         private static void Button_Unloaded(object sender, RoutedEventArgs e)
         {
-            Button button = sender as Button;
+            ButtonBase button = sender as ButtonBase;
             if (button == null)
             {
                 return;
@@ -210,19 +275,34 @@ namespace SAB.UI
             button.MouseLeave -= Button_MouseLeave;
             button.PreviewMouseLeftButtonDown -= Button_PreviewMouseLeftButtonDown;
             button.PreviewMouseLeftButtonUp -= Button_PreviewMouseLeftButtonUp;
+            button.LostMouseCapture -= Button_LostMouseCapture;
+            button.IsEnabledChanged -= Button_IsEnabledChanged;
+            button.Click -= Button_Click;
             button.Unloaded -= Button_Unloaded;
+            AnimateButtonScale(button, 1.0, 0);
             SetButtonAnimationState(button, null);
         }
 
-        private static void AnimateButtonScale(Button button, double targetScale, int milliseconds)
+        private static void AnimateButtonScale(ButtonBase button, double targetScale, int milliseconds)
         {
+            if (button == null) return;
             ButtonAnimationState state = GetButtonAnimationState(button);
             if (state == null || state.ScaleTransform == null)
             {
                 return;
             }
 
+            double fromScale = state.ScaleTransform.ScaleX;
+            state.ScaleTransform.ScaleX = targetScale;
+            state.ScaleTransform.ScaleY = targetScale;
+            if (!CanAnimate || milliseconds == 0)
+            {
+                state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+                state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+                return;
+            }
             DoubleAnimation animation = CreateDoubleAnimation(targetScale, milliseconds);
+            animation.From = fromScale;
             state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, animation, HandoffBehavior.SnapshotAndReplace);
             state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, animation.Clone(), HandoffBehavior.SnapshotAndReplace);
         }
@@ -230,6 +310,7 @@ namespace SAB.UI
         private static void AttachExpanderAnimations(DependencyObject root)
         {
             IList<Expander> expanders = FindVisualChildren<Expander>(root);
+            if (root is Expander) expanders.Insert(0, (Expander)root);
             for (int i = 0; i < expanders.Count; i++)
             {
                 Expander expander = expanders[i];
@@ -244,7 +325,7 @@ namespace SAB.UI
                 expander.Unloaded += Expander_Unloaded;
                 SetExpanderAnimationAttached(expander, true);
 
-                ScheduleExpanderArrowEntrance(expander, i * 28);
+                ScheduleExpanderArrowEntrance(expander, Math.Min(i * 20, 100));
             }
         }
 
@@ -334,29 +415,31 @@ namespace SAB.UI
             int delayMilliseconds)
         {
             Path arrow = FindExpanderArrow(expander);
-            if (arrow == null || !arrow.IsVisible)
+            if (arrow == null || !arrow.IsVisible || !CanAnimate)
             {
                 return;
             }
 
             arrow.RenderTransformOrigin = new Point(0.5, 0.5);
             ScaleTransform scaleTransform = EnsureScaleTransform(arrow);
-            scaleTransform.ScaleX = fromScale;
-            scaleTransform.ScaleY = fromScale;
+            scaleTransform.ScaleX = toScale;
+            scaleTransform.ScaleY = toScale;
 
             DoubleAnimation scaleAnimation = CreateDoubleAnimation(toScale, durationMilliseconds);
+            scaleAnimation.From = fromScale;
             if (delayMilliseconds > 0)
             {
                 scaleAnimation.BeginTime = TimeSpan.FromMilliseconds(delayMilliseconds);
             }
 
             DoubleAnimation opacityAnimation = CreateDoubleAnimation(1.0, durationMilliseconds);
+            opacityAnimation.From = 0.68;
             if (delayMilliseconds > 0)
             {
                 opacityAnimation.BeginTime = TimeSpan.FromMilliseconds(delayMilliseconds);
             }
 
-            arrow.Opacity = 0.68;
+            arrow.Opacity = 1.0;
             scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation, HandoffBehavior.SnapshotAndReplace);
             scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation.Clone(), HandoffBehavior.SnapshotAndReplace);
             arrow.BeginAnimation(UIElement.OpacityProperty, opacityAnimation, HandoffBehavior.SnapshotAndReplace);
@@ -418,6 +501,8 @@ namespace SAB.UI
         {
             element.RenderTransformOrigin = new Point(0.5, 0.5);
 
+            if (element.RenderTransform != null && element.RenderTransform.IsFrozen)
+                element.RenderTransform = element.RenderTransform.CloneCurrentValue();
             ScaleTransform directScaleTransform = element.RenderTransform as ScaleTransform;
             if (directScaleTransform != null)
             {
@@ -456,6 +541,8 @@ namespace SAB.UI
 
         private static TranslateTransform EnsureTranslateTransform(FrameworkElement element)
         {
+            if (element.RenderTransform != null && element.RenderTransform.IsFrozen)
+                element.RenderTransform = element.RenderTransform.CloneCurrentValue();
             TranslateTransform directTranslateTransform = element.RenderTransform as TranslateTransform;
             if (directTranslateTransform != null)
             {
@@ -497,6 +584,7 @@ namespace SAB.UI
             DoubleAnimation animation = new DoubleAnimation();
             animation.To = toValue;
             animation.Duration = TimeSpan.FromMilliseconds(milliseconds);
+            animation.FillBehavior = FillBehavior.Stop;
             animation.EasingFunction = new CubicEase
             {
                 EasingMode = EasingMode.EaseOut

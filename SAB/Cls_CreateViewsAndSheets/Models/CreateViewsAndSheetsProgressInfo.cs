@@ -13,5 +13,15 @@ namespace SAB.CreateViewsAndSheets.Models
         public string Stage { get; set; }
 
         public string Details { get; set; }
+
+        public int CreatedItems { get; set; }
+
+        public int UpdatedItems { get; set; }
+
+        public int SkippedItems { get; set; }
+
+        public int FailedItems { get; set; }
+
+        public string Counters { get; set; }
     }
 }

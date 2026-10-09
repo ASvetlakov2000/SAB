@@ -7,7 +7,7 @@ namespace SAB.DoorWindowExplanations.Services
 {
     public class DoorWindowSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 6;
+        private const int CurrentSchemaVersion = 12;
         private readonly string _filePath;
 
         public DoorWindowSettingsStorageService()
@@ -52,6 +52,50 @@ namespace SAB.DoorWindowExplanations.Services
                 if (persisted.SchemaVersion < 6)
                 {
                     persisted.Settings.ViewportTypeIdValue = -1;
+                }
+
+                if (persisted.SchemaVersion < 7)
+                {
+                    persisted.Settings.CreateFrontDimensions = defaults.CreateFrontDimensions;
+                    persisted.Settings.DimensionTypeIdValue = defaults.DimensionTypeIdValue;
+                    persisted.Settings.DetailedDimensionOffsetPaperMm = defaults.DetailedDimensionOffsetPaperMm;
+                    persisted.Settings.OverallDimensionOffsetPaperMm = defaults.OverallDimensionOffsetPaperMm;
+                    persisted.Settings.CreateElementImages = defaults.CreateElementImages;
+                    persisted.Settings.CurtainWallInstanceImageParameterName = defaults.CurtainWallInstanceImageParameterName;
+                    persisted.Settings.DoorWindowTypeImageParameterName = defaults.DoorWindowTypeImageParameterName;
+                    persisted.Settings.ImagePixelSize = defaults.ImagePixelSize;
+                }
+
+                if (persisted.SchemaVersion < 8)
+                {
+                    persisted.Settings.IsolateSelectedElement = defaults.IsolateSelectedElement;
+                }
+
+                if (persisted.SchemaVersion < 9)
+                {
+                    persisted.Settings.WorkflowMode = defaults.WorkflowMode;
+                    persisted.Settings.SingleViewKind = defaults.SingleViewKind;
+                    persisted.Settings.CurtainWallFrontSideMode = defaults.CurtainWallFrontSideMode;
+                    persisted.Settings.HorizontalDimensionSide = defaults.HorizontalDimensionSide;
+                    persisted.Settings.VerticalDimensionSide = defaults.VerticalDimensionSide;
+                }
+
+                if (persisted.SchemaVersion < 10)
+                {
+                    persisted.Settings.DimensionTextHeightMm = defaults.DimensionTextHeightMm;
+                }
+
+                if (persisted.SchemaVersion < 11)
+                {
+                    persisted.Settings.SideDetailedDimensionOffsetPaperMm =
+                        persisted.Settings.DetailedDimensionOffsetPaperMm;
+                    persisted.Settings.SideOverallDimensionOffsetPaperMm =
+                        persisted.Settings.OverallDimensionOffsetPaperMm;
+                }
+
+                if (persisted.SchemaVersion < 12 || persisted.Settings.ImageHeightPaperMm <= 0.0)
+                {
+                    persisted.Settings.ImageHeightPaperMm = defaults.ImageHeightPaperMm;
                 }
 
                 if (persisted.Settings.TopProjectionDepthMm <= 0.0)

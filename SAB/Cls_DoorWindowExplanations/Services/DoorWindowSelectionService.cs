@@ -25,7 +25,7 @@ namespace SAB.DoorWindowExplanations.Services
                 reference = uiDocument.Selection.PickObject(
                     ObjectType.PointOnElement,
                     filter,
-                    "Выберите экземпляр двери или окна в рабочей модели либо в связи");
+                    "Выберите дверь, окно или витражную стену в рабочей модели либо в связи");
             }
 
             return CreateSelectionData(hostDocument, reference);
@@ -48,7 +48,7 @@ namespace SAB.DoorWindowExplanations.Services
             foreach (ElementId id in selectedIds)
             {
                 Element element = uiDocument.Document.GetElement(id);
-                if (IsDoorOrWindow(element))
+                if (IsSupportedElement(element))
                 {
                     result.Add(CreateSelectionData(uiDocument.Document, new Reference(element)));
                 }
@@ -69,7 +69,7 @@ namespace SAB.DoorWindowExplanations.Services
             IList<Reference> references = uiDocument.Selection.PickObjects(
                 ObjectType.PointOnElement,
                 filter,
-                "Выберите двери и окна в рабочей модели либо в связях и нажмите «Готово»");
+                "Выберите двери, окна и витражные стены в рабочей модели либо в связях и нажмите «Готово»");
 
             List<DoorWindowSelectionData> result = new List<DoorWindowSelectionData>();
             HashSet<string> keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -90,6 +90,44 @@ namespace SAB.DoorWindowExplanations.Services
             return result;
         }
 
+        public IList<DoorWindowSelectionData> PickDoorsAndWindowsByRectangle(UIDocument uiDocument)
+        {
+            if (uiDocument == null || uiDocument.Document == null)
+            {
+                throw new ArgumentNullException(nameof(uiDocument));
+            }
+
+            Document hostDocument = uiDocument.Document;
+            DoorWindowRectangleSelectionFilter filter = new DoorWindowRectangleSelectionFilter();
+            IList<Element> elements = uiDocument.Selection.PickElementsByRectangle(
+                filter,
+                "Обведите рамкой двери, окна и витражные стены в рабочей модели");
+
+            List<DoorWindowSelectionData> result = new List<DoorWindowSelectionData>();
+            HashSet<string> keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (elements == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                Element element = elements[i];
+                if (!IsSupportedElement(element))
+                {
+                    continue;
+                }
+
+                DoorWindowSelectionData item = CreateSelectionData(hostDocument, new Reference(element));
+                if (item != null && keys.Add(item.SelectionKey))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result;
+        }
+
         private Reference TryGetPreselectedReference(UIDocument uiDocument, Document document)
         {
             ICollection<ElementId> selectedIds = uiDocument.Selection.GetElementIds();
@@ -99,14 +137,14 @@ namespace SAB.DoorWindowExplanations.Services
             }
 
             Element element = document.GetElement(selectedIds.First());
-            return IsDoorOrWindow(element) ? new Reference(element) : null;
+            return IsSupportedElement(element) ? new Reference(element) : null;
         }
 
         private DoorWindowSelectionData CreateSelectionData(Document hostDocument, Reference reference)
         {
             if (reference == null)
             {
-                throw new InvalidOperationException("Дверь или окно не выбраны.");
+                throw new InvalidOperationException("Дверь, окно или витражная стена не выбраны.");
             }
 
             Element sourceElement;
@@ -137,9 +175,9 @@ namespace SAB.DoorWindowExplanations.Services
                 sourceElement = hostDocument.GetElement(reference.ElementId);
             }
 
-            if (!IsDoorOrWindow(sourceElement))
+            if (!IsSupportedElement(sourceElement))
             {
-                throw new InvalidOperationException("Выбранный элемент не является дверью или окном.");
+                throw new InvalidOperationException("Выбранный элемент не является дверью, окном или витражной стеной.");
             }
 
             FamilyInstance familyInstance = sourceElement as FamilyInstance;
@@ -152,10 +190,12 @@ namespace SAB.DoorWindowExplanations.Services
             data.ElementType = elementType;
             data.LinkInstance = linkInstance;
             data.SourceToHostTransform = sourceToHost;
-            data.CategoryName = sourceElement.Category != null ? sourceElement.Category.Name : string.Empty;
+            data.CategoryName = sourceElement is Wall && ((Wall)sourceElement).CurtainGrid != null
+                ? "Витражи"
+                : (sourceElement.Category != null ? sourceElement.Category.Name : string.Empty);
             data.FamilyName = familyInstance != null && familyInstance.Symbol != null
                 ? familyInstance.Symbol.FamilyName
-                : string.Empty;
+                : GetSystemFamilyName(sourceElement, elementType);
             data.TypeName = elementType != null ? elementType.Name : string.Empty;
             data.LinkName = linkInstance != null ? linkInstance.Name : string.Empty;
 
@@ -164,7 +204,7 @@ namespace SAB.DoorWindowExplanations.Services
             return data;
         }
 
-        internal static bool IsDoorOrWindow(Element element)
+        internal static bool IsSupportedElement(Element element)
         {
             if (element == null || element.Category == null)
             {
@@ -172,8 +212,26 @@ namespace SAB.DoorWindowExplanations.Services
             }
 
             int categoryId = element.Category.Id.IntegerValue;
-            return categoryId == (int)BuiltInCategory.OST_Doors ||
-                   categoryId == (int)BuiltInCategory.OST_Windows;
+            if (categoryId == (int)BuiltInCategory.OST_Doors ||
+                categoryId == (int)BuiltInCategory.OST_Windows)
+            {
+                return true;
+            }
+
+            Wall wall = element as Wall;
+            return categoryId == (int)BuiltInCategory.OST_Walls &&
+                   wall != null && wall.CurtainGrid != null;
+        }
+
+        private static string GetSystemFamilyName(Element element, ElementType elementType)
+        {
+            Wall wall = element as Wall;
+            if (wall != null && wall.CurtainGrid != null)
+            {
+                return "Витражная стена";
+            }
+
+            return elementType != null ? elementType.FamilyName : string.Empty;
         }
 
         private static bool IsValidId(ElementId id)
@@ -192,7 +250,7 @@ namespace SAB.DoorWindowExplanations.Services
 
             public bool AllowElement(Element element)
             {
-                return IsDoorOrWindow(element) || element is RevitLinkInstance;
+                return IsSupportedElement(element) || element is RevitLinkInstance;
             }
 
             public bool AllowReference(Reference reference, XYZ position)
@@ -206,10 +264,23 @@ namespace SAB.DoorWindowExplanations.Services
                 {
                     RevitLinkInstance link = _hostDocument.GetElement(reference.ElementId) as RevitLinkInstance;
                     Document linkDocument = link != null ? link.GetLinkDocument() : null;
-                    return linkDocument != null && IsDoorOrWindow(linkDocument.GetElement(reference.LinkedElementId));
+                    return linkDocument != null && IsSupportedElement(linkDocument.GetElement(reference.LinkedElementId));
                 }
 
-                return IsDoorOrWindow(_hostDocument.GetElement(reference.ElementId));
+                return IsSupportedElement(_hostDocument.GetElement(reference.ElementId));
+            }
+        }
+
+        private class DoorWindowRectangleSelectionFilter : ISelectionFilter
+        {
+            public bool AllowElement(Element element)
+            {
+                return IsSupportedElement(element);
+            }
+
+            public bool AllowReference(Reference reference, XYZ position)
+            {
+                return false;
             }
         }
     }

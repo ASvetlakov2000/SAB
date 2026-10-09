@@ -30,6 +30,8 @@ namespace SAB.InteriorElevations.Models
 
         public ElementId MarkerElementId { get; set; }
 
+        public XYZ AlignmentModelPoint { get; set; }
+
         public string FailureReason { get; set; }
     }
 }

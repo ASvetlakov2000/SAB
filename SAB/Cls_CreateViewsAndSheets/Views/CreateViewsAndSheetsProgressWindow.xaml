@@ -28,6 +28,20 @@
                        TextWrapping="Wrap"
                        Margin="0,0,0,12" />
 
+            <TextBlock x:Name="StageTextBlock"
+                       Text="Подготовка"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource SabBrush.Text}"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,4" />
+
+            <TextBlock x:Name="DetailsTextBlock"
+                       Text="Готовим данные для обработки."
+                       Foreground="{StaticResource SabBrush.TextSecondary}"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,12" />
+
             <ProgressBar x:Name="MainProgressBar"
                          Height="16"
                          Minimum="0"
@@ -45,7 +59,7 @@
 
                 <TextBlock x:Name="StepTextBlock"
                            Grid.Column="0"
-                           Text="Шаг 0 из 0"
+                           Text="Выполнено 0 из 0"
                            Foreground="{StaticResource SabBrush.Accent}"
                            TextWrapping="Wrap" />
 
@@ -56,6 +70,13 @@
                            Foreground="{StaticResource SabBrush.Accent}"
                            Margin="12,0,0,0" />
             </Grid>
+
+            <TextBlock x:Name="CountersTextBlock"
+                       Text=""
+                       Foreground="{StaticResource SabBrush.TextSecondary}"
+                       TextWrapping="Wrap"
+                       Visibility="Collapsed"
+                       Margin="0,0,0,12" />
 
             <Border x:Name="RotatingMessageBorder"
                     Padding="12"

@@ -23,11 +23,14 @@ namespace SAB.InteriorElevations.Models
     {
         public PlanCornerMarkLayoutSettings()
         {
-            HorizontalShoulderPaperMm = 8.0;
-            DiagonalProjectionPaperMm = 8.0;
+            HorizontalShoulderPaperMm = 7.5;
+            DiagonalProjectionPaperMm = 7.5;
+            BodyHalfWidthPaperMm = 2.5;
+            BodyHalfHeightPaperMm = 2.5;
             MinimumOriginClearancePaperMm = 0.5;
             EndpointToleranceModelMm = 2.0;
             RequireWholeLeaderInsideRoom = true;
+            RequireWholeBodyInsideRoom = true;
         }
 
         /// <summary>
@@ -40,6 +43,16 @@ namespace SAB.InteriorElevations.Models
         /// Равные проекции дают угол 45 градусов.
         /// </summary>
         public double DiagonalProjectionPaperMm { get; set; }
+
+        /// <summary>
+        /// Половина ширины рамки марки относительно начала координат семейства.
+        /// </summary>
+        public double BodyHalfWidthPaperMm { get; set; }
+
+        /// <summary>
+        /// Половина высоты рамки марки относительно начала координат семейства.
+        /// </summary>
+        public double BodyHalfHeightPaperMm { get; set; }
 
         /// <summary>
         /// Минимальное расстояние от начала координат семейства до границы помещения.
@@ -55,6 +68,11 @@ namespace SAB.InteriorElevations.Models
         /// Если включено, оба участка встроенной выноски также должны оставаться внутри контура.
         /// </summary>
         public bool RequireWholeLeaderInsideRoom { get; set; }
+
+        /// <summary>
+        /// Если включено, вся прямоугольная рамка текста должна находиться внутри помещения.
+        /// </summary>
+        public bool RequireWholeBodyInsideRoom { get; set; }
     }
 
     public class PlanCornerMarkLayoutItem

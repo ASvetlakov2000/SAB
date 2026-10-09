@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Autodesk.Revit.DB;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Utils;
@@ -11,6 +13,13 @@ namespace SAB.InteriorElevations.Services.Sheets
         // Revit API возвращает GetBoxOutline с внутренним техническим запасом 0.01 ft (~3.048 мм).
         // Для привязки марки к "истинной" границе видового экрана компенсируем этот запас.
         private const double ViewportOutlinePaddingFeet = 0.01;
+
+        private class RowViewportTitleData
+        {
+            public Viewport Viewport { get; set; }
+
+            public Outline Outline { get; set; }
+        }
 
         public ViewportPlacementResult PlaceViewsOnSheet(
             Document document,
@@ -70,6 +79,10 @@ namespace SAB.InteriorElevations.Services.Sheets
             {
                 double cursorX = startXFeet;
                 double rowMaxHeight = 0.0;
+                double rowLowestY = double.MaxValue;
+                double? rowAlignmentY = null;
+                double rowHighestViewportY = double.MinValue;
+                List<RowViewportTitleData> rowViewportTitles = new List<RowViewportTitleData>();
                 int rowPlacedCount = 0;
 
                 for (int column = 0; column < columnsCount && currentIndex < totalViewCount; column++)
@@ -91,6 +104,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                         continue;
                     }
 
+                    Viewport viewport = null;
                     try
                     {
                         if (!Viewport.CanAddViewToSheet(document, sheet.Id, view.Id))
@@ -107,7 +121,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                         }
 
                         // Временное размещение, чтобы получить реальный размер прямоугольника viewport.
-                        Viewport viewport = Viewport.Create(document, sheet.Id, view.Id, new XYZ(startXFeet, startYFeet, 0.0));
+                        viewport = Viewport.Create(document, sheet.Id, view.Id, new XYZ(startXFeet, startYFeet, 0.0));
                         if (viewport == null)
                         {
                             if (warnings != null)
@@ -157,6 +171,19 @@ namespace SAB.InteriorElevations.Services.Sheets
                             ElementTransformUtils.MoveElement(document, viewport.Id, moveVector);
                         }
 
+                        document.Regenerate();
+
+                        if (!isTrailingView && elevationViewData != null && elevationViewData.AlignmentModelPoint != null)
+                        {
+                            TryAlignViewportByModelPoint(
+                                document,
+                                viewport,
+                                elevationViewData.AlignmentModelPoint,
+                                ref rowAlignmentY,
+                                warnings,
+                                viewName);
+                        }
+
                         Outline finalOutline;
                         double finalWidth;
                         double finalHeight;
@@ -175,10 +202,15 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                         if (!isTrailingView)
                         {
-                            TryPlaceViewportTitle(viewport, finalOutline, layoutSettings, warnings);
+                            RowViewportTitleData titleData = new RowViewportTitleData();
+                            titleData.Viewport = viewport;
+                            titleData.Outline = finalOutline;
+                            rowViewportTitles.Add(titleData);
+                            rowHighestViewportY = Math.Max(rowHighestViewportY, finalOutline.MaximumPoint.Y);
                         }
 
                         PlacedViewportData placedViewportData = new PlacedViewportData();
+                        placedViewportData.SheetId = sheet.Id;
                         placedViewportData.ViewportId = viewport.Id;
                         placedViewportData.ViewId = view.Id;
                         placedViewportData.Center = viewport.GetBoxCenter();
@@ -186,7 +218,16 @@ namespace SAB.InteriorElevations.Services.Sheets
                         XYZ topRight;
                         XYZ bottomLeft;
                         XYZ bottomRight;
-                        BuildTrueCorners(finalOutline, out topLeft, out topRight, out bottomLeft, out bottomRight);
+                        if (!TryGetViewportCropCorners(
+                                document,
+                                viewport,
+                                out topLeft,
+                                out topRight,
+                                out bottomLeft,
+                                out bottomRight))
+                        {
+                            BuildTrueCorners(finalOutline, out topLeft, out topRight, out bottomLeft, out bottomRight);
+                        }
                         placedViewportData.TopLeft = topLeft;
                         placedViewportData.TopRight = topRight;
                         placedViewportData.BottomLeft = bottomLeft;
@@ -201,6 +242,8 @@ namespace SAB.InteriorElevations.Services.Sheets
                             rowMaxHeight = finalHeight;
                         }
 
+                        rowLowestY = Math.Min(rowLowestY, finalOutline.MinimumPoint.Y);
+
                         result.PlacedCount++;
                         rowPlacedCount++;
                     }
@@ -214,12 +257,29 @@ namespace SAB.InteriorElevations.Services.Sheets
                                     : "Не удалось разместить вид " + viewName + " на листе: " + exception.Message);
                         }
                     }
+                    finally
+                    {
+                        if (viewport != null && viewport.IsValidObject &&
+                            !result.PlacedViewports.Exists(v => RevitElementIdUtils.AreEqual(v.ViewportId, viewport.Id)))
+                        {
+                            rowViewportTitles.RemoveAll(t => t.Viewport == viewport);
+                            document.Delete(viewport.Id);
+                        }
+                    }
                 }
+
+                PlaceRowViewportTitles(
+                    rowViewportTitles,
+                    rowHighestViewportY,
+                    layoutSettings,
+                    warnings);
 
                 // Для следующего ряда отступаем от нижней границы самого высокого вида в текущем ряду.
                 if (rowPlacedCount > 0)
                 {
-                    rowTopY -= rowMaxHeight + gapYFeet;
+                    rowTopY = rowLowestY < double.MaxValue
+                        ? rowLowestY - gapYFeet
+                        : rowTopY - rowMaxHeight - gapYFeet;
                 }
             }
 
@@ -233,7 +293,8 @@ namespace SAB.InteriorElevations.Services.Sheets
             IList<View> roomPlanViews,
             SheetLayoutSettings layoutSettings,
             ElementId viewportTypeId,
-            IList<string> warnings)
+            IList<string> warnings,
+            Action<int, int, ViewportPlacementResult> progress = null)
         {
             ViewportPlacementResult aggregateResult = new ViewportPlacementResult();
             if (document == null || sheet == null || roomViewGroups == null || layoutSettings == null)
@@ -274,6 +335,10 @@ namespace SAB.InteriorElevations.Services.Sheets
                 }
 
                 MergePlacementResults(aggregateResult, groupResult);
+                if (progress != null)
+                {
+                    progress(groupIndex + 1, roomViewGroups.Count, aggregateResult);
+                }
             }
 
             return aggregateResult;
@@ -678,10 +743,45 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
         }
 
+        private void PlaceRowViewportTitles(
+            IList<RowViewportTitleData> titleDataItems,
+            double rowHighestViewportY,
+            SheetLayoutSettings layoutSettings,
+            IList<string> warnings)
+        {
+            if (titleDataItems == null || layoutSettings == null)
+            {
+                return;
+            }
+
+            bool useCommonTopY = layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopLeft ||
+                                 layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopCenter;
+            double? commonTopY = useCommonTopY && rowHighestViewportY > double.MinValue
+                ? (double?)rowHighestViewportY
+                : null;
+
+            for (int index = 0; index < titleDataItems.Count; index++)
+            {
+                RowViewportTitleData titleData = titleDataItems[index];
+                if (titleData == null)
+                {
+                    continue;
+                }
+
+                TryPlaceViewportTitle(
+                    titleData.Viewport,
+                    titleData.Outline,
+                    layoutSettings,
+                    commonTopY,
+                    warnings);
+            }
+        }
+
         private void TryPlaceViewportTitle(
             Viewport viewport,
             Outline viewportOutline,
             SheetLayoutSettings layoutSettings,
+            double? commonTopY,
             IList<string> warnings)
         {
             if (viewport == null || viewportOutline == null || viewportOutline.MinimumPoint == null ||
@@ -692,7 +792,7 @@ namespace SAB.InteriorElevations.Services.Sheets
 
             try
             {
-                viewport.LabelOffset = BuildViewportTitleOffset(viewportOutline, layoutSettings);
+                viewport.LabelOffset = BuildViewportTitleOffset(viewportOutline, layoutSettings, commonTopY);
             }
             catch (Exception exception)
             {
@@ -703,7 +803,10 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
         }
 
-        private XYZ BuildViewportTitleOffset(Outline viewportOutline, SheetLayoutSettings layoutSettings)
+        private XYZ BuildViewportTitleOffset(
+            Outline viewportOutline,
+            SheetLayoutSettings layoutSettings,
+            double? commonTopY)
         {
             double minimumX = viewportOutline.MinimumPoint.X;
             double minimumY = viewportOutline.MinimumPoint.Y;
@@ -725,9 +828,10 @@ namespace SAB.InteriorElevations.Services.Sheets
             double offsetX = UnitConversionUtils.MillimetersToFeet(layoutSettings.ViewTitleOffsetXmm);
             double offsetY = UnitConversionUtils.MillimetersToFeet(layoutSettings.ViewTitleOffsetYmm);
 
-            if (layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopCenter)
+            if (layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopLeft ||
+                layoutSettings.ViewTitleAnchor == ViewTitleAnchor.TopCenter)
             {
-                anchorY = maximumY;
+                anchorY = commonTopY.HasValue ? commonTopY.Value : maximumY;
                 offsetY = -offsetY;
             }
 
@@ -757,6 +861,233 @@ namespace SAB.InteriorElevations.Services.Sheets
             width = Math.Abs(outline.MaximumPoint.X - outline.MinimumPoint.X);
             height = Math.Abs(outline.MaximumPoint.Y - outline.MinimumPoint.Y);
             return width > 1e-9 && height > 1e-9;
+        }
+
+        private void TryAlignViewportByModelPoint(
+            Document document,
+            Viewport viewport,
+            XYZ modelPoint,
+            ref double? targetSheetY,
+            IList<string> warnings,
+            string viewName)
+        {
+            if (document == null || viewport == null || modelPoint == null)
+            {
+                return;
+            }
+
+            try
+            {
+                double currentSheetY;
+                if (!TryGetModelPointSheetY(document, viewport, modelPoint, out currentSheetY))
+                {
+                    return;
+                }
+                if (!targetSheetY.HasValue)
+                {
+                    targetSheetY = currentSheetY;
+                    return;
+                }
+
+                double deltaY = targetSheetY.Value - currentSheetY;
+                if (Math.Abs(deltaY) <= 1e-9)
+                {
+                    return;
+                }
+
+                ElementTransformUtils.MoveElement(document, viewport.Id, new XYZ(0.0, deltaY, 0.0));
+                document.Regenerate();
+            }
+            catch (Exception exception)
+            {
+                if (warnings != null)
+                {
+                    warnings.Add(
+                        "Не удалось выровнять вид \"" + viewName +
+                        "\" по отметке чистого пола: " + exception.Message);
+                }
+            }
+        }
+
+        private bool TryGetModelPointSheetY(
+            Document document,
+            Viewport viewport,
+            XYZ modelPoint,
+            out double sheetY)
+        {
+            sheetY = 0.0;
+            XYZ sheetPoint;
+            if (!TryGetModelPointOnSheet(document, viewport, modelPoint, out sheetPoint))
+            {
+                return false;
+            }
+
+            sheetY = sheetPoint.Y;
+            return true;
+        }
+
+        public bool TryGetViewportCropCorners(
+            Document document,
+            Viewport viewport,
+            out XYZ topLeft,
+            out XYZ topRight,
+            out XYZ bottomLeft,
+            out XYZ bottomRight)
+        {
+            topLeft = XYZ.Zero;
+            topRight = XYZ.Zero;
+            bottomLeft = XYZ.Zero;
+            bottomRight = XYZ.Zero;
+
+            if (document == null || viewport == null)
+            {
+                return false;
+            }
+
+            View view = document.GetElement(viewport.ViewId) as View;
+            BoundingBoxXYZ cropBox = view != null ? view.CropBox : null;
+            if (cropBox == null || cropBox.Min == null || cropBox.Max == null || cropBox.Transform == null)
+            {
+                return false;
+            }
+
+            double minimumX = double.MaxValue;
+            double minimumY = double.MaxValue;
+            double maximumX = double.MinValue;
+            double maximumY = double.MinValue;
+            double[] xValues = { cropBox.Min.X, cropBox.Max.X };
+            double[] yValues = { cropBox.Min.Y, cropBox.Max.Y };
+            double[] zValues = { cropBox.Min.Z, cropBox.Max.Z };
+
+            for (int xIndex = 0; xIndex < xValues.Length; xIndex++)
+            {
+                for (int yIndex = 0; yIndex < yValues.Length; yIndex++)
+                {
+                    for (int zIndex = 0; zIndex < zValues.Length; zIndex++)
+                    {
+                        XYZ cropPoint = new XYZ(xValues[xIndex], yValues[yIndex], zValues[zIndex]);
+                        XYZ modelPoint = cropBox.Transform.OfPoint(cropPoint);
+                        XYZ sheetPoint;
+                        if (!TryGetModelPointOnSheet(document, viewport, modelPoint, out sheetPoint))
+                        {
+                            continue;
+                        }
+
+                        minimumX = Math.Min(minimumX, sheetPoint.X);
+                        minimumY = Math.Min(minimumY, sheetPoint.Y);
+                        maximumX = Math.Max(maximumX, sheetPoint.X);
+                        maximumY = Math.Max(maximumY, sheetPoint.Y);
+                    }
+                }
+            }
+
+            if (minimumX >= maximumX || minimumY >= maximumY)
+            {
+                return false;
+            }
+
+            topLeft = new XYZ(minimumX, maximumY, 0.0);
+            topRight = new XYZ(maximumX, maximumY, 0.0);
+            bottomLeft = new XYZ(minimumX, minimumY, 0.0);
+            bottomRight = new XYZ(maximumX, minimumY, 0.0);
+            return true;
+        }
+
+        public bool TryGetModelPointOnSheet(
+            Document document,
+            Viewport viewport,
+            XYZ modelPoint,
+            out XYZ sheetPoint)
+        {
+            sheetPoint = XYZ.Zero;
+            View view = document.GetElement(viewport.ViewId) as View;
+            if (view == null)
+            {
+                return false;
+            }
+
+            // Revit 2023+ предоставляет точную цепочку преобразований
+            // model -> projection -> sheet. Вызываем ее через reflection,
+            // чтобы та же сборка исходников компилировалась с Revit API 2022.
+            try
+            {
+                MethodInfo modelToProjectionMethod = view.GetType().GetMethod(
+                    "GetModelToProjectionTransforms",
+                    BindingFlags.Instance | BindingFlags.Public,
+                    null,
+                    Type.EmptyTypes,
+                    null);
+                MethodInfo projectionToSheetMethod = viewport.GetType().GetMethod(
+                    "GetProjectionToSheetTransform",
+                    BindingFlags.Instance | BindingFlags.Public,
+                    null,
+                    Type.EmptyTypes,
+                    null);
+
+                if (modelToProjectionMethod != null && projectionToSheetMethod != null)
+                {
+                    IEnumerable transformations = modelToProjectionMethod.Invoke(view, null) as IEnumerable;
+                    Transform projectionToSheet = projectionToSheetMethod.Invoke(viewport, null) as Transform;
+                    if (transformations != null && projectionToSheet != null)
+                    {
+                        foreach (object transformWithBoundary in transformations)
+                        {
+                            if (transformWithBoundary == null)
+                            {
+                                continue;
+                            }
+
+                            MethodInfo getTransformMethod = transformWithBoundary.GetType().GetMethod(
+                                "GetModelToProjectionTransform",
+                                BindingFlags.Instance | BindingFlags.Public,
+                                null,
+                                Type.EmptyTypes,
+                                null);
+                            Transform modelToProjection = getTransformMethod != null
+                                ? getTransformMethod.Invoke(transformWithBoundary, null) as Transform
+                                : null;
+                            if (modelToProjection == null)
+                            {
+                                continue;
+                            }
+
+                            XYZ projectionPoint = modelToProjection.OfPoint(modelPoint);
+                            sheetPoint = projectionToSheet.OfPoint(projectionPoint);
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Для Revit 2022 используем расчет по бумажному Outline ниже.
+            }
+
+            // Совместимый путь для Revit 2022. View.Outline хранится в бумажных
+            // футах, поэтому модельную координату вдоль UpDirection делим на масштаб.
+            try
+            {
+                BoundingBoxUV outline = view.Outline;
+                if (outline == null || outline.Min == null || outline.Max == null || view.Scale <= 0)
+                {
+                    return false;
+                }
+
+                double projectedPaperX = (modelPoint - view.Origin).DotProduct(view.RightDirection) / view.Scale;
+                double projectedPaperY = (modelPoint - view.Origin).DotProduct(view.UpDirection) / view.Scale;
+                double outlineCenterX = (outline.Min.U + outline.Max.U) / 2.0;
+                double outlineCenterY = (outline.Min.V + outline.Max.V) / 2.0;
+                XYZ viewportCenter = viewport.GetBoxCenter();
+                sheetPoint = new XYZ(
+                    viewportCenter.X + projectedPaperX - outlineCenterX,
+                    viewportCenter.Y + projectedPaperY - outlineCenterY,
+                    0.0);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void BuildTrueCorners(

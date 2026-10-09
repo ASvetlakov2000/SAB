@@ -1,0 +1,380 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
+using SAB.ParameterTools.Core;
+using Profile = SAB.ParameterTools.Core.Profile;
+
+namespace SAB.ParameterTools
+{
+    internal sealed class RoomFilter : ISelectionFilter
+    {
+        public bool AllowElement(Element element)
+        {
+            var tag = element as RoomTag;
+            return element is Room || tag != null && tag.Room != null && ReferenceEquals(tag.Room.Document, element.Document);
+        }
+        public bool AllowReference(Reference reference, XYZ point) { return false; }
+    }
+    internal sealed class Issue
+    {
+        public ElementId ElementId { get; set; }
+        public string Element { get; set; }
+        public string Parameter { get; set; }
+        public string Actual { get; set; }
+        public string Expected { get; set; }
+        public string Reason { get; set; }
+    }
+    internal static class Workflow
+    {
+        internal static Profile RequireProfile(Document doc)
+        {
+            var p = Storage.Load(doc);
+            if (!p.Configured) throw new InvalidOperationException("Сначала выполните команду «Настройки параметров» и сохраните профиль.");
+            var errors = RuleEngine.Validate(p).ToList();
+            if (errors.Count > 0) throw new InvalidOperationException(string.Join("\n", errors));
+            return p;
+        }
+        internal static List<Element> Targets(UIDocument ui, Profile p, bool selectionRequired, ICollection<ElementId> captured = null)
+        {
+            var selected = captured ?? ui.Selection.GetElementIds();
+            if (selectionRequired && selected.Count == 0) throw new InvalidOperationException("Сначала выделите элементы для заполнения.");
+            IEnumerable<Element> candidates = selected.Count > 0 ? selected.Select(ui.Document.GetElement)
+                : new FilteredElementCollector(ui.Document, ui.ActiveView.Id).WhereElementIsNotElementType();
+            var plan = ui.ActiveView as ViewPlan;
+            Level planLevel = plan == null ? null : plan.GenLevel;
+            var result = candidates.Where(e => e != null && !(e is ElementType) && e.Category != null
+                && p.CategoryIds.Contains(Ids.Category(e.Category.Id))).ToList();
+            // Do not relabel the visible underlay or the base floor of a multistory wall.
+            if (planLevel != null && p.LevelSource == LevelSource.ActivePlan && p.Rules.Any(r => r.Enabled && RuleEngine.UsesLevel(p, r)))
+                result = result.Where(e => { var l = LevelService.ElementLevel(e); return l != null && l.Id == planLevel.Id; }).ToList();
+            if (result.Count == 0) throw new InvalidOperationException("Нет подходящих элементов выбранных категорий и уровня. Проверьте область применения профиля.");
+            if (selected.Count > 0 && result.Count != selected.Count)
+                UI.Toast.Show(ui.Application.MainWindowHandle, "Обработано подходящее выделение: " + result.Count + " из " + selected.Count);
+            return result;
+        }
+        private static string LevelId(UIDocument ui, Profile p, Element e, Provenance source, string chosenLevel = null)
+        {
+            var plan = ui.ActiveView as ViewPlan;
+            var level = p.LevelSource == LevelSource.ActivePlan ? (plan == null ? null : plan.GenLevel) : LevelService.ElementLevel(e);
+            return level == null ? chosenLevel ?? source.LevelUniqueId : level.UniqueId;
+        }
+        private static string ChooseLevel(UIDocument ui, Profile profile, IEnumerable<Element> targets, IEnumerable<Rule> rules, bool useStored = false)
+        {
+            if (!rules.Any(r => RuleEngine.UsesLevel(profile, r))) return null;
+            var unresolved = targets.Where(e => (profile.LevelSource == LevelSource.ActivePlan ? (ui.ActiveView as ViewPlan)?.GenLevel == null : LevelService.ElementLevel(e) == null)
+                && (!useStored || !StoredLevelValid(ui.Document, profile, Storage.Source(e).LevelUniqueId))).ToList();
+            bool missing = unresolved.Count > 0;
+            if (!missing) return null;
+            var levels = profile.Levels.Where(l => !string.IsNullOrWhiteSpace(l.Value) && ui.Document.GetElement(l.LevelUniqueId) is Level).ToList();
+            if (levels.Count == 0) throw new InvalidOperationException("Уровень вида или элемента не определён. Откройте «Настройки параметров» → «Матрица уровней», укажите номера этажей и сохраните.");
+            var window = new UI.ModelSourceWindow("Выбрать уровень", "Уровень не определён. Выберите заполненный уровень из матрицы для этой операции.", levels.Select(l => new UI.ModelSourceChoice { Id = l.LevelUniqueId, Name = l.LevelName + " → этаж " + l.Value }).ToList());
+            new System.Windows.Interop.WindowInteropHelper(window).Owner = ui.Application.MainWindowHandle;
+            return window.ShowDialog() == true ? window.SelectedId : throw new System.OperationCanceledException();
+        }
+        private static bool StoredLevelValid(Document doc, Profile profile, string id)
+        { return !string.IsNullOrWhiteSpace(id) && profile.Levels.Any(l => l.LevelUniqueId == id && !string.IsNullOrWhiteSpace(l.Value)) && doc.GetElement(id) is Level; }
+        private static Resolution RoomValue(Room room, RoomField field, ParameterRef parameter)
+        {
+            if (room == null) return Resolution.Unknown("Не задано помещение-источник или оно удалено.");
+            if (field == RoomField.Number) return Resolution.Known(room.Number);
+            if (field == RoomField.Name) return Resolution.Known(room.get_Parameter(BuiltInParameter.ROOM_NAME).AsString());
+            var p = Catalog.Read(Catalog.Parameter(room, parameter));
+            if (!p.Exists || !p.HasValue) return Resolution.Unknown("Параметр источника помещения отсутствует или не заполнен.");
+            return Resolution.Known(p.Numeric ? p.Number.ToString("G", System.Globalization.CultureInfo.InvariantCulture) : p.Text);
+        }
+        private static Resolution SourceValue(UIDocument ui, Profile profile, Rule rule, Element e, Provenance source, Room room, string chosenLevel, Func<ParameterRef, Resolution> read)
+        {
+            switch (RuleEngine.Source(profile, rule))
+            {
+                case RuleValueSource.Constant: return Resolution.Known(rule.Constant);
+                case RuleValueSource.Level: return RuleEngine.Level(profile, LevelId(ui, profile, e, source, chosenLevel));
+                case RuleValueSource.Room:
+                    return rule.Source == RuleValueSource.ByGroup && rule.Group == ParameterGroup.Zone
+                        ? RoomValue(room, RoomField.Parameter, profile.RoomCorpusParameter) : RoomValue(room, rule.RoomField, rule.RoomParameter);
+                case RuleValueSource.ManualCorpus:
+                    return profile.Corpora.Contains(source.ManualCorpus) ? Resolution.Known(source.ManualCorpus)
+                            : Resolution.Unknown("У элемента не сохранён ручной выбор корпуса. Откройте «Настройки параметров» → «Источники» → «Корпуса для ручного выбора» → «Выбрать корпус».");
+                case RuleValueSource.ElementParameter:
+                    return read(rule.ElementParameter);
+                default: return Resolution.Unknown("Неизвестная группа правила.");
+            }
+        }
+        private static Resolution Expected(UIDocument ui, Profile profile, Rule rule, Element e, Provenance source, Room room, string chosenLevel, Func<ParameterRef, Resolution> read)
+        {
+            return RuleEngine.Evaluate(rule, token => {
+                if (token == "value") return SourceValue(ui, profile, rule, e, source, room, chosenLevel, read);
+                if (token == "level") return RuleEngine.Level(profile, LevelId(ui, profile, e, source, chosenLevel));
+                if (token == "room.number") return RoomValue(room, RoomField.Number, null);
+                if (token == "room.name") return RoomValue(room, RoomField.Name, null);
+                if (token.StartsWith("param:"))
+                {
+                    var parameters = e.GetParameters(token.Substring(6));
+                    if (parameters.Count != 1) return Resolution.Unknown("Параметр подстановки «" + token.Substring(6) + "» отсутствует или его имя неоднозначно.");
+                    var parameter = parameters[0]; return read(new ParameterRef { Name = parameter.Definition.Name, Id = Ids.Value(parameter.Id), SharedGuid = parameter.IsShared ? parameter.GUID.ToString() : null });
+                }
+                return Resolution.Unknown("Неизвестная подстановка: " + token);
+            });
+        }
+        private static Dictionary<string, Resolution> CalculatedValues(UIDocument ui, Profile profile, List<Rule> rules, Element element, Provenance source, Room room, string chosenLevel)
+        {
+            return RuleEngine.Calculate(rules, parameter => {
+                var value = Catalog.Read(Catalog.Parameter(element, parameter));
+                if (!value.Exists || !value.HasValue) return Resolution.Unknown("Исходный параметр «" + parameter?.Name + "» отсутствует или не заполнен.");
+                return Resolution.Known(value.Numeric ? value.Number.ToString("G", System.Globalization.CultureInfo.InvariantCulture) : value.Text);
+            }, (rule, read) => Expected(ui, profile, rule, element, source, room, chosenLevel, read));
+        }
+        private static List<Rule> Matching(Element element, IEnumerable<Rule> rules, List<Issue> issues, bool checking = false)
+        {
+            var matched = new List<Rule>();
+            foreach (var rule in rules)
+            {
+                var match = RuleEngine.Match(rule, Ids.Category(element.Category.Id), p => Catalog.Read(Catalog.Parameter(element, p)));
+                if (!match.Success) { if (!checking || rule.Required) issues.Add(Problem(element, rule.Target.Name, match.Error)); }
+                else if (match.Value == "true") matched.Add(rule);
+            }
+            if (matched.Any(r => matched.Any(other => other != r && RuleEngine.SameParameter(r.Target, other.Target))))
+            { issues.Add(Problem(element, "Правила", "Несколько правил подходят элементу и записывают один параметр. Уточните категории или условия во вкладке «Условия».")); return new List<Rule>(); }
+            return matched;
+        }
+        private static Room StoredRoom(Document doc, Provenance source)
+        {
+            if (string.IsNullOrEmpty(source.RoomUniqueId)) return null;
+            try { return doc.GetElement(source.RoomUniqueId) as Room; }
+            catch (Autodesk.Revit.Exceptions.ArgumentException) { return null; }
+        }
+        private static bool NeedsRoom(Profile p, IEnumerable<Rule> rules)
+        {
+            return rules.Any(r => RuleEngine.UsesRoom(p, r));
+        }
+        private static Issue Problem(Element e, string parameter, string reason, Check check = null)
+        {
+            return new Issue { ElementId = e.Id, Element = e.Category.Name + " · " + Ids.Value(e.Id),
+                Parameter = parameter, Reason = reason, Actual = check == null ? null : check.Actual,
+                Expected = check == null ? null : check.Expected };
+        }
+        internal static void Fill(UIApplication app, string corpus = null, ICollection<ElementId> captured = null, bool preview = false)
+        {
+            var ui = app.ActiveUIDocument; var doc = ui.Document; var profile = RequireProfile(doc);
+            var rules = profile.Rules.Where(r => r.Enabled && (corpus == null || RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus)).ToList();
+            if (corpus != null && (!rules.Any() || !profile.Corpora.Contains(corpus)))
+                throw new InvalidOperationException("Выбор корпуса доступен в режиме «Вручную».");
+            if (rules.Count == 0) throw new InvalidOperationException("Не включены правила для этой команды.");
+            var targets = Targets(ui, profile, true, captured);
+            var issues = new List<Issue>();
+            var perElement = targets.ToDictionary(e => e.Id, e => Matching(e, rules, issues));
+            targets = targets.Where(e => perElement[e.Id].Count > 0 && !issues.Any(i => i.ElementId == e.Id)).ToList();
+            if (targets.Count == 0) { if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Правила не применены"); else UI.Toast.Show(app.MainWindowHandle, "Выделенные элементы не подходят под категории и условия правил."); return; }
+            var relevantRules = targets.SelectMany(e => perElement[e.Id]).Distinct().ToList();
+            string chosenLevel = ChooseLevel(ui, profile, targets, relevantRules);
+            var roomResults = new Dictionary<ElementId, RoomResult>();
+            bool needsRoom = NeedsRoom(profile, relevantRules);
+            if (needsRoom && profile.RoomSourceMode == RoomSourceMode.ManualPick)
+            {
+                Room pickedRoom;
+                var originalSelection = ui.Selection.GetElementIds().ToList();
+                try
+                {
+                    var phase = UIDocumentContext.From(ui).Phase;
+                    if (ui.ActiveView is View3D)
+                    {
+                        var rooms = new FilteredElementCollector(doc).OfClass(typeof(SpatialElement)).OfType<Room>().Where(r => r.Area > 0 && phase != null && r.get_Parameter(BuiltInParameter.ROOM_PHASE).AsElementId() == phase.Id)
+                            .Select(r => new UI.ModelSourceChoice { Id = r.UniqueId, Name = r.Number + " · " + r.get_Parameter(BuiltInParameter.ROOM_NAME).AsString() + " · " + (doc.GetElement(r.LevelId)?.Name ?? "") }).OrderBy(r => r.Name).ToList();
+                        if (rooms.Count == 0) throw new InvalidOperationException("В фазе 3D-вида нет размещённых помещений. Проверьте фазу вида и помещения модели.");
+                        var picker = new UI.ModelSourceWindow("Выбрать помещение", "На 3D-виде выберите помещение-источник из списка модели.", rooms);
+                        new System.Windows.Interop.WindowInteropHelper(picker).Owner = app.MainWindowHandle;
+                        if (picker.ShowDialog() != true) throw new System.OperationCanceledException();
+                        pickedRoom = (Room)doc.GetElement(picker.SelectedId);
+                    }
+                    else { var reference = ui.Selection.PickObject(ObjectType.Element, new RoomFilter(), "Выберите помещение-источник для выделенных элементов"); var picked = doc.GetElement(reference); pickedRoom = picked as Room ?? (picked as RoomTag)?.Room; }
+                    if (phase == null || pickedRoom.get_Parameter(BuiltInParameter.ROOM_PHASE).AsElementId() != phase.Id)
+                        throw new InvalidOperationException("Выбранное помещение относится к другой фазе вида.");
+                }
+                finally { ui.Selection.SetElementIds(originalSelection); }
+                foreach (var target in targets) roomResults[target.Id] = new RoomResult { Room = pickedRoom };
+            }
+            else
+            {
+                var resolver = needsRoom ? new RoomResolver(UIDocumentContext.From(ui)) : null;
+                foreach (var target in targets) roomResults[target.Id] = resolver == null ? new RoomResult() : resolver.Resolve(target);
+            }
+            var applied = rules.ToDictionary(r => r.Id, r => new HashSet<string>());
+            if (preview)
+            {
+                foreach (var element in targets)
+                {
+                    var source = Storage.Source(element); var resolved = roomResults[element.Id]; var elementRules = perElement[element.Id];
+                    if (corpus != null) source.ManualCorpus = corpus;
+                    else if (string.IsNullOrWhiteSpace(source.ManualCorpus)) source.ManualCorpus = ParameterToolsModule.Host.CurrentCorpus(doc);
+                    var calculated = CalculatedValues(ui, profile, elementRules, element, source, resolved.Room, chosenLevel);
+                    foreach (var rule in elementRules)
+                    {
+                        var expected = calculated[rule.Id]; var parameter = Catalog.Parameter(element, rule.Target); var actual = Catalog.Read(parameter);
+                        string reason = "Будет записано. Значения модели пока не изменены.";
+                        if (NeedsRoom(profile, new[] { rule }) && resolved.Error != null) reason = resolved.Error;
+                        else if (!expected.Success) reason = expected.Error;
+                        else if (parameter == null && profile.AddMissingCategoryBindings) reason = "Параметр отсутствует. При заполнении будет предпринято добавление привязки категории.";
+                        else { try { Catalog.ValidateWrite(parameter, expected.Value); } catch (Exception ex) { reason = ex.Message; } }
+                        issues.Add(Problem(element, rule.Target.Name, reason, new Check { Actual = actual.Numeric ? actual.Number.ToString("G", System.Globalization.CultureInfo.InvariantCulture) : actual.Text, Expected = expected.Value }));
+                    }
+                }
+                UI.ReportWindow.Show(ui, issues, "Пробный расчёт — без записи"); return;
+            }
+            int success = 0;
+            using (var transaction = new Transaction(doc, corpus == null ? "SAB: заполнить параметры" : "SAB: назначить " + corpus))
+            {
+                transaction.Start();
+                var options = transaction.GetFailureHandlingOptions();
+                options.SetFailuresPreprocessor(new RollbackOnError());
+                options.SetClearAfterRollback(true); transaction.SetFailureHandlingOptions(options);
+                if (profile.AddMissingCategoryBindings)
+                    foreach (var rule in relevantRules) BindingService.Ensure(doc, targets.Where(e => perElement[e.Id].Contains(rule)).ToList(), new List<Rule> { rule });
+                foreach (var element in targets)
+                {
+                    var source = Storage.Source(element);
+                    var resolved = roomResults[element.Id];
+                    var elementRules = perElement[element.Id];
+                    if (NeedsRoom(profile, elementRules) && resolved.Error != null) { issues.Add(Problem(element, "Помещение-источник", resolved.Error)); continue; }
+                    if (resolved.Room != null) source.RoomUniqueId = resolved.Room.UniqueId;
+                    if (corpus != null) source.ManualCorpus = corpus;
+                    else if (rules.Any(r => RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus) && string.IsNullOrWhiteSpace(source.ManualCorpus))
+                        source.ManualCorpus = ParameterToolsModule.Host.CurrentCorpus(doc);
+                    Room room = resolved.Room;
+                    if (elementRules.Any(r => RuleEngine.UsesLevel(profile, r))) source.LevelUniqueId = LevelId(ui, profile, element, source, chosenLevel);
+                    var calculated = CalculatedValues(ui, profile, elementRules, element, source, room, chosenLevel);
+                    var values = elementRules.Select(r => new { Rule = r, Expected = calculated[r.Id] }).ToList();
+                    bool invalid = false;
+                    foreach (var value in values)
+                    {
+                        try
+                        {
+                            if (!value.Expected.Success) throw new InvalidOperationException(value.Expected.Error);
+                            Catalog.ValidateWrite(Catalog.Parameter(element, value.Rule.Target), value.Expected.Value);
+                        }
+                        catch (Exception ex) { issues.Add(Problem(element, value.Rule.Target.Name, ex.Message)); invalid = true; }
+                    }
+                    if (invalid) continue;
+                    using (var sub = new SubTransaction(doc))
+                    {
+                        sub.Start();
+                        try
+                        {
+                            foreach (var value in values) Catalog.Write(Catalog.Parameter(element, value.Rule.Target), value.Expected.Value);
+                            Storage.Source(element, source);
+                            if (sub.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Изменения элемента отменены Revit.");
+                            success++;
+                            foreach (var value in values) applied[value.Rule.Id].Add(value.Expected.Value);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (sub.GetStatus() == TransactionStatus.Started) sub.RollBack();
+                            issues.Add(Problem(element, "Заполнение", ex.Message));
+                        }
+                    }
+                }
+                if (transaction.Commit() != TransactionStatus.Committed)
+                    throw new InvalidOperationException("Revit отменил транзакцию. Значения этой операции не сохранены.");
+            }
+            if (corpus != null) ParameterToolsModule.Host.SetCorpus(doc, corpus);
+            string summary = "Заполнено: " + success + " из " + targets.Count;
+            foreach (var rule in rules)
+                if (applied[rule.Id].Count > 0) summary += "\n" + rule.Target.Name + ": " + string.Join("; ", applied[rule.Id].OrderBy(v => v).Take(5))
+                    + (applied[rule.Id].Count > 5 ? " … (значений: " + applied[rule.Id].Count + ")" : "");
+            UI.Toast.Show(app.MainWindowHandle, summary, 8);
+            if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Результат заполнения");
+        }
+        internal static void Check(UIApplication app)
+        {
+            var ui = app.ActiveUIDocument; var profile = RequireProfile(ui.Document);
+            var targets = Targets(ui, profile, false);
+            var categories = targets.GroupBy(e => Ids.Category(e.Category.Id)).Select(g => new CategoryChoice {
+                Id = g.Key, Name = g.First().Category.Name,
+                Selected = profile.CheckCategoryIds.Count > 0 ? profile.CheckCategoryIds.Contains(g.Key) : g.Key == (int)BuiltInCategory.OST_Walls
+            }).OrderBy(c => c.Name).ToList();
+            var window = new UI.CheckCategoriesWindow(categories);
+            new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;
+            if (window.ShowDialog() != true) return;
+            targets = targets.Where(e => window.CategoryIds.Contains(Ids.Category(e.Category.Id))).ToList();
+            // Remember only the check scope; filling keeps its own category selection.
+            profile.CheckCategoryIds = window.CategoryIds;
+            using (var settings = new Transaction(ui.Document, "SAB: категории проверки"))
+            { settings.Start(); Storage.Save(ui.Document, profile); if (settings.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Не удалось сохранить категории проверки."); }
+            var issues = new List<Issue>();
+            var roomRules = RuleEngine.ForCheck(profile.Rules.Where(r => r.Enabled).ToList(), profile);
+            var perElement = targets.ToDictionary(e => e.Id, e => RuleEngine.ForCheck(Matching(e, roomRules, issues, true), profile));
+            var relevantRules = perElement.Values.SelectMany(r => r).Distinct().ToList();
+            string chosenLevel = ChooseLevel(ui, profile, targets.Where(e => perElement[e.Id].Count > 0), relevantRules, true);
+            bool needsRoom = NeedsRoom(profile, relevantRules);
+            var resolver = needsRoom && profile.RoomSourceMode == RoomSourceMode.Automatic ? new RoomResolver(UIDocumentContext.From(ui)) : null;
+            foreach (var element in targets)
+            {
+                var source = Storage.Source(element);
+                var resolved = resolver != null ? resolver.Resolve(element) : new RoomResult { Room = needsRoom ? StoredRoom(ui.Document, source) : null };
+                var room = resolved.Room;
+                if (needsRoom && resolver == null)
+                {
+                    var phase = UIDocumentContext.From(ui).Phase;
+                    if (room == null) resolved.Error = "Не сохранено помещение-источник или оно удалено. Выполните заполнение и выберите помещение.";
+                    else if (phase == null || room.get_Parameter(BuiltInParameter.ROOM_PHASE).AsElementId() != phase.Id)
+                    { resolved.Error = "Сохранённое помещение относится к другой фазе вида."; room = null; }
+                }
+                if (NeedsRoom(profile, perElement[element.Id]) && resolved.Error != null) issues.Add(Problem(element, "Помещение-источник", resolved.Error));
+                if (NeedsRoom(profile, perElement[element.Id]) && resolver != null && room != null && !string.IsNullOrEmpty(source.RoomUniqueId) && source.RoomUniqueId != room.UniqueId)
+                    issues.Add(Problem(element, "Помещение-источник", "Элемент переместился в другое помещение. Выполните заполнение заново."));
+                var calculated = CalculatedValues(ui, profile, perElement[element.Id], element, source, room, StoredLevelValid(ui.Document, profile, source.LevelUniqueId) ? null : chosenLevel);
+                foreach (var rule in perElement[element.Id].Where(r => r.Required))
+                {
+                    var expected = calculated[rule.Id];
+                    var check = RuleEngine.Compare(Catalog.Read(Catalog.Parameter(element, rule.Target)), expected, rule.Tolerance, rule.CaseSensitive);
+                    if (check.Status != CheckStatus.Valid) issues.Add(Problem(element, rule.Target.Name, check.Reason, check));
+                }
+            }
+            ParameterToolsModule.Host.Highlight.Apply(ui, issues.Select(i => i.ElementId).Distinct().ToList());
+            UI.Toast.Show(app.MainWindowHandle, "Проверено: " + targets.Count + ". Проблемных элементов: " + issues.Select(i => i.ElementId).Distinct().Count());
+            if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Проверка параметров");
+        }
+        internal static void AssignCorpus(UIApplication app)
+        {
+            var profile = RequireProfile(app.ActiveUIDocument.Document);
+            if (!profile.Rules.Any(r => r.Enabled && RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus))
+                throw new InvalidOperationException("Во вкладке «Правила» выберите источник «Корпус вручную» хотя бы для одного правила.");
+            if (app.ActiveUIDocument.Selection.GetElementIds().Count == 0)
+                throw new InvalidOperationException("Сначала выделите элементы для назначения корпуса.");
+            var window = new UI.CorpusChoiceWindow(profile.Corpora);
+            new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;
+            if (window.ShowDialog() == true) Fill(app, window.Corpus);
+        }
+
+        internal static void Settings(UIApplication app)
+        {
+            var ui = app.ActiveUIDocument; var profile = Storage.Load(ui.Document);
+            {
+                var window = new UI.SettingsWindow(ui.Document, profile);
+                new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;
+                window.ShowDialog();
+                if (window.Action == UI.SettingsAction.Cancel) return;
+                profile = window.Profile;
+                profile.Configured = true;
+                using (var t = new Transaction(ui.Document, "SAB: настройки параметров"))
+                {
+                    t.Start(); Storage.Save(ui.Document, profile);
+                    if (t.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Настройки не сохранены.");
+                }
+                UI.Toast.Show(app.MainWindowHandle, "Настройки параметров сохранены");
+                if (window.Action == UI.SettingsAction.AssignCorpus) AssignCorpus(app);
+                return;
+            }
+        }
+    }
+    internal sealed class RollbackOnError : IFailuresPreprocessor
+    {
+        public FailureProcessingResult PreprocessFailures(FailuresAccessor accessor)
+        {
+            return accessor.GetFailureMessages().Any(f => f.GetSeverity() == FailureSeverity.Error)
+                ? FailureProcessingResult.ProceedWithRollBack : FailureProcessingResult.Continue;
+        }
+    }
+}

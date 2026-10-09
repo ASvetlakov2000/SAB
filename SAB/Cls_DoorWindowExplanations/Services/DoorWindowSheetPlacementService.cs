@@ -36,7 +36,7 @@ namespace SAB.DoorWindowExplanations.Services
             ViewSheet sheet = ViewSheet.Create(document, titleBlock.Id);
             sheet.SheetNumber = GetUniqueSheetNumber(document, settings.SheetNumber, sheet.Id);
             sheet.Name = string.IsNullOrWhiteSpace(settings.SheetName)
-                ? "Экспликации дверей и окон"
+                ? "Экспликации дверей, окон и витражей"
                 : settings.SheetName.Trim();
 
             document.Regenerate();

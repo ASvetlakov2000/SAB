@@ -12,32 +12,78 @@ namespace SAB.DoorWindowExplanations.Services
 
         public void PopulateCoordinateSystem(DoorWindowSelectionData selection)
         {
+            PopulateCoordinateSystem(selection, null, null);
+        }
+
+        public void PopulateCoordinateSystem(
+            DoorWindowSelectionData selection,
+            DoorWindowViewSettings settings,
+            XYZ interiorReferencePoint)
+        {
             if (selection == null || selection.Element == null)
             {
                 throw new ArgumentNullException(nameof(selection));
             }
 
             FamilyInstance familyInstance = selection.Element as FamilyInstance;
+            Wall curtainWall = selection.Element as Wall;
             Transform transform = selection.SourceToHostTransform ?? Transform.Identity;
 
             XYZ sourceOrigin = GetSourceOrigin(selection.Element);
             XYZ hostOrigin = transform.OfPoint(sourceOrigin);
-            XYZ sourceWidth = GetSourceWallDirection(familyInstance, sourceOrigin);
+            XYZ sourceWidth = curtainWall != null
+                ? GetWallDirection(curtainWall, sourceOrigin)
+                : GetSourceWallDirection(familyInstance, sourceOrigin);
             if (sourceWidth == null || sourceWidth.GetLength() < DirectionTolerance)
             {
                 sourceWidth = familyInstance != null ? familyInstance.HandOrientation : XYZ.BasisX;
             }
 
             XYZ width = FlattenAndNormalize(transform.OfVector(sourceWidth), XYZ.BasisX);
-            XYZ actualFacing = familyInstance != null
-                ? FlattenAndNormalize(transform.OfVector(familyInstance.FacingOrientation), XYZ.BasisY)
-                : XYZ.BasisY;
+            XYZ actualFacing;
+            if (curtainWall != null)
+            {
+                actualFacing = FlattenAndNormalize(
+                    transform.OfVector(curtainWall.Orientation),
+                    XYZ.BasisY);
+
+                CurtainWallFrontSideMode sideMode = settings != null
+                    ? settings.CurtainWallFrontSideMode
+                    : CurtainWallFrontSideMode.RevitExterior;
+                if (sideMode == CurtainWallFrontSideMode.RevitInterior)
+                {
+                    actualFacing = actualFacing.Negate();
+                }
+                else if (sideMode == CurtainWallFrontSideMode.AwayFromInteriorPoint &&
+                         interiorReferencePoint != null)
+                {
+                    XYZ fromInterior = hostOrigin - interiorReferencePoint;
+                    fromInterior = new XYZ(fromInterior.X, fromInterior.Y, 0.0);
+                    if (fromInterior.GetLength() > DirectionTolerance &&
+                        actualFacing.DotProduct(fromInterior) < 0.0)
+                    {
+                        actualFacing = actualFacing.Negate();
+                    }
+                }
+            }
+            else
+            {
+                actualFacing = familyInstance != null
+                    ? FlattenAndNormalize(transform.OfVector(familyInstance.FacingOrientation), XYZ.BasisY)
+                    : XYZ.BasisY;
+            }
 
             XYZ facing = XYZ.BasisZ.CrossProduct(width).Normalize();
             if (facing.DotProduct(actualFacing) < 0.0)
             {
                 width = width.Negate();
                 facing = XYZ.BasisZ.CrossProduct(width).Normalize();
+            }
+
+            if (selection.ReverseFrontSide)
+            {
+                width = width.Negate();
+                facing = facing.Negate();
             }
 
             selection.Origin = hostOrigin;
@@ -306,6 +352,20 @@ namespace SAB.DoorWindowExplanations.Services
 
         private XYZ GetSourceOrigin(Element element)
         {
+            Wall wall = element as Wall;
+            LocationCurve wallLocation = wall != null ? wall.Location as LocationCurve : null;
+            Curve wallCurve = wallLocation != null ? wallLocation.Curve : null;
+            if (wallCurve != null)
+            {
+                if (!(wallCurve is Line))
+                {
+                    throw new InvalidOperationException(
+                        "Криволинейные витражные стены пока не поддерживаются. Разделите витраж на прямолинейные участки.");
+                }
+
+                return wallCurve.Evaluate(0.5, true);
+            }
+
             LocationPoint locationPoint = element.Location as LocationPoint;
             if (locationPoint != null)
             {
@@ -343,6 +403,24 @@ namespace SAB.DoorWindowExplanations.Services
             {
                 return curve.GetEndPoint(1) - curve.GetEndPoint(0);
             }
+        }
+
+        private XYZ GetWallDirection(Wall wall, XYZ sourceOrigin)
+        {
+            LocationCurve locationCurve = wall != null ? wall.Location as LocationCurve : null;
+            Curve curve = locationCurve != null ? locationCurve.Curve : null;
+            if (curve == null)
+            {
+                return null;
+            }
+
+            if (!(curve is Line))
+            {
+                throw new InvalidOperationException(
+                    "Криволинейные витражные стены пока не поддерживаются. Разделите витраж на прямолинейные участки.");
+            }
+
+            return curve.GetEndPoint(1) - curve.GetEndPoint(0);
         }
 
         private XYZ FlattenAndNormalize(XYZ vector, XYZ fallback)

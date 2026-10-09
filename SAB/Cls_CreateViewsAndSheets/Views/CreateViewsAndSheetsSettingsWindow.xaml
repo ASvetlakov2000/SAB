@@ -1,4 +1,4 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Настройки создания видов и листов"
         Height="700"
@@ -45,7 +45,7 @@
                         <TextBlock Text="" Style="{StaticResource SabPanelHeaderTextStyle}" />
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer Style="{StaticResource SabFormScrollViewerStyle}" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
                             <Expander Style="{StaticResource SabPanelExpanderStyle}"
                                       IsExpanded="True"
@@ -259,7 +259,7 @@
                         <TextBlock Text="" Style="{StaticResource SabPanelHeaderTextStyle}" />
                     </StackPanel>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer Style="{StaticResource SabFormScrollViewerStyle}" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
                             <Expander Style="{StaticResource SabPanelExpanderStyle}"
                                       IsExpanded="True"

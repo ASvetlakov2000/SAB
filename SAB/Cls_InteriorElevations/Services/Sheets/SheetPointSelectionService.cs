@@ -26,7 +26,8 @@ namespace SAB.InteriorElevations.Services.Sheets
             IList<string> warnings,
             out XYZ pickedPoint,
             out ViewPlan pickedExistingRoomPlanView,
-            out bool wasCancelled)
+            out bool wasCancelled,
+            bool pickRoomPlanPosition = false)
         {
             pickedPoint = null;
             pickedExistingRoomPlanView = null;
@@ -81,14 +82,48 @@ namespace SAB.InteriorElevations.Services.Sheets
             try
             {
                 // Переключение вида выполняется только после закрытия транзакции создания листа.
-                uiDocument.ActiveView = coordinateSelectionSheet;
+                // Если команда запущена из активированного видового экрана план-схемы,
+                // назначение листа также завершает редактирование вида внутри листа.
+                if (uiDocument.ActiveView == null ||
+                    !RevitElementIdUtils.AreEqual(uiDocument.ActiveView.Id, coordinateSelectionSheet.Id))
+                {
+                    uiDocument.ActiveView = coordinateSelectionSheet;
+                }
                 ZoomSheetToFit(uiDocument, coordinateSelectionSheet.Id);
+
+                SheetRectangle planArea = null;
+                if (pickRoomPlanPosition)
+                {
+                    var workspace = new SheetWorkspaceService();
+                    try { workspace.PrepareFamilyGeometry(document, coordinateSelectionSheet); }
+                    catch (Exception exception) { SheetLayoutDiagnostics.Write("Plan point frame preparation: " + exception.Message); }
+                    using (var measurement = new Transaction(document, "Измерить лист для точки план-схемы"))
+                    {
+                        measurement.Start();
+                        IList<SheetRectangle> reserved;
+                        planArea = workspace.ReadPlanWorkspace(document, coordinateSelectionSheet,
+                            UnitConversionUtils.MillimetersToFeet(settings.SheetLayoutSettings.StartXmm),
+                            UnitConversionUtils.MillimetersToFeet(settings.SheetLayoutSettings.StartYmm), out reserved);
+                        measurement.RollBack();
+                    }
+                    if (planArea == null) throw new InvalidOperationException("Не удалось измерить границы листа для план-схемы.");
+                }
 
                 pickedPoint = uiDocument.Selection.PickPoint(
                     ObjectSnapTypes.None,
-                    "Укажите стартовую точку размещения нового комплекта разверток на листе.");
+                    pickRoomPlanPosition ? "Укажите нижний правый угол план-схемы с оформлением вне штампа." :
+                        "Укажите стартовую точку размещения нового комплекта разверток на листе.");
 
-                if (pickedPoint != null && usesExistingSheet && settings.CreateRoomPlanScheme)
+                if (pickedPoint != null && pickRoomPlanPosition)
+                {
+                    double right, bottom;
+                    SheetPlanPosition.Offsets(planArea, pickedPoint.X, pickedPoint.Y, out right, out bottom);
+                    settings.SheetLayoutSettings.RoomPlanOffsetRightMm = UnitConversionUtils.FeetToMillimeters(right);
+                    settings.SheetLayoutSettings.RoomPlanOffsetBottomMm = UnitConversionUtils.FeetToMillimeters(bottom);
+                    settings.SheetLayoutSettings.UseManualRoomPlanPosition = true;
+                }
+
+                if (pickedPoint != null && !pickRoomPlanPosition && usesExistingSheet && settings.CreateRoomPlanScheme)
                 {
                     try
                     {

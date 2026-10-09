@@ -59,6 +59,8 @@ namespace SAB.InteriorElevations.Services.Marks
             double scale = viewScale;
             double horizontalFeet = UnitConversionUtils.MillimetersToFeet(settings.HorizontalShoulderPaperMm * scale);
             double diagonalProjectionFeet = UnitConversionUtils.MillimetersToFeet(settings.DiagonalProjectionPaperMm * scale);
+            double bodyHalfWidthFeet = UnitConversionUtils.MillimetersToFeet(settings.BodyHalfWidthPaperMm * scale);
+            double bodyHalfHeightFeet = UnitConversionUtils.MillimetersToFeet(settings.BodyHalfHeightPaperMm * scale);
             double clearanceFeet = UnitConversionUtils.MillimetersToFeet(settings.MinimumOriginClearancePaperMm * scale);
 
             for (int contourIndex = 0; contourIndex < contours.Count; contourIndex++)
@@ -75,8 +77,11 @@ namespace SAB.InteriorElevations.Services.Marks
                         up,
                         horizontalFeet,
                         diagonalProjectionFeet,
+                        bodyHalfWidthFeet,
+                        bodyHalfHeightFeet,
                         clearanceFeet,
                         settings.RequireWholeLeaderInsideRoom,
+                        settings.RequireWholeBodyInsideRoom,
                         out placement))
                     {
                         result.Placements.Add(placement);
@@ -180,13 +185,13 @@ namespace SAB.InteriorElevations.Services.Marks
                     direction = FlattenAndNormalize(right + up);
                 }
 
-                XYZ originPoint = seed.Point + direction * nominalReach;
+                XYZ preferredOriginPoint = seed.Point + direction * nominalReach;
                 PlanCornerMarkOrientation orientation;
                 XYZ elbowPoint;
                 XYZ tipPoint;
                 double tipDeviation;
                 FindClosestOrientation(
-                    originPoint,
+                    preferredOriginPoint,
                     seed.Point,
                     right,
                     up,
@@ -197,18 +202,25 @@ namespace SAB.InteriorElevations.Services.Marks
                     out tipPoint,
                     out tipDeviation);
 
+                double horizontalSign = IsTipRight(orientation) ? 1.0 : -1.0;
+                double verticalSign = IsTipUpper(orientation) ? 1.0 : -1.0;
+                XYZ originPoint = seed.Point -
+                    right * (horizontalSign * (horizontalFeet + diagonalProjectionFeet)) -
+                    up * (verticalSign * diagonalProjectionFeet);
+                elbowPoint = originPoint + right * (horizontalSign * horizontalFeet);
+
                 PlanCornerMarkLayoutItem fallback = new PlanCornerMarkLayoutItem();
                 fallback.CornerNumber = seed.CornerNumber;
                 fallback.CornerPoint = seed.Point;
                 fallback.FamilyOriginPoint = originPoint;
                 fallback.LeaderElbowPoint = elbowPoint;
-                fallback.LeaderTipPoint = tipPoint;
+                fallback.LeaderTipPoint = seed.Point;
                 fallback.Orientation = orientation;
                 fallback.OriginClearanceFeet = 0.0;
                 fallback.IsFallback = true;
                 fallback.FallbackReason =
                     "Контур не удалось восстановить; использовано направление внутренних нормалей линий.";
-                fallback.TipDeviationFeet = tipDeviation;
+                fallback.TipDeviationFeet = 0.0;
                 result.Placements.Add(fallback);
                 addedFallbackCount++;
             }
@@ -283,8 +295,11 @@ namespace SAB.InteriorElevations.Services.Marks
             XYZ up,
             double horizontalFeet,
             double diagonalProjectionFeet,
+            double bodyHalfWidthFeet,
+            double bodyHalfHeightFeet,
             double requiredClearanceFeet,
             bool requireWholeLeaderInside,
+            bool requireWholeBodyInside,
             out PlanCornerMarkLayoutItem bestPlacement)
         {
             bestPlacement = null;
@@ -344,7 +359,15 @@ namespace SAB.InteriorElevations.Services.Marks
                 bool leaderIsInside = !requireWholeLeaderInside ||
                     (IsSegmentInsidePolygon(originPoint, elbowPoint, polygonNodes, false) &&
                      IsSegmentInsidePolygon(elbowPoint, cornerNode.Point, polygonNodes, true));
-                if (!hasRequiredClearance || !leaderIsInside)
+                bool bodyIsInside = !requireWholeBodyInside ||
+                    IsBodyInsidePolygon(
+                        originPoint,
+                        right,
+                        up,
+                        bodyHalfWidthFeet,
+                        bodyHalfHeightFeet,
+                        polygonNodes);
+                if (!hasRequiredClearance || !leaderIsInside || !bodyIsInside)
                 {
                     continue;
                 }
@@ -372,124 +395,80 @@ namespace SAB.InteriorElevations.Services.Marks
                 return true;
             }
 
-            bestPlacement = BuildAdaptiveFallbackPlacement(
+            bestPlacement = BuildExactFallbackPlacement(
                 polygonNodes,
                 cornerNode,
                 right,
                 up,
                 horizontalFeet,
-                diagonalProjectionFeet);
+                diagonalProjectionFeet,
+                bodyHalfWidthFeet,
+                bodyHalfHeightFeet);
             return bestPlacement != null;
         }
 
-        private PlanCornerMarkLayoutItem BuildAdaptiveFallbackPlacement(
+        private PlanCornerMarkLayoutItem BuildExactFallbackPlacement(
             IList<ContourNode> polygonNodes,
             ContourNode cornerNode,
             XYZ right,
             XYZ up,
             double horizontalFeet,
-            double diagonalProjectionFeet)
+            double diagonalProjectionFeet,
+            double bodyHalfWidthFeet,
+            double bodyHalfHeightFeet)
         {
-            double nominalReach = Math.Sqrt(
-                Math.Pow(horizontalFeet + diagonalProjectionFeet, 2.0) +
-                Math.Pow(diagonalProjectionFeet, 2.0));
-            nominalReach = Math.Max(nominalReach, GeometryTolerance * 100.0);
-
-            XYZ bestPoint = null;
-            PlanCornerMarkOrientation bestOrientation = PlanCornerMarkOrientation.TipUpperRight;
-            double bestScore = double.MaxValue;
-            double bestClearance = 0.0;
-
-            // Ищем внутри локальной окрестности угла. Угловой шаг 5 градусов
-            // позволяет работать и с острыми, и с вогнутыми углами.
-            const int directionCount = 72;
-            const int radialStepCount = 24;
-            for (int radialIndex = 1; radialIndex <= radialStepCount; radialIndex++)
+            PlanCornerMarkOrientation[] orientations =
             {
-                double radius = nominalReach * radialIndex / radialStepCount;
-                for (int directionIndex = 0; directionIndex < directionCount; directionIndex++)
+                PlanCornerMarkOrientation.TipUpperRight,
+                PlanCornerMarkOrientation.TipLowerRight,
+                PlanCornerMarkOrientation.TipUpperLeft,
+                PlanCornerMarkOrientation.TipLowerLeft
+            };
+
+            PlanCornerMarkLayoutItem bestPlacement = null;
+            int bestContainment = -1;
+            double bestClearance = double.MinValue;
+            for (int index = 0; index < orientations.Length; index++)
+            {
+                PlanCornerMarkOrientation orientation = orientations[index];
+                double horizontalSign = IsTipRight(orientation) ? 1.0 : -1.0;
+                double verticalSign = IsTipUpper(orientation) ? 1.0 : -1.0;
+                XYZ origin = cornerNode.Point -
+                    right * (horizontalSign * (horizontalFeet + diagonalProjectionFeet)) -
+                    up * (verticalSign * diagonalProjectionFeet);
+                XYZ elbow = origin + right * (horizontalSign * horizontalFeet);
+
+                bool originInside = IsPointStrictlyInsidePolygon(origin, polygonNodes);
+                bool bodyInside = IsBodyInsidePolygon(
+                    origin, right, up, bodyHalfWidthFeet, bodyHalfHeightFeet, polygonNodes);
+                int containment = (bodyInside ? 2 : 0) + (originInside ? 1 : 0);
+                double clearance = originInside
+                    ? GetMinimumDistanceToPolygon(origin, polygonNodes)
+                    : -GetMinimumDistanceToPolygon(origin, polygonNodes);
+                if (bestPlacement != null &&
+                    (containment < bestContainment ||
+                     (containment == bestContainment && clearance <= bestClearance + GeometryTolerance)))
                 {
-                    double angle = 2.0 * Math.PI * directionIndex / directionCount;
-                    XYZ direction = right * Math.Cos(angle) + up * Math.Sin(angle);
-                    XYZ candidatePoint = cornerNode.Point + direction * radius;
-                    if (!IsPointStrictlyInsidePolygon(candidatePoint, polygonNodes))
-                    {
-                        continue;
-                    }
-
-                    double clearance = GetMinimumDistanceToPolygon(candidatePoint, polygonNodes);
-                    PlanCornerMarkOrientation orientation;
-                    XYZ elbowPoint;
-                    XYZ tipPoint;
-                    double tipDeviation;
-                    FindClosestOrientation(
-                        candidatePoint,
-                        cornerNode.Point,
-                        right,
-                        up,
-                        horizontalFeet,
-                        diagonalProjectionFeet,
-                        out orientation,
-                        out elbowPoint,
-                        out tipPoint,
-                        out tipDeviation);
-
-                    // Главная цель резерва — не потерять марку и оставить ее центр
-                    // внутри. Далее минимизируем ошибку наконечника, а при равенстве
-                    // предпочитаем точку с большим запасом до границы.
-                    double score = tipDeviation - Math.Min(clearance, nominalReach) * 0.05;
-                    if (score >= bestScore - GeometryTolerance)
-                    {
-                        continue;
-                    }
-
-                    bestScore = score;
-                    bestPoint = candidatePoint;
-                    bestOrientation = orientation;
-                    bestClearance = clearance;
+                    continue;
                 }
+
+                bestPlacement = new PlanCornerMarkLayoutItem();
+                bestPlacement.CornerNumber = cornerNode.CornerNumber;
+                bestPlacement.CornerPoint = cornerNode.Point;
+                bestPlacement.FamilyOriginPoint = origin;
+                bestPlacement.LeaderElbowPoint = elbow;
+                bestPlacement.LeaderTipPoint = cornerNode.Point;
+                bestPlacement.Orientation = orientation;
+                bestPlacement.OriginClearanceFeet = Math.Max(0.0, clearance);
+                bestPlacement.IsFallback = true;
+                bestPlacement.FallbackReason =
+                    "Номинальная выноска не помещается внутри контура; наконечник сохранен в точке угла.";
+                bestPlacement.TipDeviationFeet = 0.0;
+                bestContainment = containment;
+                bestClearance = clearance;
             }
 
-            if (bestPoint == null)
-            {
-                bestPoint = FindAnyInteriorPoint(polygonNodes);
-                if (bestPoint == null)
-                {
-                    return null;
-                }
-            }
-
-            PlanCornerMarkOrientation finalOrientation;
-            XYZ finalElbowPoint;
-            XYZ finalTipPoint;
-            double finalTipDeviation;
-            FindClosestOrientation(
-                bestPoint,
-                cornerNode.Point,
-                right,
-                up,
-                horizontalFeet,
-                diagonalProjectionFeet,
-                out finalOrientation,
-                out finalElbowPoint,
-                out finalTipPoint,
-                out finalTipDeviation);
-
-            PlanCornerMarkLayoutItem fallback = new PlanCornerMarkLayoutItem();
-            fallback.CornerNumber = cornerNode.CornerNumber;
-            fallback.CornerPoint = cornerNode.Point;
-            fallback.FamilyOriginPoint = bestPoint;
-            fallback.LeaderElbowPoint = finalElbowPoint;
-            fallback.LeaderTipPoint = finalTipPoint;
-            fallback.Orientation = finalOrientation;
-            fallback.OriginClearanceFeet = bestClearance > 0.0
-                ? bestClearance
-                : GetMinimumDistanceToPolygon(bestPoint, polygonNodes);
-            fallback.IsFallback = true;
-            fallback.FallbackReason =
-                "Номинальная выноска не помещается. Центр марки адаптивно смещен внутрь помещения.";
-            fallback.TipDeviationFeet = finalTipDeviation;
-            return fallback;
+            return bestPlacement;
         }
 
         private void FindClosestOrientation(
@@ -896,6 +875,44 @@ namespace SAB.InteriorElevations.Services.Marks
             return true;
         }
 
+        private bool IsBodyInsidePolygon(
+            XYZ originPoint,
+            XYZ right,
+            XYZ up,
+            double halfWidthFeet,
+            double halfHeightFeet,
+            IList<ContourNode> polygon)
+        {
+            if (halfWidthFeet <= GeometryTolerance && halfHeightFeet <= GeometryTolerance)
+            {
+                return IsPointInsideOrOnBoundary(originPoint, polygon);
+            }
+
+            XYZ[] corners =
+            {
+                originPoint - right * halfWidthFeet - up * halfHeightFeet,
+                originPoint + right * halfWidthFeet - up * halfHeightFeet,
+                originPoint + right * halfWidthFeet + up * halfHeightFeet,
+                originPoint - right * halfWidthFeet + up * halfHeightFeet
+            };
+
+            for (int index = 0; index < corners.Length; index++)
+            {
+                if (!IsPointInsideOrOnBoundary(corners[index], polygon))
+                {
+                    return false;
+                }
+
+                XYZ nextCorner = corners[(index + 1) % corners.Length];
+                if (!IsSegmentInsidePolygon(corners[index], nextCorner, polygon, false))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private void AddSegmentIntersectionParameters(
             XYZ segmentStart,
             XYZ segmentEnd,
@@ -1059,6 +1076,8 @@ namespace SAB.InteriorElevations.Services.Marks
 
             if (settings.HorizontalShoulderPaperMm < 0.0 ||
                 settings.DiagonalProjectionPaperMm <= 0.0 ||
+                settings.BodyHalfWidthPaperMm < 0.0 ||
+                settings.BodyHalfHeightPaperMm < 0.0 ||
                 settings.MinimumOriginClearancePaperMm < 0.0 ||
                 settings.EndpointToleranceModelMm <= 0.0)
             {

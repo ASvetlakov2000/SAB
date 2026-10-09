@@ -24,6 +24,7 @@ namespace SAB.InteriorElevations.Services.Elevations
         private readonly ElevationMarkerService _markerService;
         private readonly ElevationCropService _cropService;
         private readonly ElevationNamingService _namingService;
+        private readonly ElevationGridExtentService _gridExtentService;
 
         public ElevationViewCreationService(
             ElevationMarkerService markerService,
@@ -33,6 +34,7 @@ namespace SAB.InteriorElevations.Services.Elevations
             _markerService = markerService;
             _cropService = cropService;
             _namingService = namingService;
+            _gridExtentService = new ElevationGridExtentService();
         }
 
         public ElevationViewCreationResult CreateElevationViews(
@@ -40,7 +42,8 @@ namespace SAB.InteriorElevations.Services.Elevations
             ViewPlan activePlanView,
             IList<ElevationLineData> elevationLines,
             ElevationSettings settings,
-            IList<string> warnings)
+            IList<string> warnings,
+            Action<int, int, ElevationViewCreationResult> progress = null)
         {
             ElevationViewCreationResult result = new ElevationViewCreationResult();
 
@@ -123,6 +126,9 @@ namespace SAB.InteriorElevations.Services.Elevations
 
                     bool cropApplied = _cropService.TryApplyCrop(createdView, lineData, settings, warnings);
 
+                    document.Regenerate();
+                    _gridExtentService.ApplyToView(document, createdView, settings, warnings);
+
                     // После применения шаблона повторно включаем отображение границы обрезки.
                     try
                     {
@@ -142,6 +148,7 @@ namespace SAB.InteriorElevations.Services.Elevations
                     viewData.StartCornerNumber = startPointNumber;
                     viewData.EndCornerNumber = endPointNumber;
                     viewData.MarkerElementId = markerElementId;
+                    viewData.AlignmentModelPoint = lineData.MidPoint;
 
                     result.CreatedViews.Add(viewData);
                 }
@@ -156,6 +163,13 @@ namespace SAB.InteriorElevations.Services.Elevations
                         warnings.Add(
                             "Не удалось создать развертку для линии " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
                             ": " + exception.Message);
+                    }
+                }
+                finally
+                {
+                    if (progress != null)
+                    {
+                        progress(i + 1, elevationLines.Count, result);
                     }
                 }
             }

@@ -10,6 +10,16 @@ namespace SAB.InteriorElevations.Services.Marks
 
         public const string ProjectSpecificCornerMarkFamilyName = "SAB_Марка угла_Развертки";
 
+        public const string PlanCornerMarkFamilyName = "SAB_Марка угла_План";
+
+        public const string PlanCornerVisibilityUpperLeftParameterName = "S1";
+
+        public const string PlanCornerVisibilityUpperRightParameterName = "S2";
+
+        public const string PlanCornerVisibilityLowerLeftParameterName = "S3";
+
+        public const string PlanCornerVisibilityLowerRightParameterName = "S4";
+
         public const string LeftCornerMarkTypeName = "Left";
 
         public const string RightCornerMarkTypeName = "Right";

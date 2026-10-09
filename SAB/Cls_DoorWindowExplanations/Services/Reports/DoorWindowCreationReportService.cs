@@ -10,15 +10,23 @@ namespace SAB.DoorWindowExplanations.Services.Reports
             int selectedElementsCount,
             DoorWindowBatchCreationResult creationResult)
         {
-            int createdViewsCount = creationResult != null
-                ? creationResult.ViewGroups.Count * 3
-                : 0;
+            int createdViewsCount = 0;
+            if (creationResult != null)
+            {
+                for (int index = 0; index < creationResult.ViewGroups.Count; index++)
+                {
+                    DoorWindowViewCreationResult group = creationResult.ViewGroups[index];
+                    createdViewsCount += group != null ? group.GetViews().Count : 0;
+                }
+            }
 
             StringBuilder reportBuilder = new StringBuilder();
-            reportBuilder.AppendLine("Отчет SAB по созданию экспликаций дверей и окон");
+            reportBuilder.AppendLine("Отчет SAB по созданию экспликаций дверей, окон и витражей");
             reportBuilder.AppendLine();
             reportBuilder.AppendLine("Выбрано элементов: " + selectedElementsCount);
             reportBuilder.AppendLine("Создано видов: " + createdViewsCount);
+            reportBuilder.AppendLine("Создано размеров: " + (creationResult != null ? creationResult.DimensionsCreated : 0));
+            reportBuilder.AppendLine("Записано изображений в параметры: " + (creationResult != null ? creationResult.ImagesAssigned : 0));
 
             if (creationResult != null && creationResult.Sheet != null)
             {
@@ -32,17 +40,38 @@ namespace SAB.DoorWindowExplanations.Services.Reports
                 reportBuilder.AppendLine("Размещено видовых экранов: 0");
             }
 
+            if (creationResult != null && creationResult.ExportedImagePaths.Count > 0)
+            {
+                reportBuilder.AppendLine("Экспортировано PNG: " + creationResult.ExportedImagePaths.Count);
+                reportBuilder.AppendLine("Папка PNG: " + creationResult.ImageOutputFolder);
+            }
+
+            if (creationResult != null && creationResult.Warnings.Count > 0)
+            {
+                reportBuilder.AppendLine();
+                reportBuilder.AppendLine("Предупреждения: " + creationResult.Warnings.Count);
+                int warningLimit = System.Math.Min(5, creationResult.Warnings.Count);
+                for (int index = 0; index < warningLimit; index++)
+                {
+                    reportBuilder.AppendLine("• " + creationResult.Warnings[index]);
+                }
+
+                if (creationResult.Warnings.Count > warningLimit)
+                {
+                    reportBuilder.AppendLine("• Ещё: " + (creationResult.Warnings.Count - warningLimit));
+                }
+            }
             if (createdViewsCount > 0)
             {
                 ToastNotifier.ShowSuccess(
-                    "SAB Экспликации дверей и окон",
+                    "SAB Экспликации дверей, окон и витражей",
                     reportBuilder.ToString(),
                     15);
             }
             else
             {
                 ToastNotifier.ShowWarning(
-                    "SAB Экспликации дверей и окон",
+                    "SAB Экспликации дверей, окон и витражей",
                     reportBuilder.ToString(),
                     15);
             }

@@ -8,6 +8,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Shell;
 using Helpers.Notifications.ToastNotifications;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.ViewModels;
@@ -21,7 +23,8 @@ namespace SAB.InteriorElevations.Views
         PickSelection = 1,
         Create = 2,
         PickSheetPoint = 3,
-        PickCropByExample = 4
+        PickCropByExample = 4,
+        PickRoomPlanPoint = 5
     }
 
     public partial class ElevationSettingsWindow : Window
@@ -39,12 +42,21 @@ namespace SAB.InteriorElevations.Views
         private readonly bool _initialHasSelection;
         private readonly string _initialSelectionStatusText;
         private readonly string _initialWarningInfoText;
+        private readonly bool _initialOnlyCornerNumber;
+        private readonly bool _initialBelowView;
 
         private Button _okButton;
         private Button _cancelButton;
         private Button _pickLinesButton;
         private Button _pickSheetPointButton;
+        private Button _pickRoomPlanPointButton;
         private Button _pickCropByExampleButton;
+        private Button _minimizeWindowButton;
+        private Button _closeWindowButton;
+        private TabControl _settingsTabControl;
+        private TabItem _sheetTabItem;
+        private Border _titleBar;
+        private Grid _windowRoot;
         private RichTextBox _elevationNameFormulaEditor;
         private RichTextBox _elevationTitleFormulaEditor;
         private RichTextBox _sheetNameFormulaEditor;
@@ -53,6 +65,10 @@ namespace SAB.InteriorElevations.Views
         private Border _warningInfoBorder;
         private TextBlock _selectionStatusTextBlock;
         private TextBlock _warningInfoTextBlock;
+        private RadioButton _onlyCornerNumberRadio;
+        private RadioButton _withRoomNumberRadio;
+        private RadioButton _belowViewRadio;
+        private RadioButton _aboveViewRadio;
         private bool _isUpdatingFormulaEditors;
 
         public ElevationSettingsWindow(ElevationSettingsViewModel viewModel)
@@ -67,12 +83,14 @@ namespace SAB.InteriorElevations.Views
             string initialWarningInfoText)
         {
             _viewModel = viewModel;
+            _initialOnlyCornerNumber = viewModel.CornerMarksOnlyCornerNumber;
+            _initialBelowView = viewModel.SheetCornerMarksBelowView;
             _initialHasSelection = initialHasSelection;
             _initialSelectionStatusText = string.IsNullOrWhiteSpace(initialSelectionStatusText)
                 ? "Линии и помещение не выбраны."
                 : initialSelectionStatusText;
             _initialWarningInfoText = string.IsNullOrWhiteSpace(initialWarningInfoText)
-                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане. Параметры сохраняются и будут использованы при следующем запуске команды."
+                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане."
                 : initialWarningInfoText;
 
             // Основной блок инициализации окна: загружаем XAML, назначаем DataContext и подключаем кнопки.
@@ -80,7 +98,9 @@ namespace SAB.InteriorElevations.Views
             DataContext = _viewModel;
             InitializeFormulaEditors();
             ApplyInitialSelectionUiState();
+            SelectRequiredWorkflowTab();
             AttachButtonHandlers();
+            AttachWindowBehaviorHandlers();
         }
 
         public ElevationSettings SelectedSettings { get; private set; }
@@ -112,7 +132,14 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton = loadedWindow.FindName("CancelButton") as Button;
                 _pickLinesButton = loadedWindow.FindName("PickLinesButton") as Button;
                 _pickSheetPointButton = loadedWindow.FindName("PickSheetPointButton") as Button;
+                _pickRoomPlanPointButton = loadedWindow.FindName("PickRoomPlanPointButton") as Button;
                 _pickCropByExampleButton = loadedWindow.FindName("PickCropByExampleButton") as Button;
+                _minimizeWindowButton = loadedWindow.FindName("MinimizeWindowButton") as Button;
+                _closeWindowButton = loadedWindow.FindName("CloseWindowButton") as Button;
+                _settingsTabControl = loadedWindow.FindName("SettingsTabControl") as TabControl;
+                _sheetTabItem = loadedWindow.FindName("SheetTabItem") as TabItem;
+                _titleBar = loadedWindow.FindName("TitleBar") as Border;
+                _windowRoot = loadedWindow.FindName("WindowRoot") as Grid;
                 _elevationNameFormulaEditor = loadedWindow.FindName("ElevationNameFormulaEditor") as RichTextBox;
                 _elevationTitleFormulaEditor = loadedWindow.FindName("ElevationTitleFormulaEditor") as RichTextBox;
                 _sheetNameFormulaEditor = loadedWindow.FindName("SheetNameFormulaEditor") as RichTextBox;
@@ -121,6 +148,10 @@ namespace SAB.InteriorElevations.Views
                 _warningInfoBorder = loadedWindow.FindName("WarningInfoBorder") as Border;
                 _selectionStatusTextBlock = loadedWindow.FindName("SelectionStatusTextBlock") as TextBlock;
                 _warningInfoTextBlock = loadedWindow.FindName("WarningInfoTextBlock") as TextBlock;
+                _onlyCornerNumberRadio = loadedWindow.FindName("CornerMarksOnlyCornerNumberRadio") as RadioButton;
+                _withRoomNumberRadio = loadedWindow.FindName("CornerMarksWithRoomNumberRadio") as RadioButton;
+                _belowViewRadio = loadedWindow.FindName("SheetCornerMarksBelowViewRadio") as RadioButton;
+                _aboveViewRadio = loadedWindow.FindName("SheetCornerMarksAboveViewRadio") as RadioButton;
 
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
@@ -129,6 +160,8 @@ namespace SAB.InteriorElevations.Views
                 MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
                 ResizeMode = loadedWindow.ResizeMode;
+                WindowStyle = loadedWindow.WindowStyle;
+                AllowsTransparency = loadedWindow.AllowsTransparency;
                 Style = loadedWindow.Style;
                 Background = loadedWindow.Background;
                 FontFamily = loadedWindow.FontFamily;
@@ -137,8 +170,105 @@ namespace SAB.InteriorElevations.Views
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
 
+                WindowChrome loadedChrome = WindowChrome.GetWindowChrome(loadedWindow);
+                if (loadedChrome != null)
+                {
+                    WindowChrome.SetWindowChrome(this, (WindowChrome)loadedChrome.Clone());
+                }
+
                 WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationSettingsWindow.V2");
             }
+        }
+
+        private void AttachWindowBehaviorHandlers()
+        {
+            _titleBar = _titleBar ?? FindElementByName<Border>(Content as DependencyObject, "TitleBar");
+            _windowRoot = _windowRoot ?? FindElementByName<Grid>(Content as DependencyObject, "WindowRoot");
+            _minimizeWindowButton = _minimizeWindowButton ??
+                                    FindElementByName<Button>(Content as DependencyObject, "MinimizeWindowButton");
+            _closeWindowButton = _closeWindowButton ??
+                                 FindElementByName<Button>(Content as DependencyObject, "CloseWindowButton");
+
+            if (_titleBar == null ||
+                _windowRoot == null ||
+                _minimizeWindowButton == null ||
+                _closeWindowButton == null)
+            {
+                throw new InvalidOperationException("Не удалось привязать элементы рамки окна настроек.");
+            }
+
+            _titleBar.MouseLeftButtonDown += TitleBar_MouseLeftButtonDown;
+            _minimizeWindowButton.Click += MinimizeWindowButton_Click;
+            _closeWindowButton.Click += CloseWindowButton_Click;
+            Loaded += ElevationSettingsWindow_Loaded;
+            Closed += ElevationSettingsWindow_Closed;
+        }
+
+        private void ElevationSettingsWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CornerMarksOnlyCornerNumber = _initialOnlyCornerNumber;
+            _viewModel.SheetCornerMarksBelowView = _initialBelowView;
+            if (_onlyCornerNumberRadio != null && _withRoomNumberRadio != null)
+            {
+                _onlyCornerNumberRadio.IsChecked = _initialOnlyCornerNumber;
+                _withRoomNumberRadio.IsChecked = !_initialOnlyCornerNumber;
+            }
+            if (_belowViewRadio != null && _aboveViewRadio != null)
+            {
+                _belowViewRadio.IsChecked = _initialBelowView;
+                _aboveViewRadio.IsChecked = !_initialBelowView;
+            }
+
+            SabWindowBehaviorService.ApplyLoadedBehavior(this);
+        }
+
+        private void ElevationSettingsWindow_Closed(object sender, EventArgs e)
+        {
+            CaptureMarkChoicesFromControls();
+        }
+
+        private void CaptureMarkChoicesFromControls()
+        {
+            if (_onlyCornerNumberRadio != null && _onlyCornerNumberRadio.IsChecked == true)
+            {
+                _viewModel.CornerMarksOnlyCornerNumber = true;
+            }
+            else if (_withRoomNumberRadio != null && _withRoomNumberRadio.IsChecked == true)
+            {
+                _viewModel.CornerMarksOnlyCornerNumber = false;
+            }
+
+            if (_belowViewRadio != null && _belowViewRadio.IsChecked == true)
+            {
+                _viewModel.SheetCornerMarksBelowView = true;
+            }
+            else if (_aboveViewRadio != null && _aboveViewRadio.IsChecked == true)
+            {
+                _viewModel.SheetCornerMarksBelowView = false;
+            }
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                WindowState = WindowState == WindowState.Maximized
+                    ? WindowState.Normal
+                    : WindowState.Maximized;
+                return;
+            }
+
+            DragMove();
+        }
+
+        private void MinimizeWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void CloseWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            CancelButton_Click(sender, e);
         }
 
         private void InitializeFormulaEditors()
@@ -375,6 +505,7 @@ namespace SAB.InteriorElevations.Views
                 _cancelButton == null ||
                 _pickLinesButton == null ||
                 _pickSheetPointButton == null ||
+                _pickRoomPlanPointButton == null ||
                 _pickCropByExampleButton == null)
             {
                 throw new InvalidOperationException("Не удалось привязать кнопки окна настроек.");
@@ -384,7 +515,29 @@ namespace SAB.InteriorElevations.Views
             _cancelButton.Click += CancelButton_Click;
             _pickLinesButton.Click += PickLinesButton_Click;
             _pickSheetPointButton.Click += PickSheetPointButton_Click;
+            _pickRoomPlanPointButton.Click += PickRoomPlanPointButton_Click;
             _pickCropByExampleButton.Click += PickCropByExampleButton_Click;
+        }
+
+        private void SelectRequiredWorkflowTab()
+        {
+            if (!_initialHasSelection ||
+                !_viewModel.UseExistingSheet ||
+                !_viewModel.CreateRoomPlanScheme ||
+                _viewModel.HasExistingRoomPlanSelection)
+            {
+                return;
+            }
+
+            _settingsTabControl = _settingsTabControl ??
+                                  FindElementByName<TabControl>(Content as DependencyObject, "SettingsTabControl");
+            _sheetTabItem = _sheetTabItem ??
+                            FindElementByName<TabItem>(Content as DependencyObject, "SheetTabItem");
+
+            if (_settingsTabControl != null && _sheetTabItem != null)
+            {
+                _settingsTabControl.SelectedItem = _sheetTabItem;
+            }
         }
 
         private void ApplyInitialSelectionUiState()
@@ -451,12 +604,14 @@ namespace SAB.InteriorElevations.Views
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
+            CaptureMarkChoicesFromControls();
             ElevationSettings settings;
             string validationMessage;
 
             if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
             {
                 SetWarningInfoText(validationMessage);
+                SelectRequiredWorkflowTab();
                 ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
                 return;
             }
@@ -476,6 +631,7 @@ namespace SAB.InteriorElevations.Views
 
         private void PickSheetPointButton_Click(object sender, RoutedEventArgs e)
         {
+            CaptureMarkChoicesFromControls();
             ElevationSettings settings;
             string validationMessage;
 
@@ -492,8 +648,26 @@ namespace SAB.InteriorElevations.Views
             Close();
         }
 
+        private void PickRoomPlanPointButton_Click(object sender, RoutedEventArgs e)
+        {
+            CaptureMarkChoicesFromControls();
+            ElevationSettings settings;
+            string validationMessage;
+            if (!_viewModel.TryBuildSettings(out settings, out validationMessage, false, false))
+            {
+                SetWarningInfoText(validationMessage);
+                ToastNotifier.ShowWarning("SAB Развертки", validationMessage);
+                return;
+            }
+            SelectedSettings = settings;
+            RequestedAction = ElevationSettingsWindowAction.PickRoomPlanPoint;
+            DialogResult = true;
+            Close();
+        }
+
         private void PickCropByExampleButton_Click(object sender, RoutedEventArgs e)
         {
+            CaptureMarkChoicesFromControls();
             ElevationSettings settings;
             string validationMessage;
 
@@ -549,7 +723,7 @@ namespace SAB.InteriorElevations.Views
             }
 
             _warningInfoTextBlock.Text = string.IsNullOrWhiteSpace(text)
-                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане. Параметры сохраняются и будут использованы при следующем запуске команды."
+                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане."
                 : text;
 
             Style panelStyle = TryFindResource("SabAccentInfoPanelStyle") as Style;
