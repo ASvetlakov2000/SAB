@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="Cls_ParameterTools\BindingService.cs" />
     <Compile Include="Cls_ParameterTools\Catalog.cs" />
+    <Compile Include="Cls_ParameterTools\Catalog.Write.cs" />
     <Compile Include="Cls_ParameterTools\Commands.cs" />
     <Compile Include="Cls_ParameterTools\Core\Models.cs" />
     <Compile Include="Cls_ParameterTools\Core\RuleEngine.cs" />

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../SAB/Cls_ParameterTools/Catalog.Write.cs" Link="Catalog.Write.cs" />
+    <Compile Include="../../SAB/Cls_ParameterTools/Core/*.cs" Link="Core/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

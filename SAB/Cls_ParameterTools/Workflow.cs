@@ -31,6 +31,13 @@ namespace SAB.ParameterTools
     }
     internal static class Workflow
     {
+        private sealed class PendingWrite
+        {
+            internal ElementId ElementId;
+            internal string ElementLabel;
+            internal Rule Rule;
+            internal string Expected;
+        }
         internal static Profile RequireProfile(Document doc)
         {
             var p = Storage.Load(doc);
@@ -276,6 +283,7 @@ namespace SAB.ParameterTools
                     foreach (var target in targets) roomResults[target.Id] = resolver == null || !NeedsRoom(profile, perElement[target.Id]) ? new RoomResult() : resolver.Resolve(target);
             }
             var applied = rules.ToDictionary(r => r.Id, r => new HashSet<string>());
+            var pendingWrites = new List<PendingWrite>();
             int success = 0, written = 0;
             bool committed = false;
             var failures = new RollbackOnError();
@@ -332,6 +340,7 @@ namespace SAB.ParameterTools
                                 {
                                     Catalog.Write(parameter, value.Expected.Value);
                                     if (sub.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Запись этого параметра отменена Revit при завершении подоперации.");
+                                    pendingWrites.Add(new PendingWrite { ElementId = element.Id, ElementLabel = element.Category.Name + " · " + Ids.Value(element.Id), Rule = value.Rule, Expected = value.Expected.Value });
                                     elementWritten = true; written++;
                                     applied[value.Rule.Id].Add(value.Expected.Value);
                                 }
@@ -378,6 +387,39 @@ namespace SAB.ParameterTools
                     if (transaction.GetStatus() == TransactionStatus.Started) transaction.RollBack();
                     issues.Add(new Issue { Element = "Операция", Parameter = "Запись параметров / привязки категорий", Reason = ex.Message, Technical = ex.ToString() });
                 }
+            }
+            if (committed)
+            {
+                // The outer Commit regenerates the model and runs updaters. Only now
+                // can final values be trusted; do not retain pre-commit Parameters.
+                var verifiedElements = new HashSet<ElementId>();
+                written = 0;
+                foreach (var values in applied.Values) values.Clear();
+                foreach (var pending in pendingWrites)
+                {
+                    Element element = null;
+                    Parameter parameter = null;
+                    try
+                    {
+                        element = doc.GetElement(pending.ElementId);
+                        parameter = Catalog.Parameter(element, pending.Rule.Target);
+                        var check = RuleEngine.Compare(Catalog.Read(parameter), Resolution.Known(pending.Expected));
+                        if (check.Status != CheckStatus.Valid)
+                            throw new InvalidOperationException("После завершения транзакции значение не совпадает с правилом. Сейчас: «" + check.Actual + "»; ожидалось: «" + pending.Expected + "». Запись была принята до Commit; итог мог измениться при обработке ограничений или обновляющих модулей Revit. Остальные подтверждённые записи сохранены.");
+                        verifiedElements.Add(pending.ElementId);
+                        written++;
+                        applied[pending.Rule.Id].Add(pending.Expected);
+                    }
+                    catch (Exception ex)
+                    {
+                        var issue = element == null
+                            ? new Issue { ElementId = pending.ElementId, Element = pending.ElementLabel, Parameter = Catalog.Describe(pending.Rule.Target), Expected = pending.Expected, Reason = "Не удалось проверить запись после Commit: " + ex.Message, Technical = ex.ToString() }
+                            : WriteProblem(element, pending.Rule, parameter, pending.Expected, ex);
+                        issue.Technical += "\nЭтап: проверка после Transaction.Commit = Committed. Параметр повторно получен по GUID/ID.";
+                        issues.Add(issue);
+                    }
+                }
+                success = verifiedElements.Count;
             }
             issues.AddRange(failures.Issues);
             issues.AddRange(GroupIssues(groupSkips));
