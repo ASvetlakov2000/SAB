@@ -3,125 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="assets/sab-work.css">
-  <title>SAB - Инструкции SAB</title>
+  <link rel="stylesheet" href="assets/template.css">
+  <title>SAB — инструкции пользователя</title>
 </head>
-<body class="landing-rows-page">
+<body>
 <nav class="globalnav" aria-label="SAB">
   <div class="globalnav__inner">
     <a class="globalnav__brand" href="IDEOLOGIST_HTML_Instruktsii.html">SAB</a>
     <span class="globalnav__divider" aria-hidden="true"></span>
-    <div class="globalnav__links">
-      <a href="IDEOLOGIST_HTML_Instruktsii.html">Инструкции</a>
-      <a href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">Библиотека</a>
-      <a href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">Регламент</a>
-      <a href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">Развертки</a>
-      <a href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">Листы</a>
-    </div>
+    <div class="globalnav__links"><a href="#instructions">Инструкции</a><a href="#access">Как открыть</a></div>
   </div>
 </nav>
-<nav class="localnav" aria-label="Навигация по кластерам">
+<nav class="localnav" aria-label="Навигация по странице">
   <div class="localnav__inner">
     <a class="localnav__title" href="#top">Инструкции SAB</a>
-    <div class="localnav__links">
-      <a href="#library">Библиотека</a>
-      <a href="#regulations">Регламент</a>
-      <a href="#elevations">Развертки</a>
-      <a href="#sheets">Листы</a>
-    </div>
+    <div class="localnav__links"><a href="#instructions">Доступные инструкции</a><a href="#access">Локальная справка</a></div>
   </div>
 </nav>
-<main id="top" class="landing-rows">
-  <section class="landing-rows__hero">
-    <div class="landing-rows__inner">
-      <p class="eyebrow">Страницы</p>
-      <h1>Инструкции SAB.</h1>
-      <p class="landing-rows__lead">Страницы разделены по кластерам, которые соответствуют кнопкам в Revit.</p>
+<main id="top">
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Инструкции · SAB</p>
+      <h1>Инструменты SAB.</h1>
+      <p class="hero__copy">Подготовка, настройки и рабочие сценарии. Выберите инструмент, чтобы открыть его инструкцию.</p>
+      <div class="hero__links"><a href="#instructions">Выбрать инструкцию</a><a href="#access">Как работает справка</a></div>
     </div>
   </section>
-
-  <section class="landing-rows__section" id="library">
-    <div class="landing-rows__inner">
-      <header class="landing-cluster-heading">
-        <h2>Библиотека</h2>
-        <p>Экспорт, подготовка в таблицах, обратная загрузка, размещение и HTML-просмотр библиотечных данных.</p>
-      </header>
-      <div class="landing-row-list">
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Sistemnye_semeystva_i_PNG_pirogov.html">
-          <span><strong>Системные</strong><small>Экспорт системных типов и PNG пирогов</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html">
-          <span><strong>Загружаемые</strong><small>Экспорт загружаемых семейств и PNG миниатюр</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Linii_shtrihovki_i_razmeschenie.html">
-          <span><strong>Линии и штриховки</strong><small>Экспорт, размещение и PNG-образцы</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Pereimenovanie_tipov.html">
-          <span><strong>Типы</strong><small>Переименование типов по XLSX/CSV</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Pereimenovanie_materialov.html">
-          <span><strong>Материалы</strong><small>Переименование материалов по XLSX/CSV</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_HTML_prosmotr_CSV.html">
-          <span><strong>HTML просмотр</strong><small>Профильный просмотр CSV</small></span><b>›</b>
-        </a>
+  <section class="section section--soft" id="instructions">
+    <div class="section__inner">
+      <p class="eyebrow">Доступные инструкции</p>
+      <h2>Заполнение параметров.</h2>
+      <p class="section__lead">Первая инструкция общего раздела: от выбора параметра до проверки результата.</p>
+      <div class="index-list">
+        <a class="index-link" href="IDEOLOGIST_HTML_Zapolnenie_parametrov.html"><span><strong>Заполнение и проверка параметров</strong>Помещения, корпуса, этажи, постоянные значения, ручной выбор, сопоставления, группы и перенос настроек.</span><b aria-hidden="true">↗</b></a>
       </div>
+      <div class="content-stack"><p>Раздел будет дополняться инструкциями по другим инструментам SAB. Здесь показаны инструкции, включённые в текущую версию справки.</p></div>
     </div>
   </section>
-
-  <section class="landing-rows__section" id="regulations">
-    <div class="landing-rows__inner">
-      <header class="landing-cluster-heading">
-        <h2>Регламент</h2>
-        <p>Открытие HTML-регламентов по стандартам наименования.</p>
-      </header>
-      <div class="landing-row-list">
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Standarty_naimenovaniya.html">
-          <span><strong>Наименования</strong><small>Стандарты наименования</small></span><b>›</b>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="landing-rows__section" id="elevations">
-    <div class="landing-rows__inner">
-      <header class="landing-cluster-heading">
-        <h2>Развертки</h2>
-        <p>Создание разверток по линиям, разворот видов, перенос и выравнивание марок.</p>
-      </header>
-      <div class="landing-row-list">
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Sozdanie_i_korrektirovka_razvertok.html">
-          <span><strong>Создать развертки</strong><small>Создание разверток по линиям и настройка обрезки</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Razvorot_razvertki_180.html">
-          <span><strong>Разворот 180</strong><small>Разворот направления готовой развертки</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Perenos_vidov_na_sleduyuschiy_list.html">
-          <span><strong>Перенос видов на следующий лист</strong><small>Перенос выбранных viewport разверток</small></span><b>›</b>
-        </a>
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Vyrovnyat_marki_uglov.html">
-          <span><strong>Выровнять марки</strong><small>Единый отступ марок углов на плане</small></span><b>›</b>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="landing-rows__section" id="sheets">
-    <div class="landing-rows__inner">
-      <header class="landing-cluster-heading">
-        <h2>Листы</h2>
-        <p>Создание листов, дублирование видов и размещение viewport.</p>
-      </header>
-      <div class="landing-row-list">
-        <a class="landing-row-link" href="IDEOLOGIST_HTML_Sozdat_vidy_i_listy.html">
-          <span><strong>Создать виды и листы</strong><small>Создание листов и видов</small></span><b>›</b>
-        </a>
+  <section class="section" id="access">
+    <div class="section__inner">
+      <p class="eyebrow">Локальная справка</p>
+      <h2>Всегда рядом с плагином.</h2>
+      <div class="content-stack">
+        <ol class="steps">
+          <li><span class="step-text">В Revit откройте вкладку <span class="kbd">SAB</span>, панель <span class="kbd">Настройки</span> и нажмите <span class="cmd">Инструкции</span>. Этот раздел откроется в браузере по умолчанию Windows.</span></li>
+          <li><span class="step-text">Выберите нужную инструкцию. Внутри неё используйте навигацию по разделам; ссылка <span class="cmd">Все инструкции</span> возвращает на эту страницу.</span></li>
+          <li><span class="step-text">В окне <span class="cmd">Настройки параметров</span> кнопка <span class="cmd">Инструкция</span> открывает сразу инструкцию этого инструмента.</span></li>
+        </ol>
+        <div class="callout"><strong>Интернет не требуется.</strong> HTML и оформление устанавливаются вместе с SAB. Кнопка справки не записывает данные в модель и доступна без открытого проекта.</div>
+        <dl class="spec-list">
+          <div class="spec-row"><dt>Расположение</dt><dd>%APPDATA%\Autodesk\Revit\Addins\&lt;год&gt;\SAB\Docs\PluginInstructions</dd></div>
+          <div class="spec-row"><dt>Обновление</dt><dd>Установите обновлённый SAB для своей версии Revit. Файлы справки обновятся вместе с плагином.</dd></div>
+          <div class="spec-row"><dt>Если не открывается</dt><dd>Проверьте приложение по умолчанию для .html в Windows. Если файлы отсутствуют, повторно установите SAB.</dd></div>
+        </dl>
       </div>
     </div>
   </section>
 </main>
-<footer class="footer">
-  <div class="footer__inner">SAB. Документ оформлен в рабочем HTML-шаблоне.</div>
-</footer>
+<footer class="footer"><div class="footer__inner">SAB. Инструкции пользователя · 09.10.2026.</div></footer>
 </body>
 </html>

@@ -123,6 +123,12 @@ namespace WixSharpInstaller
             // Инструкции размещаются рядом с DLL: ...\SAB\Docs\PluginInstructions\...
             // Важно: если исходная папка не найдена, сборку прерываем с ошибкой.
             string instructionsSourcePath = ResolvePluginInstructionsSourcePath(repositoryRoot);
+            foreach (string requiredFile in new[] {
+                "IDEOLOGIST_HTML_Instruktsii.html",
+                "IDEOLOGIST_HTML_Zapolnenie_parametrov.html",
+                Path.Combine("assets", "template.css") })
+                if (!IOFile.Exists(Path.Combine(instructionsSourcePath, requiredFile)))
+                    throw new FileNotFoundException("Required SAB instruction file was not found: " + requiredFile);
             Dir pluginInstructionsContentDirectory = BuildDocumentationDirectory(
                 instructionsSourcePath,
                 "PluginInstructions");

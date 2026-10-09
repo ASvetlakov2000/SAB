@@ -87,7 +87,11 @@ namespace SAB.ParameterTools.UI
             _tabs.SelectionChanged += (s, e) => { if (!ReferenceEquals(e.Source, _tabs)) return;
                 if (_tabs.SelectedIndex == 1) RefreshSources(); if (_tabs.SelectedIndex == 2) RefreshValues(); };
             var footer = new DockPanel(); var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-            var instructions = Theme.Button("Инструкция", (s, e) => new InstructionsWindow { Owner = this }.ShowDialog());
+            var instructions = Theme.Button("Инструкция", (s, e) => {
+                string error;
+                if (!SAB.Instructions.InstructionLauncher.TryOpen(SAB.Instructions.InstructionLauncher.ParametersFile, out error))
+                    MessageBox.Show(this, error, "Инструкция — заполнение параметров", MessageBoxButton.OK, MessageBoxImage.Information);
+            });
             instructions.ToolTip = "Порядок настройки, работа с группами и разбор ошибок записи";
             DockPanel.SetDock(instructions, Dock.Left); footer.Children.Add(instructions);
             buttons.Children.Add(Theme.Button("Отмена", (s, e) => Close()));

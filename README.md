@@ -57,6 +57,7 @@ MSBuild.exe SAB\SAB.csproj /t:Rebuild /p:Configuration=Release /p:RevitVersion=2
 dotnet run --project Tests\ParameterTools\ParameterTools.Tests.csproj --configuration Release
 dotnet run --project Tests\ParameterTools.RoomResolution\ParameterTools.RoomResolution.Tests.csproj --configuration Release
 dotnet run --project Tests\ParameterTools.Write\ParameterTools.Write.Tests.csproj --configuration Release
+dotnet run --project Tests\Instructions\Instructions.Tests.csproj --configuration Release
 ```
 
 Проверки ядра и WPF вне Revit не заменяют проверку записи в реальной модели.

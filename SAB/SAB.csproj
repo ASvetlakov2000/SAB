@@ -46,6 +46,12 @@
     <Reference Include="MaterialDesignColors">
       <HintPath>..\packages\MaterialDesignColors.5.3.1\lib\net462\MaterialDesignColors.dll</HintPath>
     </Reference>
+    <Reference Include="Nice3point.Revit.Toolkit">
+      <HintPath Condition="'$(RevitVersion)' == '2022'">..\packages\Nice3point.Revit.Toolkit.2022.4.0\lib\net48\Nice3point.Revit.Toolkit.dll</HintPath>
+      <HintPath Condition="'$(RevitVersion)' == '2023'">..\packages\Nice3point.Revit.Toolkit.2023.4.0\lib\net48\Nice3point.Revit.Toolkit.dll</HintPath>
+      <HintPath Condition="'$(RevitVersion)' == '2024'">..\packages\Nice3point.Revit.Toolkit.2024.3.0\lib\net48\Nice3point.Revit.Toolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Wpf.Ui"><HintPath>..\packages\WPF-UI.4.3.0\lib\net472\Wpf.Ui.dll</HintPath><Private>True</Private></Reference>
     <Reference Include="Wpf.Ui.Abstractions"><HintPath>..\packages\WPF-UI.Abstractions.4.3.0\lib\net472\Wpf.Ui.Abstractions.dll</HintPath><Private>True</Private></Reference>
     <Reference Include="System.Memory"><HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath><Private>True</Private></Reference>
@@ -104,6 +110,8 @@
   <ItemGroup>
     <Compile Include="Cls_ParameterTools\BindingService.cs" />
     <Compile Include="Cls_ParameterTools\Catalog.cs" />
+    <Compile Include="Instructions\InstructionLauncher.cs" />
+    <Compile Include="Instructions\OpenInstructionsCommand.cs" />
     <Compile Include="Cls_ParameterTools\Catalog.Write.cs" />
     <Compile Include="Cls_ParameterTools\Commands.cs" />
     <Compile Include="Cls_ParameterTools\Core\Models.cs" />

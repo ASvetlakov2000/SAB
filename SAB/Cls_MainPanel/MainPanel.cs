@@ -47,6 +47,14 @@ namespace SAB
             RibbonPanel framePanel = application.CreateRibbonPanel(RibbonTabName, FramePanelName);
 
             // Настройки.
+            var instructionsButton = Ribbon.CreatePushButtonData(
+                "SAB_OpenInstructions", "Инструкции",
+                "SAB.Instructions.OpenInstructionsCommand",
+                "SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png",
+                "SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png");
+            instructionsButton.ToolTip = "Открыть локальные HTML-инструкции по инструментам SAB. Интернет не требуется.";
+            instructionsButton.AvailabilityClassName = "SAB.Instructions.InstructionsAvailability";
+            settingsPanel.AddItem(instructionsButton);
             Ribbon.AddPushButtonSingle(
                 settingsPanel,
                 "SAB_SyncReminderSettings",

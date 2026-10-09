@@ -110,12 +110,7 @@ internal static class Program
         if (ruleGrid.Columns.Sum(c => c.ActualWidth) > ruleGrid.ActualWidth) throw new Exception("Rules require horizontal scrolling at the minimum window width.");
         Render(window, Path.Combine(folder, "settings-min.png"));
         window.Width = 1120; window.Height = 820;
-        var instructionsType = typeof(Profile).Assembly.GetType("SAB.ParameterTools.UI.InstructionsWindow");
-        var help = (Window)Activator.CreateInstance(instructionsType, true); help.Left = -10000; help.Top = -10000; help.Show();
-        var helpTabs = Find<TabControl>(help);
-        if (helpTabs.Items.Count != 4) throw new Exception("Instruction sections are missing.");
-        for (int i = 0; i < helpTabs.Items.Count; i++) { helpTabs.SelectedIndex = i; help.UpdateLayout(); Render(help, Path.Combine(folder, "instructions-" + i + ".png")); }
-        help.Close();
+        if (FindButton(window, "Инструкция") == null) throw new Exception("HTML instruction shortcut is missing.");
         settingsType.GetMethod("AddRule", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(window, null);
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         if (!status.Text.Contains("Правило 6") || !status.Text.Contains("выберите заполняемый параметр")) throw new Exception("Status does not explain the missing target.");
