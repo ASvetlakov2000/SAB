@@ -6,7 +6,9 @@ namespace RevitLibraryBuilder.Services.Regulations
 {
     public class RegulationsLandingSettings
     {
-        public const string DefaultLandingPath = @"G:\Общие диски\Ideologist Архитектурный\Софт\Плагины для Revit\SAB\Инструкции\Стандарты_HTML\01_IDEOLOGIST_HTML_Reglamenty.html";
+        public static readonly string DefaultLandingPath = Path.Combine(
+            Path.GetDirectoryName(typeof(RegulationsLandingSettings).Assembly.Location),
+            "Docs", "PluginInstructions", "SAB_HTML_Instruktsii.html");
         private readonly string settingsPath;
 
         public RegulationsLandingSettings() : this(Path.Combine(

@@ -109,7 +109,7 @@ namespace RevitLibraryBuilder.Services.Regulations
             errorMessage = string.Empty;
 
             string safePattern = string.IsNullOrWhiteSpace(options.SearchPattern) ? "*.html" : options.SearchPattern.Trim();
-            string safeContains = string.IsNullOrWhiteSpace(options.StartFileNameContains) ? "IDEOLOGIST_HTML" : options.StartFileNameContains.Trim();
+            string safeContains = string.IsNullOrWhiteSpace(options.StartFileNameContains) ? "SAB_HTML" : options.StartFileNameContains.Trim();
 
             string[] filePaths = Directory.GetFiles(directoryPath, safePattern, options.GetSearchOption());
 
@@ -157,7 +157,7 @@ namespace RevitLibraryBuilder.Services.Regulations
         {
             string safeContains = options != null && !string.IsNullOrWhiteSpace(options.StartFileNameContains)
                 ? options.StartFileNameContains.Trim()
-                : "IDEOLOGIST_HTML";
+                : "SAB_HTML";
 
             System.Text.StringBuilder builder = new System.Text.StringBuilder();
             builder.AppendLine("Не найден стартовый HTML-файл.");

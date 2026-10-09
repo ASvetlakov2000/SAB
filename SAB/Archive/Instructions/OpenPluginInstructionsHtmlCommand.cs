@@ -1,4 +1,4 @@
-﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using RevitLibraryBuilder.Services.Regulations;
@@ -13,7 +13,7 @@ namespace RevitLibraryBuilder.Commands.Regulations
     [Transaction(TransactionMode.ReadOnly)]
     public class OpenPluginInstructionsHtmlCommand : IExternalCommand
     {
-        private const string StartFileName = "IDEOLOGIST_HTML_Instruktsii.html";
+        private const string StartFileName = "SAB_HTML_Instruktsii.html";
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {

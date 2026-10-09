@@ -1054,7 +1054,7 @@ div.example-list .example-line {
   }
 }
 
-/* IDEOLOGIST instruction v2 additions */
+/* SAB instruction v2 additions */
 .cluster-section {
   margin-top: 34px;
   display: grid;
@@ -1181,7 +1181,7 @@ div.example-list .example-line {
   margin: 0;
 }
 
-/* IDEOLOGIST instruction navigation and media update */
+/* SAB instruction navigation and media update */
 .commandnav {
   position: sticky;
   top: 56px;

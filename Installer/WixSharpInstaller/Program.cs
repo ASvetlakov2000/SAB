@@ -124,8 +124,8 @@ namespace WixSharpInstaller
             // Важно: если исходная папка не найдена, сборку прерываем с ошибкой.
             string instructionsSourcePath = ResolvePluginInstructionsSourcePath(repositoryRoot);
             foreach (string requiredFile in new[] {
-                "IDEOLOGIST_HTML_Instruktsii.html",
-                "IDEOLOGIST_HTML_Zapolnenie_parametrov.html",
+                "SAB_HTML_Instruktsii.html",
+                "SAB_HTML_Zapolnenie_parametrov.html",
                 Path.Combine("assets", "template.css") })
                 if (!IOFile.Exists(Path.Combine(instructionsSourcePath, requiredFile)))
                     throw new FileNotFoundException("Required SAB instruction file was not found: " + requiredFile);

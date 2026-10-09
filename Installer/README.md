@@ -70,7 +70,7 @@ Generated files:
   earlier standalone builds.
 - Test plugin `SyncReminderTest` is built from `SyncReminderTest\SyncReminderTest.csproj` when needed and installed into `...\Addins\<Year>\SyncReminderTest`.
 - Local HTML help is opened by **SAB → Настройки → Инструкции**. The installer includes
-  `Docs/PluginInstructions/IDEOLOGIST_HTML_Instruktsii.html`, the parameter guide and
+  `Docs/PluginInstructions/SAB_HTML_Instruktsii.html`, all 22 current user guides and
   `assets/template.css` at `%APPDATA%\Autodesk\Revit\Addins\<Year>\SAB\Docs\PluginInstructions`.
   Missing required help files fail the installer build. No web server or internet is needed.
 - `Nice3point.Revit.Toolkit.dll` is bundled for the corresponding Revit version. All three

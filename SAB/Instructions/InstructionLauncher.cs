@@ -6,8 +6,8 @@ namespace SAB.Instructions
 {
     internal static class InstructionLauncher
     {
-        internal const string IndexFile = "IDEOLOGIST_HTML_Instruktsii.html";
-        internal const string ParametersFile = "IDEOLOGIST_HTML_Zapolnenie_parametrov.html";
+        internal const string IndexFile = "SAB_HTML_Instruktsii.html";
+        internal const string ParametersFile = "SAB_HTML_Zapolnenie_parametrov.html";
 
         internal static string Resolve(string assemblyDirectory, string fileName)
         {

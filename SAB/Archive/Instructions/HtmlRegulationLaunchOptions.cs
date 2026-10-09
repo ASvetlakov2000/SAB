@@ -12,7 +12,7 @@ namespace RevitLibraryBuilder.Services.Regulations
         {
             CandidateDirectories = new List<string>();
             SearchPattern = "*.html";
-            StartFileNameContains = "IDEOLOGIST_HTML";
+            StartFileNameContains = "SAB_HTML";
             IncludeSubdirectories = false;
         }
 
