@@ -7,6 +7,7 @@ from pathlib import Path
 from html import escape as e
 import re
 import xml.etree.ElementTree as ET
+from GuideMarkup import apply_markup
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / 'Docs' / 'PluginInstructions'
@@ -420,7 +421,7 @@ for guide in GUIDES:
     if scenarios:
         nav += '<a href="#scenarios">Сценарии</a>'
     nav += '<a href="#errors">Ошибки</a>'
-    (DOCS / guide['file']).write_text(shell(guide['title'], guide['panel'], guide['intro'], nav, body), encoding='utf-8')
+    (DOCS / guide['file']).write_text(apply_markup(shell(guide['title'], guide['panel'], guide['intro'], nav, body)), encoding='utf-8')
 
 # Include the approved, separately maintained guide in the full catalog.
 catalog = GUIDES + [dict(file='SAB_HTML_Zapolnenie_parametrov.html', title='Заполнение и проверка параметров',
@@ -438,5 +439,8 @@ body += section('procedure', 'Как открыть и начать', steps_html
 body += section('check', 'Локальная справка', '<p>Интернет не требуется. HTML и оформление устанавливаются вместе с SAB и открываются в браузере по умолчанию Windows. Кнопка инструкций доступна без открытой модели.</p><p>Файлы: %APPDATA%\\Autodesk\\Revit\\Addins\\&lt;год&gt;\\SAB\\Docs\\PluginInstructions.</p><p>Для обновления справки установите новую сборку SAB для своего года Revit.</p>', True)
 body += section('errors', 'Если справка не открылась', '<p>Проверьте приложение по умолчанию для .html в Windows. Если файлов нет, повторно установите SAB. Не переносите HTML отдельно от папки assets.</p>')
 nav = '<a href="#panel-0">Настройки</a><a href="#panel-1">Библиотека</a><a href="#panel-5">Развертки</a><a href="#procedure">Как начать</a>'
-(DOCS / INDEX).write_text(shell('Инструкции пользователя', 'SAB', 'Подготовка, последовательность действий, рабочие сценарии и проверка результата для инструментов SAB.', nav, body), encoding='utf-8')
+(DOCS / INDEX).write_text(apply_markup(shell('Инструкции пользователя', 'SAB', 'Подготовка, последовательность действий, рабочие сценарии и проверка результата для инструментов SAB.', nav, body)), encoding='utf-8')
+# Keep the authored content; normalize only its shared capsule roles.
+parameter_guide = DOCS / 'SAB_HTML_Zapolnenie_parametrov.html'
+parameter_guide.write_text(apply_markup(parameter_guide.read_text(encoding='utf-8')), encoding='utf-8')
 print(f'Built {len(GUIDES)} guides and catalog; approved parameter guide preserved. Total catalog: {len(catalog)} guides.')

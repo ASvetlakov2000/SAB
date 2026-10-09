@@ -55,6 +55,22 @@ const { pathToFileURL, fileURLToPath } = require('url');
         });
         const afterExpanded = await measure();
         if (afterExpanded.width > width + 1) throw Error(file + ': expanded scenario overflow at ' + width);
+        const capsules = await page.evaluate(() => {
+          const actions = [...document.querySelectorAll('main .cmd')];
+          const labels = [...document.querySelectorAll('main .kbd')];
+          return {
+            actions: actions.length, labels: labels.length,
+            badAction: actions.some(n => getComputedStyle(n).backgroundColor !== 'rgb(245, 245, 247)' || getComputedStyle(n).color !== 'rgb(29, 29, 31)'),
+            badLabel: labels.some(n => getComputedStyle(n).backgroundColor !== 'rgba(0, 0, 0, 0)'),
+            nested: document.querySelectorAll('.cmd .cmd,.cmd .kbd,.kbd .cmd,.kbd .kbd').length,
+            rawLabels: [...document.querySelectorAll('main p, main li, main td')].some(n => [...n.childNodes].some(c => c.nodeType === Node.TEXT_NODE && /«[^»]+»/.test(c.textContent))),
+            rowSpacing: [...document.querySelectorAll('.steps li')].map(n => {
+              const s = getComputedStyle(n); return [s.paddingTop, s.paddingBottom, s.marginTop, s.marginBottom, s.minHeight].join('|');
+            })
+          };
+        });
+        if (!capsules.actions || !capsules.labels || capsules.badAction || capsules.badLabel || capsules.nested || capsules.rawLabels) throw Error(file + ': inconsistent capsule roles ' + JSON.stringify(capsules));
+        if (new Set(capsules.rowSpacing).size !== 1 || !capsules.rowSpacing[0].endsWith('|0px|0px|0px')) throw Error(file + ': unequal single/multiple step spacing');
         await page.locator('details').evaluateAll(nodes => nodes.forEach(n => n.open = false));
         const after = await measure();
         if (after.font !== before.font || after.height >= before.height || Math.abs(after.sectionPadding / before.sectionPadding - 0.7) > 0.001) throw Error(file + ': spacing must be reduced by 30% with original body type');

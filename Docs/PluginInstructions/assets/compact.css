@@ -1,5 +1,6 @@
 /* SAB help: reduce only whitespace to 70% of the original template values.
-   Typography, colors, widths, radii, block order and column layout are unchanged. */
+   Typography, widths, radii, block order and column layout are unchanged.
+   Capsules distinguish action buttons from tabs, fields and important values. */
 .hero { min-height: 427px; }
 .hero__inner { padding: 60.2px 0 51.8px; }
 .section { border-top-width: 8.4px; }
@@ -13,12 +14,27 @@
 .note-card { padding: 16.8px; }
 .content-card summary { cursor: pointer; }
 
-.steps { margin-top: 23.8px; padding: 7px 16.8px; }
-.steps li { min-height: 51.8px; padding: 14px 0; gap: 16.8px; }
+.steps { margin-top: 23.8px; padding: 0 16.8px; }
+.steps li { min-height: 0; padding: 14px 0; gap: 16.8px; }
 .content-card ol:not(.steps) { margin-top: 12.6px; }
 .content-card ol:not(.steps) li { padding: 11.2px 0; gap: 11.2px; }
 .content-card ul { margin-top: 12.6px; }
 .content-card li { margin: 5.6px 0; }
+/* One row and several rows use the same content-driven height and padding.
+   Avoid adding list padding and generic card-list margins to each step. */
+.steps li { margin: 0; }
+.step-text { min-width: 0; }
+.cmd,
+.command-chip { color: var(--text); background: #f5f5f7; border-color: var(--line); }
+.kbd,
+.code-chip,
+.example-line { background: transparent; }
+.cmd,
+.kbd { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.content-card .cmd,
+.content-card .kbd,
+.steps .cmd,
+.steps .kbd { margin: 0; }
 
 .example-list { margin-top: 26.6px; padding: 5.6px 16.8px; }
 .example-list li { padding: 12.6px 0; }
@@ -37,4 +53,5 @@
   .section__inner { padding: 43.4px 0; }
   .steps li,
   .content-card ol:not(.steps) li { gap: 8.4px; }
+  .steps li::before { flex-basis: auto; }
 }
