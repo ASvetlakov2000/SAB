@@ -718,4 +718,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <Target Name="ExcludeRevitHostDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+        Condition="$([System.String]::Copy('%(ReferenceCopyLocalPaths.FullPath)').ToUpperInvariant().StartsWith($([System.String]::Copy('$(RevitApiDirectory)\').ToUpperInvariant())))" />
+    </ItemGroup>
+  </Target>
 </Project>
