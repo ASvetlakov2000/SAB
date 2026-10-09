@@ -33,7 +33,16 @@ const { pathToFileURL, fileURLToPath } = require('url');
         const measure = () => page.evaluate(() => ({
           height: document.documentElement.scrollHeight,
           width: document.documentElement.scrollWidth,
-          font: parseFloat(getComputedStyle(document.body).fontSize)
+          font: parseFloat(getComputedStyle(document.body).fontSize),
+          identity: ['body', '.hero', 'h1', 'h2', '.section__inner', '.content-card', '.index-list'].map(selector => {
+            const node = document.querySelector(selector);
+            if (!node) return null;
+            const s = getComputedStyle(node);
+            return [selector, s.fontSize, s.fontFamily, s.lineHeight, s.color, s.backgroundColor,
+              s.borderRadius, s.width, s.display, s.gridTemplateColumns];
+          }),
+          sectionPadding: parseFloat(getComputedStyle(document.querySelector('.section__inner')).paddingTop),
+          cardPadding: document.querySelector('.content-card') ? parseFloat(getComputedStyle(document.querySelector('.content-card')).paddingTop) : null
         }));
         await compact.evaluate(n => n.disabled = true);
         const before = await measure();
@@ -48,7 +57,9 @@ const { pathToFileURL, fileURLToPath } = require('url');
         if (afterExpanded.width > width + 1) throw Error(file + ': expanded scenario overflow at ' + width);
         await page.locator('details').evaluateAll(nodes => nodes.forEach(n => n.open = false));
         const after = await measure();
-        if (after.font < 17 || after.height > before.height * 0.85 || afterExpanded.height > beforeExpanded.height * 0.9) throw Error(file + ': insufficient compaction or unreadable body type at ' + width + ' ' + JSON.stringify({before, after, beforeExpanded, afterExpanded}));
+        if (after.font !== before.font || after.height >= before.height || Math.abs(after.sectionPadding / before.sectionPadding - 0.7) > 0.001) throw Error(file + ': spacing must be reduced by 30% with original body type');
+        if (after.cardPadding !== null && Math.abs(after.cardPadding / before.cardPadding - 0.7) > 0.001) throw Error(file + ': wrong card padding');
+        if (JSON.stringify(after.identity) !== JSON.stringify(before.identity)) throw Error(file + ': original typography or layout changed at ' + width + ' ' + JSON.stringify({before: before.identity, after: after.identity}));
         density.push({file, width, before: before.height, after: after.height,
           reduction: Math.round(100 * (1 - after.height / before.height)),
           expandedBefore: beforeExpanded.height, expandedAfter: afterExpanded.height});
@@ -76,7 +87,7 @@ const { pathToFileURL, fileURLToPath } = require('url');
           const catalog = await page.locator('.index-link').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
           if (catalog.length !== 22 || new Set(catalog).size !== 22 || files.some(f => f !== file && !catalog.includes(f))) throw Error('Catalog does not cover every current guide');
           const columns = await page.locator('.index-list').first().evaluate(n => getComputedStyle(n).gridTemplateColumns.split(' ').length);
-          if (columns !== (width >= 1000 ? 2 : 1)) throw Error('Wrong catalog column count');
+          if (columns !== 1) throw Error('Catalog must retain the original single column');
         } else {
           for (const id of ['requirements', 'procedure', 'check', 'errors']) if (!state.ids.includes(id)) throw Error(file + ': missing user workflow section ' + id);
         }

@@ -1,120 +1,40 @@
-/* SAB user help: reading density overrides for the shared HTML template.
-   Keep template.css unchanged; this file follows it on every installed page. */
-:root {
-  --page-width: 1280px;
-  --nav-width: 1280px;
-  --text-width: 1040px;
-}
-
-.globalnav,
-.globalnav__inner {
-  height: 44px;
-}
-
-.globalnav__inner,
-.localnav__inner {
-  width: min(var(--page-width), calc(100% - 48px));
-}
-
-.localnav { top: 44px; }
-.localnav__inner { min-height: 48px; padding: 6px 0; gap: 16px; }
-.localnav__title { font-size: 18px; }
-.globalnav__links a,
-.localnav__links a { display: inline-flex; align-items: center; min-height: 28px; }
-
-.hero { min-height: 0; }
-.hero__inner { padding: 28px 0; }
-.hero h1 { margin-bottom: 10px; font-size: clamp(28px, 3.2vw, 42px); line-height: 1.12; }
-.eyebrow { margin-bottom: 8px; font-size: 15px; }
-.hero__copy { font-size: 20px; line-height: 1.4; }
-.hero__links { margin-top: 14px; gap: 10px 20px; font-size: 17px; }
-
-h2 { margin-bottom: 12px; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.2; }
-h3 { margin-bottom: 10px; font-size: 22px; }
-.section { border-top-width: 4px; scroll-margin-top: 108px; }
-.section__inner { padding: 24px 0; }
-.section__lead { margin-bottom: 0; font-size: 19px; line-height: 1.45; }
-.content-stack { margin-top: 14px; gap: 12px; }
+/* SAB help: reduce only whitespace to 70% of the original template values.
+   Typography, colors, widths, radii, block order and column layout are unchanged. */
+.hero { min-height: 427px; }
+.hero__inner { padding: 60.2px 0 51.8px; }
+.section { border-top-width: 8.4px; }
+.section__inner { padding: 58.8px 0; }
+.content-stack { margin-top: 23.8px; gap: 16.8px; }
 .content-stack > * { min-width: 0; }
-.content-stack > p { margin-bottom: 0; }
-.example-list { margin: 0; padding: 0 14px; border-radius: 12px; }
-.example-list li { padding: 8px 0; font-family: inherit; font-size: inherit; line-height: inherit; }
 
 .content-card,
 .info-card,
 .callout,
-.note-card { padding: 12px 16px; border-radius: 12px; }
-.content-card summary { cursor: pointer; line-height: 1.45; }
-.content-card > p { margin: 10px 0 0; }
-.content-card h3,
-.info-card h3 { margin-bottom: 10px; font-size: 21px; }
+.note-card { padding: 16.8px; }
+.content-card summary { cursor: pointer; }
 
-.steps { margin-top: 12px; padding: 0 14px; border-radius: 12px; }
-.content-stack > .steps { margin-top: 0; }
-.steps li {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
-  align-items: start;
-  gap: 10px;
-  min-height: 0;
-  margin: 0;
-  padding: 9px 0;
-}
-.steps li::before { width: 30px; font-size: 19px; line-height: 1.32; }
-.step-text { min-width: 0; }
-.content-card .steps {
-  margin-top: 8px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
+.steps { margin-top: 23.8px; padding: 7px 16.8px; }
+.steps li { min-height: 51.8px; padding: 14px 0; gap: 16.8px; }
+.content-card ol:not(.steps) { margin-top: 12.6px; }
+.content-card ol:not(.steps) li { padding: 11.2px 0; gap: 11.2px; }
+.content-card ul { margin-top: 12.6px; }
+.content-card li { margin: 5.6px 0; }
 
-/* Inline button names inside a sentence must stay in the normal text flow. */
-.content-card ol:not(.steps) { margin-top: 10px; padding-left: 24px; list-style: decimal; border-top: 0; }
-.content-card ol:not(.steps) li { display: list-item; margin: 0; padding: 7px 0 7px 3px; }
-.content-card ol:not(.steps) li::before { content: none; }
-.content-card ul { margin-top: 10px; }
-.content-card ul li { margin: 5px 0; }
-.cmd,
-.kbd { min-height: 24px; max-width: 100%; padding: 3px 8px; font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; }
-
-.spec-list { margin-top: 12px; padding: 0 14px; border-radius: 12px; }
-.spec-row { padding: 10px 0; gap: 16px; }
-.command-table-wrap { margin-top: 12px; border-radius: 12px; }
-.content-stack > .command-table-wrap { margin-top: 0; }
+.example-list { margin-top: 26.6px; padding: 5.6px 16.8px; }
+.example-list li { padding: 12.6px 0; }
+.spec-list { margin-top: 25.2px; padding: 5.6px 16.8px; }
+.spec-row { padding: 14.7px 0; }
+.command-table-wrap { margin-top: 23.8px; }
 .command-table th,
-.command-table td { padding: 10px 14px; vertical-align: top; overflow-wrap: anywhere; hyphens: auto; }
+.command-table td { padding: 12.6px 16.8px; overflow-wrap: anywhere; }
 
-.index-list { width: 100%; padding: 0; gap: 0 28px; }
-.index-link { padding: 12px 0; gap: 12px; }
-.index-link strong { margin-bottom: 4px; color: var(--text); font-size: 21px; line-height: 1.25; }
-.index-link b { font-size: 22px; }
-.footer__inner { padding: 16px 0; }
-
-@media (min-width: 1000px) {
-  .index-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
+.index-list { padding: 23.8px 0 63px; }
+.index-link { padding: 18.2px 0; }
 
 @media (max-width: 760px) {
-  .globalnav__inner,
-  .localnav__inner,
-  .hero__inner,
-  .section__inner { width: calc(100% - 32px); }
-  .localnav__inner { min-height: 0; gap: 4px; padding: 7px 0; }
-  .localnav__title { font-size: 17px; }
-  .localnav__links { gap: 4px 12px; }
-  .hero__inner { padding: 22px 0; }
-  .hero__copy { font-size: 18px; }
-  .hero__links { gap: 8px 16px; }
-  .section { scroll-margin-top: 160px; }
-  .section__inner { padding: 20px 0; }
-  .content-card,
-  .callout { padding: 10px 12px; }
-  .steps { padding: 0 12px; }
-  .steps li { grid-template-columns: 26px minmax(0, 1fr); gap: 8px; }
-  .steps li::before { width: 26px; font-size: 18px; }
-  .spec-row { gap: 4px; }
-  .command-table th,
-  .command-table td { padding: 8px 10px; }
+  .hero { min-height: auto; }
+  .hero__inner { padding: 44.8px 0 39.2px; }
+  .section__inner { padding: 43.4px 0; }
+  .steps li,
+  .content-card ol:not(.steps) li { gap: 8.4px; }
 }
