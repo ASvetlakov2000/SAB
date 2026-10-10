@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework><OutputType>WinExe</OutputType><UseWPF>true</UseWPF>
+    <AssemblyName>SAB.UI.Review</AssemblyName><LangVersion>latest</LangVersion><PlatformTarget>x64</PlatformTarget>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup><PackageReference Include="WPF-UI" Version="4.3.0" /></ItemGroup>
+</Project>

@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T10:33:50.493Z",
+  "title": "Design System: SAB UI Review 2026-10",
+  "extensions": {
+    "colorMeta": {
+      "window-background": {
+        "role": "neutral",
+        "displayName": "Window gray",
+        "tonalRamp": [
+          "oklch(15.00% 0.00287 264.54)",
+          "oklch(26.43% 0.00287 264.54)",
+          "oklch(37.86% 0.00287 264.54)",
+          "oklch(49.29% 0.00287 264.54)",
+          "oklch(60.71% 0.00287 264.54)",
+          "oklch(72.14% 0.00287 264.54)",
+          "oklch(83.57% 0.00287 264.54)",
+          "oklch(95.00% 0.00287 264.54)"
+        ]
+      },
+      "panel-background": {
+        "role": "neutral",
+        "displayName": "Work white",
+        "tonalRamp": [
+          "oklch(15.00% 0.00000 0.00)",
+          "oklch(26.43% 0.00000 0.00)",
+          "oklch(37.86% 0.00000 0.00)",
+          "oklch(49.29% 0.00000 0.00)",
+          "oklch(60.71% 0.00000 0.00)",
+          "oklch(72.14% 0.00000 0.00)",
+          "oklch(83.57% 0.00000 0.00)",
+          "oklch(95.00% 0.00000 0.00)"
+        ]
+      },
+      "table-header-background": {
+        "role": "neutral",
+        "displayName": "Header gray",
+        "tonalRamp": [
+          "oklch(15.00% 0.00453 258.32)",
+          "oklch(26.43% 0.00453 258.32)",
+          "oklch(37.86% 0.00453 258.32)",
+          "oklch(49.29% 0.00453 258.32)",
+          "oklch(60.71% 0.00453 258.32)",
+          "oklch(72.14% 0.00453 258.32)",
+          "oklch(83.57% 0.00453 258.32)",
+          "oklch(95.00% 0.00453 258.32)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Boundary",
+        "tonalRamp": [
+          "oklch(15.00% 0.01513 260.73)",
+          "oklch(26.43% 0.01513 260.73)",
+          "oklch(37.86% 0.01513 260.73)",
+          "oklch(49.29% 0.01513 260.73)",
+          "oklch(60.71% 0.01513 260.73)",
+          "oklch(72.14% 0.01513 260.73)",
+          "oklch(83.57% 0.01513 260.73)",
+          "oklch(95.00% 0.01513 260.73)"
+        ]
+      },
+      "border-weak": {
+        "role": "neutral",
+        "displayName": "Weak boundary",
+        "tonalRamp": [
+          "oklch(15.00% 0.00917 258.34)",
+          "oklch(26.43% 0.00917 258.34)",
+          "oklch(37.86% 0.00917 258.34)",
+          "oklch(49.29% 0.00917 258.34)",
+          "oklch(60.71% 0.00917 258.34)",
+          "oklch(72.14% 0.00917 258.34)",
+          "oklch(83.57% 0.00917 258.34)",
+          "oklch(95.00% 0.00917 258.34)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.02960 256.85)",
+          "oklch(26.43% 0.02960 256.85)",
+          "oklch(37.86% 0.02960 256.85)",
+          "oklch(49.29% 0.02960 256.85)",
+          "oklch(60.71% 0.02960 256.85)",
+          "oklch(72.14% 0.02960 256.85)",
+          "oklch(83.57% 0.02960 256.85)",
+          "oklch(95.00% 0.02960 256.85)"
+        ]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Supporting ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.03503 265.11)",
+          "oklch(26.43% 0.03503 265.11)",
+          "oklch(37.86% 0.03503 265.11)",
+          "oklch(49.29% 0.03503 265.11)",
+          "oklch(60.71% 0.03503 265.11)",
+          "oklch(72.14% 0.03503 265.11)",
+          "oklch(83.57% 0.03503 265.11)",
+          "oklch(95.00% 0.03503 265.11)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "SAB blue",
+        "tonalRamp": [
+          "oklch(15.00% 0.14931 251.63)",
+          "oklch(26.43% 0.14931 251.63)",
+          "oklch(37.86% 0.14931 251.63)",
+          "oklch(49.29% 0.14931 251.63)",
+          "oklch(60.71% 0.14931 251.63)",
+          "oklch(72.14% 0.14931 251.63)",
+          "oklch(83.57% 0.14931 251.63)",
+          "oklch(95.00% 0.14931 251.63)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Hover blue",
+        "tonalRamp": [
+          "oklch(15.00% 0.13853 252.20)",
+          "oklch(26.43% 0.13853 252.20)",
+          "oklch(37.86% 0.13853 252.20)",
+          "oklch(49.29% 0.13853 252.20)",
+          "oklch(60.71% 0.13853 252.20)",
+          "oklch(72.14% 0.13853 252.20)",
+          "oklch(83.57% 0.13853 252.20)",
+          "oklch(95.00% 0.13853 252.20)"
+        ]
+      },
+      "accent-pressed": {
+        "role": "primary",
+        "displayName": "Pressed blue",
+        "tonalRamp": [
+          "oklch(15.00% 0.11579 251.68)",
+          "oklch(26.43% 0.11579 251.68)",
+          "oklch(37.86% 0.11579 251.68)",
+          "oklch(49.29% 0.11579 251.68)",
+          "oklch(60.71% 0.11579 251.68)",
+          "oklch(72.14% 0.11579 251.68)",
+          "oklch(83.57% 0.11579 251.68)",
+          "oklch(95.00% 0.11579 251.68)"
+        ]
+      },
+      "accent-light": {
+        "role": "primary",
+        "displayName": "Selection wash",
+        "tonalRamp": [
+          "oklch(15.00% 0.01878 255.53)",
+          "oklch(26.43% 0.01878 255.53)",
+          "oklch(37.86% 0.01878 255.53)",
+          "oklch(49.29% 0.01878 255.53)",
+          "oklch(60.71% 0.01878 255.53)",
+          "oklch(72.14% 0.01878 255.53)",
+          "oklch(83.57% 0.01878 255.53)",
+          "oklch(95.00% 0.01878 255.53)"
+        ]
+      },
+      "row-hover": {
+        "role": "neutral",
+        "displayName": "Row hover wash",
+        "tonalRamp": [
+          "oklch(15.00% 0.00792 253.85)",
+          "oklch(26.43% 0.00792 253.85)",
+          "oklch(37.86% 0.00792 253.85)",
+          "oklch(49.29% 0.00792 253.85)",
+          "oklch(60.71% 0.00792 253.85)",
+          "oklch(72.14% 0.00792 253.85)",
+          "oklch(83.57% 0.00792 253.85)",
+          "oklch(95.00% 0.00792 253.85)"
+        ]
+      },
+      "field-error": {
+        "role": "error",
+        "displayName": "Field error",
+        "tonalRamp": [
+          "oklch(15.00% 0.20883 29.48)",
+          "oklch(26.43% 0.20883 29.48)",
+          "oklch(37.86% 0.20883 29.48)",
+          "oklch(49.29% 0.20883 29.48)",
+          "oklch(60.71% 0.20883 29.48)",
+          "oklch(72.14% 0.20883 29.48)",
+          "oklch(83.57% 0.20883 29.48)",
+          "oklch(95.00% 0.20883 29.48)"
+        ]
+      },
+      "feedback-error": {
+        "role": "error",
+        "displayName": "Validation feedback",
+        "tonalRamp": [
+          "oklch(15.00% 0.18205 29.51)",
+          "oklch(26.43% 0.18205 29.51)",
+          "oklch(37.86% 0.18205 29.51)",
+          "oklch(49.29% 0.18205 29.51)",
+          "oklch(60.71% 0.18205 29.51)",
+          "oklch(72.14% 0.18205 29.51)",
+          "oklch(83.57% 0.18205 29.51)",
+          "oklch(95.00% 0.18205 29.51)"
+        ]
+      },
+      "field-disabled": {
+        "role": "neutral",
+        "displayName": "Disabled field gray",
+        "tonalRamp": [
+          "oklch(15.00% 0.00454 258.32)",
+          "oklch(26.43% 0.00454 258.32)",
+          "oklch(37.86% 0.00454 258.32)",
+          "oklch(49.29% 0.00454 258.32)",
+          "oklch(60.71% 0.00454 258.32)",
+          "oklch(72.14% 0.00454 258.32)",
+          "oklch(83.57% 0.00454 258.32)",
+          "oklch(95.00% 0.00454 258.32)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Task heading",
+        "purpose": "Task heading in this isolated approval prototype; not a production token amendment."
+      },
+      "title": {
+        "displayName": "Section title",
+        "purpose": "Settings and table section headings."
+      },
+      "preview": {
+        "displayName": "Selected view",
+        "purpose": "Selected row's preview name."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Controls and editable work data."
+      },
+      "label": {
+        "displayName": "Field label",
+        "purpose": "Semibold field and column labels."
+      },
+      "hint": {
+        "displayName": "Supporting text",
+        "purpose": "Hints, status and readable diagram annotations."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-reveal",
+        "value": "WPF CubicEase / EaseOut; FillBehavior.Stop; SnapshotAndReplace",
+        "purpose": "Owned opacity and render-transform animations."
+      },
+      {
+        "name": "ease-standard",
+        "value": "WPF CubicEase, EaseOut",
+        "purpose": "Custom opacity and RenderTransform animations."
+      },
+      {
+        "name": "shell-reveal",
+        "value": "180ms; opacity 0.65→1; translateY 6→0 DIP",
+        "purpose": "First render and explicit replay."
+      },
+      {
+        "name": "task-switch",
+        "value": "140ms; opacity 0.65→1; translateY 4→0 DIP",
+        "purpose": "Cached instrument and settings section changes."
+      },
+      {
+        "name": "button-hover",
+        "value": "100ms; opacity 1↔0.86",
+        "purpose": "Custom pointer feedback; native color states remain WPF UI-owned."
+      },
+      {
+        "name": "button-press",
+        "value": "70ms to scale 0.985; 100ms to 1; 70ms capture/reset return",
+        "purpose": "Custom button press feedback."
+      },
+      {
+        "name": "disclosure",
+        "value": "150ms; opacity 0.65→1; translateY 3→0 DIP",
+        "purpose": "Expander content reveal."
+      },
+      {
+        "name": "preview-selection",
+        "value": "160ms; opacity 0.65→1",
+        "purpose": "Selected row preview."
+      },
+      {
+        "name": "feedback",
+        "value": "140ms; opacity 0.65→1",
+        "purpose": "Updated simulation/validation feedback."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-height",
+        "value": "Window Height < 790 DIP"
+      }
+    ],
+    "platform": {
+      "name": "Native WPF / .NET Framework 4.8 / WPF UI 4.3.0 / x64",
+      "units": "Frontmatter px represents native DIP. HTML/CSS snippets are panel-only translations of owned rules, not shipped UI or replicas of WPF UI Light templates.",
+      "source": "src/ReviewStyles.xaml; src/ReviewWindow.cs; src/Motion.cs",
+      "authority": "Observed isolated extension of the user-selected SAB UI Lab composition; incumbent originals preserved; approval pending separately for all three windows.",
+      "layout": "Initial 1400×900 DIP; minimum 1100×700 DIP; 62-DIP toolbar; 68-DIP footer; settings 320 DIP; column gap 18 DIP; shell inset 24 DIP; form scrollbar gutter 12 DIP.",
+      "compactLayout": "Below Height 790 DIP hide task description and auxiliary tagged labels; preview remains content-sized with minimum 104 DIP and 12-DIP inset, otherwise minimum 120 DIP and 16-DIP inset.",
+      "focus": "One 1-DIP rounded text-field border changes to accent or field-error. Parent DataGrid cell focus border hides during editing. Custom checkbox keyboard focus changes its own border from 1 to 2 DIP.",
+      "motionPolicy": "Custom motion honors Motion.Enabled and Windows ClientAreaAnimation; interruption/close restores opacity 1, translation 0 and scale 1. Layout dimensions never animate. WPF UI internal animations are not covered.",
+      "ramps": "Synthesized panel-only OKLCH ramps, not WPF brushes; frontmatter source hex values remain normative.",
+      "scope": "In-memory navigation/edit/search/selection/validation and simulated actions on synthetic data. Import/export/table-loading/model picks show placeholder feedback. Some settings selectable without full business implementation; no SAB profile persistence or Revit transactions.",
+      "evidence": "outputs/verification.txt: 24 passing checks; 2006 rules, 7 realized rows. REVIEW.md: ship only for four scored fixes. Physical monitor-DPI transitions and Revit execution untested; 192-DPI capture is bitmap rendering only."
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Translation of owned primary colors, padding, minimum height and custom pointer motion; native shape/template remains library-owned.",
+      "html": "<button class=\"ds-primary\">Тест создания</button>",
+      "css": ".ds-primary{background:#0F6CBD;color:#fff;padding:6px 12px;min-height:34px;font:13px \"Segoe UI\",sans-serif;border:none;transition:opacity 100ms,transform 70ms;}.ds-primary:hover{background:#0B5EA8;opacity:.86;}.ds-primary:active{background:#084B86;transform:scale(.985);}.ds-primary:focus-visible{outline:revert;}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Owned white work panel with thin boundary and reusable inset.",
+      "html": "<section class=\"ds-panel\"><strong class=\"ds-panel-title\">Настройки развёрток</strong><p class=\"ds-panel-hint\">Рабочие настройки вида</p></section>",
+      "css": ".ds-panel{background:#fff;color:#1F2937;border:1px solid #D8DEE8;border-radius:8px;padding:16px;font:13px \"Segoe UI\",sans-serif;}.ds-panel-title{font-size:16px;font-weight:600;}.ds-panel-hint{font-size:12px;color:#667085;}"
+    },
+    {
+      "name": "Table Editor",
+      "kind": "input",
+      "refersTo": "table-editor",
+      "description": "Panel translation of the owned rounded DataGrid editor; WPF supplies actual editing semantics.",
+      "html": "<label class=\"ds-editor-label\">Имя вида<input class=\"ds-editor\" value=\"Помещение 001 · Север\"></label>",
+      "css": ".ds-editor-label{display:block;color:#1F2937;font:600 12px \"Segoe UI\",sans-serif;}.ds-editor{display:block;background:#fff;color:#1F2937;border:1px solid #0F6CBD;border-radius:5px;margin:4px 6px;padding:0 5px;font:13px \"Segoe UI\",sans-serif;}.ds-editor:focus-visible{outline:none;border-color:#0F6CBD;}"
+    },
+    {
+      "name": "Checkbox",
+      "kind": "input",
+      "refersTo": "checkbox",
+      "description": "Custom checked fill, vector tick, pointer border, keyboard border and disabled opacity.",
+      "html": "<label class=\"ds-check\"><input type=\"checkbox\" checked><span class=\"ds-check-box\"><svg viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M4 10 L8 14 L16 6\"/></svg></span><span>Создать листы</span></label>",
+      "css": ".ds-check{display:flex;align-items:center;gap:8px;position:relative;color:#1F2937;font:13px \"Segoe UI\",sans-serif;}.ds-check input{position:absolute;opacity:0;width:20px;height:20px;margin:0;}.ds-check-box{display:block;width:20px;height:20px;background:#fff;border:1px solid #667085;border-radius:4px;}.ds-check-box svg{display:none;width:20px;height:20px;}.ds-check-box path{fill:none;stroke:white;stroke-width:1.8;}.ds-check input:checked+.ds-check-box{background:#0F6CBD;border-color:#0F6CBD;}.ds-check input:checked+.ds-check-box svg{display:block;}.ds-check:hover .ds-check-box{border-color:#084B86;}.ds-check input:focus-visible+.ds-check-box{border-width:2px;}.ds-check input:disabled~span{opacity:.55;}"
+    },
+    {
+      "name": "Table Row",
+      "kind": "custom",
+      "refersTo": "table-row",
+      "description": "Owned row density, divider, hover, selection and cell-focus styling.",
+      "html": "<div class=\"ds-row\" tabindex=\"0\"><span>Помещение 001 · Север</span><span>1:50</span></div>",
+      "css": ".ds-row{display:flex;align-items:center;justify-content:space-between;height:42px;background:#fff;color:#1F2937;border-bottom:1px solid #E6EAF0;font:13px \"Segoe UI\",sans-serif;}.ds-row span{margin:0 10px;}.ds-row:hover{background:#F5F9FE;}.ds-row[aria-selected=\"true\"]{background:#EAF3FF;}.ds-row:focus-visible{outline:1px solid #0F6CBD;}"
+    },
+    {
+      "name": "Table Header",
+      "kind": "custom",
+      "refersTo": "table-header",
+      "description": "Light header with semibold labels and weak lower separator.",
+      "html": "<div class=\"ds-header\"><span>Имя вида</span><span>Масштаб</span></div>",
+      "css": ".ds-header{display:flex;align-items:center;justify-content:space-between;height:38px;padding:0 10px;background:#F5F7FA;color:#667085;border-bottom:1px solid #E6EAF0;font:600 12px \"Segoe UI\",sans-serif;}"
+    },
+    {
+      "name": "Rounded Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Owned single-border field; focus/error change its existing outline, with no second focus ring.",
+      "html": "<label class=\"ds-field-label\">Глубина, мм<input class=\"ds-field\" value=\"1500\"></label>",
+      "css": ".ds-field-label{display:block;color:#1F2937;font:600 12px \"Segoe UI\",sans-serif;}.ds-field{display:block;min-height:34px;padding:5px 8px;border:1px solid #D8DEE8;border-radius:5px;background:#fff;color:#1F2937;font:13px \"Segoe UI\",sans-serif;}.ds-field:focus-visible{outline:none;border-color:#0F6CBD;}.ds-field[aria-invalid=\"true\"]{border-color:#D92D20;}.ds-field:disabled{background:#F2F4F7;}"
+    },
+    {
+      "name": "Instrument Navigation",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Owned active/inactive color assignment only; this HTML translation does not reproduce WPF UI templates.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Инструменты\"><button class=\"ds-nav-active\">Развёртки</button><button>Виды и листы</button></nav>",
+      "css": ".ds-nav{display:flex;gap:8px;}.ds-nav button{min-height:34px;padding:6px 12px;border:none;background:transparent;color:#1F2937;font:13px \"Segoe UI\",sans-serif;}.ds-nav button.ds-nav-active{background:#0F6CBD;color:white;}.ds-nav button:hover{opacity:.86;}.ds-nav button:active{transform:scale(.985);}.ds-nav button:focus-visible{outline:revert;}"
+    },
+    {
+      "name": "Primary Button Hover",
+      "kind": "button",
+      "refersTo": "button-primary-hover",
+      "description": "Primary state preview using observed WPF UI brush overrides; shape remains library-owned.",
+      "html": "<button class=\"ds-primary-state\">Тест создания</button>",
+      "css": ".ds-primary-state{background:#0B5EA8;color:#fff;padding:6px 12px;min-height:34px;border:none;font:13px \"Segoe UI\",sans-serif;}.ds-primary-state:hover{opacity:.86;}.ds-primary-state:active{transform:scale(.985);}.ds-primary-state:focus-visible{outline:revert;}"
+    },
+    {
+      "name": "Primary Button Pressed",
+      "kind": "button",
+      "refersTo": "button-primary-active",
+      "description": "Primary state preview using observed WPF UI brush overrides; shape remains library-owned.",
+      "html": "<button class=\"ds-primary-state\">Тест создания</button>",
+      "css": ".ds-primary-state{background:#084B86;color:#fff;padding:6px 12px;min-height:34px;border:none;font:13px \"Segoe UI\",sans-serif;}.ds-primary-state:hover{opacity:.86;}.ds-primary-state:active{transform:scale(.985);}.ds-primary-state:focus-visible{outline:revert;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "SAB working window",
+    "overview": "This inherited descriptive name comes from SAB UI Lab; it records observed authority rather than a new identity or a newly approved metaphor. Russian-speaking architects work with dense editable data in light native windows. White work surfaces, thin boundaries, Segoe UI and restrained blue states retain the user-selected LAB composition.\n\nThis document records the isolated programmatic WPF prototypes in `src/ReviewWindow.cs`, their shared `src/ReviewStyles.xaml` resources and `src/Motion.cs`. They target .NET Framework 4.8, x64, with WPF UI 4.3.0 Light templates. The incumbent `../SAB-UI-Lab/DESIGN.md` and `../SAB-UI-Lab/.impeccable/design.json` were read as reference and remain unchanged. Local tokens govern this prototype only; production SAB XAML and identity are outside the write boundary. Each window awaits separate user approval in `APPROVAL.md`.",
+    "keyCharacteristics": [
+      "Light native work surfaces with editable tables taking priority.",
+      "Blue actions, selection and one rounded field focus border.",
+      "Cached settings, selected-row text previews and explicit test feedback.",
+      "Short optional opacity and render-transform motion with visible base states."
+    ],
+    "rules": [
+      {
+        "name": "Shared Brush",
+        "body": "Extend the observed SAB palette and shared resources; do not treat library defaults or unused resources as newly approved tokens.",
+        "section": "colors"
+      },
+      {
+        "name": "Text Preview",
+        "body": "Show the selected row's name and contextual metadata as text. The user excluded elevation diagrams and sheet pictures from these prototypes.",
+        "section": "typography"
+      },
+      {
+        "name": "Table Priority",
+        "body": "Preserve editable rows, readable selected results and fixed task actions while secondary settings scroll or disclose locally.",
+        "section": "layout"
+      },
+      {
+        "name": "Quiet Surface",
+        "body": "Use tonal separation and thin boundaries for work panels without adding decorative depth.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** preserve the user-selected LAB composition, SAB palette and Segoe UI hierarchy.",
+      "**Do** keep one rounded field focus border and a separate form scrollbar gutter.",
+      "**Do** derive readable textual previews from the selected demonstration data.",
+      "**Do** retain cached in-session edits and visible base states after interrupted motion.",
+      "**Do** disclose synthetic data, simulated actions and external-operation placeholders."
+    ],
+    "donts": [
+      "**Don't** treat this document or the scoped fix verdict as user approval of any window.",
+      "**Don't** amend production SAB or the incumbent LAB system through these local measurements.",
+      "**Don't** add elevation diagrams or sheet pictures to these textual previews.",
+      "**Don't** claim all selectable settings execute production business logic.",
+      "**Don't** interpret bitmap DPI rendering as physical monitor testing or Revit integration."
+    ]
+  }
+}
