@@ -1,78 +1,115 @@
-# SAB MSI Installer (WixSharp, Per-User)
+# Установщики SAB для Revit
 
-## Purpose
-This folder contains WixSharp-based installer builder for the Revit plugin.
+## Скачать готовый установщик
 
-The generated installers:
-- do **not** require administrator rights;
-- install into user profile:
-  - `%AppData%\Autodesk\Revit\Addins\2022`
-  - `%AppData%\Autodesk\Revit\Addins\2023`
-  - `%AppData%\Autodesk\Revit\Addins\2024`
+Последний выпуск: **[Скачать SAB](https://github.com/ASvetlakov2000/SAB/releases/latest)**.
+Выберите `SAB_Revit_2022.msi`, `SAB_Revit_2023.msi` или `SAB_Revit_2024.msi`
+по версии установленного Revit. Закройте Revit, запустите MSI и откройте Revit заново.
 
-## Technology
-- `WixSharp.wix4` NuGet package
-- Installer code: `Installer\WixSharpInstaller\Program.cs`
-- Entry point for all versions: `Build-Msi.bat` in the repository root
-- Version-specific build orchestration: `Installer\Build-All-Msi.ps1`
-- Low-level MSI packaging script: `Installer\Build-Msi.ps1`
+Пакеты устанавливаются для текущего пользователя Windows без прав администратора:
 
-## Build command
-Double-click `Build-Msi.bat` in the repository root. It compiles the single SAB
-assembly, including parameter tools, material quantity and filled-region tools, against every
-supported Revit API and then creates the matching MSI installers. The default
-configuration is Release. For a Debug build, run
-`Build-Msi.bat Debug`; an optional second argument sets the installer version,
-for example `Build-Msi.bat Release 1.2.3`.
+- `%APPDATA%\Autodesk\Revit\Addins\2022`
+- `%APPDATA%\Autodesk\Revit\Addins\2023`
+- `%APPDATA%\Autodesk\Revit\Addins\2024`
 
-The 2022 build uses the installed Revit 2022 API or the local reference cache
-in `Installer\.tools\Revit2022Api`. Revit 2023 and 2024 API assemblies must be
-available in their installed Revit folders under `Program Files\Autodesk`.
+Вкладка **SAB** появляется на ленте Revit. Справка открывается через
+**SAB → Настройки → Инструкции** и работает без интернета.
+Для нескольких версий Revit нужны соответствующие отдельные установщики.
+Обновление выполняется запуском нового MSI при закрытом Revit.
+Удаление — через список установленных приложений Windows, **SAB Revit <год>**.
 
-`Installer\Build-Msi.ps1` only packages an already compiled SAB assembly. When
-using it directly, pass a version-specific `-BinFolder` and matching `-Years`.
+## Сборка установщиков
 
-Place families saved in Revit 2022 in
-`SAB\Families for Plugin\CreateInteriorElevationsCommand\2022`, and families
-saved in Revit 2023 for Revit 2023-2024 in
-`SAB\Families for Plugin\CreateInteriorElevationsCommand\2023-2024`:
+Используется WixSharp (`WixSharp_wix4.bin` 2.13.0) и WiX 4.0.5.
+Требования к сборке и восстановление NuGet описаны в [основном README](../README.md).
 
-- `SAB_Марка угла_План.rfa` (required)
-- `SAB_Марка угла_Развертки.rfa` (required)
-- `SAB_Марка_Помещение.rfa` (optional; enables the built-in room tag)
+- `Build-Msi.bat` в корне — сборка для всех трёх версий Revit.
+- `Installer/Build-All-Msi.ps1` — компиляция SAB с API каждого года и упаковка MSI.
+- `Installer/Build-Msi.ps1` — упаковка уже скомпилированной версии SAB.
+- `Installer/WixSharpInstaller/Program.cs` — состав и параметры MSI.
 
-The build verifies every family's file format before packaging. Each MSI contains
-only its matching version folder under `Families for Plugin\CreateInteriorElevationsCommand`.
+Запустите из корня репозитория:
 
-## Result
-Output folder:
-- `Installer\output`
+```powershell
+.\Build-Msi.bat Release 1.0.0
+```
 
-Generated files:
+Без аргументов используется конфигурация `Release`, версия берётся из `SAB.dll`.
+Для отладки можно передать `Debug`. Для следующих выпусков увеличивайте номер
+версии в формате `Major.Minor.Build`, например `1.0.1`: этот номер записывается в MSI.
+
+Для сборки нужны API всех трёх версий Revit. Для 2022 поддерживаются установленный
+Revit 2022 и локальный кэш `Installer/.tools/Revit2022Api`. API 2023 и 2024
+ищутся в `C:\Program Files\Autodesk\Revit <год>`.
+Библиотеки Autodesk и локальный кэш в Git не включаются.
+
+При отдельном запуске `Build-Msi.ps1` обязательно укажите папку сборки
+соответствующего года в `-BinFolder` и тот же год в `-Years`.
+Упаковка одной DLL в MSI другого года не обеспечивает совместимость.
+
+## Семейства и состав пакета
+
+Семейства для развёрток размещаются в исходниках:
+
+- Revit 2022: `SAB/Families for Plugin/CreateInteriorElevationsCommand/2022`.
+- Revit 2023–2024: `SAB/Families for Plugin/CreateInteriorElevationsCommand/2023-2024`,
+  в формате Revit 2023.
+
+Обязательные файлы: `SAB_Марка угла_План.rfa` и `SAB_Марка угла_Развертки.rfa`.
+Необязательный `SAB_Марка_Помещение.rfa` включает встроенную марку помещения.
+Сборка проверяет формат каждого семейства. В MSI попадает только папка нужного года.
+
+Все действующие инструменты, включая параметры, материалы, заливки и напоминание
+о синхронизации, входят в одну `SAB.dll`. Манифест `SAB_<год>.addin` регистрирует
+плагин из папки `Addins/<год>/SAB`.
+`Nice3point.Revit.Toolkit.dll` поставляется в версии для соответствующего Revit.
+Библиотеки самого Revit в установщики не включаются.
+
+Справка включает каталог, 22 руководства и локальные стили. Она устанавливается в
+`%APPDATA%\Autodesk\Revit\Addins\<год>\SAB\Docs\PluginInstructions`.
+Отсутствие обязательных файлов справки прерывает сборку.
+
+При установке удаляются устаревшие отдельные регистрации `SAB.ParameterTools.addin`,
+`SAB.MaterialQuantity.addin`, `FilledRegionFromMaterial.addin` и старые папки модулей
+материалов и заливок. Идентификаторы хранения профилей параметров сохраняются.
+Тестовый плагин `SyncReminderTest` не входит в обычную сборку; его можно явно
+подключить через `-SyncReminderBinFolder` при отдельной упаковке для разработки.
+
+Результат сборки в `Installer/output`:
+
 - `SAB_Revit_2022.msi`
 - `SAB_Revit_2023.msi`
 - `SAB_Revit_2024.msi`
 
-## Important notes
-- `Build-Msi.ps1` runs the WixSharp console project via `dotnet run`.
-- `Program.cs` sets installer scope to `InstallScope.perUser`.
-- All production commands are installed in `...\Addins\<Year>\SAB` as one
-  `SAB.dll` and registered by the single `SAB_<Year>.addin` manifest.
-- Parameter fill/check commands are built into `SAB.dll`; all commands and
-  settings are on `SAB / Параметры`. See
-  `Docs/PluginInstructions/ParameterTools.md`.
-- Installation removes the obsolete standalone `SAB.ParameterTools.addin`
-  registration. Existing parameter profiles and source-room metadata retain
-  their storage schema identifiers.
-- During installation, legacy `SAB.MaterialQuantity.addin` and
-  `FilledRegionFromMaterial.addin` manifests and their obsolete plugin folders
-  are removed to prevent duplicate ribbon registrations and stale DLLs from
-  earlier standalone builds.
-- Test plugin `SyncReminderTest` is built from `SyncReminderTest\SyncReminderTest.csproj` when needed and installed into `...\Addins\<Year>\SyncReminderTest`.
-- Local HTML help is opened by **SAB → Настройки → Инструкции**. The installer includes
-  `Docs/PluginInstructions/SAB_HTML_Instruktsii.html`, all 22 current user guides and
-  `assets/template.css` at `%APPDATA%\Autodesk\Revit\Addins\<Year>\SAB\Docs\PluginInstructions`.
-  Missing required help files fail the installer build. No web server or internet is needed.
-- `Nice3point.Revit.Toolkit.dll` is bundled for the corresponding Revit version. All three
-  pinned toolkit packages are restored from `SAB/packages.config`.
-- If `SyncReminderTest` needs to be built, `Build-Msi.ps1` searches for `RevitAPI.dll` and `RevitAPIUI.dll` in shared `lib` folders, SAB bin folders, and installed `Program Files\Autodesk\Revit *` folders.
+## Публикация на GitHub
+
+MSI размещаются в **GitHub Releases**, в исходники Git их добавлять не нужно.
+Постоянная ссылка для пользователей:
+[Скачать SAB](https://github.com/ASvetlakov2000/SAB/releases/latest).
+Правила таких ссылок описаны в [справке GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/linking-to-releases).
+
+1. Соберите все три MSI с новым номером версии.
+2. Обновите русское описание выпуска в `Installer/ReleaseNotes.md`.
+3. Сохраните изменения в Git и отправьте их в `origin/master`.
+4. Проверьте и опубликуйте выпуск из корня репозитория:
+
+```powershell
+# Только проверки и подготовка контрольных сумм, без публикации.
+.\Installer\Publish-GitHubRelease.ps1 -Version 1.0.0 -PrepareOnly
+
+# Создание выпуска, загрузка файлов и публикация.
+.\Installer\Publish-GitHubRelease.ps1 -Version 1.0.0
+```
+
+Для публикации нужен доступ на запись к репозиторию: используется `GH_TOKEN`,
+`GITHUB_TOKEN` или сохранённая учётная запись Git Credential Manager.
+Токен не передаётся в аргументах команд и не записывается в файлы.
+
+Скрипт проверяет версию и состав MSI, создаёт `SHA256SUMS.txt`, загружает три
+установщика и контрольные суммы в черновик. Выпуск публикуется только после проверки
+загруженных файлов. При ошибке остаётся черновик; повторный запуск продолжает
+загрузку, если файлы и исходный коммит совпадают. Опубликованные выпуски не перезаписываются.
+Для следующей версии используйте новый номер и новый тег, например `v1.0.1`.
+
+Установщики пока не подписаны цифровым сертификатом. Это указывается в описании
+выпуска; Windows может показать предупреждение о неизвестном издателе.

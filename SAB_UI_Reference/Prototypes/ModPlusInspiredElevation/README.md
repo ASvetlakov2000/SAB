@@ -1,17 +1,19 @@
-# ModPlus-inspired prototype for «Развертки»
+# Прототип окна «Развёртки» по мотивам ModPlus
 
-Standalone WPF prototype. It does not reference Revit, does not execute SAB commands and does not modify the production `ElevationSettingsWindow`.
+Самостоятельный прототип WPF без зависимости от Revit. Он не выполняет команды SAB
+и не изменяет рабочее окно `ElevationSettingsWindow`.
 
-## Run
+## Запуск
 
 ```powershell
 dotnet run --project .\ModPlusInspiredElevationPrototype.csproj
 ```
 
-## Render a PNG
+## Сохранение изображения PNG
 
 ```powershell
 dotnet run --project .\ModPlusInspiredElevationPrototype.csproj -- --render=.\artifacts\elevation-prototype.png
 ```
 
-The prototype links the production `SABWindowStyles.xaml` at build time and adds only isolated prototype styles and UI-only motion.
+При сборке прототип подключает рабочий словарь `SABWindowStyles.xaml`.
+Дополнительные стили и анимации действуют только внутри прототипа.
