@@ -1,70 +1,150 @@
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="SAB Список помещений для разверток" Height="560" Width="1040" MinHeight="420" MinWidth="1000" WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip" FontFamily="Segoe UI" FontSize="13" Background="{DynamicResource SabBrush.WindowBackground}">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SAB Список помещений для разверток"
+        Height="560"
+        Width="1040"
+        MinHeight="420"
+        MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        FontFamily="Segoe UI"
+        FontSize="13"
+        Background="{DynamicResource SabBrush.WindowBackground}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../UI/Styles/SABRedesignStyles.xaml"/>
+                <ResourceDictionary Source="../../UI/Styles/SABWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
         <Grid Grid.Row="0" Margin="20,18,20,14">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="10"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+
             <StackPanel Grid.Row="0">
-                <TextBlock Text="Несколько помещений за один запуск" FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource SabBrush.Text}"/>
-                <TextBlock Text="Для каждого помещения выберите линии разверток. Добавляйте следующие помещения кнопкой «+»." Style="{StaticResource SabFieldHintTextStyle}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                <TextBlock Text="Несколько помещений за один запуск"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource SabBrush.Text}" />
+                <TextBlock Text="Для каждого помещения выберите линии разверток. Добавляйте следующие помещения кнопкой «+»."
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           TextWrapping="Wrap"
+                           Margin="0,4,0,0" />
             </StackPanel>
+
             <Border Grid.Row="2" Style="{StaticResource SabPanelBorderStyle}">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="12"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
+
                     <StackPanel Grid.Row="0" Orientation="Horizontal">
-                        <TextBlock Text="Список помещений" Style="{StaticResource SabPanelHeaderTextStyle}"/>
+                        <Border Style="{StaticResource SabPanelIconBorderStyle}">
+                            <TextBlock Text="☷" Style="{StaticResource SabPanelIconTextStyle}" />
+                        </Border>
+                        <TextBlock Text="Список помещений" Style="{StaticResource SabPanelHeaderTextStyle}" />
                     </StackPanel>
+
                     <Border Grid.Row="2" Style="{StaticResource SabDataGridContainerBorderStyle}">
-                        <DataGrid x:Name="RoomsDataGrid" ItemsSource="{Binding Rows}" Style="{StaticResource SabDataGridStyle}" BorderThickness="0" IsReadOnly="True" CanUserAddRows="False" SelectionMode="Single" SelectionUnit="FullRow" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <DataGrid x:Name="RoomsDataGrid"
+                                  ItemsSource="{Binding Rows}"
+                                  Style="{StaticResource SabDataGridStyle}"
+                                  BorderThickness="0"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  SelectionMode="Single"
+                                  SelectionUnit="FullRow"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="№" Width="54" Binding="{Binding Index}" ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="№"
+                                                    Width="54"
+                                                    Binding="{Binding Index}"
+                                                    ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}"
+                                                    IsReadOnly="True" />
+
                                 <DataGridTemplateColumn Header="Номер помещения" Width="150">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
-                                                <TextBlock Text="{Binding RoomNumber}" ToolTip="{Binding RoomNumber}" Style="{StaticResource SabDataGridTextBlockStyle}"/>
+                                                <TextBlock Text="{Binding RoomNumber}"
+                                                           ToolTip="{Binding RoomNumber}"
+                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
                                             </Border>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
+
                                 <DataGridTemplateColumn Header="Имя помещения" Width="170">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Border Style="{StaticResource SabDataGridDisplayFieldBorderStyle}">
-                                                <TextBlock Text="{Binding RoomName}" ToolTip="{Binding RoomName}" TextTrimming="CharacterEllipsis" Style="{StaticResource SabDataGridTextBlockStyle}"/>
+                                                <TextBlock Text="{Binding RoomName}"
+                                                           ToolTip="{Binding RoomName}"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Style="{StaticResource SabDataGridTextBlockStyle}" />
                                             </Border>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Групп линий" Width="105" Binding="{Binding LineGroupsCount}" ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Выбрано линий" Width="115" Binding="{Binding SelectedLinesCount}" ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Статус" Width="105" Binding="{Binding StatusText}" ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}" IsReadOnly="True"/>
+
+                                <DataGridTextColumn Header="Групп линий"
+                                                    Width="105"
+                                                    Binding="{Binding LineGroupsCount}"
+                                                    ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}"
+                                                    IsReadOnly="True" />
+
+                                <DataGridTextColumn Header="Выбрано линий"
+                                                    Width="115"
+                                                    Binding="{Binding SelectedLinesCount}"
+                                                    ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}"
+                                                    IsReadOnly="True" />
+
+                                <DataGridTextColumn Header="Статус"
+                                                    Width="105"
+                                                    Binding="{Binding StatusText}"
+                                                    ElementStyle="{StaticResource SabDataGridCenteredTextBlockStyle}"
+                                                    IsReadOnly="True" />
+
                                 <DataGridTemplateColumn Header="Действия" Width="205" CanUserResize="False">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Button x:Name="SelectRoomButton" Content="Выбрать" Tag="{Binding}" Width="92" Height="30" ToolTip="Выбрать линии и помещение для этой строки" Style="{StaticResource SabOutlineButtonStyle}" Margin="0,0,8,0"/>
-                                                <Button x:Name="AddRoomButton" Content="+" Tag="{Binding}" ToolTip="Добавить помещение ниже" Style="{StaticResource SabRowAddButtonStyle}" Margin="0,0,8,0"/>
-                                                <Button x:Name="DeleteRoomButton" Content="×" Tag="{Binding}" ToolTip="Удалить помещение" Style="{StaticResource SabRowDeleteButtonStyle}"/>
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center">
+                                                <Button x:Name="SelectRoomButton"
+                                                        Content="Выбрать"
+                                                        Tag="{Binding}"
+                                                        Width="92"
+                                                        Height="30"
+                                                        ToolTip="Выбрать линии и помещение для этой строки"
+                                                        Style="{StaticResource SabOutlineButtonStyle}"
+                                                        Margin="0,0,8,0" />
+                                                <Button x:Name="AddRoomButton"
+                                                        Content="+"
+                                                        Tag="{Binding}"
+                                                        ToolTip="Добавить помещение ниже"
+                                                        Style="{StaticResource SabRowAddButtonStyle}"
+                                                        Margin="0,0,8,0" />
+                                                <Button x:Name="DeleteRoomButton"
+                                                        Content="×"
+                                                        Tag="{Binding}"
+                                                        ToolTip="Удалить помещение"
+                                                        Style="{StaticResource SabRowDeleteButtonStyle}" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -74,20 +154,40 @@
                     </Border>
                 </Grid>
             </Border>
+
             <Border Grid.Row="4" Style="{StaticResource SabValidationPanelStyle}">
-                <TextBlock Text="{Binding ValidationText}" Style="{StaticResource SabFieldHintTextStyle}" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding ValidationText}"
+                           Style="{StaticResource SabFieldHintTextStyle}"
+                           TextWrapping="Wrap" />
             </Border>
         </Grid>
-        <Border Grid.Row="1" Background="{StaticResource SabBrush.PanelBackground}" BorderBrush="{StaticResource SabBrush.Border}" BorderThickness="0,1,0,0" Padding="20,10">
+
+        <Border Grid.Row="1"
+                Background="{StaticResource SabBrush.PanelBackground}"
+                BorderBrush="{StaticResource SabBrush.Border}"
+                BorderThickness="0,1,0,0"
+                Padding="20,10">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding StatusText}" Style="{StaticResource SabStatusTextStyle}" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusText}"
+                           Style="{StaticResource SabStatusTextStyle}"
+                           VerticalAlignment="Center" />
+
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="CancelButton" Content="Отмена" Width="120" Style="{StaticResource SabNeutralButtonStyle}" Margin="0,0,10,0"/>
-                    <Button x:Name="TransferButton" Content="Передать список помещений" Width="210" Style="{StaticResource SabPrimaryButtonStyle}"/>
+                    <Button x:Name="CancelButton"
+                            Content="Отмена"
+                            Width="120"
+                            Style="{StaticResource SabNeutralButtonStyle}"
+                            Margin="0,0,10,0" />
+                    <Button x:Name="TransferButton"
+                            Content="Передать список помещений"
+                            Width="210"
+                            Style="{StaticResource SabPrimaryButtonStyle}" />
                 </StackPanel>
             </Grid>
         </Border>

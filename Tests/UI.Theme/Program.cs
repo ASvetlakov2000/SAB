@@ -28,7 +28,6 @@ internal static class Program
         try
         {
             CheckFields(root);
-            CheckFields(root, "SABRedesignStyles.xaml");
             foreach (string file in Directory.GetFiles(Path.Combine(root, "SAB"), "*.xaml", SearchOption.AllDirectories)
                 .Where(p => !p.Contains("\\bin\\") && !p.Contains("\\obj\\") && !p.Contains("\\Archive\\")))
             {
@@ -78,11 +77,11 @@ internal static class Program
       "PreviewMouseLeftButtonDown", "PreviewMouseMove", "PreviewMouseLeftButtonUp", "MouseLeftButtonDown",
       "MouseDoubleClick", "PreviewKeyDown", "KeyDown", "SizeChanged", "Expanded", "Collapsed" };
 
-    private static void CheckFields(string root, string dictionary = "SABWindowStyles.xaml")
+    private static void CheckFields(string root)
     {
         var window = new Window { Title = "SAB — проверка полей", Width = 640, Height = 520 };
         window.Resources.MergedDictionaries.Add(new ResourceDictionary
-        { Source = new Uri(Path.Combine(root, "SAB", "UI", "Styles", dictionary)) });
+        { Source = new Uri(Path.Combine(root, "SAB", "UI", "Styles", "SABWindowStyles.xaml")) });
         var fields = new StackPanel { Margin = new Thickness(20) };
         fields.Children.Add(new TextBlock { Text = "Одна рамка поля — обычное / активное / ошибка", Margin = new Thickness(0,0,0,12) });
         var text = new TextBox { Text = "Развёртка помещения", Margin = new Thickness(0,0,0,12) };

@@ -480,7 +480,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UI\AdaptiveSettingsGrid.cs" />
-    <Compile Include="UI\SabRedesignLayout.cs" />
     <Compile Include="UI\SabWindowAnimationService.cs" />
     <Compile Include="UI\SabWindowBehaviorService.cs" />
     <Compile Include="UI\SabWindowPlacementService.cs" />
@@ -531,10 +530,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
-    <Page Include="UI\Styles\SABRedesignStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Cls_MaterialQuantity\MaterialQuantityProgressWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -615,9 +610,6 @@
     <EmbeddedResource Include="Resources\GklFrameWall_16.png" />
     <EmbeddedResource Include="Resources\GklFrameWall_32.png" />
     <Content Include="UI\Styles\SABWindowStyles.xaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UI\Styles\SABRedesignStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Cls_GklFrame\Views\FrameModuleWindow.xaml">

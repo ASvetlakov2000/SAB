@@ -107,12 +107,8 @@ internal static class Program
         edited.Rules[0].Source = RuleValueSource.Room;
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); tabs.SelectedIndex=0;
         window.Width = window.MinWidth; window.Height = window.MinHeight; window.UpdateLayout();
-        if (ruleGrid.Columns.Where(c => c.Visibility == Visibility.Visible).Sum(c => c.ActualWidth) > ruleGrid.ActualWidth) throw new Exception("Rules require horizontal scrolling at the minimum window width.");
+        if (ruleGrid.Columns.Sum(c => c.ActualWidth) > ruleGrid.ActualWidth) throw new Exception("Rules require horizontal scrolling at the minimum window width.");
         Render(window, Path.Combine(folder, "settings-min.png"));
-        var completeRows = FindAll<DataGridRow>(ruleGrid).Count(r => r.IsVisible && r.TranslatePoint(new Point(0, 0), ruleGrid).Y >= 0
-            && r.TranslatePoint(new Point(0, r.ActualHeight), ruleGrid).Y <= ruleGrid.ActualHeight - 2);
-        if (completeRows < 2) throw new Exception("Minimum-height rules must show at least two complete rows. Grid=" + ruleGrid.ActualHeight + "; "
-            + string.Join(";", FindAll<DataGridRow>(ruleGrid).Select(r => r.TranslatePoint(new Point(0, 0), ruleGrid).Y + ":" + r.ActualHeight)));
         window.Width = 1120; window.Height = 820;
         if (FindButton(window, "Инструкция") == null) throw new Exception("HTML instruction shortcut is missing.");
         settingsType.GetMethod("AddRule", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(window, null);
@@ -180,21 +176,7 @@ internal static class Program
         if (!(bool)categoryType.GetProperty("Selected").GetValue(categories[0]) || !(bool)categoryType.GetProperty("Selected").GetValue(categories[1])) throw new Exception("Bulk enable failed.");
         var search = (TextBox)selector.GetType().GetField("_search", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selector);
         search.Text = "стен"; if (list.Items.Count != 1) throw new Exception("Category search failed.");
-        Render(check, Path.Combine(folder, "category-search.png"));
-        var selectedOnly = (CheckBox)selector.GetType().GetField("_selectedOnly", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(selector);
-        categoryType.GetProperty("Selected").SetValue(categories[0], false);
-        selectedOnly.IsChecked = true;
-        if (list.Items.Count != 0 || (bool)categoryType.GetProperty("Selected").GetValue(categories[0])) throw new Exception("Selected-only must intersect search without enabling categories.");
-        search.Text = "";
-        if (list.Items.Count != 2) throw new Exception("Selected-only must use enabled toggles, not ListBox row selection.");
-        list.SelectAll(); selector.GetType().GetMethod("SetSelected", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(selector, new object[] { false });
-        check.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
-        if (list.Items.Count != 0 || categories.Cast<object>().Any(c => (bool)categoryType.GetProperty("Selected").GetValue(c))) throw new Exception("Filtered bulk disable lost rows or failed to refresh.");
-        selectedOnly.IsChecked = false;
-        if (list.Items.Count != 3) throw new Exception("Clearing selected-only must restore hidden categories.");
-        categoryType.GetProperty("Selected").SetValue(categories[0], true);
-        selectedOnly.IsChecked = true; check.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
-        Render(check, Path.Combine(folder, "categories-selected-only.png")); check.Close();
+        Render(check, Path.Combine(folder, "category-search.png")); check.Close();
         var stateType = typeof(Profile).Assembly.GetType("SAB.ParameterTools.HighlightService+State");
         var state = Activator.CreateInstance(stateType); var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
         var originalType = typeof(Profile).Assembly.GetType("SAB.ParameterTools.HighlightService+Original");

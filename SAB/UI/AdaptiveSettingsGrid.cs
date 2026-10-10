@@ -24,14 +24,6 @@ namespace SAB.UI
     // Preserve the desktop layout and stack settings in a narrow window.
     public sealed class AdaptiveSettingsGrid : Grid
     {
-        public static readonly DependencyProperty ForceCompactProperty = DependencyProperty.Register(
-            "ForceCompact", typeof(bool), typeof(AdaptiveSettingsGrid),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsMeasure));
-        public bool ForceCompact
-        {
-            get { return (bool)GetValue(ForceCompactProperty); }
-            set { SetValue(ForceCompactProperty, value); }
-        }
         private Window _window;
         private bool _compact;
         private List<RowDefinition> _rows;
@@ -67,7 +59,7 @@ namespace SAB.UI
             Window window = _window ?? Window.GetWindow(this);
             double width = window == null ? constraint.Width :
                 (window.ActualWidth > 0 ? window.ActualWidth : window.Width);
-            bool compact = ForceCompact || width < 780;
+            bool compact = width < 780;
             if (compact != _compact)
             {
                 if (_cells == null)
@@ -75,11 +67,7 @@ namespace SAB.UI
                     _rows = RowDefinitions.ToList();
                     _columns = ColumnDefinitions.Select(c => c.Width).ToList();
                     _cells = Children.OfType<FrameworkElement>()
-                        .Select(c => new CellLayout(c)).ToList();
-                    // Column groups keep each label beside its own input when stacked in a sidebar.
-                    _cells = ForceCompact
-                        ? _cells.OrderBy(c => c.Column).ThenBy(c => c.Row).ToList()
-                        : _cells.OrderBy(c => c.Row).ThenBy(c => c.Column).ToList();
+                        .Select(c => new CellLayout(c)).OrderBy(c => c.Row).ThenBy(c => c.Column).ToList();
                 }
                 RowDefinitions.Clear();
                 if (compact)
