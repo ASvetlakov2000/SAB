@@ -47,6 +47,8 @@ namespace SAB.InteriorElevations.ViewModels
 
     public class ElevationNamingPreviewItem
     {
+        public string RoomName { get; set; }
+        public string Corners { get; set; }
         public string ViewName { get; set; }
 
         public string ViewTitle { get; set; }
@@ -197,7 +199,7 @@ namespace SAB.InteriorElevations.ViewModels
             get
             {
                 return HasNamingPreview
-                    ? "Пример для первого вида."
+                    ? "Предпросмотр: " + NamingPreviewItems.Count + ". Имена проверяются повторно при создании."
                     : "Выберите линии и помещение — здесь появятся итоговые имена и заголовки.";
             }
         }
@@ -997,19 +999,23 @@ namespace SAB.InteriorElevations.ViewModels
                 previewSettings.ElevationTitlePart3 = ElevationTitlePart3Text ?? string.Empty;
 
                 ElevationNamingService namingService = new ElevationNamingService(_document);
-                ElevationNamingPreviewContext context = _namingPreviewContexts[0];
-                ElevationNamingPreviewItem item = new ElevationNamingPreviewItem();
-                item.ViewName = namingService.GenerateUniqueElevationViewName(
-                    context.RoomData,
-                    context.StartPointNumber,
-                    context.EndPointNumber,
-                    previewSettings);
-                item.ViewTitle = namingService.GenerateElevationTitleOnSheet(
-                    context.RoomData,
-                    context.StartPointNumber,
-                    context.EndPointNumber,
-                    previewSettings);
-                NamingPreviewItems.Add(item);
+                foreach (ElevationNamingPreviewContext context in _namingPreviewContexts)
+                {
+                    ElevationNamingPreviewItem item = new ElevationNamingPreviewItem();
+                    item.RoomName = context.RoomData.RoomNumber + " · " + context.RoomData.RoomName;
+                    item.Corners = context.StartPointNumber + "–" + context.EndPointNumber;
+                    item.ViewName = namingService.GenerateUniqueElevationViewName(
+                        context.RoomData,
+                        context.StartPointNumber,
+                        context.EndPointNumber,
+                        previewSettings);
+                    item.ViewTitle = namingService.GenerateElevationTitleOnSheet(
+                        context.RoomData,
+                        context.StartPointNumber,
+                        context.EndPointNumber,
+                        previewSettings);
+                    NamingPreviewItems.Add(item);
+                }
             }
 
             OnPropertyChanged("HasNamingPreview");

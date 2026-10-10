@@ -23,7 +23,7 @@ namespace SAB.CreateViewsAndSheets.Views
     public partial class CreateViewsAndSheetsWindow : Window
     {
         private static readonly bool ShowBatchEditDebugDialogs = false;
-        private const string ColumnLayoutKeyPrefix = "ClassicColumnsV1";
+        private const string ColumnLayoutKeyPrefix = "RedesignColumnsV2";
 
         private readonly CreateViewsAndSheetsViewModel _viewModel;
         private readonly CreateViewsAndSheetsWindowLayoutService _layoutService;
@@ -131,6 +131,7 @@ namespace SAB.CreateViewsAndSheets.Views
             RestoreWindowLayout();
             AttachAnimatedFeedbackTargets();
             SabWindowBehaviorService.ApplyLoadedBehavior(this);
+            SabRedesignLayout.WatchPreview(_rowsDataGrid, FindVisualChildByName<Border>(this, "SheetTextPreview"));
             OpenSettingsWindowAfterLoadedIfNeeded();
         }
 

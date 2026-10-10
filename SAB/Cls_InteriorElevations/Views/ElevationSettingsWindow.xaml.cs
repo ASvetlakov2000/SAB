@@ -220,6 +220,8 @@ namespace SAB.InteriorElevations.Views
             }
 
             SabWindowBehaviorService.ApplyLoadedBehavior(this);
+            SabRedesignLayout.WatchPreview(FindElementByName<DataGrid>(Content as DependencyObject, "ElevationPreviewDataGrid"),
+                FindElementByName<Border>(Content as DependencyObject, "ElevationTextPreview"));
         }
 
         private void ElevationSettingsWindow_Closed(object sender, EventArgs e)

@@ -7,6 +7,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Windows.Threading;
 using Binding = System.Windows.Data.Binding;
 
 namespace SAB.ParameterTools.UI
@@ -18,6 +19,8 @@ namespace SAB.ParameterTools.UI
         private readonly ICollectionView _view;
         private readonly TextBox _search;
         private readonly TextBlock _count;
+        private readonly CheckBox _selectedOnly;
+        private bool _refreshPending;
         internal CategorySelectionControl(List<CategoryChoice> categories)
         {
             _categories = categories;
@@ -26,6 +29,11 @@ namespace SAB.ParameterTools.UI
             top.Children.Add(Theme.Text("Поиск категории", true));
             _search = new TextBox { Margin = new Thickness(4, 0, 4, 6), ToolTip = "Поиск по названию категории" };
             top.Children.Add(_search);
+            _selectedOnly = new CheckBox { Content = "Показать только выбранные категории", Margin = new Thickness(4, 4, 4, 8),
+                ToolTip = "Показать категории с включённым тумблером. Поиск продолжает действовать; состав выбора не меняется." };
+            _selectedOnly.Checked += (s, e) => RefreshFilter();
+            _selectedOnly.Unchecked += (s, e) => RefreshFilter();
+            top.Children.Add(_selectedOnly);
             var actions = new WrapPanel();
             actions.Children.Add(Theme.Button("Выделить все", (s, e) => _list.SelectAll()));
             actions.Children.Add(Theme.Button("Включить", (s, e) => SetSelected(true)));
@@ -35,8 +43,10 @@ namespace SAB.ParameterTools.UI
             hint.FontSize = 12; top.Children.Add(hint);
             DockPanel.SetDock(top, Dock.Top); root.Children.Add(top);
             _count = Theme.Text(""); DockPanel.SetDock(_count, Dock.Bottom); root.Children.Add(_count);
-            _view = new ListCollectionView(categories); _view.Filter = item => string.IsNullOrWhiteSpace(_search.Text) ||
-                ((CategoryChoice)item).Name.IndexOf(_search.Text.Trim(), StringComparison.CurrentCultureIgnoreCase) >= 0;
+            _view = new ListCollectionView(categories); _view.Filter = item =>
+                (_selectedOnly.IsChecked != true || ((CategoryChoice)item).Selected) &&
+                (string.IsNullOrWhiteSpace(_search.Text) ||
+                ((CategoryChoice)item).Name.IndexOf(_search.Text.Trim(), StringComparison.CurrentCultureIgnoreCase) >= 0);
             _list = new ListBox { ItemsSource = _view, SelectionMode = SelectionMode.Extended, BorderThickness = new Thickness(0),
                 HorizontalContentAlignment = HorizontalAlignment.Stretch, Background = System.Windows.Media.Brushes.White, Margin = new Thickness(4) };
             var row = new FrameworkElementFactory(typeof(DockPanel)); row.SetValue(FrameworkElement.MarginProperty, new Thickness(8, 7, 8, 7));
@@ -51,8 +61,14 @@ namespace SAB.ParameterTools.UI
             _list.ItemTemplate = new DataTemplate { VisualTree = row };
             _list.PreviewKeyDown += (s, e) => { if (e.Key == Key.Space) { var rows = _list.SelectedItems.Cast<CategoryChoice>().ToList();
                 if (rows.Count > 0) Apply(rows, !rows.All(c => c.Selected)); e.Handled = true; } };
-            _search.TextChanged += (s, e) => { _view.Refresh(); UpdateCount(); };
-            foreach (var category in categories) category.PropertyChanged += (s, e) => UpdateCount();
+            _search.TextChanged += (s, e) => RefreshFilter();
+            foreach (var category in categories) category.PropertyChanged += (s, e) => {
+                UpdateCount();
+                // Refresh after the whole multi-selection operation, never during its iteration.
+                if (_selectedOnly.IsChecked != true || _refreshPending) return;
+                _refreshPending = true;
+                Dispatcher.BeginInvoke(new Action(() => { _refreshPending = false; RefreshFilter(); }), DispatcherPriority.Background);
+            };
             var frame = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(6),
                 BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(216, 222, 232)),
                 Background = System.Windows.Media.Brushes.White, Margin = new Thickness(4), Padding = new Thickness(4), Child = _list };
@@ -69,7 +85,11 @@ namespace SAB.ParameterTools.UI
         private void Apply(IEnumerable<CategoryChoice> rows, bool enabled)
         { foreach (var row in rows) row.Selected = enabled; UpdateCount(); }
         private void UpdateCount()
-        { _count.Text = "Включено: " + _categories.Count(c => c.Selected) + " из " + _categories.Count; }
+        { _count.Text = "Включено: " + _categories.Count(c => c.Selected) + " из " + _categories.Count
+            + " · Показано: " + _view.Cast<object>().Count()
+            + (_view.IsEmpty ? ". Нет категорий по текущему фильтру." : ""); }
+        private void RefreshFilter()
+        { if (_view == null) return; _view.Refresh(); UpdateCount(); }
     }
 
     internal sealed class CheckCategoriesWindow : Window

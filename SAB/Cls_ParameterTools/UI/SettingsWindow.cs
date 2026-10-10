@@ -53,6 +53,9 @@ namespace SAB.ParameterTools.UI
         private TextBox _corpusCount;
         private bool _statusPending, _sourcesPending;
         private string _sourceRuleId;
+        private Border _inlineSourceHost, _sourceTabHost;
+        private ScrollViewer _sourceScroll;
+        private Border _selectedRuleEditor;
         private static readonly Choice[] Groups = { new Choice(ParameterGroup.Zone, "Зона"), new Choice(ParameterGroup.Level, "Уровень"),
             new Choice(ParameterGroup.Location, "Местоположение"), new Choice(ParameterGroup.Room, "Помещение") };
         private static readonly Choice[] Sources = { new Choice(RuleValueSource.Room, "Из помещения"), new Choice(RuleValueSource.Level, "Из модели: уровень"),
@@ -80,12 +83,15 @@ namespace SAB.ParameterTools.UI
                 Value = Profile.Levels.FirstOrDefault(x => x.LevelUniqueId == level.LevelUniqueId)?.Value }).ToList();
             _rules = new ObservableCollection<Rule>(Profile.Rules);
             _corpora = new ObservableCollection<CorpusItem>(Profile.Corpora.Select(c => new CorpusItem { Name = c }));
-            Title = "Настройки параметров"; Width = 1120; Height = 820; MinWidth = 980; MinHeight = 680; Theme.Window(this);
+            Title = "Настройки параметров"; Width = 1400; Height = 900; MinWidth = 1100; MinHeight = 700; Theme.Window(this);
+            Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("pack://application:,,,/SAB;component/UI/Styles/SABRedesignStyles.xaml", UriKind.Absolute) });
+            Resources[typeof(CheckBox)] = new Style(typeof(CheckBox), (Style)FindResource("SabCheckBoxStyle"));
             _status = Theme.Text(""); _status.MaxHeight = 64; _status.FontSize = 12;
             _tabs = new TabControl(); Theme.Tabs(_tabs);
+            _tabs.ItemContainerStyle = (Style)FindResource("SabReviewTabItemStyle");
             RulesTab(); SourcesTab(); LevelsTab(); CategoriesTab();
             _tabs.SelectionChanged += (s, e) => { if (!ReferenceEquals(e.Source, _tabs)) return;
-                if (_tabs.SelectedIndex == 1) RefreshSources(); if (_tabs.SelectedIndex == 2) RefreshValues(); };
+                MoveSourcePanel(); if (_tabs.SelectedIndex <= 1) RefreshSources(); if (_tabs.SelectedIndex == 2) RefreshValues(); };
             var footer = new DockPanel(); var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
             var instructions = Theme.Button("Инструкция", (s, e) => {
                 string error;
@@ -95,7 +101,10 @@ namespace SAB.ParameterTools.UI
             instructions.ToolTip = "Порядок настройки, работа с группами и разбор ошибок записи";
             DockPanel.SetDock(instructions, Dock.Left); footer.Children.Add(instructions);
             buttons.Children.Add(Theme.Button("Отмена", (s, e) => Close()));
-            var save = Theme.Button("Сохранить настройки", (s, e) => Save()); Theme.Primary(this, save); buttons.Children.Add(save);
+            var saveLabel = new TextBlock { Text = "Сохранить настройки" };
+            saveLabel.SetBinding(TextBlock.ForegroundProperty, new Binding("Foreground") { RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(System.Windows.Controls.Button), 1) });
+            var save = new Wpf.Ui.Controls.Button { Content = saveLabel, Appearance = Wpf.Ui.Controls.ControlAppearance.Primary };
+            save.Click += (s, e) => Save(); buttons.Children.Add(save);
             DockPanel.SetDock(buttons, Dock.Right); footer.Children.Add(buttons); footer.Children.Add(_status);
             var body = new DockPanel(); var transfer = new StackPanel(); var transferButtons = new WrapPanel();
             transferButtons.Children.Add(Theme.Button("Экспорт конфигурации…", (s, e) => TransferFile(false)));
@@ -106,6 +115,7 @@ namespace SAB.ParameterTools.UI
             transfer.Children.Add(new ScrollViewer { Content = _configurationStatus, MaxHeight = 100, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
             DockPanel.SetDock(transfer, Dock.Top); body.Children.Add(transfer); body.Children.Add(_tabs);
             Theme.Frame(this, "Настройки параметров", "Здесь задаются правила. Запись в элементы выполняется отдельной командой «Занести параметры».", body, footer);
+            Loaded += (s, e) => { MoveSourcePanel(); SAB.UI.SabRedesignLayout.Initialize(this); };
             ObserveRules(); _rules.CollectionChanged += (s, e) => { ObserveRules(); ScheduleSources(); ScheduleStatus(); };
             foreach (var category in _categories) category.PropertyChanged += (s, e) => ScheduleStatus();
             ObserveCorpora(); _corpora.CollectionChanged += (s, e) => { ObserveCorpora(); if (_corpusCount != null) _corpusCount.Text = _corpora.Count.ToString(); ScheduleStatus(); };
@@ -221,11 +231,18 @@ namespace SAB.ParameterTools.UI
         }
         private void RulesTab()
         {
-            var root = new DockPanel(); var header = Theme.Text("Каждая строка записывает один параметр. Выберите параметр и источник, затем нажмите «Настроить источник». «Проверять» ищет пустые значения и не влияет на запись.");
+            var root = new DockPanel(); var header = Theme.Text("Каждая строка заполняет один параметр. Источник выбранной строки — слева. «Проверять» ищет пустые значения.");
+            header.FontSize = 12;
+            header.Margin = new Thickness(4, 2, 4, 2);
             DockPanel.SetDock(header, Dock.Top); root.Children.Add(header);
             var bottom = new StackPanel();
-            _ruleExplanation = Theme.Text(""); _ruleExplanation.MaxHeight = 84;
-            bottom.Children.Add(_ruleExplanation);
+            _ruleExplanation = Theme.Text("");
+            _ruleExplanation.Margin = new Thickness(4, 2, 4, 2);
+            var explanationScroll = new ScrollViewer { MaxHeight = 60, Content = _ruleExplanation,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                Style = (Style)FindResource("SabFormScrollViewerStyle") };
+            var preview = new StackPanel(); preview.Children.Add(Theme.Text("Предпросмотр действия правила", true)); preview.Children.Add(explanationScroll);
+            bottom.Children.Add(SAB.UI.SabRedesignLayout.Panel(this, preview, new Thickness(10, 6, 10, 6)));
             var actions = new WrapPanel(); var add = Theme.Button("Добавить правило", (s, e) => AddRule()); Theme.Primary(this, add); actions.Children.Add(add);
             var configure = Theme.Button("Настроить источник", (s, e) => {
                 if (!(_rulesGrid.SelectedItem is Rule rule)) { _status.Text = "Выберите строку правила, чтобы настроить её источник."; return; }
@@ -235,7 +252,7 @@ namespace SAB.ParameterTools.UI
             configure.ToolTip = "Открыть настройки источника выбранной строки"; actions.Children.Add(configure); bottom.Children.Add(actions);
             DockPanel.SetDock(bottom, Dock.Bottom); root.Children.Add(bottom);
             _rulesGrid = GridFor(_rules); _rulesGrid.MinRowHeight = 74; _rulesGrid.RowHeight = double.NaN;
-            _rulesGrid.SelectionChanged += (s, e) => UpdateRuleExplanation();
+            _rulesGrid.SelectionChanged += (s, e) => { UpdateRuleExplanation(); if (_rulesGrid.SelectedItem is Rule selected) { _sourceRuleId = selected.Id; ScheduleSources(); } };
             CheckColumn(_rulesGrid, "Вкл.", "Enabled", 46);
             TextColumn(_rulesGrid, "Сущность / название", "EntityName", 1.05);
             _rulesGrid.Columns.Add(new DataGridTextColumn { Header = "", Binding = new Binding("Id") { Converter = new ArrowConverter() }, IsReadOnly = true,
@@ -246,23 +263,39 @@ namespace SAB.ParameterTools.UI
             RowActions(_rulesGrid, (row, addRow) => { if (addRow) AddRule(); else if (row is Rule rule) _rules.Remove(rule); }, false);
             // Keep the identifiers readable when the native DataGrid is resized.
             _rulesGrid.Columns[1].Width = 145; _rulesGrid.Columns[3].Width = 300;
-            _rulesGrid.Columns[4].Width = 210;
-            _rulesGrid.SizeChanged += (s, e) => _rulesGrid.Columns[4].Width = Math.Max(210, _rulesGrid.ActualWidth - 655);
-            root.Children.Add(_rulesGrid); Tab("Правила", Theme.Card(this, "Правила заполнения", root));
+            // The same source binding is edited in the sidebar; the table keeps the target readable.
+            _rulesGrid.Columns[4].Visibility = System.Windows.Visibility.Collapsed;
+            root.Children.Add(_rulesGrid);
+            var layout = new Grid(); layout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(320) });
+            layout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(18) }); layout.ColumnDefinitions.Add(new ColumnDefinition());
+            var sidebar = new DockPanel(); _selectedRuleEditor = new Border { Margin = new Thickness(0, 0, 0, 12) };
+            DockPanel.SetDock(_selectedRuleEditor, Dock.Top); sidebar.Children.Add(_selectedRuleEditor);
+            _inlineSourceHost = new Border(); sidebar.Children.Add(_inlineSourceHost);
+            layout.Children.Add(SAB.UI.SabRedesignLayout.Panel(this, sidebar, new Thickness(12)));
+            var table = SAB.UI.SabRedesignLayout.Panel(this, root); Grid.SetColumn(table, 2); layout.Children.Add(table);
+            Tab("Правила", layout);
             if (_rules.Count > 0) _rulesGrid.SelectedIndex = 0;
         }
         private void UpdateRuleExplanation()
         {
             if (_ruleExplanation == null) return;
             var rule = _rulesGrid?.SelectedItem as Rule;
+            if (_selectedRuleEditor != null)
+            {
+                var editor = new StackPanel(); editor.Children.Add(Theme.Text("Источник выбранного правила", true));
+                if (rule != null) { editor.Children.Add(Theme.Text(rule.EntityName ?? "Правило")); editor.Children.Add(Combo(rule, "Source", Sources, true)); }
+                else editor.Children.Add(Theme.Text("Выберите строку в таблице справа."));
+                _selectedRuleEditor.Child = editor;
+            }
             _ruleExplanation.Text = rule == null ? "Выберите строку: здесь появится пояснение её действия." :
                 (rule.Enabled ? "Будет записано: " : "Правило выключено: ") + (rule.Target?.Name ?? "параметр ещё не выбран") + " ← "
                 + (Sources.FirstOrDefault(s => Equals(s.Value, rule.Source))?.Label ?? "источник не выбран")
                 + ". Название правила служит подписью и не определяет логику записи.\n" + (rule.Target?.Details ?? "Выберите параметр в таблице.");
+            SAB.UI.SabWindowAnimationService.PulseElement(_ruleExplanation);
         }
         private void CheckColumn(DataGrid grid, string header, string path, double width)
         {
-            var style = new Style(typeof(CheckBox)); style.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center)); style.Setters.Add(new Setter(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center));
+            var style = new Style(typeof(CheckBox), (Style)FindResource("SabCheckBoxStyle")); style.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center)); style.Setters.Add(new Setter(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center));
             grid.Columns.Add(new DataGridCheckBoxColumn { Header = header, Binding = new Binding(path) { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged }, ElementStyle = style, EditingElementStyle = style, Width = width });
         }
         private void AddRule()
@@ -287,7 +320,16 @@ namespace SAB.ParameterTools.UI
         }
         private void SourcesTab()
         {
-            _sourcesPanel = new StackPanel(); Tab("Источники", new ScrollViewer { Content = _sourcesPanel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
+            _sourcesPanel = new StackPanel(); _sourceScroll = new ScrollViewer { Content = _sourcesPanel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, Style = (Style)FindResource("SabFormScrollViewerStyle") };
+            _sourceTabHost = new Border(); Tab("Источники", _sourceTabHost); MoveSourcePanel();
+        }
+        private void MoveSourcePanel()
+        {
+            if (_sourceScroll == null) return;
+            var destination = _tabs.SelectedIndex <= 0 ? _inlineSourceHost : _sourceTabHost;
+            if (ReferenceEquals(destination.Child, _sourceScroll)) return;
+            _inlineSourceHost.Child = null; _sourceTabHost.Child = null; destination.Child = _sourceScroll;
         }
         private void ObserveRules()
         {
@@ -306,7 +348,7 @@ namespace SAB.ParameterTools.UI
             if (_corpusGrid != null) { _corpusGrid.CommitEdit(DataGridEditingUnit.Row, true); _grids.Remove(_corpusGrid); _corpusGrid = null; }
             _sourcesPanel.Children.Clear(); var rules = _rules.Where(r => r.Enabled).ToList();
             if (rules.Count == 0) { _sourcesPanel.Children.Add(Theme.Text("Во вкладке «Правила» добавьте и включите хотя бы одну строку. Здесь появятся настройки её источника.")); return; }
-            var shared = new WrapPanel(); _sourcesPanel.Children.Add(shared);
+            var shared = new StackPanel(); _sourcesPanel.Children.Add(shared);
             if (rules.Any(r => RuleEngine.UsesRoom(Profile, r)))
             {
                 var body = new StackPanel();
@@ -321,17 +363,19 @@ namespace SAB.ParameterTools.UI
                 automatic.Visibility = Profile.RoomSourceMode == RoomSourceMode.Automatic ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
                 mode.SelectionChanged += (s, e) => automatic.Visibility = Equals(mode.SelectedValue, RoomSourceMode.Automatic) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
                 body.Children.Add(automatic);
-                var card = Theme.Card(this, "Выбор помещения", body); card.Width = 433; shared.Children.Add(card);
+                var card = Theme.Card(this, "Выбор помещения", body); shared.Children.Add(card);
             }
             if (rules.Any(r => RuleEngine.UsesLevel(Profile, r)))
             {
                 var body = new StackPanel(); Field(body, "Откуда брать уровень", Combo(Profile, "LevelSource", new[] { new Choice(LevelSource.ActivePlan, "Уровень текущего плана"), new Choice(LevelSource.Element, "Уровень элемента") }, true));
                 body.Children.Add(Theme.Text("Для выделения на нескольких этажах выберите «Уровень элемента». «Уровень текущего плана» обрабатывает только элементы этажа открытого плана."));
-                body.Children.Add(Theme.Button("Значения и сопоставления →", (s, e) => _tabs.SelectedIndex = 2)); var card = Theme.Card(this, "Уровень модели", body); card.Width = 433; shared.Children.Add(card);
+                body.Children.Add(Theme.Button("Значения и сопоставления →", (s, e) => _tabs.SelectedIndex = 2)); var card = Theme.Card(this, "Уровень модели", body); shared.Children.Add(card);
             }
             var picker = new ComboBox { ItemsSource = rules.Select(r => new Choice(r.Id, r.ToString())).ToList(), SelectedValuePath = "Value", DisplayMemberPath = "Label", Margin = new Thickness(4), VerticalContentAlignment = VerticalAlignment.Center };
             if (!rules.Any(r => r.Id == _sourceRuleId)) _sourceRuleId = rules[0].Id; picker.SelectedValue = _sourceRuleId;
-            picker.SelectionChanged += (s, e) => { _sourceRuleId = picker.SelectedValue as string; ScheduleSources(); };
+            picker.SelectionChanged += (s, e) => { _sourceRuleId = picker.SelectedValue as string;
+                if (_tabs.SelectedIndex == 0) _rulesGrid.SelectedItem = _rules.FirstOrDefault(r => r.Id == _sourceRuleId);
+                ScheduleSources(); };
             _sourcesPanel.Children.Add(Theme.Text("Выберите правило, для которого настраиваете источник", true)); _sourcesPanel.Children.Add(picker);
             foreach (var rule in rules.Where(r => r.Id == _sourceRuleId && r.Source != RuleValueSource.Level && r.Source != RuleValueSource.ManualCorpus))
             {
