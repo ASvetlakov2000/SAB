@@ -31,6 +31,7 @@ namespace SAB.InteriorElevations.Views
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
             AttachHandlers();
+            Loaded += (s, e) => SabLayoutAssist.Apply(this);
         }
 
         public MultiRoomSelectionWindowAction RequestedAction { get; private set; }

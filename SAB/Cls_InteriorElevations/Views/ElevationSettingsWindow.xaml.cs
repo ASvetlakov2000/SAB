@@ -220,6 +220,7 @@ namespace SAB.InteriorElevations.Views
             }
 
             SabWindowBehaviorService.ApplyLoadedBehavior(this);
+            SabLayoutAssist.Apply(this);
         }
 
         private void ElevationSettingsWindow_Closed(object sender, EventArgs e)

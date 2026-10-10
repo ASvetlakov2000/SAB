@@ -658,7 +658,8 @@
                                   SelectionMode="Extended"
                                   SelectionUnit="FullRow"
                                   VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VirtualizingPanel.IsVirtualizingWhenGrouping="True">
                             <DataGrid.GroupStyle>
                                 <GroupStyle>
                                     <GroupStyle.ContainerStyle>

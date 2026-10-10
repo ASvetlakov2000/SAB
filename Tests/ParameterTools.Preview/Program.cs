@@ -98,6 +98,7 @@ internal static class Program
         if (FindButton(window,"Добавить соответствие")==null) throw new Exception("Mapping table editing is missing.");
         var mappingPanel=(StackPanel)settingsType.GetField("_valuesPanel",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(window);
         var mappingGrid=Find<DataGrid>(mappingPanel);
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); window.UpdateLayout();
         if (mappingGrid.Columns[0].ActualWidth<150 || mappingGrid.Columns[1].ActualWidth<150) throw new Exception("Mapping columns collapsed inside the scrollable panel.");
         Render(window,Path.Combine(folder,"values-and-mappings.png"));
         edited.Rules[0].Source=RuleValueSource.ManualChoice; edited.Rules[0].ManualValues.AddRange(new[]{"0","1","Корпус 3"}); edited.Rules[0].LastManualValue="1";
@@ -107,6 +108,7 @@ internal static class Program
         edited.Rules[0].Source = RuleValueSource.Room;
         window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); tabs.SelectedIndex=0;
         window.Width = window.MinWidth; window.Height = window.MinHeight; window.UpdateLayout();
+        window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle); window.UpdateLayout();
         if (ruleGrid.Columns.Sum(c => c.ActualWidth) > ruleGrid.ActualWidth) throw new Exception("Rules require horizontal scrolling at the minimum window width.");
         Render(window, Path.Combine(folder, "settings-min.png"));
         window.Width = 1120; window.Height = 820;

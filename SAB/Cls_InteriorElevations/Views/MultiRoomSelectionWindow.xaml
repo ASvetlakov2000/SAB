@@ -69,7 +69,7 @@
                                   SelectionMode="Single"
                                   SelectionUnit="FullRow"
                                   VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
+                                  HorizontalScrollBarVisibility="Auto">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="№"
                                                     Width="54"

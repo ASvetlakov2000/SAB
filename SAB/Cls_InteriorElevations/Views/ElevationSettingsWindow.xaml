@@ -482,19 +482,17 @@
                                 <GroupBox.Header>
                                     <ui:AdaptiveSettingsGrid>
                                         <ui:AdaptiveSettingsGrid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </ui:AdaptiveSettingsGrid.ColumnDefinitions>
-                                        <TextBlock Text="Раскладка видов" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <TextBlock Text="Точка: " Style="{StaticResource SabFieldHintTextStyle}" VerticalAlignment="Center" TextWrapping="Wrap" />
-                                            <TextBlock Text="{Binding SheetPointSummary}" Style="{StaticResource SabFieldHintTextStyle}" VerticalAlignment="Center" Margin="0,0,10,0" TextWrapping="Wrap" />
-                                            <Button x:Name="PickSheetPointButton" Content="{Binding PickSheetPointButtonText}" Style="{StaticResource SabOutlineButtonStyle}" MinWidth="190" />
-                                        </StackPanel>
+                                        <TextBlock Text="Раскладка видов" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                        <TextBlock Grid.Column="1" Style="{StaticResource SabFieldHintTextStyle}" VerticalAlignment="Center" Margin="0,0,10,0" TextWrapping="Wrap"><Run Text="Точка: " /><Run Text="{Binding SheetPointSummary, Mode=OneWay}" /></TextBlock>
+                                        <Button Grid.Column="2" x:Name="PickSheetPointButton" Content="{Binding PickSheetPointButtonText}" Style="{StaticResource SabOutlineButtonStyle}" MinWidth="190" />
                                     </ui:AdaptiveSettingsGrid>
                                 </GroupBox.Header>
                                 <StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <StackPanel Margin="0,0,0,10">
                                         <StackPanel.Style>
                                             <Style TargetType="{x:Type StackPanel}">
                                                 <Setter Property="Visibility" Value="Collapsed" />

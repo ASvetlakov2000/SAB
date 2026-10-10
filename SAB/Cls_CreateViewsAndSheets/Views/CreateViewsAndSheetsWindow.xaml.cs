@@ -131,6 +131,7 @@ namespace SAB.CreateViewsAndSheets.Views
             RestoreWindowLayout();
             AttachAnimatedFeedbackTargets();
             SabWindowBehaviorService.ApplyLoadedBehavior(this);
+            SabLayoutAssist.Apply(this);
             OpenSettingsWindowAfterLoadedIfNeeded();
         }
 
@@ -1467,6 +1468,14 @@ namespace SAB.CreateViewsAndSheets.Views
             }
 
             DataGridColumnHeader header = FindParent<DataGridColumnHeader>(thumb);
+            if (header != null && header.Column != null && thumb.Name == "PART_LeftHeaderGripper")
+            {
+                DataGridColumn previous = null;
+                foreach (DataGridColumn column in _rowsDataGrid.Columns)
+                    if (column.Visibility == Visibility.Visible && column.DisplayIndex < header.Column.DisplayIndex
+                        && (previous == null || column.DisplayIndex > previous.DisplayIndex)) previous = column;
+                return previous;
+            }
             return header != null ? header.Column : null;
         }
 
@@ -1822,9 +1831,10 @@ namespace SAB.CreateViewsAndSheets.Views
 
                 double availableWidth = _rowsDataGrid.ActualWidth - 2.0;
                 ScrollViewer scrollViewer = FindVisualChild<ScrollViewer>(_rowsDataGrid);
-                if (scrollViewer != null && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible)
+                ScrollContentPresenter presenter = scrollViewer == null ? null : FindVisualChild<ScrollContentPresenter>(scrollViewer);
+                if (presenter != null && presenter.ActualWidth > 0)
                 {
-                    availableWidth -= SystemParameters.VerticalScrollBarWidth;
+                    availableWidth = presenter.ActualWidth;
                 }
 
                 double fixedWidth = 0.0;

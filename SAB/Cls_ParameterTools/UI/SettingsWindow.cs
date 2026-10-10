@@ -110,6 +110,7 @@ namespace SAB.ParameterTools.UI
             foreach (var category in _categories) category.PropertyChanged += (s, e) => ScheduleStatus();
             ObserveCorpora(); _corpora.CollectionChanged += (s, e) => { ObserveCorpora(); if (_corpusCount != null) _corpusCount.Text = _corpora.Count.ToString(); ScheduleStatus(); };
             RefreshSources(); UpdateStatus();
+            Loaded += (s, e) => SAB.UI.SabLayoutAssist.Apply(this);
         }
         private static ParameterRef Match(IList<ParameterRef> list, ParameterRef parameter)
         { return parameter == null ? null : list.FirstOrDefault(p => !string.IsNullOrEmpty(parameter.SharedGuid) ? string.Equals(p.SharedGuid, parameter.SharedGuid, StringComparison.OrdinalIgnoreCase) : p.Id == parameter.Id); }
@@ -246,8 +247,7 @@ namespace SAB.ParameterTools.UI
             RowActions(_rulesGrid, (row, addRow) => { if (addRow) AddRule(); else if (row is Rule rule) _rules.Remove(rule); }, false);
             // Keep the identifiers readable when the native DataGrid is resized.
             _rulesGrid.Columns[1].Width = 145; _rulesGrid.Columns[3].Width = 300;
-            _rulesGrid.Columns[4].Width = 210;
-            _rulesGrid.SizeChanged += (s, e) => _rulesGrid.Columns[4].Width = Math.Max(210, _rulesGrid.ActualWidth - 655);
+            _rulesGrid.Columns[4].MinWidth = 210;
             root.Children.Add(_rulesGrid); Tab("Правила", Theme.Card(this, "Правила заполнения", root));
             if (_rules.Count > 0) _rulesGrid.SelectedIndex = 0;
         }
@@ -405,9 +405,8 @@ namespace SAB.ParameterTools.UI
                     void ManualChanged(object sender, PropertyChangedEventArgs e) { sync(); }
                     observe(); choices.CollectionChanged += (s, e) => { observe(); sync(); };
                     var grid = GridFor(choices); grid.MinHeight = 100; grid.MaxHeight = 250; _valueGrids.Add(grid);
-                    TextColumn(grid, "Значение для выбора перед записью", "Name", 1); grid.Columns[0].Width = 650;
+                    TextColumn(grid, "Значение для выбора перед записью", "Name", 1); grid.Columns[0].MinWidth = 220;
                     RowActions(grid, (row, plus) => { CommitGrids(); var item = (CorpusItem)row; if (plus) choices.Insert(choices.IndexOf(item) + 1, new CorpusItem()); else choices.Remove(item); }, true);
-                    grid.SizeChanged += (s, e) => grid.Columns[0].Width = Math.Max(220, grid.ActualWidth - 76);
                     body.Children.Add(grid); body.Children.Add(Theme.Button("Добавить значение", (s, e) => choices.Add(new CorpusItem())));
                 } else {
                     var source = (ComboBox)Combo(rule, "MappingInput", MappingInputs, true); Field(body, "Откуда взять исходное значение", source);
@@ -424,8 +423,7 @@ namespace SAB.ParameterTools.UI
                     var rows = new ObservableCollection<ValueMapping>(rule.Mappings);
                     var grid = GridFor(rows); grid.MinHeight = 110; grid.MaxHeight = 280; _valueGrids.Add(grid);
                     TextColumn(grid, "Исходное значение", "Key", 1); TextColumn(grid, "Записываемое значение", "Value", 1);
-                    grid.Columns[0].Width = 350; grid.Columns[1].Width = 350;
-                    grid.SizeChanged += (s, e) => { double width = Math.Max(140, (grid.ActualWidth - 74) / 2); grid.Columns[0].Width = width; grid.Columns[1].Width = width; };
+                    grid.Columns[0].MinWidth = 140; grid.Columns[1].MinWidth = 140;
                     RowActions(grid, (row, plus) => { CommitGrids(); var item = (ValueMapping)row;
                         if (plus) rows.Insert(rows.IndexOf(item) + 1, new ValueMapping()); else rows.Remove(item); }, true);
                     rows.CollectionChanged += (s, e) => { rule.Mappings = rows.ToList(); ScheduleStatus(); };
@@ -440,8 +438,7 @@ namespace SAB.ParameterTools.UI
             levelBody.Children.Add(Theme.Text("Существующая матрица сохранена. Получатели: " + (levelTargets.Count == 0 ? "правила с источником «Из модели: уровень»" : string.Join(", ", levelTargets)) + ". Привязка хранится по ID уровня, переименование её не ломает."));
             var levels = GridFor(Profile.Levels); levels.MinHeight = 130; levels.MaxHeight = 280; _valueGrids.Add(levels);
             TextColumn(levels, "Уровень модели", "LevelName", 2, true); TextColumn(levels, "Записываемое значение", "Value", 1);
-            levels.Columns[0].Width = 500; levels.Columns[1].Width = 250;
-            levels.SizeChanged += (s, e) => { double width = Math.Max(250, levels.ActualWidth - 8); levels.Columns[0].Width = width * 2 / 3; levels.Columns[1].Width = width / 3; };
+            levels.Columns[0].MinWidth = 160; levels.Columns[1].MinWidth = 100;
             levelBody.Children.Add(levels);
             _valuesPanel.Children.Add(Theme.Card(this, "Уровни → значения", levelBody));
         }
