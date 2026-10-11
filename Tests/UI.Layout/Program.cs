@@ -93,7 +93,13 @@ internal static class Program
             var mw=new MultiRoomSelectionWindow(rows);Open(mw,mw.MinWidth,mw.MinHeight);var mg=All<DataGrid>(mw).First();Table(mg,"multiple rooms");Capture(mw,"rooms-min");mw.Close();
             var vm=new CreateViewsAndSheetsViewModel(new List<RevitElementItem>(),new List<RevitElementItem>(),new List<RevitElementItem>(),new List<RevitElementItem>(),new List<RevitElementItem>(),new Dictionary<long,List<string>>(),new Dictionary<long,HashSet<long>>(),new List<RevitElementItem>(),new HashSet<string>(),new HashSet<string>(),new CreateViewsAndSheetsSettings());
             for(int i=0;i<120;i++){var row=vm.Rows.Last();row.ViewName="Тестовый вид "+i;row.SheetNumber="АР-"+i;row.SheetName="Длинное название листа для проверки таблицы "+i;vm.InsertRowAfterCommand.Execute(row);}
-            var vw=new CreateViewsAndSheetsWindow(vm);Open(vw,1280,760);var vg=All<DataGrid>(vw).Single(g=>g.Name=="CreationRowsDataGrid");Capture(vw,"views-normal");
+            var vw=new CreateViewsAndSheetsWindow(vm);
+            var layoutService=typeof(CreateViewsAndSheetsWindow).GetField("_layoutService",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(vw);
+            var layoutFile=Path.Combine(output,"views-fixture-layout.json");if(File.Exists(layoutFile))File.Delete(layoutFile);
+            layoutService.GetType().GetField("_layoutFilePath",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(layoutService,layoutFile);
+            Open(vw,1280,760);var vg=All<DataGrid>(vw).Single(g=>g.Name=="CreationRowsDataGrid");Capture(vw,"views-normal");
+            Check(vg.Columns.Where(c=>c.Visibility==Visibility.Visible).Sum(c=>c.ActualWidth)<2*vw.ActualWidth,"default table columns stay proportionate to the window");
+            Check(Scroller(vg).ScrollableWidth<1,"default columns fit the normal window viewport");
             vw.Width=vw.MinWidth;vw.Height=vw.MinHeight;Drain();Table(vg,"views/sheets grouped");Capture(vw,"views-min");Scroller(vg).ScrollToRightEnd();Drain();Capture(vw,"views-min-right");
             Check(All<DataGridRow>(vg).Count()<60,"grouped table virtualizes 121 rows");
             Scroller(vg).ScrollToLeftEnd();Drain();
@@ -103,6 +109,15 @@ internal static class Program
             var previous=vg.Columns.Where(c=>c.Visibility==Visibility.Visible&&c.DisplayIndex<header.Column.DisplayIndex).OrderBy(c=>c.DisplayIndex).Last();
             Check(ReferenceEquals(resizeTarget.Invoke(vw,new object[]{left}),previous)&&ReferenceEquals(resizeTarget.Invoke(vw,new object[]{right}),header.Column),"left/right header grippers identify the actual resized column, skipping hidden columns");
             vw.Close();
+            var stored=((SAB.CreateViewsAndSheets.Services.CreateViewsAndSheetsWindowLayoutService)layoutService).Load();
+            stored.ColumnWidths["ClassicColumnsV1|4|Имя вида"]=9353;stored.ColumnWidths["ClassicColumnsV1|6|Шаблон вида"]=10000;
+            stored.ColumnWidths["ClassicColumnsV1|3|Тип плана"]=200;
+            ((SAB.CreateViewsAndSheets.Services.CreateViewsAndSheetsWindowLayoutService)layoutService).Save(stored);
+            var restored=new CreateViewsAndSheetsWindow(vm);var restoredService=typeof(CreateViewsAndSheetsWindow).GetField("_layoutService",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(restored);
+            restoredService.GetType().GetField("_layoutFilePath",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(restoredService,layoutFile);
+            Open(restored,1280,760);var restoredGrid=All<DataGrid>(restored).Single(g=>g.Name=="CreationRowsDataGrid");
+            Check(restoredGrid.Columns[4].ActualWidth<1280&&restoredGrid.Columns[6].ActualWidth<1280,"old oversized saved columns recover on reopening");
+            Check(Math.Abs(restoredGrid.Columns[3].ActualWidth-200)<1,"valid saved manual column width survives reopening");restored.Close();
             var vs=new CreateViewsAndSheetsSettingsWindow(vm);Open(vs,1040,700);
             foreach(var size in new[]{new Size(1040,700),new Size(vs.MinWidth,vs.MinHeight)}) {
                 vs.Width=size.Width;vs.Height=size.Height;Drain();

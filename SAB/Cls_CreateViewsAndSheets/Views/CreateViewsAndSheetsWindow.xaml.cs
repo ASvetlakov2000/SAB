@@ -131,6 +131,7 @@ namespace SAB.CreateViewsAndSheets.Views
             RestoreWindowLayout();
             AttachAnimatedFeedbackTargets();
             SabWindowBehaviorService.ApplyLoadedBehavior(this);
+            InitializeFlexibleColumnWidths();
             SabLayoutAssist.Apply(this);
             OpenSettingsWindowAfterLoadedIfNeeded();
         }
@@ -1953,6 +1954,36 @@ namespace SAB.CreateViewsAndSheets.Views
             return column.MinWidth > 0 ? column.MinWidth : 0.0;
         }
 
+        private void InitializeFlexibleColumnWidths()
+        {
+            if (_rowsDataGrid == null) return;
+            _rowsDataGrid.UpdateLayout();
+            // Grouped virtualization can measure star columns with infinite horizontal space.
+            // Resolve their original proportions once against the real viewport; saved/manual
+            // pixel widths and the existing final-column fill behavior remain authoritative.
+            ScrollViewer viewer = FindVisualChild<ScrollViewer>(_rowsDataGrid);
+            double available = viewer != null && viewer.ViewportWidth > 0
+                ? viewer.ViewportWidth : _rowsDataGrid.ActualWidth;
+            double weight = 0;
+            foreach (DataGridColumn column in _rowsDataGrid.Columns)
+            {
+                if (column.Visibility != Visibility.Visible) continue;
+                if (column.Width.IsStar) weight += column.Width.Value;
+                else available -= GetColumnActualWidth(column);
+            }
+            if (weight <= 0) return;
+            bool wasNormalizing = _normalizingColumnWidths;
+            _normalizingColumnWidths = true;
+            try
+            {
+                foreach (DataGridColumn column in _rowsDataGrid.Columns)
+                    if (column.Visibility == Visibility.Visible && column.Width.IsStar)
+                        column.Width = new DataGridLength(Math.Max(column.MinWidth,
+                            Math.Min(column.MaxWidth, Math.Max(0, available) * column.Width.Value / weight)));
+            }
+            finally { _normalizingColumnWidths = wasNormalizing; }
+        }
+
         private void RestoreWindowLayout()
         {
             if (_layoutRestored)
@@ -1992,7 +2023,8 @@ namespace SAB.CreateViewsAndSheets.Views
                     DataGridColumn column = _rowsDataGrid.Columns[i];
                     string key = BuildColumnLayoutKey(column, i);
                     double width;
-                    if (settings.ColumnWidths.TryGetValue(key, out width) && width > 20.0)
+                    if (settings.ColumnWidths.TryGetValue(key, out width) && width > 20.0
+                        && width <= Math.Max(Width, MinWidth) * 2)
                     {
                         column.Width = new DataGridLength(width, DataGridLengthUnitType.Pixel);
                     }
