@@ -1,0 +1,169 @@
+{
+  "scope": "Actual SAB.dll parameterization and views/sheets windows; synthetic DTOs",
+  "checksPassed": 81,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/00-parameters-rules.png",
+      "sha256": "04f20f560b1aa6f48b329be89a4b267a0d88c9f8935d7f6205766795b4509323",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/01-parameters-sources.png",
+      "sha256": "952ded4b6b5cadbbf168c7317967e5c15ef19e26829fc473a80b81e0dc1646d2",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/02-parameters-values.png",
+      "sha256": "dcc17d24234d98f4095cd83438679c24d2cbc7c0949a9c144eb44e8906274c7a",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/03-parameters-categories.png",
+      "sha256": "b6e1558a1aca34061cc0008cece72cd4c9d505db15cf81ee9a6592393f85fa05",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/04-parameters-editing.png",
+      "sha256": "8713e93bdfc1cc68ec2b86c45575fb9db9bb6f24639c0062adc82b975f530f43",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/05-parameter-dropdown.png",
+      "sha256": "b58af361eb796cde88b0c45adfcc3e458e89f010c8ad9f6a6a2a5b4741e9eae3",
+      "width": 386,
+      "height": 420
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/06-parameters-validation.png",
+      "sha256": "9fc14fc2fedb05dabb024e8b5e532f1a1498c399d0f1477a85be0192668a253a",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/07-categories-empty.png",
+      "sha256": "16828fe40a5edd6cece2729a342fa4d5c8c596c24ab2b2b3cd261c9df20490e3",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/08-parameters-minimum.png",
+      "sha256": "5708183ae16a0ec28e6bfe4cf8618a1867a60e146367955bb0d8b057418e5a1b",
+      "width": 964,
+      "height": 781
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/09-parameters-144dpi.png",
+      "sha256": "5c27c0a51a9f5389c60723a047667c941b2cb833e6593183823fd7b21ba8bbbc",
+      "width": 2076,
+      "height": 1322
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/10-views-sheets.png",
+      "sha256": "0406d4eb97095bae7fb8fbe43c01aa3c302bc1e7de7a524cb45053915b4b875c",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/11-views-editing.png",
+      "sha256": "76399384c795d7f1fcde90308ecbdb588206fcb953350d0bb0174e64efafa67f",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/12-views-multi-story.png",
+      "sha256": "685e243a4ca3c776c27ced40ce33539b2b4855cf5d28a18b4f43ee55d2a2af60",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/13-views-multi-view.png",
+      "sha256": "c576e38ba1b87bf591589cec29a14f7aeb78ea562ad554f696355e9c2ce03ab0",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/14-views-validation.png",
+      "sha256": "859b7625f6d74917efe05732e04ab04f93335b2c464cd0b73aa290911a36cefc",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/15-views-minimum.png",
+      "sha256": "9586318534ba633b5d2b1c22e46f31b04a9c20b4f63bac8bc3f6864afa1a09ad",
+      "width": 1084,
+      "height": 721
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/16-views-settings-bottom.png",
+      "sha256": "00b84d0d0232f686e978177325c342944b1526bd7bc989a9c9037be3dbb49fc9",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/17-views-144dpi.png",
+      "sha256": "60630e642030ebae9f65a4a14962f40d9c1232cb274bfcd38cf52c5f543a704f",
+      "width": 2196,
+      "height": 1352
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/18-views-empty.png",
+      "sha256": "7969081994967483d7240fba664cd7cb54fe742fe687f26dfe33a5ded637d224",
+      "width": 1464,
+      "height": 901
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/19-categories-selected.png",
+      "sha256": "7a8effcba911861da0c4aeb5ddad0775c079ef04fb7e94a91340b323bd1fa346",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/20-categories-loaded.png",
+      "sha256": "042abb2a277b5313d9286db77a3af31cb0b4d1e3b1bab686b0a23078aeb2f0de",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/21-views-secondary-settings.png",
+      "sha256": "ff652d1f489d878424ddd0451c0ef3829f6e06a8ea93fb139206686c636a9f6c",
+      "width": 1184,
+      "height": 861
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/22-views-secondary-minimum.png",
+      "sha256": "f2a0673a5d66b83625e4a9bbbd24e61b628cd93d60c62956a412e71d599227bd",
+      "width": 1024,
+      "height": 721
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/23-categories-minimum.png",
+      "sha256": "5e0d33e0ac5188a3abbead0741fb48f3ff1abbd8638346aa3540c21aa99d60ae",
+      "width": 964,
+      "height": 781
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/24-views-secondary-zones.png",
+      "sha256": "2615fc9b9b6111b77c89d9bc5256579eaaa5a636591a700e850b2081a0e410ff",
+      "width": 1024,
+      "height": 721
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/25-parameters-mapping-input.png",
+      "sha256": "e2bcdf71d35e141326607582f16434b80c4cfa84c3dc44d3980cbf43455bb1b6",
+      "width": 1384,
+      "height": 881
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-modules/26-parameters-values-bottom.png",
+      "sha256": "86214d1b6948773c693a9c5acaeb46adc56b1386da2f9d1474a0d04ebe5260f3",
+      "width": 1384,
+      "height": 881
+    }
+  ],
+  "logSha256": "42c42825fbe96053b9e604abdbe4f29d482a46ca14608604dfdd94235766d9f5"
+}

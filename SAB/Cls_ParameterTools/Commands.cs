@@ -16,14 +16,12 @@ namespace SAB.ParameterTools
                 if (app.ActiveUIDocument.Document.IsReadOnly) throw new InvalidOperationException("Модель доступна только для чтения.");
                 ParameterToolsModule.Host.Busy = true; action(); return Result.Succeeded;
             }
-            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { return Result.Cancelled; }
-            catch (System.OperationCanceledException) { return Result.Cancelled; }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { UI.ParameterNotifications.Cancelled(app.MainWindowHandle); return Result.Cancelled; }
+            catch (System.OperationCanceledException) { UI.ParameterNotifications.Cancelled(app.MainWindowHandle); return Result.Cancelled; }
             catch (Exception ex)
             {
                 message = ex.Message; ParameterToolsModule.Host.Log(ex);
-                var dialog = new TaskDialog("SAB — параметры") { MainInstruction = "Не удалось выполнить команду параметров", MainContent = ex.Message,
-                    ExpandedContent = ex + "\n\nЖурнал: " + System.IO.Path.Combine(RuntimeHost.LogFolder, "errors.log"), CommonButtons = TaskDialogCommonButtons.Close };
-                dialog.Show(); return Result.Cancelled;
+                UI.ParameterNotifications.Error(app.MainWindowHandle, ex); return Result.Cancelled;
             }
             finally { ParameterToolsModule.Host.Busy = false; }
         }

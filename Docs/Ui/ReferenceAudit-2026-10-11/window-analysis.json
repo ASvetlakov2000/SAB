@@ -1,0 +1,2029 @@
+[
+  {
+    "name": "SettingsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ParameterTools/UI/SettingsWindow.cs",
+    "line": 33,
+    "scope": "active",
+    "types": {
+      "TabControl": 1,
+      "DockPanel": 5,
+      "StackPanel": 16,
+      "WrapPanel": 4,
+      "ScrollViewer": 3,
+      "TabItem": 1,
+      "Border": 1,
+      "ParameterPicker": 2,
+      "ComboBox": 3,
+      "TextBlock": 2,
+      "DataGrid": 1,
+      "DataGridTextColumn": 2,
+      "DataGridTemplateColumn": 3,
+      "DataGridCheckBoxColumn": 1,
+      "Button": 1,
+      "TextBox": 2,
+      "ContentControl": 1,
+      "CheckBox": 3,
+      "CategorySelectionControl": 1
+    },
+    "titles": [
+      "Настройки параметров",
+      "Импорт конфигурации параметров SAB",
+      "Экспорт конфигурации параметров SAB"
+    ],
+    "dimensions": [
+      [
+        "Width",
+        "1120"
+      ],
+      [
+        "Height",
+        "820"
+      ],
+      [
+        "MinWidth",
+        "980"
+      ],
+      [
+        "MinHeight",
+        "680"
+      ],
+      [
+        "MaxHeight",
+        "64"
+      ],
+      [
+        "MaxHeight",
+        "100"
+      ],
+      [
+        "MinHeight",
+        "62"
+      ],
+      [
+        "MaxHeight",
+        "84"
+      ],
+      [
+        "Width",
+        "26"
+      ],
+      [
+        "Width",
+        "145"
+      ],
+      [
+        "Width",
+        "300"
+      ],
+      [
+        "MinWidth",
+        "210"
+      ],
+      [
+        "Width",
+        "433"
+      ],
+      [
+        "Width",
+        "433"
+      ],
+      [
+        "Width",
+        "58"
+      ],
+      [
+        "MinHeight",
+        "100"
+      ],
+      [
+        "MaxHeight",
+        "240"
+      ],
+      [
+        "MinHeight",
+        "100"
+      ],
+      [
+        "MaxHeight",
+        "250"
+      ],
+      [
+        "MinWidth",
+        "220"
+      ],
+      [
+        "MinHeight",
+        "110"
+      ],
+      [
+        "MaxHeight",
+        "280"
+      ],
+      [
+        "MinWidth",
+        "140"
+      ],
+      [
+        "MinWidth",
+        "140"
+      ],
+      [
+        "MinHeight",
+        "130"
+      ],
+      [
+        "MaxHeight",
+        "280"
+      ],
+      [
+        "MinWidth",
+        "160"
+      ],
+      [
+        "MinWidth",
+        "100"
+      ]
+    ],
+    "key": "ParameterTools.SettingsWindow",
+    "purpose": "Правила заполнения параметров",
+    "layout": "4 вкладки: Правила, Источники, Значения и сопоставления, Категории; вложенные таблицы, закреплённый подвал",
+    "complexity": "высокая",
+    "states": "ParameterPicker, фильтрация категорий, проверка профиля, выбор строки, редактирование; источники и таблицы перестраиваются динамически",
+    "scores": [
+      9.5,
+      9.5,
+      10,
+      8.5,
+      9,
+      7
+    ],
+    "score": 92.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CategorySelectionControl",
+      "CheckBox",
+      "ComboBox",
+      "ContentControl",
+      "DataGrid",
+      "DataGridCheckBoxColumn",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "DockPanel",
+      "Grid",
+      "GroupBox",
+      "ListBox",
+      "ParameterPicker",
+      "ScrollViewer",
+      "StackPanel",
+      "TabControl",
+      "TabItem",
+      "TextBlock",
+      "TextBox",
+      "ToggleButton",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "1120",
+      "Height": "820",
+      "MinWidth": "980",
+      "MinHeight": "680",
+      "MaxHeight": "64"
+    },
+    "xaml": null
+  },
+  {
+    "name": "CreateViewsAndSheetsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs",
+    "line": 23,
+    "scope": "active",
+    "types": {
+      "DataGridTemplateColumn": 1,
+      "ComboBox": 1
+    },
+    "titles": [
+      "Выберите таблицу листов",
+      "Сохранить настройки создания видов и листов",
+      "Выберите файл настроек создания видов и листов"
+    ],
+    "dimensions": [
+      [
+        "MinWidth",
+        "130.0"
+      ]
+    ],
+    "key": "CreateViewsAndSheetsWindow",
+    "purpose": "Пакетное создание видов и листов",
+    "layout": "Панель настроек, основная таблица, группировка, закреплённый подвал",
+    "complexity": "высокая",
+    "states": "Множественное выделение, массовое редактирование, drag-and-drop, разные режимы, валидация; колонки параметров браузера генерируются C#",
+    "scores": [
+      9,
+      8.5,
+      10,
+      9,
+      9,
+      7
+    ],
+    "score": 89.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "Expander",
+      "Grid",
+      "ItemsControl",
+      "RadioButton",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox",
+      "ToggleButton"
+    ],
+    "dimensions_summary": {
+      "Width": "1280",
+      "Height": "760",
+      "MinWidth": "1100",
+      "MinHeight": "640"
+    },
+    "xaml": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml"
+  },
+  {
+    "name": "ViewTemplateGraphicsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ViewTemplateGraphics/Views/ViewTemplateGraphicsWindow.xaml.cs",
+    "line": 22,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "ViewTemplateGraphicsWindow",
+    "purpose": "Пакетное редактирование графики шаблонов видов",
+    "layout": "Список шаблонов слева, 8 вкладок справа, несколько таблиц",
+    "complexity": "высокая",
+    "states": "Трёхсостояние флажков, изменено/исходное, readonly/редактируемые значения; иерархия категорий в DataGrid, не TreeView",
+    "scores": [
+      8,
+      8,
+      10,
+      9,
+      8,
+      3
+    ],
+    "score": 82.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "Grid",
+      "ListBox",
+      "StackPanel",
+      "TabControl",
+      "TabItem",
+      "TextBlock",
+      "TextBox",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "1380",
+      "Height": "820",
+      "MinWidth": "1120",
+      "MinHeight": "650"
+    },
+    "xaml": "SAB/Cls_ViewTemplateGraphics/Views/ViewTemplateGraphicsWindow.xaml"
+  },
+  {
+    "name": "ElevationSettingsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs",
+    "line": 30,
+    "scope": "active",
+    "types": {
+      "Run": 3
+    },
+    "titles": [],
+    "dimensions": [],
+    "key": "ElevationSettingsWindow",
+    "purpose": "Создание развёрток стен",
+    "layout": "Вкладки, адаптивные группы, текстовый предпросмотр, прокрутка",
+    "complexity": "высокая",
+    "states": "RichTextBox с Run для имени, динамический предпросмотр, предупреждения, зависимые настройки",
+    "scores": [
+      8,
+      9.5,
+      4,
+      9,
+      9,
+      4
+    ],
+    "score": 77.5,
+    "effective_types": [
+      "AdaptiveSettingsGrid",
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Grid",
+      "GroupBox",
+      "ItemsControl",
+      "RadioButton",
+      "RichTextBox",
+      "ScrollViewer",
+      "StackPanel",
+      "TabControl",
+      "TabItem",
+      "TextBlock",
+      "TextBox",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "980",
+      "Height": "720",
+      "MinWidth": "420",
+      "MinHeight": "540"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml"
+  },
+  {
+    "name": "MaterialRulesWindow",
+    "base": "Window",
+    "path": "SAB/Cls_MaterialQuantity/MaterialRulesWindow.xaml.cs",
+    "line": 11,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "MaterialRulesWindow",
+    "purpose": "Единицы и правила подсчёта материалов",
+    "layout": "Поиск/фильтр, массовое правило, таблица, нижняя панель прогресса",
+    "complexity": "средняя",
+    "states": "Множественный выбор, изменённые/неполные правила, busy, скрытый/видимый прогресс и счётчики",
+    "scores": [
+      6.5,
+      6.5,
+      8.5,
+      9,
+      9,
+      6
+    ],
+    "score": 74.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "ComboBox",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "Grid",
+      "ProgressBar",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "1100",
+      "Height": "700",
+      "MinWidth": "920",
+      "MinHeight": "560"
+    },
+    "xaml": "SAB/Cls_MaterialQuantity/MaterialRulesWindow.xaml"
+  },
+  {
+    "name": "DoorWindowViewsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_DoorWindowExplanations/Views/DoorWindowViewsWindow.xaml.cs",
+    "line": 16,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "DoorWindowViewsWindow",
+    "purpose": "Создание видов дверей и окон",
+    "layout": "Левая форма, раскрываемые секции, предпросмотр",
+    "complexity": "высокая",
+    "states": "Режимы вида/размещения, валидация, отключённые поля, условный предпросмотр",
+    "scores": [
+      7.5,
+      8,
+      3,
+      8.5,
+      8,
+      5
+    ],
+    "score": 70.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Expander",
+      "Grid",
+      "RadioButton",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox",
+      "ToggleButton"
+    ],
+    "dimensions_summary": {
+      "Width": "1180",
+      "Height": "780",
+      "MinWidth": "980",
+      "MinHeight": "680"
+    },
+    "xaml": "SAB/Cls_DoorWindowExplanations/Views/DoorWindowViewsWindow.xaml"
+  },
+  {
+    "name": "ElevationDecorationWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.cs",
+    "line": 21,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "ElevationDecorationWindow",
+    "purpose": "Оформление развёрток: марки, размеры, отметки",
+    "layout": "Вкладки, AdaptiveSettingsGrid, группы и прокрутка",
+    "complexity": "высокая",
+    "states": "Условные группы и поля, числовая проверка, выбранные типы семейств",
+    "scores": [
+      7,
+      9,
+      2,
+      8,
+      8,
+      2
+    ],
+    "score": 66.5,
+    "effective_types": [
+      "AdaptiveSettingsGrid",
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Grid",
+      "GroupBox",
+      "RadioButton",
+      "ScrollViewer",
+      "StackPanel",
+      "TabControl",
+      "TabItem",
+      "TextBlock",
+      "TextBox",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "900",
+      "Height": "720",
+      "MinWidth": "420",
+      "MinHeight": "540"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml"
+  },
+  {
+    "name": "CreateViewsAndSheetsSettingsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.cs",
+    "line": 13,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "CreateViewsAndSheetsSettingsWindow",
+    "purpose": "Дополнительные настройки создания видов и листов",
+    "layout": "Прокручиваемые секции Expander, связанные поля",
+    "complexity": "средняя",
+    "states": "Раскрытие, режимы размещения, условная доступность, динамические параметры браузера",
+    "scores": [
+      6.5,
+      7.5,
+      3,
+      8,
+      8,
+      6
+    ],
+    "score": 65.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Expander",
+      "Grid",
+      "ItemsControl",
+      "RadioButton",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "1040",
+      "Height": "700",
+      "MinWidth": "940",
+      "MinHeight": "620"
+    },
+    "xaml": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml"
+  },
+  {
+    "name": "CheckCategoriesWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs",
+    "line": 75,
+    "scope": "active",
+    "types": {
+      "CategorySelectionControl": 1,
+      "DockPanel": 1,
+      "StackPanel": 1
+    },
+    "titles": [
+      "Проверка заполненности параметров"
+    ],
+    "dimensions": [
+      [
+        "Width",
+        "470"
+      ],
+      [
+        "Height",
+        "550"
+      ],
+      [
+        "MinWidth",
+        "420"
+      ],
+      [
+        "MinHeight",
+        "430"
+      ]
+    ],
+    "key": "CheckCategoriesWindow",
+    "purpose": "Категории для проверки параметров",
+    "layout": "CategorySelectionControl, сообщение ошибки и действия",
+    "complexity": "средняя",
+    "states": "Поиск, тумблеры, множественный выбор, ошибка при нулевом наборе",
+    "scores": [
+      6,
+      6.5,
+      6,
+      7,
+      7,
+      7
+    ],
+    "score": 64.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CategorySelectionControl",
+      "DockPanel",
+      "Grid",
+      "GroupBox",
+      "ListBox",
+      "StackPanel",
+      "TextBlock",
+      "TextBox",
+      "ToggleButton",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "470",
+      "Height": "550",
+      "MinWidth": "420",
+      "MinHeight": "430"
+    },
+    "xaml": null
+  },
+  {
+    "name": "SettingsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_FilledRegionFromMaterial/SettingsWindow.xaml.cs",
+    "line": 11,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "FilledRegion.SettingsWindow",
+    "purpose": "Штриховка по материалу: настройки соответствий",
+    "layout": "Форма выбора и редактируемая таблица",
+    "complexity": "средняя",
+    "states": "Флажки, условные поля, выбор материалов/штриховок, табличные ComboBox",
+    "scores": [
+      5.5,
+      6.5,
+      8,
+      7,
+      7,
+      4
+    ],
+    "score": 63.75,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "Grid",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "1120",
+      "Height": "700",
+      "MinWidth": "880",
+      "MinHeight": "610"
+    },
+    "xaml": "SAB/Cls_FilledRegionFromMaterial/SettingsWindow.xaml"
+  },
+  {
+    "name": "FrameModuleWindow",
+    "base": "Window",
+    "path": "SAB/Cls_GklFrame/Views/FrameModuleWindow.xaml.cs",
+    "line": 13,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "FrameModuleWindow",
+    "purpose": "Расчёт/создание каркаса ГКЛ",
+    "layout": "Две колонки настроек в ScrollViewer, ссылка справки и действия",
+    "complexity": "средняя",
+    "states": "Генерация/расчёт, валидация, доступность полей, Hyperlink",
+    "scores": [
+      6.5,
+      6.5,
+      1,
+      7,
+      7,
+      4
+    ],
+    "score": 56.75,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Grid",
+      "Hyperlink",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "980",
+      "Height": "690",
+      "MinWidth": "880",
+      "MinHeight": "620"
+    },
+    "xaml": "SAB/Cls_GklFrame/Views/FrameModuleWindow.xaml"
+  },
+  {
+    "name": "MultiRoomSelectionWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/MultiRoomSelectionWindow.xaml.cs",
+    "line": 21,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "MultiRoomSelectionWindow",
+    "purpose": "Сопоставление помещений для нескольких развёрток",
+    "layout": "Редактируемая таблица строк и кнопки",
+    "complexity": "средняя",
+    "states": "Вставка/удаление строки, текстовые/шаблонные ячейки",
+    "scores": [
+      4.5,
+      5,
+      7,
+      6.5,
+      7,
+      7
+    ],
+    "score": 56.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "1040",
+      "Height": "560",
+      "MinWidth": "1000",
+      "MinHeight": "420"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/MultiRoomSelectionWindow.xaml"
+  },
+  {
+    "name": "ReportWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ParameterTools/UI/SmallWindows.cs",
+    "line": 196,
+    "scope": "active",
+    "types": {
+      "DockPanel": 1,
+      "DataGrid": 1,
+      "TextBox": 1,
+      "StackPanel": 2,
+      "DataGridTextColumn": 1
+    },
+    "titles": [],
+    "dimensions": [
+      [
+        "Width",
+        "1120"
+      ],
+      [
+        "Height",
+        "680"
+      ],
+      [
+        "MinWidth",
+        "980"
+      ],
+      [
+        "MinHeight",
+        "540"
+      ],
+      [
+        "MinHeight",
+        "140"
+      ],
+      [
+        "MaxHeight",
+        "180"
+      ]
+    ],
+    "key": "ReportWindow",
+    "purpose": "Отчёт проблем заполнения параметров",
+    "layout": "Поиск, DataGrid и действия перехода/выделения",
+    "complexity": "средняя",
+    "states": "Фильтрация, выбранная проблема; переход к Revit зависит от UIApplication",
+    "scores": [
+      4.5,
+      6,
+      7,
+      7,
+      6,
+      3
+    ],
+    "score": 56.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "DataGrid",
+      "DataGridTextColumn",
+      "DockPanel",
+      "Grid",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "1120",
+      "Height": "680",
+      "MinWidth": "980",
+      "MinHeight": "540",
+      "MaxHeight": "180"
+    },
+    "xaml": null
+  },
+  {
+    "name": "GraphicOverrideEditorWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ViewTemplateGraphics/Views/GraphicOverrideEditorWindow.xaml.cs",
+    "line": 20,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "GraphicOverrideEditorWindow",
+    "purpose": "Редактор переопределений графики",
+    "layout": "Прокручиваемая форма графических настроек",
+    "complexity": "средняя",
+    "states": "Slider прозрачности, цвет/толщина/образцы линий и штриховок, флажки",
+    "scores": [
+      6.5,
+      5.5,
+      2,
+      7,
+      7,
+      4
+    ],
+    "score": 56.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Grid",
+      "ScrollViewer",
+      "Slider",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "760",
+      "Height": "520",
+      "MinWidth": "680",
+      "MinHeight": "340"
+    },
+    "xaml": "SAB/Cls_ViewTemplateGraphics/Views/GraphicOverrideEditorWindow.xaml"
+  },
+  {
+    "name": "DeleteViewsAndSheetsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_CreateViewsAndSheets/Views/DeleteViewsAndSheetsWindow.cs",
+    "line": 15,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "DeleteViewsAndSheetsWindow",
+    "purpose": "Выбор созданных видов и листов для удаления",
+    "layout": "Таблица выбора и подтверждение",
+    "complexity": "средняя",
+    "states": "Выбранные строки, флажки, доступность действия удаления",
+    "scores": [
+      4.5,
+      5,
+      7,
+      6,
+      6,
+      6
+    ],
+    "score": 54.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "1120",
+      "Height": "720",
+      "MinWidth": "920",
+      "MinHeight": "560"
+    },
+    "xaml": "SAB/Cls_CreateViewsAndSheets/Views/DeleteViewsAndSheetsWindow.xaml"
+  },
+  {
+    "name": "ElevationDecorationCatalogWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/ElevationDecorationCatalogWindow.cs",
+    "line": 24,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "ElevationDecorationCatalogWindow",
+    "purpose": "Каталог элементов оформления развёрток",
+    "layout": "GroupBox и ListView с GridView",
+    "complexity": "средняя",
+    "states": "Тип и источник записи, выделение, операции с каталогом",
+    "scores": [
+      4.5,
+      6.5,
+      6,
+      6,
+      6,
+      3
+    ],
+    "score": 54.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "ComboBox",
+      "Grid",
+      "GridView",
+      "GridViewColumn",
+      "GroupBox",
+      "ListView",
+      "StackPanel",
+      "TextBlock",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "880",
+      "Height": "620",
+      "MinWidth": "760",
+      "MinHeight": "520"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/ElevationDecorationCatalogWindow.xaml"
+  },
+  {
+    "name": "SyncReminderSettingsWindow",
+    "base": "Window",
+    "path": "SAB/SyncReminder/SyncReminderSettingsWindow.cs",
+    "line": 11,
+    "scope": "active",
+    "types": {
+      "Grid": 4,
+      "StackPanel": 3,
+      "TextBlock": 5,
+      "CheckBox": 1,
+      "Slider": 1,
+      "TextBox": 1,
+      "ComboBox": 1,
+      "Border": 3,
+      "Button": 1,
+      "ComboBoxItem": 1
+    },
+    "titles": [
+      "Настройки напоминания о синхронизации"
+    ],
+    "dimensions": [
+      [
+        "Width",
+        "560"
+      ],
+      [
+        "Height",
+        "540"
+      ],
+      [
+        "MinWidth",
+        "560"
+      ],
+      [
+        "MinHeight",
+        "540"
+      ],
+      [
+        "Width",
+        "76"
+      ],
+      [
+        "Height",
+        "1"
+      ]
+    ],
+    "key": "SyncReminderSettingsWindow",
+    "purpose": "Настройки напоминания о синхронизации",
+    "layout": "Компактная форма интервала и вида анимации",
+    "complexity": "средняя",
+    "states": "Slider и TextBox синхронизированы, флажок включения, тестовое напоминание",
+    "scores": [
+      6.5,
+      5,
+      0,
+      7,
+      7,
+      6
+    ],
+    "score": 53.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "ComboBox",
+      "Grid",
+      "Slider",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "560",
+      "Height": "540",
+      "MinWidth": "560",
+      "MinHeight": "540"
+    },
+    "xaml": null
+  },
+  {
+    "name": "SabStyledToastHost",
+    "base": "Window",
+    "path": "SAB/Helpers/Notifications/ToastNotifications/SabStyledToastNotifier.cs",
+    "line": 129,
+    "scope": "active",
+    "types": {
+      "StackPanel": 3,
+      "ScrollViewer": 1,
+      "DockPanel": 1,
+      "Border": 6,
+      "Button": 2,
+      "TextBlock": 6,
+      "TextBox": 1,
+      "Expander": 1,
+      "ContentPresenter": 2,
+      "Grid": 1
+    },
+    "titles": [],
+    "dimensions": [
+      [
+        "Width",
+        "464"
+      ],
+      [
+        "Width",
+        "414"
+      ],
+      [
+        "Width",
+        "24"
+      ],
+      [
+        "Height",
+        "24"
+      ],
+      [
+        "MaxHeight",
+        "160"
+      ],
+      [
+        "MaxHeight",
+        "34"
+      ],
+      [
+        "MinHeight",
+        "86"
+      ],
+      [
+        "Width",
+        "28"
+      ],
+      [
+        "Height",
+        "28"
+      ]
+    ],
+    "key": "SabStyledToastHost",
+    "purpose": "Хост уведомлений SAB",
+    "layout": "Стопка уведомлений, детали в Expander, ссылки и действия",
+    "complexity": "средняя",
+    "states": "Info/Success/Warning/Error, таймер исчезновения, кнопки закрытия/папки, развёрнутые детали",
+    "scores": [
+      4.5,
+      6,
+      2,
+      9,
+      6,
+      3
+    ],
+    "score": 51.75,
+    "effective_types": [
+      "Border",
+      "Button",
+      "DockPanel",
+      "Expander",
+      "Grid",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "464",
+      "Height": "24",
+      "MaxHeight": "160",
+      "MinHeight": "86"
+    },
+    "xaml": null
+  },
+  {
+    "name": "LibraryBuilderWindow",
+    "base": "Window",
+    "path": "SAB/Cls_RevitLibraryBuilder/UI/LibraryBuilderWindow.cs",
+    "line": 23,
+    "scope": "active",
+    "types": {
+      "StackPanel": 1,
+      "TextBlock": 4,
+      "Border": 1,
+      "ToolTip": 1
+    },
+    "titles": [
+      "Выберите CSV-файлы для HTML-просмотрщика"
+    ],
+    "dimensions": [],
+    "key": "LibraryBuilderWindow",
+    "purpose": "Операции библиотеки Revit и просмотр CSV",
+    "layout": "Навигация кнопками режимов, панели операций, прокрутка и прогресс",
+    "complexity": "средняя",
+    "states": "Выбранные режимы и действия, условная доступность, прогресс; режимы имитируют вкладки без TabControl",
+    "scores": [
+      4.5,
+      6,
+      2,
+      7,
+      7,
+      5
+    ],
+    "score": 50.75,
+    "effective_types": [
+      "Border",
+      "Button",
+      "DockPanel",
+      "Grid",
+      "ProgressBar",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "ToolTip"
+    ],
+    "dimensions_summary": {
+      "Width": "1080",
+      "Height": "760",
+      "MinWidth": "920",
+      "MinHeight": "640"
+    },
+    "xaml": "SAB/Cls_RevitLibraryBuilder/UI/LibraryBuilderWindow.xaml"
+  },
+  {
+    "name": "DoorWindowSelectionListWindow",
+    "base": "Window",
+    "path": "SAB/Cls_DoorWindowExplanations/Views/DoorWindowSelectionListWindow.xaml.cs",
+    "line": 23,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "DoorWindowSelectionListWindow",
+    "purpose": "Список дверей/окон для формирования видов",
+    "layout": "Таблица с флажками и подвал",
+    "complexity": "средняя",
+    "states": "Выбор строк, DataGridCheckBoxColumn, пустой список",
+    "scores": [
+      4,
+      5,
+      6.5,
+      5.5,
+      6,
+      5
+    ],
+    "score": 50.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "DataGrid",
+      "DataGridCheckBoxColumn",
+      "DataGridTextColumn",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "980",
+      "Height": "620",
+      "MinWidth": "900",
+      "MinHeight": "500"
+    },
+    "xaml": "SAB/Cls_DoorWindowExplanations/Views/DoorWindowSelectionListWindow.xaml"
+  },
+  {
+    "name": "ModelSourceWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ParameterTools/UI/SmallWindows.cs",
+    "line": 159,
+    "scope": "active",
+    "types": {
+      "DockPanel": 2,
+      "TextBox": 1,
+      "ListBox": 1,
+      "StackPanel": 1
+    },
+    "titles": [],
+    "dimensions": [
+      [
+        "Width",
+        "530"
+      ],
+      [
+        "Height",
+        "420"
+      ],
+      [
+        "MinWidth",
+        "430"
+      ],
+      [
+        "MinHeight",
+        "320"
+      ]
+    ],
+    "key": "ModelSourceWindow",
+    "purpose": "Выбор источника значения модели",
+    "layout": "Поиск TextBox и ListBox, подвал",
+    "complexity": "средняя",
+    "states": "Отфильтрованный/пустой список, выбранное значение",
+    "scores": [
+      4.5,
+      5,
+      5,
+      5,
+      6,
+      7
+    ],
+    "score": 50.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "DockPanel",
+      "Grid",
+      "ListBox",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "530",
+      "Height": "420",
+      "MinWidth": "430",
+      "MinHeight": "320"
+    },
+    "xaml": null
+  },
+  {
+    "name": "AddFiltersWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ViewTemplateGraphics/Views/AddFiltersWindow.xaml.cs",
+    "line": 18,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "AddFiltersWindow",
+    "purpose": "Добавление фильтров к шаблонам видов",
+    "layout": "Поиск и таблица выбора",
+    "complexity": "средняя",
+    "states": "Фильтр, флажки, выделенные/пустые строки",
+    "scores": [
+      4,
+      5,
+      6,
+      6,
+      6,
+      4
+    ],
+    "score": 50.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "CheckBox",
+      "DataGrid",
+      "DataGridTemplateColumn",
+      "DataGridTextColumn",
+      "Grid",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "680",
+      "Height": "620",
+      "MinWidth": "560",
+      "MinHeight": "460"
+    },
+    "xaml": "SAB/Cls_ViewTemplateGraphics/Views/AddFiltersWindow.xaml"
+  },
+  {
+    "name": "RoomPlanSchemeSettingsWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/RoomPlanSchemeSettingsWindow.xaml.cs",
+    "line": 16,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "RoomPlanSchemeSettingsWindow",
+    "purpose": "Настройки плана-схемы помещений",
+    "layout": "Прокручиваемые раскрываемые секции",
+    "complexity": "средняя",
+    "states": "Выбор типов, числовые настройки, раскрытие секций",
+    "scores": [
+      4.5,
+      6,
+      1,
+      6,
+      6,
+      4
+    ],
+    "score": 46.25,
+    "effective_types": [
+      "Border",
+      "Button",
+      "ComboBox",
+      "Expander",
+      "Grid",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "820",
+      "Height": "560",
+      "MinWidth": "760",
+      "MinHeight": "540"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/RoomPlanSchemeSettingsWindow.xaml"
+  },
+  {
+    "name": "DataSourceDialog",
+    "base": "Window",
+    "path": "SAB/BimDashboard/UI/DataSourceDialog.xaml.cs",
+    "line": 15,
+    "scope": "active",
+    "types": {
+      "Grid": 1,
+      "TextBlock": 4,
+      "StackPanel": 2,
+      "ComboBox": 1,
+      "Button": 2,
+      "DockPanel": 1,
+      "Border": 2
+    },
+    "titles": [
+      "Источник данных dashboard",
+      "Выберите CSV источник"
+    ],
+    "dimensions": [
+      [
+        "Width",
+        "700"
+      ],
+      [
+        "Height",
+        "470"
+      ],
+      [
+        "MinWidth",
+        "680"
+      ],
+      [
+        "MinHeight",
+        "450"
+      ],
+      [
+        "Height",
+        "32"
+      ],
+      [
+        "Height",
+        "34"
+      ],
+      [
+        "Height",
+        "36"
+      ]
+    ],
+    "key": "DataSourceDialog",
+    "purpose": "Источник CSV для BIM dashboard",
+    "layout": "Карточки профиля и файла, подвал действий",
+    "complexity": "низкая",
+    "states": "Недоступный профиль, выбранный/невыбранный путь; системный файловый диалог",
+    "scores": [
+      3,
+      5,
+      0,
+      4,
+      5,
+      7
+    ],
+    "score": 35.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "ComboBox",
+      "DockPanel",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "700",
+      "Height": "470",
+      "MinWidth": "680",
+      "MinHeight": "450"
+    },
+    "xaml": null
+  },
+  {
+    "name": "ElevationCropAdjustmentWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/ElevationCropAdjustmentWindow.xaml.cs",
+    "line": 13,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "ElevationCropAdjustmentWindow",
+    "purpose": "Числовая корректировка границ развёртки",
+    "layout": "Компактная сетка числовых полей",
+    "complexity": "низкая",
+    "states": "Ошибочный ввод, подтверждение, обычный/недоступный ввод",
+    "scores": [
+      3,
+      4,
+      0,
+      6,
+      5,
+      5
+    ],
+    "score": 35.0,
+    "effective_types": [
+      "Border",
+      "Button",
+      "Grid",
+      "StackPanel",
+      "TextBlock",
+      "TextBox"
+    ],
+    "dimensions_summary": {
+      "Width": "540",
+      "Height": "438",
+      "MinWidth": "540",
+      "MinHeight": "438"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/ElevationCropAdjustmentWindow.xaml"
+  },
+  {
+    "name": "CorpusChoiceWindow",
+    "base": "Window",
+    "path": "SAB/Cls_ParameterTools/UI/SmallWindows.cs",
+    "line": 178,
+    "scope": "active",
+    "types": {
+      "StackPanel": 1,
+      "ScrollViewer": 1
+    },
+    "titles": [
+      "Рабочий корпус"
+    ],
+    "dimensions": [
+      [
+        "Width",
+        "400"
+      ],
+      [
+        "MinHeight",
+        "230"
+      ]
+    ],
+    "key": "CorpusChoiceWindow",
+    "purpose": "Ручной выбор корпуса",
+    "layout": "Прокручиваемый набор кнопок значений",
+    "complexity": "низкая",
+    "states": "Выбор доступного корпуса",
+    "scores": [
+      2,
+      4,
+      2,
+      4,
+      5,
+      7
+    ],
+    "score": 32.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "Grid",
+      "ScrollViewer",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "400",
+      "MinHeight": "230"
+    },
+    "xaml": null
+  },
+  {
+    "name": "CreateViewsAndSheetsProgressWindow",
+    "base": "Window, IProgress<CreateViewsAndSheetsProgressInfo>",
+    "path": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsProgressWindow.cs",
+    "line": 13,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "CreateViewsAndSheetsProgressWindow",
+    "purpose": "Ход создания видов и листов",
+    "layout": "Вертикальные этапы и индикатор прогресса",
+    "complexity": "низкая",
+    "states": "Этапы, процент, счётчики и предупреждения создаются/обновляются из C#",
+    "scores": [
+      1,
+      3,
+      0,
+      7,
+      5,
+      7
+    ],
+    "score": 28.5,
+    "effective_types": [
+      "Border",
+      "Grid",
+      "ProgressBar",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "520",
+      "Height": "auto",
+      "MinWidth": "500",
+      "MinHeight": "—"
+    },
+    "xaml": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsProgressWindow.xaml"
+  },
+  {
+    "name": "MaterialQuantityProgressWindow",
+    "base": "Window",
+    "path": "SAB/Cls_MaterialQuantity/MaterialQuantityProgressWindow.xaml.cs",
+    "line": 8,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "MaterialQuantityProgressWindow",
+    "purpose": "Ход подсчёта материалов",
+    "layout": "Короткое окно этапа и прогресса",
+    "complexity": "низкая",
+    "states": "Определённый/неопределённый прогресс и текст этапа",
+    "scores": [
+      1,
+      3,
+      0,
+      7,
+      5,
+      6
+    ],
+    "score": 28.0,
+    "effective_types": [
+      "Border",
+      "Grid",
+      "ProgressBar",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "560",
+      "Height": "auto",
+      "MinWidth": "520",
+      "MinHeight": "—"
+    },
+    "xaml": "SAB/Cls_MaterialQuantity/MaterialQuantityProgressWindow.xaml"
+  },
+  {
+    "name": "CropByExampleActionWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/CropByExampleActionWindow.xaml.cs",
+    "line": 17,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "CropByExampleActionWindow",
+    "purpose": "Выбор действия обрезки по примеру",
+    "layout": "Набор крупных кнопок и пояснения",
+    "complexity": "низкая",
+    "states": "Разные действия, длинные пояснения Run",
+    "scores": [
+      2,
+      4,
+      0,
+      3,
+      5,
+      6
+    ],
+    "score": 27.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "Grid",
+      "StackPanel",
+      "TextBlock",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "850",
+      "Height": "410",
+      "MinWidth": "850",
+      "MinHeight": "410"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/CropByExampleActionWindow.xaml"
+  },
+  {
+    "name": "CropByExampleLineCreationWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/CropByExampleLineCreationWindow.xaml.cs",
+    "line": 12,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "CropByExampleLineCreationWindow",
+    "purpose": "Режим создания линий обрезки по примеру",
+    "layout": "Кнопки режимов и пояснения",
+    "complexity": "низкая",
+    "states": "Варианты действия, WrapPanel/Run",
+    "scores": [
+      2,
+      4,
+      0,
+      3,
+      5,
+      6
+    ],
+    "score": 27.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "Grid",
+      "StackPanel",
+      "TextBlock",
+      "WrapPanel"
+    ],
+    "dimensions_summary": {
+      "Width": "815",
+      "Height": "455",
+      "MinWidth": "815",
+      "MinHeight": "455"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/CropByExampleLineCreationWindow.xaml"
+  },
+  {
+    "name": "LineGroupNextActionWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml.cs",
+    "line": 10,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "LineGroupNextActionWindow",
+    "purpose": "Дальнейшее действие после группы линий",
+    "layout": "Пояснение и кнопки действий",
+    "complexity": "низкая",
+    "states": "Переход к следующей операции",
+    "scores": [
+      2,
+      3,
+      0,
+      3,
+      4,
+      6
+    ],
+    "score": 24.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "680",
+      "Height": "270",
+      "MinWidth": "640",
+      "MinHeight": "270"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml"
+  },
+  {
+    "name": "LineGroupSelectionWindow",
+    "base": "Window",
+    "path": "SAB/Cls_InteriorElevations/Views/LineGroupSelectionWindow.xaml.cs",
+    "line": 10,
+    "scope": "active",
+    "types": {},
+    "titles": [],
+    "dimensions": [],
+    "key": "LineGroupSelectionWindow",
+    "purpose": "Выбор способа работы с группой линий",
+    "layout": "Компактный диалог действия",
+    "complexity": "низкая",
+    "states": "Варианты выбора",
+    "scores": [
+      2,
+      3,
+      0,
+      3,
+      4,
+      6
+    ],
+    "score": 24.5,
+    "effective_types": [
+      "Border",
+      "Button",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "620",
+      "Height": "270",
+      "MinWidth": "620",
+      "MinHeight": "270"
+    },
+    "xaml": "SAB/Cls_InteriorElevations/Views/LineGroupSelectionWindow.xaml"
+  },
+  {
+    "name": "ConfirmViewCreationDialog",
+    "base": "Window",
+    "path": "SAB/Cls_RevitLibraryBuilder/UI/Dialogs/ConfirmViewCreationDialog.xaml.cs",
+    "line": 11,
+    "scope": "active",
+    "types": {
+      "Grid": 1,
+      "TextBlock": 1,
+      "StackPanel": 1,
+      "Button": 2
+    },
+    "titles": [
+      "Подтверждение"
+    ],
+    "dimensions": [
+      [
+        "Width",
+        "420"
+      ],
+      [
+        "Height",
+        "190"
+      ],
+      [
+        "MinWidth",
+        "380"
+      ],
+      [
+        "MinHeight",
+        "170"
+      ],
+      [
+        "Width",
+        "95"
+      ],
+      [
+        "Height",
+        "28"
+      ],
+      [
+        "Width",
+        "95"
+      ],
+      [
+        "Height",
+        "28"
+      ]
+    ],
+    "key": "ConfirmViewCreationDialog",
+    "purpose": "Подтверждение создания видов библиотеки",
+    "layout": "Сообщение и две кнопки",
+    "complexity": "низкая",
+    "states": "Default/Cancel, клавиатурное подтверждение",
+    "scores": [
+      1.5,
+      3,
+      0,
+      3,
+      4,
+      8
+    ],
+    "score": 23.75,
+    "effective_types": [
+      "Button",
+      "Grid",
+      "StackPanel",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "420",
+      "Height": "190",
+      "MinWidth": "380",
+      "MinHeight": "170"
+    },
+    "xaml": null
+  },
+  {
+    "name": "DuckReminderWindow",
+    "base": "Window",
+    "path": "SAB/SyncReminder/DuckReminderWindow.cs",
+    "line": 16,
+    "scope": "active",
+    "types": {
+      "Canvas": 2,
+      "Border": 1,
+      "TextBlock": 1,
+      "Ellipse": 4,
+      "Image": 1
+    },
+    "titles": [],
+    "dimensions": [
+      [
+        "Width",
+        "430"
+      ],
+      [
+        "Height",
+        "372"
+      ],
+      [
+        "MinWidth",
+        "220"
+      ],
+      [
+        "MinHeight",
+        "40"
+      ],
+      [
+        "MaxHeight",
+        "122"
+      ],
+      [
+        "MaxHeight",
+        "108"
+      ],
+      [
+        "Width",
+        "208"
+      ],
+      [
+        "Height",
+        "28"
+      ],
+      [
+        "Width",
+        "208"
+      ],
+      [
+        "Height",
+        "208"
+      ],
+      [
+        "Width",
+        "46"
+      ],
+      [
+        "Height",
+        "38"
+      ],
+      [
+        "Width",
+        "34"
+      ],
+      [
+        "Height",
+        "8"
+      ]
+    ],
+    "key": "DuckReminderWindow",
+    "purpose": "Анимированное напоминание о синхронизации",
+    "layout": "Прозрачный Canvas со спрайтом и декоративными фигурами",
+    "complexity": "низкая",
+    "states": "Кадры анимации, движение, декоративное дочернее окно",
+    "scores": [
+      0,
+      3,
+      0,
+      5,
+      2,
+      5
+    ],
+    "score": 18.0,
+    "effective_types": [
+      "Border",
+      "Canvas",
+      "Image",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "430",
+      "Height": "372",
+      "MinWidth": "220",
+      "MinHeight": "40",
+      "MaxHeight": "122"
+    },
+    "xaml": null
+  },
+  {
+    "name": "PeekingAnimalReminderWindow",
+    "base": "Window",
+    "path": "SAB/SyncReminder/PeekingAnimalReminderWindow.cs",
+    "line": 14,
+    "scope": "active",
+    "types": {
+      "Canvas": 1,
+      "Image": 1,
+      "Border": 2,
+      "TextBlock": 1
+    },
+    "titles": [],
+    "dimensions": [
+      [
+        "Width",
+        "900"
+      ],
+      [
+        "Height",
+        "560"
+      ],
+      [
+        "Width",
+        "310"
+      ]
+    ],
+    "key": "PeekingAnimalReminderWindow",
+    "purpose": "Анимированное напоминание выглядывающим персонажем",
+    "layout": "Прозрачный Canvas, Image, подпись",
+    "complexity": "низкая",
+    "states": "Последовательность кадров и положение окна",
+    "scores": [
+      0,
+      3,
+      0,
+      5,
+      2,
+      5
+    ],
+    "score": 18.0,
+    "effective_types": [
+      "Border",
+      "Canvas",
+      "Image",
+      "TextBlock"
+    ],
+    "dimensions_summary": {
+      "Width": "900",
+      "Height": "560"
+    },
+    "xaml": null
+  },
+  {
+    "name": "PoopDropWindow",
+    "base": "Window",
+    "path": "SAB/SyncReminder/DuckReminderWindow.cs",
+    "line": 740,
+    "scope": "active",
+    "types": {
+      "Canvas": 1,
+      "Ellipse": 2
+    },
+    "titles": [],
+    "dimensions": [
+      [
+        "Width",
+        "46"
+      ],
+      [
+        "Height",
+        "38"
+      ],
+      [
+        "Width",
+        "34"
+      ],
+      [
+        "Height",
+        "8"
+      ]
+    ],
+    "key": "PoopDropWindow",
+    "purpose": "Декоративный эффект напоминания",
+    "layout": "Малое прозрачное Canvas-окно",
+    "complexity": "низкая",
+    "states": "Движение/исчезновение фигур; не рабочая форма",
+    "scores": [
+      0,
+      1,
+      0,
+      2,
+      1,
+      5
+    ],
+    "score": 8.5,
+    "effective_types": [
+      "Canvas"
+    ],
+    "dimensions_summary": {
+      "Width": "46",
+      "Height": "38"
+    },
+    "xaml": null
+  }
+]

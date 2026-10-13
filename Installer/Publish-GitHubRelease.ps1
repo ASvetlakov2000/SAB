@@ -3,6 +3,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^\d+\.\d+\.\d+$')]
     [string]$Version,
+    [string]$ReleaseName = '',
     [switch]$PrepareOnly
 )
 
@@ -96,7 +97,8 @@ try {
         }
     }
     else {
-        $body = @{ tag_name = $tag; target_commitish = $commit; name = "SAB $Version — установщики для Revit 2022–2024"; body = $notes; draft = $true; prerelease = $false } | ConvertTo-Json
+        $title = if ([string]::IsNullOrWhiteSpace($ReleaseName)) { "SAB $Version — установщики для Revit 2022–2024" } else { "SAB $Version — $ReleaseName" }
+        $body = @{ tag_name = $tag; target_commitish = $commit; name = $title; body = $notes; draft = $true; prerelease = $false } | ConvertTo-Json
         $release = Invoke-RestMethod -Uri "$api/releases" -Headers $headers -Method Post -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
     }
     foreach ($name in $assetNames) {

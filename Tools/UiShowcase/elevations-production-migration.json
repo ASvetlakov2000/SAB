@@ -1,0 +1,107 @@
+{
+  "authorization": "Direct user approval 2026-10-12; 1.1.0 Редизайн",
+  "historicalBaseline": "elevations-baseline.json",
+  "functionalDelta": "elevations-functional-delta.json",
+  "files": {
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
+      "before": "fbd5df2b7caa27d73e50372a22a9a90e38252d72f4191d32a1f6fdb9f5a6115d",
+      "after": "3e247ec18b436ed567d1ba1007d2f2993537b015e40854a6a786e021b91f269f"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": {
+      "before": "566579c342a3f73399198d9e42b8b84ac3fc7ae0156e94a4f1e468b63a742aa3",
+      "after": "e6cb22a83e3bf6f71d80d5194190be077f187c68fb812005523a6b3474df964f"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationCatalogWindow.xaml": {
+      "before": "8560d334bcfe6c73b8d910e63263a9aee917750a517f232c6c0f6e381e572044",
+      "after": "8b8dcfbd61cca690661952158a583ffdd42f8500eb543112bcf213ffb641f71f"
+    },
+    "SAB/Cls_InteriorElevations/Views/MultiRoomSelectionWindow.xaml": {
+      "before": "dc75d86742c48779074adf9c99de2d2e7a5538473465a02f68a7d175859dec0b",
+      "after": "84fa1c27ce9766fc5a9f4b0ff155956178060b6a3fa016ad98bb70265ae175b5"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationCropAdjustmentWindow.xaml": {
+      "before": "444b080d0219e54da910e33ab2bf01626dbf54770c50f3e19f51314d3d6fb3f6",
+      "after": "c763291c0bcac28c0b9dc16af00d9a971068b4cd7ef68793a29d101ed6328edf"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupSelectionWindow.xaml": {
+      "before": "7853b08e7ffd0c78c25968d024029dd2085e32ebee1bf609d1d839cd0e047390",
+      "after": "515c1403645b34d5ee01264cacf3a712a82ff05f35e0b1e5aafaaa89b40867ff"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml": {
+      "before": "d4b47329a8a6a6729edacf4a1fb7a9c95a8005996bd8e4078014b4411a07b92a",
+      "after": "e27a239ffb2b439c9adf63e1790e60d83f396d5989108ce92e24656c47313a0b"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleActionWindow.xaml": {
+      "before": "fec9df5890a24ff1937bda90d3c11bc9cc32d25cb7f7bb129757c6490e8bb2e1",
+      "after": "f2a00749dbfad403a419d7cafa09861f44633e5b172bbcab8524e1b3276b1435"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleLineCreationWindow.xaml": {
+      "before": "59edb21cf1b7d2dee06e0538c1fc128070e2827be8f57ca1ccfbc1fc1fd3eff6",
+      "after": "773194f5224af9b4116543bd2c33d9c8dd84d8fd470d387a6d73706e553bca24"
+    },
+    "SAB/UI/Styles/SABFluentLight.xaml": {
+      "before": "74976542186ce6527ffc940a02cbd9d89d39a0b4f6e3a9f9d4cc9fe595d9db08",
+      "after": "1c4fd0c2feaf9554b2b44d1163dbc8c0c0aec95a325b515bed7e69998f25e9c3"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": {
+      "before": "b266062fa5a33f8a3e24398d509e3e5ae77f4e6ad90a1ad81b75414ff4a3bf0d",
+      "after": "8bb72ae536ae4b1196c30b4fad8a40a59aa652e4c584561a6c082531baf19ddf"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.cs": {
+      "before": "49486fac76966385cc83793d795a03a3fad4d8f34f730e8d666acb76dc225987",
+      "after": "bdb9498d080ee2c20333277fabcb4b82a7e851002a0568ba15c83d2a41dca1ba"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationCatalogWindow.cs": {
+      "before": "9337ea955efd2e33e974ccd7e5ab92704f32531e2c4c1d3e742d076129e3f2e6",
+      "after": "ef9d12e0c6b4589d9af1a64640bd45f738b8d1e34a5494648af2eded96374e1f"
+    },
+    "SAB/Cls_InteriorElevations/Views/MultiRoomSelectionWindow.xaml.cs": {
+      "before": "f69da7a856a776e80baa56e9380c01520bcd164f31cae9315d387ae45900bace",
+      "after": "b12d9f065c1c6d41144675d6c694da19fe6fb9df4e825c7ff4e114691911e468"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationCropAdjustmentWindow.xaml.cs": {
+      "before": "62d771d0fcc51f74f3f079bbec50a6c872e19c7b11c08eacb94fa0ba57ee9e48",
+      "after": "1e139169c0f0d634caedf23874435fe1062a053d15b228bd36b0264b1e46c43f"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupSelectionWindow.xaml.cs": {
+      "before": "e2b73a59da04982f4181dfb5e4521711522047385b5912eaec75bcfb22e85f3e",
+      "after": "772bb9bd9075130b72b9d0ca7bbc72dc8eebbd3cb0b8993e93645b439167d0d9"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml.cs": {
+      "before": "7f920ac93c6c073920cabc6c3ff7a07de4b3bcd35decdda1bcc8d8a3a0476b6b",
+      "after": "5874c2f1a454df9fac2f2e9a9bfb6c385b0f7fb0ab1f66ad9d3d1b35ec579a3d"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleActionWindow.xaml.cs": {
+      "before": "f917e8e7fb33064912c59478373f363cd07c85028083146c0f7864116ab4278b",
+      "after": "c72f79070231aca26edfc8911988fe2fa6f4262258321d01cb4333a614d5735a"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleLineCreationWindow.xaml.cs": {
+      "before": "1f5316f4f492fa8cff12090e787b644c0e8a88ba5d5fac8452dcba5b02c86038",
+      "after": "44e334117f495a33c0c26a55aa5aac3991d40f8aedc3088442ce331dbb810fd4"
+    },
+    "SAB/Cls_InteriorElevations/ViewModels/ElevationSettingsViewModel.cs": {
+      "before": "8fbf6d010d82a01ac8653d8792794c29b9c5b9f1aaf8637a72d9560c20300cff",
+      "after": "ade643f68f5ccbcd217a06009d1d09ad7d7f1aa42eae97b69ea2045399e0efa8"
+    },
+    "SAB/UI/Notifications/NotificationStack.cs": {
+      "before": "967a662d2adaf28af8402691f7b01a290e2d2ddb12c9e42533fc053792211bf9",
+      "after": "3e1e9e0cfa504034830510f61aa889bf3afbbe738ffa4b2021e8d9d5d18b08cf"
+    },
+    "SAB/UI/Notifications/NotificationCard.cs": {
+      "before": "ac3b5a32239aa04b7382351bdb752c65eca572952ccfeb53f59c3fba7f130ae6",
+      "after": "59d92d397a7d03d738e85374408bb9f0cfa95e8dd7be27660c2a6ee4191fa05c"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "46e387b1c9e215b683104a251c6f6f7f34adabc616694f71dfbe09ccb5fa4003",
+      "after": "9cef747f5ee937af4b69d9127922cbfe7136189daef8e40ccb683bb3de0b1e7e"
+    },
+    "SAB/Cls_InteriorElevations/Commands/DecorateInteriorElevationsCommand.cs": {
+      "before": "104d48e1577035cf1aace234c64c5c0441828c492c231208e1ccfd69e7c344b4",
+      "after": "266c7b18a157b6c5a6196c8e8a92e8316115480f01f2ea9f361e5cdcfcf82f58"
+    },
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "feb4ffce0578e1f49291e795930cb7a5d6f3d929d3f8e02dadc75c85f33db997",
+      "after": "cf6f73108ef5252b10179ae4d0956b3abbfc947ebb545ebe5b334ccb7ee5d5ee"
+    }
+  }
+}

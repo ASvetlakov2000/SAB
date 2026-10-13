@@ -1,0 +1,31 @@
+param([switch]$Capture, [switch]$Open)
+$ErrorActionPreference='Stop'
+$projectRoot=Split-Path -Parent $PSScriptRoot | Split-Path -Parent
+$msbuild='C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe'
+if (!(Test-Path -LiteralPath $msbuild)) { $msbuild=(Get-Command MSBuild.exe -ErrorAction Stop).Source }
+$python='C:\Users\svetl\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+if (!(Test-Path -LiteralPath $python)) { $python=(Get-Command python -ErrorAction Stop).Source }
+& $python (Join-Path $PSScriptRoot 'GenerateSourceViews.py')
+if ($LASTEXITCODE -ne 0) { throw 'Source contract generation failed.' }
+$generated=Join-Path $projectRoot 'outputs\ui-source-preview\generated'
+$targets=Join-Path $PSScriptRoot 'SourcePreview.targets'
+& $msbuild (Join-Path $projectRoot 'SAB\SAB.csproj') /t:Build /p:Configuration=Debug /p:RevitVersion=2023 '/p:OutputPath=..\outputs\ui-source-preview\plugin\' '/p:BaseIntermediateOutputPath=..\outputs\ui-source-preview\obj\' '/p:IntermediateOutputPath=..\outputs\ui-source-preview\obj\Debug\' "/p:CustomAfterMicrosoftCommonTargets=$targets" "/p:SourcePreviewGenerated=$generated" /v:quiet /nologo
+if ($LASTEXITCODE -ne 0) { throw 'Isolated SAB source build failed.' }
+$plugin=Join-Path $projectRoot 'outputs\ui-source-preview\plugin'
+New-Item -ItemType Directory -Path (Join-Path $plugin 'Docs') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $projectRoot 'Docs\PluginInstructions') -Destination (Join-Path $plugin 'Docs') -Recurse -Force
+New-Item -ItemType Directory -Path (Join-Path $plugin 'UI\Styles') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $generated 'SABWindowStyles.xaml') -Destination (Join-Path $plugin 'UI\Styles\SABWindowStyles.xaml') -Force
+Copy-Item -LiteralPath (Join-Path $generated 'CreateViewsAndSheetsWindow.xaml') -Destination (Join-Path $plugin 'Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml') -Force
+Copy-Item -LiteralPath (Join-Path $generated 'CreateViewsAndSheetsSettingsWindow.xaml') -Destination (Join-Path $plugin 'Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsSettingsWindow.xaml') -Force
+& $msbuild (Join-Path $PSScriptRoot 'Sab.UiShowcase.csproj') /t:Build /p:Configuration=Debug /v:quiet /nologo
+if ($LASTEXITCODE -ne 0) { throw 'WPF preview build failed.' }
+$previewExe=Join-Path $plugin 'SAB.UI.Preview.exe'
+if ($Capture) {
+    $capturePath=Join-Path $projectRoot 'Docs\Ui\DesignSystem\screenshots-v0.5'
+    $captureRun=Start-Process -FilePath $previewExe -ArgumentList @('--capture','--out',('"'+$capturePath+'"')) -Wait -PassThru -WindowStyle Hidden
+    if ($captureRun.ExitCode -ne 0) { throw ('Capture failed. See '+$previewExe+' directory diagnostics\error.txt') }
+    & $python (Join-Path $PSScriptRoot 'MakeSourceReview.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Source review documentation failed.' }
+}
+if ($Open) { Start-Process -FilePath $previewExe }

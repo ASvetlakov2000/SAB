@@ -1,0 +1,70 @@
+{
+  "source": "SAB/UI/Styles/SABWindowStyles.xaml",
+  "sha256": "7d10f47996a69c8ce805884b1e4b9b17a602f4a14f275753d1d29c8d516887e0",
+  "changes": [
+    "brush references dynamic",
+    "density and radius tokens",
+    "table horizontal separators",
+    "visible keyboard focus",
+    "button pressed feedback"
+  ],
+  "status": "preview-only / pending approval",
+  "themes": {
+    "FluentLight": {
+      "label": "Fluent Light",
+      "control": 36,
+      "row": 72,
+      "header": 38,
+      "pad": 24,
+      "radius": 6,
+      "title": 24,
+      "bg": "#F5F7FB",
+      "line": "#D8DEE8",
+      "weak": "#E8EDF4",
+      "table": "#F4F7FB",
+      "secondary": "#596579"
+    },
+    "FluentCompact": {
+      "label": "Fluent Compact",
+      "control": 28,
+      "row": 54,
+      "header": 32,
+      "pad": 18,
+      "radius": 4,
+      "title": 22,
+      "bg": "#F3F5F8",
+      "line": "#CDD5E0",
+      "weak": "#E3E8F0",
+      "table": "#EDF1F6",
+      "secondary": "#536074"
+    },
+    "MinimalSaas": {
+      "label": "Minimal SaaS",
+      "control": 34,
+      "row": 66,
+      "header": 36,
+      "pad": 28,
+      "radius": 3,
+      "title": 24,
+      "bg": "#FFFFFF",
+      "line": "#DDE2E9",
+      "weak": "#EEF0F4",
+      "table": "#FAFBFC",
+      "secondary": "#626C7A"
+    },
+    "Unified": {
+      "label": "SAB Unified",
+      "control": 32,
+      "row": 60,
+      "header": 34,
+      "pad": 20,
+      "radius": 5,
+      "title": 23,
+      "bg": "#F6F8FB",
+      "line": "#D5DDE8",
+      "weak": "#E8EDF4",
+      "table": "#F4F6FA",
+      "secondary": "#566479"
+    }
+  }
+}

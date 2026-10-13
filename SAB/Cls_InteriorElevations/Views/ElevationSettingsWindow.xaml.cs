@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -90,7 +90,7 @@ namespace SAB.InteriorElevations.Views
                 ? "Линии и помещение не выбраны."
                 : initialSelectionStatusText;
             _initialWarningInfoText = string.IsNullOrWhiteSpace(initialWarningInfoText)
-                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане."
+                ? string.Empty
                 : initialWarningInfoText;
 
             // Основной блок инициализации окна: загружаем XAML, назначаем DataContext и подключаем кнопки.
@@ -156,6 +156,7 @@ namespace SAB.InteriorElevations.Views
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
                 Height = loadedWindow.Height;
+                SizeToContent = loadedWindow.SizeToContent;
                 MinWidth = loadedWindow.MinWidth;
                 MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
@@ -169,6 +170,7 @@ namespace SAB.InteriorElevations.Views
                 FontWeight = loadedWindow.FontWeight;
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
+                ScopeRadioGroups(Content as DependencyObject, Guid.NewGuid().ToString("N"));
 
                 WindowChrome loadedChrome = WindowChrome.GetWindowChrome(loadedWindow);
                 if (loadedChrome != null)
@@ -176,8 +178,18 @@ namespace SAB.InteriorElevations.Views
                     WindowChrome.SetWindowChrome(this, (WindowChrome)loadedChrome.Clone());
                 }
 
-                WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationSettingsWindow.V2");
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationSettingsWindow.Redesign110");
             }
+        }
+
+        // Radio groups belong to one reopened dialog instance, not another retained window.
+        private static void ScopeRadioGroups(DependencyObject root, string scope)
+        {
+            if (root == null) return;
+            RadioButton radio = root as RadioButton;
+            if (radio != null && !string.IsNullOrEmpty(radio.GroupName)) radio.GroupName += scope;
+            foreach (object child in LogicalTreeHelper.GetChildren(root))
+                if (child is DependencyObject) ScopeRadioGroups((DependencyObject)child, scope);
         }
 
         private void AttachWindowBehaviorHandlers()
@@ -220,7 +232,7 @@ namespace SAB.InteriorElevations.Views
             }
 
             SabWindowBehaviorService.ApplyLoadedBehavior(this);
-            SabLayoutAssist.Apply(this);
+            // Fluent collection and form templates own layout; legacy tree mutation is not applicable.
         }
 
         private void ElevationSettingsWindow_Closed(object sender, EventArgs e)
@@ -723,8 +735,9 @@ namespace SAB.InteriorElevations.Views
                 return;
             }
 
+            if (_warningInfoBorder != null) _warningInfoBorder.Visibility = string.IsNullOrWhiteSpace(text) ? Visibility.Collapsed : Visibility.Visible;
             _warningInfoTextBlock.Text = string.IsNullOrWhiteSpace(text)
-                ? "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане."
+                ? string.Empty
                 : text;
 
             Style panelStyle = TryFindResource("SabAccentInfoPanelStyle") as Style;

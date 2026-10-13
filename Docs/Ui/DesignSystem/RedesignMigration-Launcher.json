@@ -1,0 +1,14 @@
+{
+  "pids": [
+    36796
+  ],
+  "executableSha256": "FDCB880CA3D7C4B6C5214246FAED69A9E33DA58C7CC510412FD5DD43314B9596",
+  "physicalForeground": "NOT RUN",
+  "commands": [
+    "LaunchPreview.ps1 -Elevations",
+    "LaunchPreview.ps1 -Elevations"
+  ],
+  "executableHashUnchanged": true,
+  "date": "2026-10-13",
+  "interactiveInstances": 1
+}

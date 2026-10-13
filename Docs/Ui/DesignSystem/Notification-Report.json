@@ -1,0 +1,822 @@
+{
+  "schemaVersion": 1,
+  "task": "Actual Parameterization notifications and common SAB template; bottom-up follow-up",
+  "date": "2026-10-12",
+  "scope": "Actual production WPF classes outside Revit; synthetic results; release MSI payload verification",
+  "sourceRevision": "565ebe7c2f3ced2611014b6e0363baa6ea5f1096 + dirty authorized source",
+  "dirtyBaseline": "Preserved in bounded notification-baseline.json; no new commit requested",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/Notification-Layout.md"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/Notification-Layout.md",
+  "build": [
+    {
+      "year": 2022,
+      "configuration": "Release",
+      "status": "PASS",
+      "evidence": "Docs/Ui/DesignSystem/Installer-Verification.md"
+    },
+    {
+      "year": 2023,
+      "configuration": "Release",
+      "status": "PASS",
+      "evidence": "Docs/Ui/DesignSystem/Installer-Verification.md"
+    },
+    {
+      "year": 2024,
+      "configuration": "Release",
+      "status": "PASS",
+      "evidence": "Docs/Ui/DesignSystem/Installer-Verification.md"
+    }
+  ],
+  "captures": [
+    "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json"
+  ],
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96,
+    144
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Initial integration fix and later bottom-up scoped ship;35 native assertions/9PNG, separate dated verdicts",
+    "scope": "Actual native WPF captures/code outside Revit; not MSI or Revit execution",
+    "report": "Docs/Ui/DesignSystem/Notification-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Physical hover/pressed and complete accessibility/keyboard traversal not executed; native selection and focus pause passed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient notification has no editable form/table/list picker/tabs/search/disclosure or HTML instruction footer; accepted explicit notification composition governs. Existing source unchanged outside bounded authorization.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Active-clock, focus, owner-disabled, copying and offscreen pause verified; physical pointer hover integration not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md",
+        "SAB/UI/Notifications/NotificationStack.cs"
+      ],
+      "unverified": [
+        "Actual Revit owner disposal; physical hover."
+      ]
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Bounded owner-monitor stack verified on current96DPI monitor; real multi-monitor/OS-DPI transitions unavailable.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/notification-source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Scope is recorded WPF/source evidence; Revit execution/physical input/OS DPI transitions not claimed."
+      ]
+    }
+  ],
+  "bottomUp": {
+    "newest": "bottom",
+    "growth": "up",
+    "insetDip": 16,
+    "assertions": 35,
+    "evidence": "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json"
+  }
+}

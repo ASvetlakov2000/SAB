@@ -1,0 +1,1130 @@
+{
+  "schemaVersion": 1,
+  "task": "Elevations feedback: three annotation cards, spatial crop boundaries, clean final notification and independent category code verification",
+  "date": "2026-10-12",
+  "scope": "Isolated UI preview;8authorized Elevations production functional deltas plus2generic optional warning-section owners; no suite UI migration or installation",
+  "sourceRevision": "565ebe7c2f3ced2611014b6e0363baa6ea5f1096 + preserved dirty tree",
+  "dirtyBaseline": "Current pre-edit sources/evidence preserved in outputs/ui-production-preview/elevations-annotations-before.zip; prior snapshots retained",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/LayoutPatterns.md",
+    "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/Elevations-Layout.md",
+  "build": [
+    {
+      "command": "Tools/UiShowcase/Build.ps1; host-only MSBuild after test harness fix; actual --capture-elevations",
+      "configuration": "Debug2023 net48",
+      "exitCode": 0,
+      "evidence": "outputs/ui-production-preview/elevations-annotations-build.log"
+    },
+    {
+      "command": "Build-Msi.bat < NUL",
+      "configuration": "Release2022/2023/2024",
+      "exitCode": 0,
+      "evidence": "outputs/ui-production-preview/installer-build.log"
+    }
+  ],
+  "captures": [
+    "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+  ],
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96,
+    144
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "disposition": "ship",
+    "scope": "44fresh PNG/635assertions, source boundary and8functional deltas; Revit execution and MSI excluded",
+    "report": "Docs/Ui/DesignSystem/Elevations-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Inventory of9 active windows plus unreachable plan window; source-derived bindings131 and disclosed adapters; source contract.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Scoped Fluent Light resources and new functional composition; legacy presentation tree excluded.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Shared SABFluentLight/Presentation/FluentResources; no copied local design dictionary.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Binding contract plus actual naming/formula handlers, source room VM and action results; cancellation/return regressions tested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Debug net48/API2023 builds; real API context/Revit execution and preview native API22/24 runtime not exercised.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "UI suite and416/16proposal stay isolated/pending approval; explicitly requested8functional changes and optional shared warnings are packaged, installation not performed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md",
+        "Docs/Ui/DesignSystem/STATUS.json",
+        "Docs/Ui/DesignSystem/Elevations-Layout.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Production migration is explicitly gated; this report is isolated preview only.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Layout specification written before code; main/decoration alternate layouts compared.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md",
+        "Docs/Ui/DesignSystem/STATUS.json",
+        "Docs/Ui/DesignSystem/Elevations-Layout.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "44fresh native captures including normal/minimum three-card composition, spatial crop and success/warning/error/long results plus actual production notification. Provenance hashes all files.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Immutable baseline93 reconciled as85unchanged+8exact authorized deltas; host source/binary/capture hashes recorded.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Normal/minimum/long/validation/empty/programmatic focus covered; complete physical interaction/accessibility state matrix not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Native Segoe UI tokens and shared typography retained; current screenshots reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Rooms/catalog row44/header38 measured; shared separators/selection style.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Row actions28, gap8; minimum last-row/right-edge capture reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Read-only catalog/rooms have resting cell content without persistent editor boxes. Editing-state branch absent.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Visible text/header axes measured<=1DIP for each visible first-row non-action column; centered numeric cells.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No editable numeric table editors; centered read-only numeric headers covered by016.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "24-row long-room minimum table scrolled to last row and last column, actions accessible.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Normal table layout and minimum bounded horizontal scroll captured.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Capsules have exactly1 checked, source Binding/VM and indicator agree, pending/reopen checked; independent checkboxes retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "All visible capsule min34/indicator>=30 measured; wrapped source labels grow naturally.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No hidden alternative in current capsule groups; initial/reopen checked state covered020/053.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "4 main tab capsule headers/title-width track reviewed in normal/min captures.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Shared tab content gap12, visual review across4 main tabs; no duplicate wrapper.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Captures settle220ms; animation clock, reduced-motion transition and physical motion quality not tested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "All9 surfaces remove decorative heading glyphs; vector action icons retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Semantic GroupBox cards retained separately in main/decoration.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Shared collection frame RoundedClip actual geometry reused; four-corner screenshots reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Bounded minimum scroll plus bottom captures; footer stays insideviewport; compact button bounds tested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Empty warning collapsed without empty wrapper; empty catalog remains framed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "All visible DataGrids have independent CollectionFrame parent border; source containers styled.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No nested zone/floor collection in this suite.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Common alignment reviewed visually; every dynamic field edge was not numerically measured.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No nested zone/floor form rows.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Shared34 fields/text buttons; compact actual controls insidecard; action28 separate; visual spacing reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Existing-sheet editable source ComboBox retained; typed search/dropdown state not exercised.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No category toolbar or presets in source; no new controls invented.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No import/export configuration controls in active source suite.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Rooms source row plus retained, no duplicate add route; last blank row follows source VM.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No category checkbox selection/preset feature in this module.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No category preset files.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Instructional descriptions removed; actual labels/state/validation/results retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "One footer Help per working window; original progress explicitly retained without footer; local HTML paths resolved; browser NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Real naming results, source room metadata, group status and validation retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Shared native TableScroll reused and long room scroll captured; bar/header bounds not measured in this suite. No grouped room rows.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Header covers collection width; no grouped-row gutter in catalog/rooms; visual minimum reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No ParameterPicker popup in active Elevations suite.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Active csproj includes14generated C# and ElevationPreview;51types31current/11resource/9missing; old Gallery excluded.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md",
+        "Docs/Ui/DesignSystem/STATUS.json",
+        "Docs/Ui/DesignSystem/Elevations-Layout.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "No DockablePane in active workflow.",
+      "evidence": [],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "All actual patterns used here expose pinned actions and results; whole7-pattern gallery not claimed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Source room actions use contextual automation names and shared vectorpaths; full accessibility NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Production room VM delete last retains1 blank row and blocks Transfer.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Source mode exclusion, Enter suppression, actions/Cancel/Transfer/modeless gates tested; sameVM retains unsaved input.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Real NamingService textual results preserved; no decorative sheet preview.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Status separate from fixed action footer; shared button rhythm reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "70 registry IDs covered by this scoped report; canonical norms and current evidence updated, historical snapshots retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md",
+        "Docs/Ui/DesignSystem/STATUS.json",
+        "Docs/Ui/DesignSystem/Elevations-Layout.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Source ComboBox chevron retained; open/closed popup capture not taken.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "7 room columns and2 catalog columns visible/readable with bounded scroll; long values retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/Elevations-Inventory.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Isolated416DIP proposal with16Bold outcome and framed summary; actual source-derived WPF capture. Production template unchanged pending approval.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/Notification-Report.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Proposal inherits original implementation; fresh capture verifies presentation, not full clipboard/timer/physical/monitor interaction matrix. Historical production35checks not credited to proposal.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/Notification-Report.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Proposal inherits original implementation; fresh capture verifies presentation, not full clipboard/timer/physical/monitor interaction matrix. Historical production35checks not credited to proposal.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/Notification-Report.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Proposal inherits original implementation; fresh capture verifies presentation, not full clipboard/timer/physical/monitor interaction matrix. Historical production35checks not credited to proposal.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/Notification-Report.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Proposal inherits original implementation; fresh capture verifies presentation, not full clipboard/timer/physical/monitor interaction matrix. Historical production35checks not credited to proposal.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/Notification-Report.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "No production Elevations notification calls migrated; report/confirmation synthetic, actual transactions/native selection/report persistence not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/Notification-Report.json",
+        "Docs/Ui/DesignSystem/screenshots-notifications/provenance.json",
+        "Docs/Ui/DesignSystem/Notification-Review.md"
+      ],
+      "unverified": [
+        "Revit operations/Document/native selection/ExternalEvent; physical input/accessibility; OS-DPI/monitor changes; browser launch."
+      ]
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Fresh final binary launch and repeat reused one exact-path Elevations PID13836 without rebuild; executable SHA unchanged. Physical foreground behavior NOT RUN.",
+      "evidence": [
+        "outputs/ui-production-preview/elevations-launch-check.json"
+      ],
+      "unverified": [
+        "Actual Revit/physical/OS-DPI execution"
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "All six dropdown/leader gaps12DIP and vertical centers within1DIP at normal/minimum; two current tag captures.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit/physical/OS-DPI execution"
+      ]
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Wide-resize text grows, numeric/status/actions fixed, columns fill viewport, action header/group center within1DIP.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit/physical/OS-DPI execution"
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Three choice dialogs NoResize/SizeToContent; centered groups and actual bounds verified.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit/physical/OS-DPI execution"
+      ]
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Actual production storage:8combinations and schema1–8migration PASS; actual original window handlers:7valid category mappings PASS; actual replacement role gates8masks incl Diagnostic roles PASS. Source creation target gates reviewed. Revit geometry/transactions NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit/physical/OS-DPI execution"
+      ]
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Actual plugin BuildNotification tested:positive-only success; failed views/mark/plan/unplaced/fallback separate; all-failed red; single continuation sheet retained; zero manual-placement claim suppressed. Actual shared warning copy handler and production520/12 rendering checked; isolated416/16 visual proposal captured.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevations-preview/creation-notification-production.png"
+      ],
+      "unverified": [
+        "Actual Revit creation/transaction result execution; physical clipboard input/OS monitor/DPI"
+      ]
+    }
+  ],
+  "approval": {
+    "stage": "pending_user_approval",
+    "productionMigrationAuthorized": false,
+    "installationAuthorized": false
+  }
+}

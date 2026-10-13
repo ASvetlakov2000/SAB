@@ -1,0 +1,123 @@
+{
+  "version": "0.5-production-migration",
+  "uiSourceOverrides": false,
+  "checks": [
+    "All original bindings preserved: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+    "All original bindings preserved: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml",
+    "All ten original table columns retained",
+    "Business body preserved (presentation helper rename only): private void TransferFile(",
+    "Business body preserved (presentation helper rename only): internal void ExportConfiguration(",
+    "Business body preserved (presentation helper rename only): internal void ImportConfiguration(",
+    "Business body preserved (presentation helper rename only): private void AddRule(",
+    "Business body preserved (presentation helper rename only): private void RefreshSources(",
+    "Business body preserved (presentation helper rename only): private void RefreshValues(",
+    "Business body preserved (presentation helper rename only): private void SyncProfile(",
+    "Business body preserved (presentation helper rename only): private List<string> Problems(",
+    "Business body preserved (presentation helper rename only): private bool UpdateStatus(",
+    "Business body preserved (presentation helper rename only): private void SaveCore(",
+    "Unchanged production source: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs",
+    "Unchanged production source: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.cs",
+    "Unchanged production source: SAB/Cls_CreateViewsAndSheets/ViewModels/CreateViewsAndSheetsViewModel.cs",
+    "Unchanged production source: SAB/Cls_CreateViewsAndSheets/Services/CreateViewsAndSheetsWindowLayoutService.cs",
+    "Unchanged production source: SAB/Cls_ParameterTools/UI/SmallWindows.cs",
+    "Unchanged production source: SAB/UI/Styles/SABWindowStyles.xaml",
+    "Shared Fluent layer has no dependency on application-global Fluent resources",
+    "Parameter native window retains Escape/dropdown keyboard handling",
+    "Production markup has no synthetic-data badge: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+    "Production markup has no synthetic-data badge: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml",
+    "Production view loads scoped Fluent dictionary: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+    "Production view loads scoped Fluent dictionary: SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml"
+  ],
+  "businessMethods": [
+    {
+      "method": "private void TransferFile(",
+      "originalSha256": "56b48d76c0192b1f0033355268b0496d93af96d01bf7c5533d5137607ee9bbef",
+      "currentSha256": "56b48d76c0192b1f0033355268b0496d93af96d01bf7c5533d5137607ee9bbef",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "internal void ExportConfiguration(",
+      "originalSha256": "96ac19e65a0597f62b6de555d5cd9d08cfd342d548fe60746c1aa17e2cf8ed33",
+      "currentSha256": "96ac19e65a0597f62b6de555d5cd9d08cfd342d548fe60746c1aa17e2cf8ed33",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "internal void ImportConfiguration(",
+      "originalSha256": "a07e23f9eb759846df6f53895e4550fca7f72210b7183df50eb5c1abf409562b",
+      "currentSha256": "a07e23f9eb759846df6f53895e4550fca7f72210b7183df50eb5c1abf409562b",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "private void AddRule(",
+      "originalSha256": "5166de5eaf9f689b12b50158746c80fbf83348dcdcfd2266178f6e1ba253991a",
+      "currentSha256": "5166de5eaf9f689b12b50158746c80fbf83348dcdcfd2266178f6e1ba253991a",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "private void RefreshSources(",
+      "originalSha256": "7d2406af83a04f6c34c637e67e01828e36c2af5140921ee1469f7d0bd08f1784",
+      "currentSha256": "772c77c45b5f07541ff2c4e76f04d081f884d959b8b938ad318c44e9d1e21e30",
+      "presentationHelperRenamed": true
+    },
+    {
+      "method": "private void RefreshValues(",
+      "originalSha256": "0000807882615f5902c86820638f60c9d42ca52b78711591c206b0f7b7f0f165",
+      "currentSha256": "71ac4344d1bb06644b7830f4666218c7035269ea9554904832cfa54e62999914",
+      "presentationHelperRenamed": true
+    },
+    {
+      "method": "private void SyncProfile(",
+      "originalSha256": "5781280a41be511f35e23276bc1dae40ea29f18ec744461d0b4d70866ab6419f",
+      "currentSha256": "5781280a41be511f35e23276bc1dae40ea29f18ec744461d0b4d70866ab6419f",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "private List<string> Problems(",
+      "originalSha256": "8c21c326dbce8a2476489e4b353fb43cb28a707cffb3a4d26e11913b408dfab5",
+      "currentSha256": "8c21c326dbce8a2476489e4b353fb43cb28a707cffb3a4d26e11913b408dfab5",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "private bool UpdateStatus(",
+      "originalSha256": "7084b7c0f119658b572db20caaed96fc9f9ec0e4aaf395b639f3cb68c3269c2b",
+      "currentSha256": "7084b7c0f119658b572db20caaed96fc9f9ec0e4aaf395b639f3cb68c3269c2b",
+      "presentationHelperRenamed": false
+    },
+    {
+      "method": "private void SaveCore(",
+      "originalSha256": "f7c09d58bf97bc71902ec082c5aa7d05f458d96e964955c9f1e449884da2b110",
+      "currentSha256": "f7c09d58bf97bc71902ec082c5aa7d05f458d96e964955c9f1e449884da2b110",
+      "presentationHelperRenamed": false
+    }
+  ],
+  "files": {
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs": "1f68edabcdccc7f4f067d6082668158f82de08edb23ed889d8aa776caf35d73c",
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.cs": "c0a67cb376a063c69ae7caff57e2b1c70c8b627ccdbe31b7a792fe3b7c746194",
+    "SAB/Cls_CreateViewsAndSheets/ViewModels/CreateViewsAndSheetsViewModel.cs": "d5a859144b1d8e44dca6e68bed453316341febbd5c30bd274f25a77a3b625573",
+    "SAB/Cls_CreateViewsAndSheets/Services/CreateViewsAndSheetsWindowLayoutService.cs": "979aa99255ba5176cb8c3311baad60efc5c755a22922ef22de1016cfcf17207b",
+    "SAB/Cls_ParameterTools/UI/SmallWindows.cs": "ead5f0d953f6be1cf53af3bac9ed8baa653e8b11a64556b0688700bb2d4d5be6",
+    "SAB/UI/Styles/SABWindowStyles.xaml": "7d10f47996a69c8ce805884b1e4b9b17a602f4a14f275753d1d29c8d516887e0",
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml": "7c14a8536451234da75f3b88ac74e7254f2f44f8627483e3c7445a9a0ce2afbc",
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml": "fbcce40bae8419fb78fe840ab8b7182e9bea99eddc3df7b4d1aba516de6acea7",
+    "SAB/Cls_ParameterTools/UI/SettingsWindow.cs": "8e07aadf5b8a79dcff95176d19512c785538a0288c013b838203bb81063554b6",
+    "SAB/Cls_ParameterTools/UI/ParameterPicker.cs": "13bbee84870109211b9ae96836c86d0577769669354c8b4303d71dd31b6653cf",
+    "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs": "6ca2c0660770aa57c3f0505cbbf99d65620d5efb6bef7c31cd10ec0048704cf7",
+    "SAB/Cls_ParameterTools/UI/FluentTheme.cs": "b28114e85406b687a5e133baec16db2dd7a5c41a95a6aebc87d53a3845660150",
+    "SAB/UI/FluentLight/FluentResources.cs": "2ce5f025c4d12d405ac9c4c5024894fcbdd9e2b9c1336962d827ef8e7ecf17e6",
+    "SAB/UI/FluentLight/Presentation.cs": "5574abbe46fd9dd33b63cfe121041686b71e017aead711b175170a1fb3ff09f0",
+    "SAB/UI/Styles/SABFluentLight.xaml": "aad5e523e9b140f35ab9aabf629e141938111f6d986829543a718161b7534452",
+    "SAB/SAB.csproj": "571f9430b7febc8f57f1ccc1025bd36bdc3e43dc58a6311e3f9d6226932a5518"
+  },
+  "bindingCounts": {
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml": {
+      "original": 135,
+      "current": 136,
+      "missing": []
+    },
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml": {
+      "original": 103,
+      "current": 103,
+      "missing": []
+    }
+  }
+}

@@ -41,7 +41,7 @@ namespace SAB.UI
         {
             if (window == null) return false;
             string typeName = window.GetType().FullName ?? string.Empty;
-            if (typeName.StartsWith("SAB.Helpers.Notifications.") || typeName.StartsWith("SAB.Notifications.") ||
+            if (typeName.StartsWith("SAB.Helpers.Notifications.") || typeName.StartsWith("SAB.Notifications.") || typeName.StartsWith("SAB.UI.Notifications.") ||
                 typeName.EndsWith("DuckReminderWindow") || typeName.EndsWith("PeekingAnimalReminderWindow") ||
                 typeName.EndsWith("PoopDropWindow")) return false;
             return

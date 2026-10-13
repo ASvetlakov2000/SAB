@@ -1,4 +1,5 @@
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
+using System.Collections.Generic;
 
 namespace SAB.InteriorElevations.Models
 {
@@ -10,7 +11,38 @@ namespace SAB.InteriorElevations.Models
 
     public class ElevationDecorationSettings
     {
+        public IEnumerable<ElevationDecorationCatalogRole> RequiredCatalogRoles()
+        {
+            var roles = new HashSet<ElevationDecorationCatalogRole>();
+            if (PlaceSpotElevations && PlaceFloorSpots) {
+                if (PlaceFinishFloorSpotElevation) roles.Add(ElevationDecorationCatalogRole.FinishFloor);
+                if (PlaceSubfloorSpotElevations) roles.Add(ElevationDecorationCatalogRole.Subfloor);
+                if (PlaceStructuralBaseSpotElevation) roles.Add(ElevationDecorationCatalogRole.StructuralSlab);
+            }
+            if (PlaceSpotElevations && PlaceCeilingSpots) roles.Add(ElevationDecorationCatalogRole.Ceiling);
+            if (PlaceSpotElevations && PlaceSlabSpots) roles.Add(ElevationDecorationCatalogRole.StructuralSlab);
+            if (PlaceDimensions) {
+                if (PlaceHorizontalDimensions) roles.Add(ElevationDecorationCatalogRole.FinishWall);
+                if (PlaceVerticalDimensions) { roles.Add(ElevationDecorationCatalogRole.FinishFloor); roles.Add(ElevationDecorationCatalogRole.Ceiling); roles.Add(ElevationDecorationCatalogRole.StructuralSlab); }
+            }
+            if (PlaceTags) {
+                if (PlaceWallTags) roles.Add(ElevationDecorationCatalogRole.FinishWall);
+                if (PlaceFloorTags) roles.Add(ElevationDecorationCatalogRole.FinishFloor);
+                if (PlaceCeilingTags) roles.Add(ElevationDecorationCatalogRole.Ceiling);
+                if (PlacePlinthTags) roles.Add(ElevationDecorationCatalogRole.Plinth);
+                if (PlaceDoorTags) roles.Add(ElevationDecorationCatalogRole.Door);
+                if (PlaceWindowTags) roles.Add(ElevationDecorationCatalogRole.Window);
+            }
+            return roles;
+        }
+
         public bool PlaceSpotElevations { get; set; }
+
+        public bool PlaceFloorSpots { get; set; } = true;
+
+        public bool PlaceCeilingSpots { get; set; } = true;
+
+        public bool PlaceSlabSpots { get; set; } = true;
 
         public bool PlaceTags { get; set; }
 

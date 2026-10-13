@@ -1,0 +1,1508 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T09:32:15.653682+00:00",
+  "title": "Design System: SAB Fluent Light — production1.1.0",
+  "extensions": {
+    "nativePlatform": {
+      "platform": "Windows desktop / WPF",
+      "framework": ".NET Framework 4.8",
+      "units": "DIP (1/96 inch); documentation suffixes are not XAML literals",
+      "thicknessNotation": "WPF scalar uniform; two values horizontal,vertical; four values left,top,right,bottom",
+      "componentPreviewFormat": "native resource references, not HTML/CSS shadow-DOM snippets",
+      "schemaAdaptation": "Native sidecar extensions retain WPF templates, states and geometry. No web conversion, synthetic tonal ramps or mobile breakpoints."
+    },
+    "approval": {
+      "documentStatus": "User-approved productionmigration1.1.0; independentboundednativeWPFship; MSIpayloadverified; no installation or Revitexecution",
+      "version": "1.1.0-redesign",
+      "status": "approved_for_production_migration",
+      "recommendedConcept": "FluentLightSource",
+      "approvedConcept": "FluentLightSource",
+      "approvedAt": "2026-10-12",
+      "productionMigrationAuthorized": true,
+      "canonicalStatus": "Docs/Ui/DesignSystem/STATUS.json",
+      "canonicalSpecification": "Docs/Ui/DesignSystem/Specification.md",
+      "scope": "Approved three-module production UI and shared notifications; installation and native Revit operation unverified",
+      "reviewMeaning": "New explicit user authorization; not retroactive approval of historical preview packets.",
+      "installationAuthorized": false,
+      "migrationScope": [
+        "Создание видов и листов: main + secondary settings",
+        "Параметризация:4 tabs + ParameterPicker + CategorySelectionControl",
+        "Развёртки:9active windows, shared notifications416/16 and category services"
+      ]
+    },
+    "provenance": {
+      "pathBase": "repository root",
+      "resourceOwners": [
+        "SAB/UI/Styles/SABFluentLight.xaml",
+        "SAB/UI/FluentLight/Presentation.cs",
+        "SAB/UI/FluentLight/FluentResources.cs",
+        "SAB/Cls_ParameterTools/UI/FluentTheme.cs"
+      ],
+      "runtimeDictionary": "SAB/UI/Styles/SABFluentLight.xaml",
+      "runtimeLoad": "Views main/secondary merge scoped relative dictionary; parameterSettingsWindow uses scoped FluentTheme;CategorySelectionControl merges its own dictionary; shared helpers use FluentResources, not Revit Application resource lookup.",
+      "productionViews": [
+        "SAB/Cls_ParameterTools/UI/SettingsWindow.cs",
+        "SAB/Cls_ParameterTools/UI/ParameterPicker.cs",
+        "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs",
+        "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+        "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml"
+      ],
+      "host": "Tools/UiShowcase/SourcePreview.cs;Tools/UiShowcase/NotificationPreview.cs",
+      "build": "Tools/UiShowcase/Build.ps1;ordinary SAB.csproj;no SourcePreview.targets/Compile substitutions",
+      "sourceContract": "Tools/UiShowcase/production-source-contract.json",
+      "baseline": "Tools/UiShowcase/production-baseline.json",
+      "verificationEntryPoint": "GenerateSourceViews.py delegates to VerifyNotificationSource.py;47 bounded successor source checks; UI not generated; historical migration proof immutable",
+      "historicalTransformer": "Docs/Ui/DesignSystem/history/pre-migration-GenerateSourceViews.py.txt",
+      "legacyUnchanged": [
+        "SAB/UI/Styles/SABWindowStyles.xaml",
+        "SmallWindows.cs legacy Theme and ReportWindow; Toast wrapper changed for notification adapter",
+        "Views main/secondary code-behind;VM;layout service"
+      ],
+      "direction": "Tools/UiShowcase/Refinement-0.5.md",
+      "directionAuthority": {
+        "pinnedWorld": "Fluent Light для настоящих функций SAB",
+        "latestFeedback": "Docs/Ui/DesignSystem/reference/feedback-0.5/01.png through 04.png, plus 05-scrollbar.png",
+        "plan": "Tools/UiShowcase/Refinement-0.5.md",
+        "canonicalSpecification": "Docs/Ui/DesignSystem/Specification.md",
+        "separateFiveBlockDirectionContract": false,
+        "separatelyRolledQualityBar": false,
+        "process": "Native code-led refinement; no asset generation or composition-roll exploration.",
+        "artifactScope": "Refinement 0.5 only; separateFiveBlockDirectionContract/separatelyRolledQualityBar describe new artifacts supplied for this refinement, not all historical documents.",
+        "historicalDirectionContract": "Tools/UiShowcase/Redesign-0.2.md#direction-contract"
+      },
+      "freshTemplates": true,
+      "primitiveOwner": "DESIGN frontmatter snapshots actual shared production layer;no generated visual copy is used by the host.",
+      "notificationOwners": [
+        "SAB/UI/Notifications/NotificationMessage.cs",
+        "SAB/UI/Notifications/NotificationCard.cs",
+        "SAB/UI/Notifications/NotificationStack.cs",
+        "SAB/Cls_ParameterTools/UI/ParameterNotifications.cs",
+        "SAB/UI/Styles/SABFluentLight.xaml notification-only styles"
+      ]
+    },
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "SAB blue",
+        "resourceKey": "SabBrush.Accent"
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Primary hover",
+        "resourceKey": "SabBrush.AccentHover"
+      },
+      "accent-light": {
+        "role": "primary",
+        "displayName": "Pale selection",
+        "resourceKey": "SabBrush.AccentLight"
+      },
+      "window-background": {
+        "role": "neutral",
+        "displayName": "Cool workspace",
+        "resourceKey": "SabBrush.WindowBackground"
+      },
+      "panel-background": {
+        "role": "neutral",
+        "displayName": "White working surface",
+        "resourceKey": "SabBrush.PanelBackground"
+      },
+      "table-header-background": {
+        "role": "neutral",
+        "displayName": "Quiet header",
+        "resourceKey": "SabBrush.TableHeaderBackground"
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Structural line",
+        "resourceKey": "SabBrush.Border"
+      },
+      "border-weak": {
+        "role": "neutral",
+        "displayName": "Quiet separator",
+        "resourceKey": "SabBrush.BorderWeak"
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "resourceKey": "SabBrush.Text"
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary slate",
+        "resourceKey": "SabBrush.TextSecondary"
+      },
+      "hover": {
+        "role": "neutral",
+        "displayName": "Neutral hover",
+        "resourceKey": "SabBrush.Hover"
+      },
+      "error": {
+        "role": "semantic-error",
+        "displayName": "Declared error",
+        "resourceKey": "SabBrush.Error"
+      },
+      "success": {
+        "role": "semantic-success",
+        "displayName": "Declared success",
+        "resourceKey": "SabBrush.Success"
+      },
+      "warning": {
+        "role": "semantic-warning",
+        "displayName": "Declared warning",
+        "resourceKey": "SabBrush.Warning"
+      },
+      "disabled-text": {
+        "role": "neutral",
+        "displayName": "Disabled text",
+        "resourceKey": "SabBrush.DisabledText"
+      },
+      "button-border": {
+        "role": "neutral",
+        "displayName": "Neutral button outline",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "implicit Button.BorderBrush",
+        "literal": true
+      },
+      "disabled-background": {
+        "role": "neutral",
+        "displayName": "Disabled field surface",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "TextBox/ComboBox disabled trigger",
+        "literal": true
+      },
+      "disabled-primary": {
+        "role": "neutral",
+        "displayName": "Disabled primary surface",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "SabPrimaryButtonStyle disabled background/border",
+        "literal": true
+      },
+      "checkbox-border": {
+        "role": "neutral",
+        "displayName": "Unchecked checkbox line",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "CheckTemplate Box.BorderBrush",
+        "literal": true
+      },
+      "scrollbar-thumb": {
+        "role": "neutral",
+        "displayName": "Scrollbar grip",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "ScrollThumb Grip.Background",
+        "literal": true
+      },
+      "scrollbar-thumb-hover": {
+        "role": "neutral",
+        "displayName": "Scrollbar grip hover",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "ScrollThumb IsMouseOver trigger",
+        "literal": true
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "Window title",
+        "source": "SabWindowTitleTextStyle"
+      },
+      "section": {
+        "displayName": "Section heading",
+        "source": "SabPanelHeaderTextStyle; GroupBox header"
+      },
+      "body": {
+        "displayName": "Working data",
+        "source": "window inheritance; implicit TextBlock/Button/TextBox/ComboBox/DataGrid"
+      },
+      "field-label": {
+        "displayName": "Field label",
+        "source": "SabFieldLabelTextStyle"
+      },
+      "hint": {
+        "displayName": "Secondary working text",
+        "source": "SabFieldHintTextStyle; factual preview disclosure; no active instructional subtitle",
+        "purpose": "Secondary actual status or metadata, never module descriptions or instructional prose."
+      },
+      "table-header": {
+        "displayName": "Column label",
+        "source": "implicit DataGridColumnHeader"
+      },
+      "metadata": {
+        "displayName": "Source parameter details",
+        "source": "SAB/Cls_ParameterTools/UI/ParameterPicker.cs; SAB/Cls_ParameterTools/UI/SettingsWindow.cs",
+        "purpose": "Type, group behavior and GUID/ID; never substitute for body text."
+      }
+    },
+    "nativeGeometryBindings": {
+      "rounded.control": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "Button/TextBox/ComboBox/CheckTemplate corners; literal, no shared radius resource"
+      },
+      "rounded.container": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "SabPanelBorderStyle; GroupBox template"
+      },
+      "rounded.scrollbar": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "ScrollThumb"
+      },
+      "spacing": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs; SAB/Cls_ParameterTools/UI/FluentTheme.cs; production window markup/classes",
+        "meaning": "Observed repeated values, not named spacing resources."
+      },
+      "components.table-row.height": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; Presentation.Decorate",
+        "scope": "All DataGrids have44-DIP rows at runtime, including rules; compact picker34."
+      },
+      "components.table-header.height": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml implicit DataGridColumnHeader",
+        "exception": "Original views group-header template retains Height=36."
+      },
+      "rounded.switch-track": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "usage": "Production SabSwitchTemplate"
+      },
+      "components.collection": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs OutlineCollection",
+        "usage": "SabCollectionBorderStyle BasedOn SabDataGridContainerBorderStyle; own one-DIP SabBrush.Border outline, radius6, padding0; existing category frame reused."
+      },
+      "adaptiveCapsule": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs Capsule",
+        "primitivePolicy": "No fixed outer height or capsule radius token; measured native geometry is recorded in nativeGeometry05."
+      },
+      "components.items-collection": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs CollectionChrome",
+        "usage": "SabItemsCollectionBorderStyle; shared CollectionChrome.Enabled reads actual ItemsControl after load/layout, applying padding8/border1 only for HasItems&&ActualHeight>0, else0/0 without collapsing children."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "capsule-selection",
+        "value": "160 ms; CubicEase; EasingMode.EaseOut",
+        "source": "SAB/UI/FluentLight/Presentation.cs",
+        "nativeProperty": "TranslateTransform.X",
+        "enabledWhen": "SystemParameters.ClientAreaAnimation",
+        "fallback": "Clear animation and set target X immediately.",
+        "purpose": "Move CapsuleIndicator between native RadioButton or TabItem choices; update geometry without animation on layout changes.",
+        "scheduling": "Checked and TabControl.SelectionChanged call Update(grid,true) immediately; queued Loaded callback would allow LayoutUpdated to consume target before animation.",
+        "verification": "HasAnimatedProperties sampled at30ms proves native tab animation clock is running when ClientAreaAnimation permits; no physical input/perceptual claim."
+      }
+    ],
+    "nativeFocus": {
+      "source": "SAB/UI/Styles/SABFluentLight.xaml",
+      "styleKey": "Focus",
+      "template": "Rectangle Margin=-3 Stroke={DynamicResource SabBrush.Accent} StrokeThickness=1 StrokeDashArray='2 1' RadiusX=4 RadiusY=4",
+      "fieldPolicy": "TextBox/ComboBox suppress external focus visual; focused existing border turns blue. TextBox suppresses Validation.ErrorTemplate.",
+      "cellPolicy": "Inset margin 2 border appears for IsKeyboardFocused and disappears for IsEditing.",
+      "fullKeyboardTraversalVerified": false
+    },
+    "nativeStateValues": {
+      "neutralButtonPressedOpacity": 0.7,
+      "neutralButtonDisabledFrameOpacity": 0.55,
+      "primaryButtonPressedOpacity": 0.75,
+      "checkDisabledOpacity": 0.55,
+      "defaultBorderThickness": 1,
+      "scrollbarThickness": 12,
+      "minimumScrollThumb": 24,
+      "source": "SAB/UI/Styles/SABFluentLight.xaml; scoped production templates; no old underline-tab state",
+      "capsuleDisabledOpacity": 0.45,
+      "switchDisabledOpacity": 0.5
+    },
+    "windowGeometry": {
+      "unit": "DIP",
+      "meaning": "Window dimensions, client area reduced by Windows chrome; not breakpoints",
+      "parameterization": {
+        "normal": [
+          1400,
+          920
+        ],
+        "minimum": [
+          980,
+          820
+        ],
+        "rulesRowHeight": 44,
+        "rulesMinRowHeight": 44,
+        "pickerEditorHeight": 34,
+        "pickerMinHeight": 34,
+        "minimumReason": "Retain reachable footer, bounded rows and selected-rule metadata at the actual minimum viewport.",
+        "ruleColumnMinimums": {
+          "name": 150,
+          "parameter": 220,
+          "source": 180
+        },
+        "categories": {
+          "outerScrollViewer": false,
+          "rightColumn": 280,
+          "gap": 16,
+          "list": "remaining height; bounded native scrolling",
+          "search": "last control immediately before list",
+          "keyboardHint": "removed; instructions available through local HTML footer button"
+        }
+      },
+      "viewsSheets": {
+        "normal": [
+          1480,
+          940
+        ],
+        "minimum": [
+          1100,
+          760
+        ],
+        "sidebarWidth": 380,
+        "sidebarPadding": "16,8,12,12",
+        "selectionMode": "Extended",
+        "selectionUnit": "FullRow",
+        "horizontalScroll": "Auto",
+        "secondarySettings": {
+          "normal": [
+            1200,
+            900
+          ],
+          "minimum": [
+            1040,
+            760
+          ],
+          "workingAreas": 2,
+          "boundedScroll": true
+        }
+      }
+    },
+    "sourceOverrides": [
+      {
+        "source": "SAB/Cls_ParameterTools/UI/FluentTheme.cs Button",
+        "target": "parameter buttons",
+        "values": {
+          "padding": "12,0,12,0",
+          "margin": "0,0,8,0",
+          "verticalAlignment": "Center"
+        }
+      },
+      {
+        "source": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+        "target": "original validation panel",
+        "values": {
+          "borderThickness": 2,
+          "statusSymbol": "Segoe UI Symbol; existing VM binding"
+        },
+        "meaning": "Source-specific geometry, not a generic panel standard."
+      },
+      {
+        "source": "SAB/Cls_ParameterTools/UI/SettingsWindow.cs AddCheck",
+        "target": "checkbox headers",
+        "values": {
+          "padding": "0",
+          "horizontalContentAlignment": "Center"
+        }
+      },
+      {
+        "source": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+        "target": "ordinary views/sheets table column geometry",
+        "values": {
+          "PlanKind.Width": 150,
+          "ViewName.MinWidth": 130,
+          "ViewScaleText.Width": 84,
+          "ViewScaleText.MinWidth": 84,
+          "SelectedViewTemplate.Name.MinWidth": 140,
+          "SheetNumber.Width": 90,
+          "SheetNumber.MinWidth": 90,
+          "SheetName.MinWidth": 120,
+          "RowNumber.Width": 44
+        },
+        "meaning": "Local normal fit; no new global spacing/type tokens and no removed business columns."
+      }
+    ],
+    "sourceProvidedDrift": [
+      {
+        "source": "SAB/Cls_CreateViewsAndSheets/ViewModels/CreateViewsAndSheetsViewModel.cs",
+        "properties": {
+          "ValidationBorderOkBrush": "#0F6CBD",
+          "ValidationBorderWarningBrush": "#FACC15",
+          "ValidationBorderErrorBrush": "#D92D20",
+          "ValidationTextBrush": "#1F2937",
+          "ValidationIconForegroundBrush": "#FFFFFF",
+          "ValidationWarningIconForegroundBrush": "#1F2937"
+        },
+        "meaning": "Existing VM-owned values; warning/error/text differ from SABFluentLight.xaml semantic brushes. Retained without canonizing or claiming exact semantic-token matches."
+      },
+      {
+        "source": "SAB/Cls_ParameterTools/UI/ParameterPicker.cs",
+        "meaning": "Local metadata colors include DimGray and Black; local group-state green/red happen to match declared semantic values but remain source-local."
+      },
+      {
+        "source": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml:ValidationIconText",
+        "meaning": "Source status glyph retained for functional fidelity; not reusable action-icon guidance or a new design token."
+      }
+    ],
+    "evidence": {
+      "phase": "Completed production migration before notification changes; historical snapshot, not current notification source proof",
+      "sourceContract": "Tools/UiShowcase/production-source-contract.json",
+      "baseline": "Tools/UiShowcase/production-baseline.json",
+      "sourceBindingsOriginal": 135,
+      "sourceBindingsCurrent": 136,
+      "secondaryBindings": 103,
+      "originalColumns": 10,
+      "businessMethodsCompared": 10,
+      "businessComparison": "SHA256 after sole FluentTheme.→Theme. normalization; two raw method hashes differ only by helper rename",
+      "runtimeEvidenceDirectory": "Docs/Ui/DesignSystem/screenshots-production-0.5",
+      "runtimeStatus": "COMPLETED; 81 PASS; no FAIL; actual production sources outside Revit",
+      "captureCount": 27,
+      "passCount": 81,
+      "historicalEvidenceRef": "extensions.historicalPreMigration.evidence",
+      "documentationPass": "Actual source/resources/status/build config and persisted contracts read only;no build/UI/capture/browser/Revit execution.",
+      "verification": "Docs/Ui/DesignSystem/ProductionMigration-Verification.md",
+      "report": "Docs/Ui/DesignSystem/ProductionMigration-Report.json",
+      "independentReview": "Docs/Ui/DesignSystem/ProductionMigration-Review.md",
+      "independentDisposition": "ship",
+      "sourceCheckCount": 25
+    },
+    "isolation": {
+      "actualModelsAndVM": true,
+      "syntheticProfilesAndDTOs": true,
+      "revitDocument": null,
+      "productionFilesWritten": true,
+      "productionAssemblyInstalled": false,
+      "codeBehindBoundary": "Main/secondary code-behind unchanged,geometry restore/save calls retained;host isolates secondary preferences separately.",
+      "clearRowsMeaning": "Original ClearRowsCommand restores one blank row.",
+      "uiSourceOverrides": false
+    },
+    "limitations": [
+      "Local instruction file resolution verified; actual external browser launch not exercised.",
+      "No Document, Revit transactions, ExternalEvent or point-selection verification.",
+      "No physical mouse/keyboard/drag/drop, complete keyboard traversal or accessibility automation verification.",
+      "No monitor transition or OS DPI scaling verification.",
+      "No fake HTML/CSS components, synthesized tonal ramps, invented motion tokens or web breakpoints.",
+      "Source-specific visual drift is reported rather than made reusable guidance.",
+      "Current approval12October includes Parameterization, Views/Sheets and Elevations plus the shared notification template; installationAuthorized=false.",
+      "Historical75PASS/27PNG are not new production results; see separate current migration report.",
+      "CategorySelectionControl also used by legacyCategoryCheckWindow;downstream visual effects require separate evidence."
+    ],
+    "sharedComponents": {
+      "rowActions": {
+        "size": [
+          28,
+          28
+        ],
+        "gap": 8,
+        "outerSpacing": 8,
+        "columnWidth": 88,
+        "header": "Действия",
+        "verticalAlignment": "Center"
+      },
+      "cards": {
+        "styleKey": "SabSectionCardTemplate",
+        "headerIcons": false,
+        "sourceConditionalVisibilityPreserved": true,
+        "gap": 16
+      },
+      "information": {
+        "styleKey": "SabInformationBorderStyle",
+        "helper": "Presentation.Information",
+        "padding": 12,
+        "defaultMargin": "0,8,0,12",
+        "visibilityFollowsContent": true,
+        "commonInstructionVisibleBelowTitle": false,
+        "contentPolicy": "Actual selected-item metadata, factual status, validation/errors and operation results; no module descriptions or instructional prose."
+      },
+      "tabs": {
+        "headerWidth": "content",
+        "stripAlignment": "Left",
+        "selected": "white header text over moving accent indicator",
+        "types": [
+          "TabControl",
+          "TabItem"
+        ],
+        "padding": "16,0",
+        "inset": 2,
+        "minimumHeight": 34,
+        "headerHeight": 30,
+        "trackHeight": "Auto; actual measured content",
+        "radius": "actual height /2",
+        "bodyGap": 12
+      },
+      "addPolicy": "Hide duplicate toolbar add only when populated table exposes row plus; empty table retains one named plus with original handler.",
+      "rulesTableCard": {
+        "helper": "Presentation.TableCard",
+        "frame": "SabDataGridContainerBorderStyle",
+        "tableMargin": 0,
+        "layout": "heading/toolbar/independently outlined DataGrid/selected-rule metadata in separate Grid rows; former instructional row has no visible content",
+        "rowHeight": 44,
+        "headerHeight": 38,
+        "actions": 28,
+        "gap": 8,
+        "collectionFrameMargin": "16,0,16,12"
+      },
+      "footer": {
+        "auxiliary": "one local module instruction button plus configuration/settings import/export",
+        "status": "separate row above lower actions",
+        "commands": "original retained"
+      },
+      "categoryActions": {
+        "helper": "Presentation.ActionGroup",
+        "groups": [
+          "Показать",
+          "Выборки",
+          "Выделение"
+        ],
+        "wrap": "whole group",
+        "search": "last before list",
+        "keyboardHint": "removed; instructions available through local HTML footer button"
+      },
+      "instructions": {
+        "rule": "No inline plugin/module descriptions or instructional prose, even short instructions, in current and subsequent window/templates.",
+        "retained": [
+          "field/action labels",
+          "actual selected-item metadata",
+          "validation",
+          "errors",
+          "operation results",
+          "factual status"
+        ],
+        "button": "Инструкция",
+        "countPerWindow": 1,
+        "placement": "fixed footer",
+        "buttonRef": "button-neutral",
+        "parameterization": {
+          "file": "SAB_HTML_Zapolnenie_parametrov.html",
+          "handler": "original parameter instruction handler"
+        },
+        "viewsSheets": {
+          "file": "SAB_HTML_Sozdat_vidy_i_listy.html",
+          "windows": [
+            "main",
+            "secondary settings"
+          ],
+          "attachedProperty": "SAB.UI.FluentLight.Instructions.File"
+        },
+        "sharedTemplate": "FluentTheme.Frame suppresses subtitle;Instructions.EnsureFooter supplies catalog fallback only where no module entry exists;legacySmallWindows Theme unchanged.",
+        "resolver": "SAB.Instructions.InstructionLauncher.Resolve locates instruction tree; Instructions.Resolve validates HTML basename and existing module file.",
+        "launch": "Process.Start with UseShellExecute=true; launch errors displayed in MessageBox",
+        "packaging": "SAB.csproj Content copies local HTML instructions/assets",
+        "verified": "Historical preview file-resolution evidence;currentproduction verification recorded separately.",
+        "externalBrowserLaunchVerified": false,
+        "transientNotificationException": "No HTML instruction footer in accepted result card; SAB-UI-043 N/A for this surface, workspace/secondary footers retained."
+      },
+      "status": {
+        "helper": "Presentation.Status",
+        "sourceMethodsUnchanged": true,
+        "display": "Proxy bound to original Text, Foreground and ToolTip",
+        "readyText": "Настройки готовы.",
+        "shortening": "Only ready prose and corresponding ready tooltip text; all other errors/status pass through unchanged."
+      },
+      "collections": {
+        "styleKey": "SabCollectionBorderStyle",
+        "helper": "Presentation.OutlineCollection",
+        "borderBrushResource": "SabBrush.Border",
+        "borderThickness": 1,
+        "cornerRadius": 6,
+        "padding": 0,
+        "eachCollectionOwnsOutline": true,
+        "categoryExistingFrameReused": true,
+        "repeatedDecoration": "Does not stack outlines",
+        "generatedMainTableFrameMargin": "16,0,16,16",
+        "rulesFrameMargin": "16,0,16,12",
+        "cellOutlines": false,
+        "verticalGridLines": false,
+        "clip": "RoundedClip.Radius6; child rectangle radius5",
+        "boundItemsControl": {
+          "styleKey": "SabItemsCollectionBorderStyle",
+          "basedOn": "SabCollectionBorderStyle",
+          "padding": 8,
+          "scope": "Bound ItemsControl including FloorMappings/MultiViewZoneMappings/Floors and ItemTemplate descendants",
+          "frameMargin": "Original source margin; child margin0",
+          "floorItemBorder": "0,0,0,1; radius0; bottom separator only",
+          "claimBoundary": "Applies measured chrome only; no claim to hide every empty-looking visual state.",
+          "chromeBehavior": {
+            "attachedProperty": "CollectionChrome.Enabled",
+            "source": "Presentation.cs",
+            "updates": [
+              "Loaded",
+              "LayoutUpdated"
+            ],
+            "renderedCondition": "ItemsControl.HasItems && ItemsControl.ActualHeight > 0",
+            "renderedValues": {
+              "padding": 8,
+              "borderThickness": 1
+            },
+            "otherwiseValues": {
+              "padding": 0,
+              "borderThickness": 0
+            },
+            "visibility": "Does not collapse child; future growth remains measurable"
+          }
+        }
+      },
+      "tableScroll": {
+        "attachedProperty": "TableScroll.Enabled",
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs TableScroll",
+        "nativeBindingsPreserved": true,
+        "headers": "Extend DataGridColumnHeadersPresenter Grid.ColumnSpan through vertical bar column",
+        "verticalBar": "Top margin is remaining visible top GroupToggle height, capped by body height",
+        "gutter": "GroupScrollCap uses SabBrush.TableHeaderBackground and one-DIP SabBrush.Border bottom line; visible only when native bar and group prefix are visible",
+        "updates": "Captured DataGrid in LayoutUpdated handler; recompute after scroll/layout",
+        "nativeGroupCollapsePreserved": true,
+        "stickyHeadersClaim": false
+      },
+      "notificationRef": "extensions.notification"
+    },
+    "authorizedAddition": {
+      "source": "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs",
+      "originalSABFeature": false,
+      "functions": [
+        "All/Selected filtering",
+        "Save selection",
+        "Load selection"
+      ],
+      "selectionProperty": "CategoryChoice.Selected",
+      "preservesProfileConnection": true,
+      "json": {
+        "format": "SAB.CategorySelection",
+        "version": 1,
+        "identity": "stable category IDs"
+      },
+      "import": "Replace selection with available imported IDs; skip unknown IDs and display count; invalid files leave selection unchanged.",
+      "cancel": "No change",
+      "export": "UTF-8; write temporary file then replace/move destination",
+      "errors": "Visible framed status inside control",
+      "revitDocumentRequired": false,
+      "currentScope": "Included in approved production module migration;historically added to preview by explicit authorization."
+    },
+    "nativeGeometry05": {
+      "unit": "DIP",
+      "controlHeight": 34,
+      "capsuleInset": 2,
+      "numericHeaderStyle": "SabCenteredHeaderStyle; TemplateColumn and TextColumn",
+      "numericEditor": "SabNumericComboBoxStyle; visible PART_EditableTextBox TextAlignment=Center Margin=0",
+      "conditionalCapsule": "UniformGrid Columns=0; collapsed choices consume no segment",
+      "inlineTextEditor": {
+        "margin": 0,
+        "padding": "9,0",
+        "textEdge": 10
+      },
+      "roundedClip": {
+        "helper": "RoundedClip.Radius",
+        "outerRadius": 6,
+        "childRadius": 5,
+        "geometry": "RectangleGeometry",
+        "updates": [
+          "Loaded",
+          "SizeChanged",
+          "LayoutUpdated"
+        ]
+      },
+      "scrollContinuation": {
+        "helper": "ScrollEdges.Enabled",
+        "nominalFade": 12,
+        "viewportFractionCap": 0.06,
+        "kind": "LinearGradientBrush OpacityMask",
+        "edges": "only where content continues",
+        "fixed": "outer working-area frame",
+        "moves": "inner section cards with scrolling content"
+      },
+      "nestedZoneFloor": "Grid row0 labels; row1 fields34/actions28; common vertical center",
+      "capsuleOuterMinHeight": 34,
+      "capsuleInnerMinHeight": 30,
+      "capsuleHeight": "Auto; content-measured; all segments share actual group height",
+      "modePadding": "8,6",
+      "capsuleVerticalPadding": 6,
+      "trackRadius": "ActualHeight/2",
+      "indicatorHeight": "max(30, group.ActualHeight-4)",
+      "indicatorRadius": "indicator.Height/2",
+      "tabHeaderHeight": 30,
+      "tabHeaderPadding": "16,0",
+      "tabBodyGap": 12,
+      "selectedBody": "Common TabControl ContentPresenter named SelectedBody; Margin0,12,0,0",
+      "verticalForms": {
+        "helper": "Presentation.Decorate",
+        "parent": "ComboBox/TextBox/CheckBox in vertical StackPanel; ParameterPicker also when hosted by Grid",
+        "controls": [
+          "ComboBox",
+          "TextBox",
+          "CheckBox",
+          "ParameterPicker"
+        ],
+        "horizontalMargin": 0,
+        "verticalMargins": "preserved",
+        "exclusions": [
+          "horizontal action/count rows",
+          "DataGrid editors"
+        ],
+        "dynamicPickerFactoryMargin": "0,4,0,4",
+        "dynamicPickerSource": "SAB/Cls_ParameterTools/UI/SettingsWindow.cs Combo factory"
+      },
+      "collectionOutline": {
+        "styleKey": "SabCollectionBorderStyle",
+        "helper": "Presentation.OutlineCollection",
+        "borderBrushResource": "SabBrush.Border",
+        "borderThickness": 1,
+        "cornerRadius": 6,
+        "padding": 0,
+        "eachCollectionOwnsOutline": true,
+        "categoryExistingFrameReused": true,
+        "repeatedDecoration": "Does not stack outlines",
+        "generatedMainTableFrameMargin": "16,0,16,16",
+        "rulesFrameMargin": "16,0,16,12",
+        "cellOutlines": false,
+        "verticalGridLines": false,
+        "clip": "RoundedClip.Radius6; child rectangle radius5"
+      }
+    },
+    "documentationWorkflow": {
+      "visualStandard": "Docs/Ui/DesignSystem/Specification.md",
+      "mandatoryChecks": "Docs/Ui/DesignSystem/ErrorRegistry.md",
+      "workflow": "Docs/Ui/DesignSystem/Workflow.md",
+      "roleContracts": "Docs/Ui/DesignSystem/ReviewRoles.md",
+      "coverageMatrix": "Docs/Ui/DesignSystem/component-coverage.csv",
+      "remainingWork": "Docs/Ui/DesignSystem/CoveragePlan.md",
+      "registryReferences": [
+        "SAB-UI-003",
+        "SAB-UI-006",
+        "SAB-UI-007",
+        "SAB-UI-008",
+        "SAB-UI-009",
+        "SAB-UI-010",
+        "SAB-UI-011",
+        "SAB-UI-048",
+        "SAB-UI-056",
+        "SAB-UI-059",
+        "SAB-UI-060",
+        "SAB-UI-061",
+        "SAB-UI-062",
+        "SAB-UI-063",
+        "SAB-UI-064"
+      ],
+      "activeHostCompile": [
+        "Tools/UiShowcase/SourcePreview.cs",
+        "Tools/UiShowcase/NotificationPreview.cs"
+      ],
+      "excludedHistoricalSources": [
+        "Gallery.cs",
+        "ReferenceView.xaml",
+        "ReferenceView.xaml.cs",
+        "CompositeControls.cs",
+        "App.xaml/App.xaml.cs",
+        "MainWindow.xaml/MainWindow.xaml.cs",
+        "DemoModel.cs",
+        "Capture.cs",
+        "Styles/Controls.xaml",
+        "Styles/Showcase.xaml"
+      ],
+      "coverage": {
+        "auditedTypes": 51,
+        "current_example": 29,
+        "resource_only": 11,
+        "missing": 11,
+        "meaning": "Type coverage only; current example is not all-state or production coverage. Some resource/template parts render inside active controls but have no independent component-state scenario.",
+        "previousMigrationCount": {
+          "current_example": 28,
+          "resource_only": 11,
+          "missing": 12,
+          "meaning": "Before captured determinate notification ProgressBar"
+        }
+      },
+      "documentationPass": "Current notification extraction and delivery documentation;64registryIDs/51types29,11,11; historical preview/migration retained; no build/UI/run by documenter.",
+      "currentMigrationScope": [
+        "Создание видов и листов: main + secondary settings",
+        "Параметризация:4 tabs + ParameterPicker + CategorySelectionControl"
+      ]
+    },
+    "historicalPreMigration": {
+      "approvalAtThatTime": {
+        "documentStatus": "implemented proposal / source review",
+        "version": "0.5.0-source-review",
+        "status": "approved_for_production_migration",
+        "recommendedConcept": "FluentLightSource",
+        "approvedConcept": "FluentLightSource",
+        "approvedAt": "2026-10-11",
+        "productionMigrationAuthorized": true,
+        "canonicalStatus": "Docs/Ui/DesignSystem/STATUS.json",
+        "canonicalSpecification": "Docs/Ui/DesignSystem/Specification.md",
+        "scope": "User-authorized migration of both reviewed modules; installation not requested",
+        "reviewMeaning": "User approval is the explicit migration request; review remains independent evidence."
+      },
+      "provenance": {
+        "pathBase": "repository root",
+        "resourceOwners": [
+          "Tools/UiShowcase/Styles/Light.xaml",
+          "Tools/UiShowcase/GenerateSourceViews.py",
+          "Tools/UiShowcase/RefineSourceViews.py",
+          "Tools/UiShowcase/RefineFourth.py",
+          "Tools/UiShowcase/RefineHelpOnly.py",
+          "Tools/UiShowcase/RefineFifth.py",
+          "Tools/UiShowcase/Presentation.cs"
+        ],
+        "runtimeDictionary": "outputs/ui-source-preview/generated/SABWindowStyles.xaml",
+        "runtimeLoad": "Application and parameter Theme load generated UI/Styles/SABWindowStyles.xaml; views markup merges ../../UI/Styles/SABWindowStyles.xaml.",
+        "generatedViews": [
+          "outputs/ui-source-preview/generated/SettingsWindow.cs",
+          "outputs/ui-source-preview/generated/SmallWindows.cs",
+          "outputs/ui-source-preview/generated/CreateViewsAndSheetsWindow.xaml",
+          "outputs/ui-source-preview/generated/CreateViewsAndSheetsWindow.xaml.cs",
+          "outputs/ui-source-preview/generated/ParameterPicker.cs",
+          "outputs/ui-source-preview/generated/CategorySelectionControl.cs",
+          "outputs/ui-source-preview/generated/CreateViewsAndSheetsSettingsWindow.xaml"
+        ],
+        "host": "Tools/UiShowcase/SourcePreview.cs",
+        "build": "Tools/UiShowcase/Build.ps1; Tools/UiShowcase/SourcePreview.targets",
+        "sourceContract": "Tools/UiShowcase/source-contract.json",
+        "direction": "Tools/UiShowcase/Refinement-0.5.md",
+        "freshTemplates": true,
+        "compatibility": "Generator reads production keys/types only, then aliases fresh implicit styles. No inherited production ControlTemplates.",
+        "generatorBehavior": [
+          "TabItem ContentPresenter named HeaderLabel; selected foreground targets TextElement.Foreground on that presenter.",
+          "DataGrid AutoGenerateColumns=False.",
+          "ComboBox inside visible DataGrid rests with transparent border/background.",
+          "Row add/delete aliases receive compact native geometry.",
+          "Form ScrollViewer alias enables vertical auto-scroll.",
+          "RefineSourceViews adds SabInformationBorderStyle, RadioButton capsule labels, SabSwitchTemplate and SabSectionCardTemplate.",
+          "Compact title-width TabControl; settings sidebar 380 DIP with separate permanently open source-conditional cards.",
+          "Shared 44-DIP table rhythm, 38-DIP headers, 88-DIP actions column; 28-DIP actions with gap 8.",
+          "ParameterPicker details hidden inside grids; complete metadata retained in dropdown, tooltip and selected-rule explanation.",
+          "Presentation.Decorate frames actual SabDataExplanation metadata/status and hides duplicate toolbar Add only where row plus already exists.",
+          "RefineFourth supplies native34/30 capsule tabs, centered numeric headers and visible editors, conditional segment layout, fixed footer exchange, bounded scroll geometry and real rounded clipping.",
+          "RefineHelpOnly removes inline module descriptions and instructional prose, retains labels/actual metadata/errors/results/status, removes empty information wrappers and supplies local module footer help. Theme.Frame suppresses subtitle and ensures catalog fallback.",
+          "RefineFifth runs after earlier refinements: mode Auto/minimum34/30 and padding8,6, Auto tab track/minimum34, SelectedBody gap12, generated collection frames inset16. Presentation computes measured capsule radii/heights, reuses existing list outlines and normalizes only vertical-form horizontal margins; latest generated overrides win.",
+          "Final fifth refinement wraps bound ItemsControl including ItemTemplates, normalizes dynamic ParameterPicker factory margin0,4,0,4, fits normal columns and enables TableScroll header/gutter/bar geometry with native bindings. Floor rows use bottom separators; empty/zero-height items wrappers use shared measured CollectionChrome behavior without collapsing children."
+        ],
+        "superseded": [
+          "Unified 0.1",
+          "Tools/UiShowcase/Styles/Controls.xaml",
+          "Tools/UiShowcase/Styles/Showcase.xaml",
+          "0.2 presentation; screenshots-v0.2 retained as history",
+          "0.3–0.4 geometry; screenshots retained as history"
+        ],
+        "primitiveOwner": "DESIGN.md frontmatter is an extraction snapshot; Light.xaml, GenerateSourceViews.py, RefineSourceViews.py, RefineFourth.py, RefineHelpOnly.py, RefineFifth.py and Presentation.cs own native presentation.",
+        "directionAuthority": {
+          "pinnedWorld": "Fluent Light для настоящих функций SAB",
+          "latestFeedback": "Docs/Ui/DesignSystem/reference/feedback-0.5/01.png through 04.png, plus 05-scrollbar.png",
+          "plan": "Tools/UiShowcase/Refinement-0.5.md",
+          "canonicalSpecification": "Docs/Ui/DesignSystem/Specification.md",
+          "separateFiveBlockDirectionContract": false,
+          "separatelyRolledQualityBar": false,
+          "process": "Native code-led refinement; no asset generation or composition-roll exploration.",
+          "artifactScope": "Refinement 0.5 only; separateFiveBlockDirectionContract/separatelyRolledQualityBar describe new artifacts supplied for this refinement, not all historical documents.",
+          "historicalDirectionContract": "Tools/UiShowcase/Redesign-0.2.md#direction-contract"
+        }
+      },
+      "evidence": {
+        "sourceBindings": 135,
+        "missingBindings": [],
+        "originalColumns": 10,
+        "preservedColumns": 10,
+        "addedBindings": [
+          "{Binding StatusText}"
+        ],
+        "parameterBusinessMethodBodiesIdentical": 10,
+        "sourceContract": "Tools/UiShowcase/source-contract.json",
+        "captureCount": 27,
+        "captureManifest": "Docs/Ui/DesignSystem/screenshots-v0.5/provenance.json",
+        "captureOrigin": "SourcePreview.cs native WPF RenderTargetBitmap, isolated actual SAB with synthetic DTOs; no image composition or AI art.",
+        "documentationSamples": [],
+        "captureDpiMeaning": "144 dpi is an offscreen render, not an OS DPI transition; observed host DPI 96.",
+        "documentationPass": "Seven resource owners, generated source, source-contract and existing verification checked; no app/browser/build/capture/Revit rerun.",
+        "secondarySettingsBindings": 103,
+        "secondaryMissingBindings": [],
+        "verification": "Docs/Ui/DesignSystem/screenshots-v0.5/verification.txt",
+        "verificationStatus": "COMPLETED; 75 PASS; no FAIL",
+        "latestChecks": [
+          "TemplateColumn and TextColumn numeric headers centered",
+          "Visible editable scale text shares header axis within1DIP",
+          "Conditional placement capsule uses full inner width without phantom segment",
+          "Table actual rounded geometry clip at all corners",
+          "Actual native tab-indicator animation clock sampled at30ms; HasAnimatedProperties respects ClientAreaAnimation",
+          "One instruction button resolves local module HTML in parameterization and main/secondary views/sheets windows",
+          "No visible inline module description or instructional prose in all four parameter tabs and main/secondary views/sheets windows",
+          "Two-line structure labels expand capsule above compact minimum; every visible segment shares measured height, inset2 and matching indicator height",
+          "Shared12-DIP selected-body gap on all four tabs",
+          "Vertical form fields align with labels and adjacent frames; horizontal rows/table editors retain spacing",
+          "Every visible table/list has one independent rounded one-DIP outline at normal/minimum size; category frame reused",
+          "27 native captures include source room-parameter state25 and lower values tab26",
+          "Actual source-parameter field axes including dynamically created picker",
+          "Visible bound ItemsControl independent outlines and no zero-height padding strip",
+          "Normal initial table has no horizontal overflow; minimum scrollbar starts below top group; header spans gutter",
+          "Native vertical scroll changes VerticalOffset and actual group collapse works",
+          "Visible ParameterPicker dropdown has rendered parameter names and metadata"
+        ],
+        "passCount": 75,
+        "inlineInstructions": false,
+        "instructionFiles": [
+          "SAB_HTML_Zapolnenie_parametrov.html",
+          "SAB_HTML_Sozdat_vidy_i_listy.html"
+        ],
+        "instructionWindowsVerified": 3,
+        "proseGatesVerified": 6,
+        "externalBrowserLaunchVerified": false,
+        "staticCaptureSettling": "Shot updates layout, pumps 220 ms, updates layout again, then renders; exceeds 160-ms movement to capture settled selection. Separate animation-clock check samples HasAnimatedProperties at 30 ms."
+      },
+      "meaning": "Immutable historical isolated preview;75PASS/27PNG do not become new production results."
+    },
+    "revit2022": {
+      "date": "2026-10-12",
+      "build": "PASS",
+      "apiFileVersion": "22.0.2.392",
+      "nativeCapture": "NOT RUN: missing native Revit2022 runtime",
+      "verification": "Docs/Ui/DesignSystem/Revit2022-Verification.md",
+      "evidence": "outputs/ui-production-2022/build-provenance.json",
+      "sameProductionWindows": true,
+      "installationPerformed": false
+    },
+    "notification": {
+      "authority": {
+        "acceptedDesignDate": "2026-10-11",
+        "directImplementationAuthorizationDate": "2026-10-12",
+        "scope": "Parameterization notification, then shared SAB template, then correctly packaged Build-Msi.bat installer; no installation or automatic migration of other modules",
+        "acceptedDesign": "C:/Users/svetl/Documents/Codex/2026-10-11/referenced-chatgpt-conversation-this-is-an/outputs/SAB_Уведомления_Проект_дизайна.md",
+        "acceptedHtml": "C:/Users/svetl/.codex/visualizations/2026/10/11/01a12ae0-874f-7ee3-bf5f-54119740f366/sab-parameter-notifications.html",
+        "currentBrief": "Docs/Ui/DesignSystem/Notification-Layout.md",
+        "registryIds": [
+          "SAB-UI-059",
+          "SAB-UI-060",
+          "SAB-UI-061",
+          "SAB-UI-062",
+          "SAB-UI-063",
+          "SAB-UI-064"
+        ]
+      },
+      "sources": [
+        "SAB/UI/Notifications/NotificationMessage.cs",
+        "SAB/UI/Notifications/NotificationCard.cs",
+        "SAB/UI/Notifications/NotificationStack.cs",
+        "SAB/Cls_ParameterTools/UI/ParameterNotifications.cs",
+        "SAB/UI/Styles/SABFluentLight.xaml notification-only styles"
+      ],
+      "geometry": {
+        "width": 520,
+        "widthBehavior": "Bounded by owner monitor work area",
+        "borderThickness": 1,
+        "cornerRadius": 6,
+        "padding": 16,
+        "stackGap": 12,
+        "workAreaInset": 16,
+        "closeSize": 28,
+        "copyButtonHeight": 28,
+        "progressHeight": 2,
+        "codeRadius": 4,
+        "codePadding": "10,12",
+        "body": "Bounded ScrollViewer; header and countdown/progress footer outside"
+      },
+      "typography": {
+        "title": "Segoe UI16 SemiBold",
+        "outcome": "Segoe UI12 SemiBold",
+        "summary": "Segoe UI13; explicit lineHeight20",
+        "copy": "Consolas12; explicit lineHeight19.2",
+        "countdown": "Segoe UI12",
+        "meaning": "Component-specific shared styles, not new workspace-wide font roles"
+      },
+      "content": {
+        "module": "SAB · Параметризация",
+        "outcomes": [
+          "Завершено",
+          "Завершено с пропусками",
+          "Операция отменена",
+          "Сообщение"
+        ],
+        "summary": "Selectable read-only text; factual result",
+        "ids": "Optional; positive unique IDs prepared by module adapter; copy only ID string",
+        "support": "Optional; whole prepared operation/parameter/element/reason/technical context",
+        "copySuccess": "Скопировано only after successful clipboard write",
+        "copyFailure": "Не скопировано plus exception tooltip",
+        "feedbackSeconds": 2,
+        "close": "One card only; vector button or Escape",
+        "instructionFooter": false
+      },
+      "lifetime": {
+        "activeSeconds": 10,
+        "clock": "Monotonic Stopwatch",
+        "pauseReasons": [
+          "hover",
+          "keyboard focus within",
+          "copy in progress",
+          "not fully visible in stack viewport",
+          "stack unavailable",
+          "owner disabled or minimized"
+        ],
+        "resume": "Remaining duration; no reset on copy",
+        "display": "Remaining seconds and actual determinate ProgressBar.Value"
+      },
+      "stack": {
+        "onePerOwnerHandle": true,
+        "newestFirst": true,
+        "showActivated": false,
+        "overflow": "All cards retained in bounded scrolling stack; partial/fully offscreen lifetimes paused",
+        "duringReading": "Preserve reading position when adding new cards",
+        "placement": "Owner HWND monitor work area, GetDpiForWindow conversion, bottom-right inset16; newest-bottom, grows-up; recompute250ms",
+        "cleanup": "Final card/owner disposal stops timer, releases events and static reference"
+      },
+      "integration": {
+        "adapter": "Synchronous existing command context to immutable strings/tone",
+        "data": "Existing counters/commit state/Issue; Issue.ElementIds retains structured failure IDs",
+        "callbacks": "Clipboard/close/scroll only; no Revit API/transaction callbacks",
+        "reportWindow": "Existing detailed report and save/copy/selection/show preserved; actual Revit operations not executed by this evidence",
+        "applicationBehavior": "SourcePreview initializes real app dictionary and SabWindowBehaviorService before notification branch; generic service excludes SAB.UI.Notifications namespace"
+      },
+      "evidence": {
+        "directory": "Docs/Ui/DesignSystem/screenshots-notifications",
+        "log": "Docs/Ui/DesignSystem/screenshots-notifications/verification.txt",
+        "captureCount": 9,
+        "observedPassCount": 26,
+        "observedStatus": "COMPLETED; no FAIL",
+        "origin": "Actual production SAB.dll WPF classes; synthetic result fixtures; observed existing builder evidence, not documenter execution",
+        "clipboard": "Real Windows clipboard success; injected failure",
+        "dpi144": "RenderTargetBitmap only; not OS150% or transition",
+        "taskVerdict": "Scoped independent ship: Verdict Pass resolved integration finding and found no material regression in shown native WPF scenarios; not product-wide or in-Revit acceptance",
+        "notRun": [
+          "Actual Revit execution/API22",
+          "ReportWindow save/selection/show in Revit",
+          "Physical hover/full keyboard/accessibility",
+          "OS multi-monitor/DPI transitions"
+        ],
+        "review": "Docs/Ui/DesignSystem/Notification-Review.md",
+        "sourceContract": "Tools/UiShowcase/notification-source-contract.json",
+        "sourceChecks": 47
+      },
+      "deliveryPolicy": {
+        "installer": "All shipped changes included in Build-Msi.bat package; package-content gate before installer completion; no installation authorized",
+        "workOutput": "outputs/ui-production-preview",
+        "evidence": "Docs/Ui/DesignSystem/screenshots-notifications",
+        "history": "Preserve historical evidence; no timestamp output per repeated run",
+        "backup": "Only on separate backup request: old version commit+push+remote verification+rollback commit; single local journal",
+        "packageVerification": {
+          "configuration": "Release",
+          "entry": "Build-Msi.bat -> Installer/Build-All-Msi.ps1 -> Verify-MsiPayload.ps1 automatic gate",
+          "method": "Extract embedded CAB read-only; compare SHA256 SAB.dll/two styles/Toolkit/23HTML with current build; verify Revit API references, compiled components and no host API/test artifacts",
+          "results": [
+            {
+              "year": "2022",
+              "evidence": "outputs/ui-production-preview/msi-check/2022/verification.json",
+              "status": "PASS",
+              "msiSha256": "4F063E4CFE3041E376F2E0B9479CA8687C5E015200C762BF87D547319BCBF867",
+              "installationPerformed": false
+            },
+            {
+              "year": "2023",
+              "evidence": "outputs/ui-production-preview/msi-check/2023/verification.json",
+              "status": "PASS",
+              "msiSha256": "88FB244687A9C0A2FCCA2A06E85C6F103E798DA706C2444414BE1C5C55BEA73C",
+              "installationPerformed": false
+            },
+            {
+              "year": "2024",
+              "evidence": "outputs/ui-production-preview/msi-check/2024/verification.json",
+              "status": "PASS",
+              "msiSha256": "8D1FFBD59CACB885D95B55909F115F521AA3E5CD32BA128106BA982A97E11F02",
+              "installationPerformed": false
+            }
+          ],
+          "scope": "Package contents only; no installation or installed Revit execution"
+        }
+      }
+    },
+    "elevationsPreview": {
+      "stage": "pending_user_approval",
+      "productionMigrationAuthorized": false,
+      "source": "Docs/Ui/DesignSystem/Elevations-Report.json",
+      "assertions": 526,
+      "captures": 47
+    },
+    "elevationsFeedback": {
+      "assertions": 635,
+      "captures": 44,
+      "productionUiMigrationAuthorized": false,
+      "functionalDeltaFiles": 8,
+      "baselineFilesUnchanged": 85,
+      "notificationProposalWidthDip": 416,
+      "proposalApproved": false,
+      "evidence": "Docs/Ui/DesignSystem/Elevations-Verification.md",
+      "latest": "Three selection cards, spatial dashed crop, final notification, independent create/delete categories",
+      "historical": true,
+      "supersededBy": "redesignProduction"
+    },
+    "redesignProduction": {
+      "version": "1.1.0",
+      "provenance": "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+      "actualWindowAssertions": 109,
+      "actualWindowCaptures": 23,
+      "modulesAssertions": 81,
+      "notificationAssertions": 35,
+      "isolatedSessionAssertions": 635,
+      "installationPerformed": false
+    }
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Explicit blue action over the fresh native button base.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "styleKey": "SabPrimaryButtonStyle",
+        "basedOn": "implicit Button",
+        "hover": "button-primary-hover",
+        "focusStyleKey": "Focus",
+        "states": [
+          "IsMouseOver",
+          "IsPressed",
+          "IsEnabled"
+        ]
+      }
+    },
+    {
+      "name": "Neutral button",
+      "kind": "button",
+      "refersTo": "button-neutral",
+      "description": "Fresh white outlined action; compatibility names share this base.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "styleKeys": [
+          "SabOutlineButtonStyle",
+          "SabNeutralButtonStyle",
+          "SabDangerOutlineButtonStyle"
+        ],
+        "basedOn": "implicit Button",
+        "hover": "button-neutral-hover",
+        "states": [
+          "IsMouseOver",
+          "IsPressed",
+          "IsEnabled"
+        ]
+      }
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "Single border for resting, focus and validation states.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "type": "TextBox",
+        "alias": "SabTextBoxStyle",
+        "states": [
+          "IsKeyboardFocusWithin",
+          "Validation.HasError",
+          "IsEnabled"
+        ],
+        "defaultErrorAdorner": false,
+        "verticalFormHorizontalMargin": 0,
+        "normalizationScope": "Vertical StackPanel only; table editors/horizontal action rows preserve spacing."
+      }
+    },
+    {
+      "name": "Combo field",
+      "kind": "input",
+      "refersTo": "combo-field",
+      "description": "Native editable host and popup; table-specific transparent rest state.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/Cls_ParameterTools/UI/SettingsWindow.cs",
+        "type": "ComboBox",
+        "aliases": [
+          "SabComboBoxStyle",
+          "SabDataGridComboBoxStyle"
+        ],
+        "states": [
+          "IsEditable",
+          "IsKeyboardFocusWithin",
+          "IsDropDownOpen",
+          "IsEnabled"
+        ],
+        "itemStates": [
+          "IsHighlighted",
+          "IsSelected"
+        ],
+        "numericStyleKey": "SabNumericComboBoxStyle",
+        "numericAlignment": "Visible editable TextBox and selected-item presenter centered; Margin=0",
+        "verticalFormHorizontalMargin": 0,
+        "normalizationScope": "Vertical StackPanel only; table editors/horizontal action rows preserve spacing."
+      }
+    },
+    {
+      "name": "Workspace tabs",
+      "kind": "nav",
+      "refersTo": "workspace-tab",
+      "description": "Native title-width capsule TabControl/TabItem headers; white selected text and moving accent indicator.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs",
+        "types": [
+          "TabControl",
+          "TabItem"
+        ],
+        "selected": "workspace-tab-selected",
+        "states": [
+          "IsSelected",
+          "IsMouseOver"
+        ],
+        "focusStyleKey": "Focus",
+        "motionRef": "capsule-selection",
+        "inset": 2,
+        "outerMinimumHeight": 34,
+        "trackHeight": "Auto",
+        "trackRadius": "group.ActualHeight/2",
+        "indicatorHeight": "max(30, group.ActualHeight-4)",
+        "indicatorRadius": "indicator.Height/2",
+        "headerHeight": 30,
+        "bodyGap": 12
+      }
+    },
+    {
+      "name": "Section card / information frame",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat independent settings cards and quiet framed working metadata/status; no header icons, chevrons or instructional prose.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "styleKeys": [
+          "SabPanelBorderStyle",
+          "SabDataGridContainerBorderStyle",
+          "SabValidationPanelStyle",
+          "SabInformationBorderStyle"
+        ],
+        "groupAlias": "SabLayeredSettingsGroupStyle",
+        "groupTarget": "fresh implicit GroupBox",
+        "templateKey": "SabSectionCardTemplate",
+        "helper": "SAB.UI.FluentLight.Presentation.Information/Decorate/Status;parameterFluentTheme.Card/Frame",
+        "scrolling": "Fixed outer bounded working-area frame; inner cards scroll; ScrollEdges continuation opacity mask",
+        "contentPolicy": "Field labels, actual metadata, validation/errors/results and factual status retained; no module description or instructional prose."
+      }
+    },
+    {
+      "name": "Table",
+      "kind": "custom",
+      "refersTo": "table-row",
+      "description": "Independently outlined bounded tables with44-DIP rows,38-DIP headers, centered numeric axes and rounded geometry clipping.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "styleKey": "SabDataGridStyle",
+        "headerRef": "table-header",
+        "selected": "table-row-selected",
+        "states": [
+          "IsMouseOver",
+          "IsSelected",
+          "IsKeyboardFocused",
+          "IsEditing"
+        ],
+        "parameterRuleHeight": "44 at runtime via Presentation.Decorate",
+        "autoGenerateColumns": false,
+        "numericHeaders": "SabCenteredHeaderStyle on TemplateColumn and TextColumn",
+        "clip": "RoundedClip.Radius -> actual child RectangleGeometry",
+        "collectionStyleKey": "SabCollectionBorderStyle",
+        "collectionBorderBrush": "SabBrush.Border",
+        "collectionBorderThickness": 1,
+        "collectionRadius": 6,
+        "primaryHorizontalInset": 16,
+        "categoryFrameReuse": true,
+        "tableScroll": {
+          "attachedProperty": "TableScroll.Enabled",
+          "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs TableScroll",
+          "nativeBindingsPreserved": true,
+          "headers": "Extend DataGridColumnHeadersPresenter Grid.ColumnSpan through vertical bar column",
+          "verticalBar": "Top margin is remaining visible top GroupToggle height, capped by body height",
+          "gutter": "GroupScrollCap uses SabBrush.TableHeaderBackground and one-DIP SabBrush.Border bottom line; visible only when native bar and group prefix are visible",
+          "updates": "Captured DataGrid in LayoutUpdated handler; recompute after scroll/layout",
+          "nativeGroupCollapsePreserved": true,
+          "stickyHeadersClaim": false
+        },
+        "boundItemsCollectionStyle": "SabItemsCollectionBorderStyle"
+      }
+    },
+    {
+      "name": "Independent checkbox / category switch",
+      "kind": "custom",
+      "refersTo": "checkbox",
+      "description": "Source Enabled/Required checks and independent category selection; native switch track for categories.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml",
+        "templateKey": "CheckTemplate",
+        "types": [
+          "CheckBox",
+          "ToggleButton"
+        ],
+        "checked": "checkbox-checked",
+        "states": [
+          "IsChecked=True",
+          "IsChecked=null",
+          "IsMouseOver",
+          "IsEnabled"
+        ],
+        "focusStyleKey": "Focus",
+        "switchTemplateKey": "SabSwitchTemplate"
+      }
+    },
+    {
+      "name": "Row action",
+      "kind": "button",
+      "refersTo": "row-action",
+      "description": "Authored vector add/delete actions preserving original commands.",
+      "native": {
+        "source": "SAB/Cls_ParameterTools/UI/SettingsWindow.cs; SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs",
+        "styleKeys": [
+          "SabRowAddButtonStyle",
+          "SabRowDeleteButtonStyle"
+        ],
+        "format": "System.Windows.Shapes.Path",
+        "strokeThickness": 1.4,
+        "iconSize": [
+          12,
+          12
+        ],
+        "generatedViewsAutomationNames": true,
+        "size": [
+          28,
+          28
+        ],
+        "gap": 8,
+        "outerSpacing": 8,
+        "columnWidth": 88,
+        "emptyTablePlus": "Original handler; named plus; only shown when Items.Count=0 where row-plus pattern exists."
+      }
+    },
+    {
+      "name": "Actual parameter picker",
+      "kind": "custom",
+      "refersTo": "combo-field",
+      "description": "Compact selected name inside tables; complete type/group/identity metadata in dropdown, tooltip and selected-rule frame.",
+      "native": {
+        "source": "SAB/Cls_ParameterTools/UI/ParameterPicker.cs",
+        "type": "SAB.ParameterTools.UI.ParameterPicker",
+        "businessSource": "SAB/Cls_ParameterTools/UI/ParameterPicker.cs",
+        "states": [
+          "search",
+          "selection",
+          "Enter",
+          "Escape",
+          "popup"
+        ],
+        "metadataRole": "metadata",
+        "geometryOverride": "34-DIP selected editor and minimum height; see windowGeometry.parameterization",
+        "metadataVisibility": "In table: name only; dropdown, tooltip and selected-rule explanation retain full metadata.",
+        "verticalFormHorizontalMargin": 0,
+        "normalizationScope": "Production SettingsWindow factory sets margin0,4,0,4;sharedPresentation preserves Grid/verticalform axes;table editor geometry remains.",
+        "dynamicFactoryMargin": "0,4,0,4"
+      }
+    },
+    {
+      "name": "Capsule modes",
+      "kind": "nav",
+      "refersTo": "mode-capsule",
+      "description": "Moving accent selection over native mutually exclusive RadioButtons; independent categories still use switches.",
+      "native": {
+        "source": "SAB/UI/Styles/SABFluentLight.xaml; SAB/UI/FluentLight/Presentation.cs",
+        "type": "RadioButton",
+        "aliases": [
+          "SabRadioButtonStyle",
+          "SabStructureModeRadioButtonStyle"
+        ],
+        "attachedProperty": "SAB.UI.FluentLight.Capsule.IsGroup",
+        "indicatorTag": "CapsuleIndicator",
+        "selected": "mode-capsule-selected",
+        "states": [
+          "IsChecked",
+          "IsEnabled",
+          "keyboard focus",
+          "resize/layout"
+        ],
+        "motionRef": "capsule-selection",
+        "semantics": "Original RadioButton Binding/GroupName/events and automation peers preserved.",
+        "inset": 2,
+        "conditionalLayout": "UniformGrid Columns=0; ignores collapsed segments",
+        "outerMinimumHeight": 34,
+        "trackHeight": "Auto",
+        "trackRadius": "group.ActualHeight/2",
+        "indicatorHeight": "max(30, group.ActualHeight-4)",
+        "indicatorRadius": "indicator.Height/2",
+        "innerMinimumHeight": 30,
+        "padding": "8,6",
+        "height": "Auto; wrapped content; equal-height group segments"
+      }
+    },
+    {
+      "name": "Result notification",
+      "kind": "feedback",
+      "refersTo": "notification-card",
+      "description": "Owner-bound SAB result card with selectable summary, separate exact-copy blocks and independent active lifetime.",
+      "native": {
+        "source": [
+          "SAB/UI/Notifications/NotificationMessage.cs",
+          "SAB/UI/Notifications/NotificationCard.cs",
+          "SAB/UI/Notifications/NotificationStack.cs",
+          "SAB/Cls_ParameterTools/UI/ParameterNotifications.cs",
+          "SAB/UI/Styles/SABFluentLight.xaml notification-only styles"
+        ],
+        "types": [
+          "NotificationCard",
+          "NotificationStack",
+          "TextBox",
+          "Button",
+          "ProgressBar"
+        ],
+        "detailsRef": "extensions.notification",
+        "states": [
+          "success",
+          "warning",
+          "cancelled",
+          "selectable text",
+          "copy success/failure",
+          "paused/remainder",
+          "long bounded body",
+          "stack/overflow"
+        ],
+        "scope": "Actual WPF with synthetic fixtures; not in-Revit PASS"
+      }
+    }
+  ],
+  "narrative": {
+    "northStar": "Fluent Light для настоящих функций SAB",
+    "overview": "**Creative North Star: \"Fluent Light для настоящих функций SAB\"**\n\nThe implemented direction is a light Windows engineering workspace: cool background, white working surfaces, blue actions and selection, quiet table separators, and native Segoe UI. The user's image supplies visual grammar; actual plugin fields, metadata, commands and validation supply the content. Parameterization and creation of views/sheets share components while retaining their different working layouts. The 0.5 refinement sizes mode capsules from their actual text, leaves a shared gap below tabs, aligns vertical form fields and gives each table/list its own outline. Moving native capsule tabs, grouped actions and bounded outer scroll frames remain. Individual settings cards, compact tables and framed working metadata/status remain. The latest shared requirement removes inline module descriptions and instructional prose from every current and subsequent window/template; one footer button «Инструкция» opens the module's local HTML.\n\nThe user directly authorized production migration of the accepted 0.5 layouts on 2026-10-11. [STATUS.json](../../Docs/Ui/DesignSystem/STATUS.json) is `approved_for_production_migration`, version `0.5.0-source-review`, approvedConcept `FluentLightSource`, productionMigrationAuthorized true and installationAuthorized false. Scope is exactly views/sheets main plus secondary settings, and parameterization's four tabs with actual ParameterPicker/CategorySelectionControl. This is a new authorization, not retroactive approval of older review packets. No installation or other modules are included.\n\nThe direct request of 2026-10-12 additionally authorizes the accepted parameterization notification, extraction of the shared SAB notification template, then a correctly packaged Build-Msi.bat installer. Installation remains unauthorized. [Notification-Layout](../../Docs/Ui/DesignSystem/Notification-Layout.md) records the accepted design and current brief; mandatory checks SAB-UI-059–064 apply. The 0.5 layout and palette are retained.\n\nThe single visual standard is [Specification.md](../../Docs/Ui/DesignSystem/Specification.md); mandatory checks are [ErrorRegistry.md](../../Docs/Ui/DesignSystem/ErrorRegistry.md), execution stages [Workflow.md](../../Docs/Ui/DesignSystem/Workflow.md), and role contracts [ReviewRoles.md](../../Docs/Ui/DesignSystem/ReviewRoles.md). Apply SAB-UI-003/006/007/048 to common ownership, authority, actual-window fidelity and honest coverage.\n\nCurrent resource owners are [SABFluentLight.xaml](../../SAB/UI/Styles/SABFluentLight.xaml), [Presentation.cs](../../SAB/UI/FluentLight/Presentation.cs), [FluentResources.cs](../../SAB/UI/FluentLight/FluentResources.cs) and parameter [FluentTheme.cs](../../SAB/Cls_ParameterTools/UI/FluentTheme.cs). Scoped dictionaries supply the accepted geometry directly to production windows and the test host. Legacy SmallWindows.cs Theme and global SABWindowStyles.xaml remain unchanged; Revit Application resources are not replaced. The old seven preview owners and generated overrides are historical provenance, not the active build chain. Build.ps1 now builds production SAB sources without SourcePreview.targets or Compile substitution; GenerateSourceViews.py now delegates to successor VerifyNotificationSource.py and does not generate UI.\n\nNotifications add [NotificationMessage](../../SAB/UI/Notifications/NotificationMessage.cs), [NotificationCard](../../SAB/UI/Notifications/NotificationCard.cs), [NotificationStack](../../SAB/UI/Notifications/NotificationStack.cs) and module [ParameterNotifications](../../SAB/Cls_ParameterTools/UI/ParameterNotifications.cs). The common component uses strings and tone, not Revit DB objects or API callbacks; notification-only styles use the same scoped dictionary. SmallWindows.Toast forwards to the adapter; its legacy Theme and ReportWindow remain. This is not automatic migration of other SAB notification systems.\n\nFluent Light, the four initial feedback images plus fifth scrollbar image and [Refinement-0.5.md](Refinement-0.5.md) supply the accepted world and composition. No new separately rolled five-block direction contract or quality-bar artifact was supplied for refinement 0.5; historical [Redesign-0.2.md](Redesign-0.2.md) does contain a Direction contract. This is a native code-led implementation of the accepted system, without new visual variants.\n\n[Coverage CSV](../../Docs/Ui/DesignSystem/component-coverage.csv) and [CoveragePlan.md](../../Docs/Ui/DesignSystem/CoveragePlan.md) preserve51 audited types:31 current examples,11 resource/template-only,9 missing. The previous28/11/12 count predates the captured determinate notification ProgressBar. Current-example is not all-states or in-Revit verification. The host compiles SourcePreview.cs plus NotificationPreview.cs and isolated ElevationPreview.cs/generated copies; Gallery/ReferenceView/CompositeControls0.1 remain excluded. Historical pre-migration evidence is27PNG/75PASS in screenshots-v0.5; completed migration evidence is separately27PNG/81native PASS/25source checks with scoped review ship. Notification captures/log are separate in screenshots-notifications and do not inherit those PASS. This documenter does not run or invent runtime results.\n",
+    "keyCharacteristics": [
+      "Native Windows WPF on .NET Framework 4.8; geometry uses DIP and WPF Thickness.",
+      "Flat white working surfaces, restrained blue interaction cues and title-width capsule tabs.",
+      "Content-sized capsule geometry, shared tab/body gap, aligned form edges, independent collection outlines, bounded scrolling and separate section cards.",
+      "Actual production SAB windows, models, ViewModels, bindings and commands; the WPF host alone supplies synthetic DTOs without a Revit Document.",
+      "Complete parameter metadata and a user-authorized category selection file workflow.",
+      "One local module instruction entry in each fixed footer; field labels, metadata, validation, errors, results and factual status remain visible."
+    ],
+    "rules": [
+      {
+        "name": "The Meaning Alongside Color Rule",
+        "body": "Keep validation summaries, counts and file-operation results alongside color; color alone does not explain the outcome.",
+        "section": "colors"
+      },
+      {
+        "name": "The Metadata Completeness Rule",
+        "body": "Keep compact table names and complete metadata together: retain details in the dropdown, tooltip and selected-rule explanation rather than deleting them.",
+        "section": "typography"
+      },
+      {
+        "name": "The Bounded Table Rule",
+        "body": "Keep the DataGrid in a bounded viewport with its own scrollbars so the footer and operations remain reachable.",
+        "section": "layout"
+      },
+      {
+        "name": "The Instructions Outside Windows Rule",
+        "body": "Remove module descriptions and instructional prose, even short instructions, from every current and subsequent window/template. Keep field/action labels, actual metadata, validation, errors, results and factual status; provide one footer «Инструкция» button opening local module HTML. Accepted transient result notifications have no instruction footer; SAB-UI-043 is N/A for this surface.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do read canonical STATUS.json and Specification.md before applying this extraction.",
+      "Do change shared visuals in SABFluentLight.xaml, FluentLight/Presentation.cs, FluentResources.cs and the scoped parameter FluentTheme.cs; build the actual production sources and verify the changed surfaces.",
+      "Do preserve actual fields, bindings, commands, selection semantics and complete parameter metadata.",
+      "Do use the shared table rhythm, centered row actions, native title-width capsule tabs, capsule modes and framed working metadata/status.",
+      "Do keep one visible route to add a row when a row plus exists, with a named plus for an empty table.",
+      "Do put search immediately before its list, group actions above, and configuration exchange in the fixed footer.",
+      "Do size capsule modes from wrapped content with outer/inner minima 34/30, inset 2 and vertical text padding 6; let indicator height and radii follow measurement.",
+      "Do keep the common 12-DIP tab/body gap and zero horizontal margin for vertical form fields.",
+      "Do give each table/list one independent one-DIP rounded outline, reuse existing category frames and inset main table frames by 16 horizontally; use the shared padded frame for bound ItemsControl collections.",
+      "Do preserve outer scroll frames, clip table corners with real geometry, and align visible numeric editors with their headers.",
+      "Do keep native table scroll bindings while extending header fill over the gutter and placing the vertical bar below the visible top group row.",
+      "Do distinguish native preview captures from production and in-Revit verification.",
+      "Do provide one footer «Инструкция» button for local module HTML in current and subsequent window templates."
+    ],
+    "donts": [
+      "The current explicit three-module approval does not authorize installation or unrelated modules; historical pending evidence remains historical.",
+      "Don't inherit old production templates or revive superseded Unified 0.1 tokens.",
+      "Don't invent module fields, table search or selection checkboxes from the visual reference.",
+      "Don't combine independent selections into mutually exclusive capsule modes.",
+      "Don't promote source VM validation colors, local metadata colors or status glyphs into shared tokens or action icons.",
+      "Don't turn DIP, WPF Thickness or native triggers into pretend CSS components or web breakpoints.",
+      "Don't place module descriptions or instructional prose, even short instructions, inside windows or replace removed prose with empty frames."
+    ]
+  }
+}

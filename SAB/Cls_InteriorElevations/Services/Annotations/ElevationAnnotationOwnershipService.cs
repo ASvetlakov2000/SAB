@@ -93,7 +93,14 @@ namespace SAB.InteriorElevations.Services.Annotations
 
             if (role.StartsWith("Spot", StringComparison.Ordinal))
             {
-                return settings.PlaceSpotElevations;
+                if (!settings.PlaceSpotElevations) return false;
+                if (role == "Spot.FinishFloor") return settings.PlaceFloorSpots && settings.PlaceFinishFloorSpotElevation;
+                if (role == "Spot.Subfloor") return settings.PlaceFloorSpots && settings.PlaceSubfloorSpotElevations;
+                if (role == "Spot.StructuralBase") return settings.PlaceFloorSpots && settings.PlaceStructuralBaseSpotElevation;
+                if (role == "Spot.Ceiling") return settings.PlaceCeilingSpots;
+                if (role == "Spot.StructuralSlab") return settings.PlaceSlabSpots;
+                // A legacy role without category cannot safely be removed by a partial selection.
+                return settings.PlaceFloorSpots && settings.PlaceCeilingSpots && settings.PlaceSlabSpots;
             }
 
             if (role.StartsWith("Tag.Wall", StringComparison.Ordinal))

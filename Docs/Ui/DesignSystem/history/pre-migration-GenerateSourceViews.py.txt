@@ -1,0 +1,247 @@
+"""Generate presentation-only overrides for an isolated build of the real SAB.
+No production file is written. Actual models, commands, services and VM are compiled.
+"""
+from pathlib import Path
+import re, json, hashlib, copy
+from collections import Counter
+import xml.etree.ElementTree as E
+from RefineSourceViews import refine_styles, add_section_template, refine_markup, refine_parameter_sources, refine_category_source
+import RefineFourth as fourth
+import RefineHelpOnly as help_only
+import RefineFifth as fifth
+HERE=Path(__file__).resolve().parent; ROOT=HERE.parents[1]
+OUT=ROOT/'outputs/ui-source-preview'; GEN=OUT/'generated'; GEN.mkdir(parents=True,exist_ok=True)
+P='http://schemas.microsoft.com/winfx/2006/xaml/presentation'; X='http://schemas.microsoft.com/winfx/2006/xaml'
+E.register_namespace('',P); E.register_namespace('x',X)
+def tag(t):return '{'+P+'}'+t
+def node(t,**attrs):return E.Element(tag(t),attrs)
+def named(root,name):return next(n for n in root.iter() if n.get('{'+X+'}Name')==name)
+def read(path):return (ROOT/path).read_text(encoding='utf-8-sig')
+def replace_method(text,signature,body):
+    start=text.index(signature); opening=text.index('{',start)
+    mask=re.sub(r'@"(?:""|[^"])*"|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|//[^\n]*|/\*[\s\S]*?\*/',lambda m:' '*(m.end()-m.start()),text)
+    depth=1;i=opening+1
+    while depth:
+        if mask[i]=='{':depth+=1
+        elif mask[i]=='}':depth-=1
+        i+=1
+    return text[:opening]+'{\n'+body+'\n        }'+text[i:]
+def method_body(text,signature):
+    start=text.index(signature);opening=text.index('{',start)
+    mask=re.sub(r'@"(?:""|[^"])*"|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|//[^\n]*|/\*[\s\S]*?\*/',lambda m:' '*(m.end()-m.start()),text)
+    depth=1;i=opening+1
+    while depth:
+        if mask[i]=='{':depth+=1
+        elif mask[i]=='}':depth-=1
+        i+=1
+    return text[opening:i]
+
+# Entire new dictionary; original resource keys are compatibility names only.
+fresh=E.parse(HERE/'Styles/Light.xaml').getroot()
+refine_styles(fresh);add_section_template(fresh)
+fourth.styles(fresh)
+fifth.styles(fresh)
+for n in fresh:
+    if n.tag==tag('Style') and n.get('TargetType')=='TabItem':
+        for part in n.iter(tag('ContentPresenter')):part.set('{'+X+'}Name','HeaderLabel')
+        for setter in n.iter(tag('Setter')):
+            if setter.get('Property')=='Foreground':setter.attrib.update({'Property':'TextElement.Foreground','TargetName':'HeaderLabel'})
+    if n.tag==tag('Style') and n.get('TargetType')=='DataGrid' and not n.get('{'+X+'}Key'):
+        E.SubElement(n,tag('Setter'),Property='AutoGenerateColumns',Value='False')
+    if n.tag==tag('Style') and n.get('TargetType')=='ComboBox' and not n.get('{'+X+'}Key'):
+        triggers=n.find(tag('Style.Triggers'))
+        trigger=E.SubElement(triggers,tag('DataTrigger'),Binding='{Binding IsVisible, RelativeSource={RelativeSource AncestorType=DataGrid}}',Value='True')
+        E.SubElement(trigger,tag('Setter'),Property='BorderBrush',Value='Transparent');E.SubElement(trigger,tag('Setter'),Property='Background',Value='Transparent')
+existing={n.get('{'+X+'}Key') for n in fresh if n.get('{'+X+'}Key')}
+legacy=E.fromstring(read('SAB/UI/Styles/SABWindowStyles.xaml'))
+special={'SabDataGridLastColumnHeaderStyle':'DataGridColumnHeader','SabDataGridLastColumnCellStyle':'DataGridCell'}
+for item in legacy:
+    key=item.get('{'+X+'}Key'); target=item.get('TargetType','')
+    if item.tag!=tag('Style') or not key or key in existing:continue
+    typ=target.replace('{x:Type ','').replace('}',''); typ=special.get(key,typ)
+    style=E.SubElement(fresh,tag('Style'),{'{'+X+'}Key':key,'TargetType':typ})
+    if typ in {'Button','TextBox','ComboBox','CheckBox','RadioButton','ToggleButton','DataGrid','DataGridCell','DataGridColumnHeader','DataGridRow','GroupBox','Expander','TabControl','TabItem','ListBoxItem'}:style.set('BasedOn','{StaticResource {x:Type '+typ+'}}')
+    if key in {'SabRowAddButtonStyle','SabRowDeleteButtonStyle'}:
+        for prop,val in [('Width','28'),('Height','28'),('Padding','0')]:E.SubElement(style,tag('Setter'),Property=prop,Value=val)
+    if key=='SabFormScrollViewerStyle':E.SubElement(style,tag('Setter'),Property='VerticalScrollBarVisibility',Value='Auto')
+    existing.add(key)
+E.indent(fresh);E.ElementTree(fresh).write(GEN/'SABWindowStyles.xaml',encoding='utf-8',xml_declaration=True)
+
+# Real parameter settings constructor, rules and all event handlers remain source based.
+small=read('SAB/Cls_ParameterTools/UI/SmallWindows.cs')
+small=replace_method(small,'internal static void Window(Window w)',r'''
+            var resources = new ResourceDictionary { Source = new Uri(Path.Combine(Path.GetDirectoryName(typeof(Theme).Assembly.Location), "UI", "Styles", "SABWindowStyles.xaml"), UriKind.Absolute) };
+            w.Resources.MergedDictionaries.Add(resources);
+            w.FontFamily = new FontFamily("Segoe UI"); w.FontSize = 13;
+            w.Foreground = (Brush)resources["SabBrush.Text"]; w.Background = (Brush)resources["SabBrush.WindowBackground"];
+            w.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+'''.replace('\\"','"'))
+small=replace_method(small,'internal static void Frame(Window window, string title, string subtitle, UIElement body, UIElement footer = null)',r'''
+            var root = new Grid { Background = (Brush)window.FindResource("SabBrush.WindowBackground") };
+            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            root.RowDefinitions.Add(new RowDefinition());
+            root.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            var brand = new StackPanel { Orientation = Orientation.Horizontal };
+            brand.Children.Add(new Border { Width = 28, Height = 28, CornerRadius = new CornerRadius(5), Background = Accent, Child = new TextBlock { Text = "S", Foreground = Brushes.White, FontWeight = FontWeights.Bold, FontSize = 18, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } });
+            brand.Children.Add(new TextBlock { Text = "SAB", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10,0,24,0), FontWeight = FontWeights.SemiBold });
+            brand.Children.Add(new TextBlock { Text = "Параметризация", VerticalAlignment = VerticalAlignment.Center });
+            brand.Children.Add(new TextBlock { Text = "Предпросмотр · тестовые данные · модель Revit не подключена", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(24,0,0,0), FontSize = 12, Foreground = (Brush)window.FindResource("SabBrush.TextSecondary") });
+            var bar = new Border { Background = Brushes.White, BorderBrush = (Brush)window.FindResource("SabBrush.Border"), BorderThickness = new Thickness(0,0,0,1), Padding = new Thickness(24,14,24,14), Child = brand }; root.Children.Add(bar);
+            var header = new StackPanel { Margin = new Thickness(24,22,24,18) };
+            header.Children.Add(new TextBlock { Text = title, Style = (Style)window.FindResource("SabWindowTitleTextStyle") });
+            header.Children.Add(new TextBlock { Text = subtitle, Style = (Style)window.FindResource("SabWindowSubtitleTextStyle"), Margin = new Thickness(0,6,0,0) });
+            Grid.SetRow(header,1);root.Children.Add(header);
+            var content = new Border { Padding = new Thickness(24,0,24,18), Child = body };Grid.SetRow(content,2);root.Children.Add(content);
+            if(footer!=null) { var bottom = new Border { BorderBrush = (Brush)window.FindResource("SabBrush.BorderWeak"), BorderThickness = new Thickness(0,1,0,0), Background = Brushes.White, Padding = new Thickness(20,14,20,14), Child = footer };Grid.SetRow(bottom,3);root.Children.Add(bottom); }
+            window.Content = root;
+'''.replace('\\"','"'))
+small=replace_method(small,'internal static void Tabs(TabControl tabs)', '            tabs.Background = Brushes.Transparent; tabs.BorderThickness = new Thickness(0);')
+small=replace_method(small,'internal static ToggleButton Toggle()', '            return new ToggleButton { Template = (ControlTemplate)Application.Current.FindResource("CheckTemplate"), Width = 20, Height = 22 };')
+small=small.replace('internal static ToggleButton Toggle()',r'''internal static DataTemplate ActionIcon(bool plus)
+        {
+            var path = new FrameworkElementFactory(typeof(System.Windows.Shapes.Path));
+            path.SetValue(System.Windows.Shapes.Path.DataProperty, Geometry.Parse(plus ? "M1 6 H11 M6 1 V11" : "M2 3 H10 M4 3 V1 H8 V3 M3 4 V11 H9 V4 M5 5 V9 M7 5 V9"));
+            path.SetValue(System.Windows.Shapes.Path.StrokeThicknessProperty, 1.4);path.SetResourceReference(System.Windows.Shapes.Path.StrokeProperty,"SabBrush.TextSecondary");
+            path.SetValue(FrameworkElement.WidthProperty,12.0);path.SetValue(FrameworkElement.HeightProperty,12.0);path.SetValue(System.Windows.Shapes.Path.StretchProperty,Stretch.Uniform);
+            return new DataTemplate { VisualTree = path };
+        }
+        internal static ToggleButton Toggle()''')
+(GEN/'SmallWindows.cs').write_text(small,encoding='utf8')
+settings=read('SAB/Cls_ParameterTools/UI/SettingsWindow.cs')
+settings=settings.replace('Width = 1120; Height = 820;', 'Width = 1400; Height = 920;')
+settings=settings.replace('MinWidth = 980; MinHeight = 680;', 'MinWidth = 980; MinHeight = 820;')
+settings=settings.replace('var style = new Style(typeof(CheckBox));','var style = new Style(typeof(CheckBox), (Style)FindResource(typeof(CheckBox)));')
+# The real source picker exposes all metadata, so rows stay tall enough for it.
+settings=settings.replace('_rulesGrid.MinRowHeight = 74;', '_rulesGrid.MinRowHeight = 86;')
+settings=settings.replace('button.SetValue(ContentControl.ContentProperty, isPlus ? "+" : "×")','button.SetValue(ContentControl.ContentTemplateProperty, Theme.ActionIcon(isPlus))')
+settings=settings.replace('Theme.Primary(this, add); actions.Children.Add(add);','actions.Children.Add(add);')
+settings=settings.replace('_rulesGrid.Columns[1].Width = 145; _rulesGrid.Columns[3].Width = 300;', '_rulesGrid.Columns[1].Width = new DataGridLength(1, DataGridLengthUnitType.Star); _rulesGrid.Columns[1].MinWidth = 190; _rulesGrid.Columns[3].Width = new DataGridLength(1.4, DataGridLengthUnitType.Star); _rulesGrid.Columns[3].MinWidth = 300;')
+settings=settings.replace('grid.Columns.Add(new DataGridCheckBoxColumn { Header = header,', 'var headerStyle = new Style(typeof(System.Windows.Controls.Primitives.DataGridColumnHeader), (Style)FindResource(typeof(System.Windows.Controls.Primitives.DataGridColumnHeader))); headerStyle.Setters.Add(new Setter(Control.PaddingProperty,new Thickness(4,0,4,0))); headerStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty,HorizontalAlignment.Center));\n            grid.Columns.Add(new DataGridCheckBoxColumn { Header = header, HeaderStyle = headerStyle,')
+small,settings=refine_parameter_sources(small,settings)
+small,settings=fourth.sources(small,settings)
+small,settings=help_only.sources(small,settings)
+small,settings=fifth.sources(small,settings)
+(GEN/'SmallWindows.cs').write_text(small,encoding='utf8')
+(GEN/'SettingsWindow.cs').write_text(settings,encoding='utf8')
+(GEN/'Presentation.cs').write_text((HERE/'Presentation.cs').read_text(encoding='utf8'),encoding='utf8')
+
+# New composition using the original XAML fields, bindings, commands and templates.
+original=E.fromstring(read('SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml'))
+win=node('Window',Title='SAB — Создание видов и листов',Width='1480',Height='940',MinWidth='1100',MinHeight='760',FontFamily='Segoe UI',FontSize='13',Background='{DynamicResource SabBrush.WindowBackground}')
+resources=E.SubElement(win,tag('Window.Resources'));rd=E.SubElement(resources,tag('ResourceDictionary'));merged=E.SubElement(rd,tag('ResourceDictionary.MergedDictionaries'));E.SubElement(merged,tag('ResourceDictionary'),Source='../../UI/Styles/SABWindowStyles.xaml')
+root=E.SubElement(win,tag('Grid'),{'{'+X+'}Name':'CreateViewsAndSheetsRoot','Background':'{DynamicResource SabBrush.WindowBackground}'})
+rows=E.SubElement(root,tag('Grid.RowDefinitions'))
+for h in ['Auto','Auto','*','Auto']:E.SubElement(rows,tag('RowDefinition'),Height=h)
+bar=E.SubElement(root,tag('Border'),Background='White',BorderBrush='{DynamicResource SabBrush.Border}',BorderThickness='0,0,0,1',Padding='24,14')
+brand=E.SubElement(bar,tag('StackPanel'),Orientation='Horizontal');badge=E.SubElement(brand,tag('Border'),Width='28',Height='28',CornerRadius='5',Background='{DynamicResource SabBrush.Accent}');E.SubElement(badge,tag('TextBlock'),Text='S',Foreground='White',FontWeight='Bold',FontSize='18',HorizontalAlignment='Center',VerticalAlignment='Center');E.SubElement(brand,tag('TextBlock'),Text='SAB',FontWeight='SemiBold',Margin='10,0,24,0',VerticalAlignment='Center');E.SubElement(brand,tag('TextBlock'),Text='Создание видов и листов',VerticalAlignment='Center')
+E.SubElement(brand,tag('TextBlock'),Text='Предпросмотр · тестовые данные · модель Revit не подключена',FontSize='12',Foreground='{DynamicResource SabBrush.TextSecondary}',Margin='24,0,0,0',VerticalAlignment='Center')
+header=E.SubElement(root,tag('Grid'),{'Grid.Row':'1','Margin':'24,18,24,12'});cols=E.SubElement(header,tag('Grid.ColumnDefinitions'));E.SubElement(cols,tag('ColumnDefinition'),Width='*');E.SubElement(cols,tag('ColumnDefinition'),Width='Auto');heading=E.SubElement(header,tag('StackPanel'),Margin='0,0,16,0');E.SubElement(heading,tag('TextBlock'),Text='Создание видов и листов',Style='{StaticResource SabWindowTitleTextStyle}');E.SubElement(heading,tag('TextBlock'),Text='Настройте структуру и образцы, затем заполните таблицу создаваемых видов и листов.',Style='{StaticResource SabWindowSubtitleTextStyle}',Margin='0,6,0,0')
+settingsbutton=copy.deepcopy(named(original,'SettingsButton'));settingsbutton.attrib.update({'Grid.Column':'1','Width':'Auto','Height':'34','Padding':'12,0','Margin':'0'});settingsbutton[:]=[];settingsbutton.set('Content','Настройки');header.append(settingsbutton)
+body=E.SubElement(root,tag('Grid'),{'Grid.Row':'2','Margin':'24,0,24,18'});cols=E.SubElement(body,tag('Grid.ColumnDefinitions'))
+for w in ['380','20','*']:E.SubElement(cols,tag('ColumnDefinition'),Width=w)
+left=E.SubElement(body,tag('Border'),Padding='0')
+drawer=copy.deepcopy(named(original,'SettingsDrawerPanel'));drawer.attrib.pop('Grid.Column',None);drawer.attrib.update({'Width':'Auto','Margin':'0','Visibility':'Visible','VerticalScrollBarVisibility':'Auto'});left.append(drawer)
+right=E.SubElement(body,tag('Grid'),{'Grid.Column':'2'});rows=E.SubElement(right,tag('Grid.RowDefinitions'))
+for h in ['*','Auto']:E.SubElement(rows,tag('RowDefinition'),Height=h)
+tableframe=E.SubElement(right,tag('Border'),Style='{StaticResource SabDataGridContainerBorderStyle}');tablewrap=E.SubElement(tableframe,tag('Grid'));rows=E.SubElement(tablewrap,tag('Grid.RowDefinitions'))
+for h in ['Auto','*']:E.SubElement(rows,tag('RowDefinition'),Height=h)
+tools=E.SubElement(tablewrap,tag('StackPanel'),Margin='16,14,16,12');E.SubElement(tools,tag('TextBlock'),Text='Создаваемые виды и листы',Style='{StaticResource SabPanelHeaderTextStyle}',Margin='0,0,0,12')
+actions=E.SubElement(tools,tag('WrapPanel'))
+for b in original.iter(tag('Button')):
+    if b.get('Command','') in ['{Binding ImportSettingsCommand}','{Binding ExportSettingsCommand}','{Binding ImportSheetTableCommand}','{Binding CopySheetNamesToViewNamesCommand}','{Binding ClearRowsCommand}']:
+        c=copy.deepcopy(b);c.set('Margin','0,0,8,8');actions.append(c)
+grid=copy.deepcopy(named(original,'CreationRowsDataGrid'));grid.set('Grid.Row','1');grid.set('RowHeight','44');tablewrap.append(grid)
+validation=copy.deepcopy(named(original,'ValidationPanelBorder'));validation.set('Grid.Row','1');validation.set('Margin','0,14,0,0');validation.set('Height','Auto');right.append(validation)
+footer=E.SubElement(root,tag('Border'),{'Grid.Row':'3','Background':'White','BorderBrush':'{DynamicResource SabBrush.BorderWeak}','BorderThickness':'0,1,0,0','Padding':'24,14'})
+fg=E.SubElement(footer,tag('Grid'));cols=E.SubElement(fg,tag('Grid.ColumnDefinitions'));E.SubElement(cols,tag('ColumnDefinition'),Width='*');E.SubElement(cols,tag('ColumnDefinition'),Width='Auto');E.SubElement(fg,tag('TextBlock'),Text='{Binding StatusText}',Style='{StaticResource SabFieldHintTextStyle}',VerticalAlignment='Center',Margin='0,0,24,0');buttons=E.SubElement(fg,tag('StackPanel'),{'Grid.Column':'1','Orientation':'Horizontal'})
+for b in original.iter(tag('Button')):
+    if b.get('Command','') in ['{Binding CancelCommand}','{Binding CreateCommand}']:buttons.append(copy.deepcopy(b))
+# Every original binding and command must survive; extra status is the existing VM property.
+def bindings(tree):return Counter(v for n in tree.iter() for v in n.attrib.values() if '{Binding' in v)
+before=bindings(original);after=bindings(win);missing=before-after
+if missing:raise RuntimeError('Lost source bindings: '+repr(missing))
+
+def icon(data):return node('Path',Data=data,Stroke='{DynamicResource SabBrush.TextSecondary}',StrokeThickness='1.4',Width='12',Height='12',Stretch='Uniform',HorizontalAlignment='Center',VerticalAlignment='Center')
+for n in win.iter():
+    # Replace only presentation glyphs, with authored line icons and existing tooltips.
+    if n.tag==tag('Button') and n.get('Content') in ['+','X','×']:
+        value=n.attrib.pop('Content');n.set('AutomationProperties.Name',n.get('ToolTip') or ('Добавить строку ниже' if value=='+' else 'Удалить строку'));n.append(icon('M1 6 H11 M6 1 V11' if value=='+' else 'M2 3 H10 M4 3 V1 H8 V3 M3 4 V11 H9 V4 M5 5 V9 M7 5 V9'))
+    if n.tag==tag('ComboBox') and any('AncestorType=DataGrid' in v for v in n.attrib.values()):n.set('Style','{StaticResource SabDataGridComboBoxStyle}')
+# Remove decorative text icon containers; retain headers, field text and real data.
+for parent in win.iter():
+    for child in list(parent):
+        if child.tag==tag('Border') and child.get('Style')=='{StaticResource SabPanelIconBorderStyle}':parent.remove(child)
+        if child.tag==tag('TextBlock') and child.get('Style')=='{StaticResource SabDataGridDragHandleTextStyle}':
+            parent.remove(child);parent.append(icon('M5 1 H7 M5 6 H7 M5 11 H7'))
+refine_markup(win,drawer)
+fourth.markup(win)
+help_only.markup(win,True)
+fifth.markup(win)
+left.set('Style','{StaticResource SabPanelBorderStyle}');left.set('Padding','12')
+E.indent(win);E.ElementTree(win).write(GEN/'CreateViewsAndSheetsWindow.xaml',encoding='utf-8',xml_declaration=True)
+
+# The actual secondary settings class loads this loose XAML, too.
+secondary=E.fromstring(read('SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml'))
+secondary_before=bindings(secondary)
+secondary.set('Width','1200');secondary.set('Height','900');secondary.set('MinWidth','1040');secondary.set('MinHeight','760')
+for parent in secondary.iter():
+    for child in list(parent):
+        if child.tag==tag('Border') and child.get('Style')=='{StaticResource SabPanelIconBorderStyle}':parent.remove(child)
+for b in secondary.iter(tag('Button')):
+    if b.get('Content') in ['+','×','X']:
+        value=b.attrib.pop('Content');b.append(icon('M1 6 H11 M6 1 V11' if value=='+' else 'M2 3 H10 M4 3 V1 H8 V3 M3 4 V11 H9 V4 M5 5 V9 M7 5 V9'))
+for column in secondary.iter(tag('ColumnDefinition')):
+    if column.get('Width')=='384':column.set('Width','380')
+for scroll in secondary.iter(tag('ScrollViewer')):scroll.set('{'+fourth.D+'}ScrollEdges.Enabled','True')
+refine_markup(secondary,secondary)
+fourth.markup(secondary,False)
+help_only.markup(secondary,False)
+# Shared geometry without main-window footer transformation.
+for grid4 in secondary.iter(tag('Grid')):
+    if grid4.get('{'+fourth.D+'}Capsule.IsGroup')=='True':
+        grid4.set('Height','34')
+        for uniform in grid4.findall(tag('UniformGrid')):uniform.set('Margin','2')
+fifth.markup(secondary)
+if secondary_before-bindings(secondary):raise RuntimeError('Secondary settings bindings lost')
+secondary_body=next(n for n in list(secondary) if n.tag==tag('Grid'));secondary.remove(secondary_body)
+secondary_frame=E.SubElement(secondary,tag('Border'),Background='{DynamicResource SabBrush.WindowBackground}');secondary_frame.append(secondary_body)
+E.indent(secondary);E.ElementTree(secondary).write(GEN/'CreateViewsAndSheetsSettingsWindow.xaml',encoding='utf-8',xml_declaration=True)
+secondary_code=read('SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.cs').replace('WindowSizeSettingsService.Apply(this, "CreateViewsAndSheets.SettingsWindow");','// Isolated preview: do not restore/save production settings window geometry.')
+(GEN/'CreateViewsAndSheetsSettingsWindow.cs').write_text(secondary_code,encoding='utf8')
+
+viewcode=read('SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs')
+# Preview-only persistence boundary, not a change to command/validation logic.
+viewcode=viewcode.replace('            RestoreWindowLayout();','            // Isolated preview: do not restore production window preferences.')
+viewcode=viewcode.replace('            SaveWindowLayout();','            // Isolated preview: do not save production window preferences.')
+(GEN/'CreateViewsAndSheetsWindow.xaml.cs').write_text(viewcode,encoding='utf8')
+picker=read('SAB/Cls_ParameterTools/UI/ParameterPicker.cs').replace('_combo.SetResourceReference(Control.ForegroundProperty, "SabBrush.Accent")','_combo.SetResourceReference(Control.ForegroundProperty, "SabBrush.Text")')
+picker=picker.replace('MinHeight = 86;', 'MinHeight = 34;').replace('Height = 32,','Height = 34,').replace('Children.Add(_combo); Children.Add(_details);','Children.Add(_combo); Children.Add(_details); Loaded += (s,e) => { DependencyObject parent = this; while(parent != null) { if(parent is DataGrid) { _details.Visibility = Visibility.Collapsed; break; } parent = System.Windows.Media.VisualTreeHelper.GetParent(parent); } };')
+(GEN/'ParameterPicker.cs').write_text(picker,encoding='utf8')
+category=read('SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs')
+category=category.replace('private readonly TextBlock _count;', 'private readonly TextBlock _count;\n        private FrameworkElement _emptyMessage;')
+category=category.replace('_view.Refresh(); UpdateCount();', '_view.Refresh(); UpdateCount(); UpdateEmpty();')
+category=category.replace('Child = _list };', 'Child = null };\n            var listBody = new Grid();listBody.Children.Add(_list);\n            var empty = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false };\n            empty.Children.Add(new TextBlock { Text = "Категории не найдены", FontSize = 16, FontWeight = FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center });\n            empty.Children.Add(new TextBlock { Text = "Измените запрос или очистите поле поиска.", FontSize = 12, Margin = new Thickness(0,8,0,0) });\n            _emptyMessage = empty;listBody.Children.Add(empty);frame.Child = listBody;')
+category=category.replace('root.Children.Add(frame); Content = root; UpdateCount();', 'root.Children.Add(frame); Content = root; UpdateCount(); UpdateEmpty();')
+category=category.replace('private void Toggled(', 'private void UpdateEmpty() { if (_emptyMessage != null) _emptyMessage.Visibility = _view.IsEmpty ? Visibility.Visible : Visibility.Collapsed; }\n        private void Toggled(')
+category=refine_category_source(category)
+category=fourth.categories(category)
+category=help_only.categories(category)
+category=fifth.categories(category)
+(GEN/'CategorySelectionControl.cs').write_text(category,encoding='utf8')
+proof={'version':'0.3-source-review','authorizedAddition':'Category selection filter/save/load; shared capsule and presentation refinement','sourceBindings':sum(before.values()),'missingBindings':list(missing.elements()),'addedBindings':list((bindings(win)-before).elements()),'sourceColumns':len(named(original,'CreationRowsDataGrid').find(tag('DataGrid.Columns'))),'newColumns':len(grid.find(tag('DataGrid.Columns'))),'newStyles':'Tools/UiShowcase/Styles/Light.xaml + RefineSourceViews.py; no inherited production templates','overrides':{},'productionFilesWritten':False}
+proof.update(version='0.4-source-review',secondarySettingsBindings=sum(secondary_before.values()),secondaryMissingBindings=list((secondary_before-bindings(secondary)).elements()),newStyles='Light.xaml + RefineSourceViews.py + RefineFourth.py + Presentation.cs')
+proof.update(inlineInstructions=False,instructionFiles=['SAB_HTML_Zapolnenie_parametrov.html',help_only.VIEWS_FILE],newStyles=proof['newStyles']+' + RefineHelpOnly.py')
+proof.update(version='0.5-source-review',newStyles=proof['newStyles']+' + RefineFifth.py')
+source_settings=read('SAB/Cls_ParameterTools/UI/SettingsWindow.cs')
+preserved=['private void TransferFile(', 'internal void ExportConfiguration(', 'internal void ImportConfiguration(', 'private void AddRule(', 'private void RefreshSources(', 'private void RefreshValues(', 'private void SyncProfile(', 'private List<string> Problems(', 'private bool UpdateStatus(', 'private void SaveCore(']
+proof['parameterBehaviorMethodsUnchanged']=[]
+for sig in preserved:
+    body=method_body(source_settings,sig)
+    if method_body(settings,sig)!=body:raise RuntimeError('Logic changed: '+sig)
+    proof['parameterBehaviorMethodsUnchanged'].append({'method':sig,'sha256':hashlib.sha256(body.encode()).hexdigest()})
+if bindings(win)-after:raise RuntimeError('Unexpected bindings introduced after inventory')
+if before-bindings(win):raise RuntimeError('Original bindings lost after icon conversion')
+for name,path in [('parameterSettings','SAB/Cls_ParameterTools/UI/SettingsWindow.cs'),('parameterTheme','SAB/Cls_ParameterTools/UI/SmallWindows.cs'),('viewsWindow','SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs'),('viewsMarkup','SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml'),('viewsVM','SAB/Cls_CreateViewsAndSheets/ViewModels/CreateViewsAndSheetsViewModel.cs')]:proof['overrides'][name]={'source':path,'sha256':hashlib.sha256((ROOT/path).read_bytes()).hexdigest()}
+(HERE/'source-contract.json').write_text(json.dumps(proof,ensure_ascii=False,indent=2),encoding='utf8')
+print('Generated real-source presentation overrides. Source bindings retained:',sum(before.values()),'; columns:',proof['newColumns'])

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Autodesk.Revit.DB;
 using Newtonsoft.Json;
@@ -30,7 +30,7 @@ namespace SAB.InteriorElevations.Services.Settings
 
             PersistedSettings persisted = JsonConvert.DeserializeObject<PersistedSettings>(
                 File.ReadAllText(_settingsFilePath));
-            if (persisted == null || persisted.SchemaVersion < 1 || persisted.SchemaVersion > 8)
+            if (persisted == null || persisted.SchemaVersion < 1 || persisted.SchemaVersion > 9)
             {
                 return null;
             }
@@ -38,6 +38,9 @@ namespace SAB.InteriorElevations.Services.Settings
             return new ElevationDecorationSettings
             {
                 PlaceSpotElevations = persisted.PlaceSpotElevations,
+                PlaceFloorSpots = persisted.SchemaVersion < 9 || persisted.PlaceFloorSpots,
+                PlaceCeilingSpots = persisted.SchemaVersion < 9 || persisted.PlaceCeilingSpots,
+                PlaceSlabSpots = persisted.SchemaVersion < 9 || persisted.PlaceSlabSpots,
                 PlaceTags = persisted.PlaceTags,
                 PlaceDimensions = persisted.SchemaVersion >= 2 && persisted.PlaceDimensions,
                 PlaceWallTags = persisted.SchemaVersion >= 8
@@ -125,8 +128,11 @@ namespace SAB.InteriorElevations.Services.Settings
 
             PersistedSettings persisted = new PersistedSettings
             {
-                SchemaVersion = 8,
+                SchemaVersion = 9,
                 PlaceSpotElevations = settings.PlaceSpotElevations,
+                PlaceFloorSpots = settings.PlaceFloorSpots,
+                PlaceCeilingSpots = settings.PlaceCeilingSpots,
+                PlaceSlabSpots = settings.PlaceSlabSpots,
                 PlaceTags = settings.PlaceTags,
                 PlaceDimensions = settings.PlaceDimensions,
                 PlaceWallTags = settings.PlaceWallTags,
@@ -186,6 +192,9 @@ namespace SAB.InteriorElevations.Services.Settings
         {
             public int SchemaVersion { get; set; }
             public bool PlaceSpotElevations { get; set; }
+            public bool PlaceFloorSpots { get; set; }
+            public bool PlaceCeilingSpots { get; set; }
+            public bool PlaceSlabSpots { get; set; }
             public bool PlaceTags { get; set; }
             public bool PlaceDimensions { get; set; }
             public bool PlaceWallTags { get; set; }

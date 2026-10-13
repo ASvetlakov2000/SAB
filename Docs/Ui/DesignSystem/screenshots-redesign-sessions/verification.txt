@@ -1,0 +1,681 @@
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-normal | 1264x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab0 | 1264x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Не размещать на листе=False;Создать новый лист=True;Добавить на существующий лист=False
+PASS Capsule agrees with source VM: DoNotPlaceViewsOnSheetMode
+PASS Capsule agrees with source VM: CreateNewSheetMode
+PASS Capsule agrees with source VM: ExistingSheetMode
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Автоматическое размещение=True;Ручные настройки=False
+PASS Capsule agrees with source VM: UseAutomaticSheetPlacement
+PASS Capsule agrees with source VM: UseManualSheetPlacement
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab1 | 1264x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab2 | 1264x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Номер помещения и номер угла=True;Только номер угла=False
+PASS Capsule agrees with source VM: CornerMarksWithRoomNumber
+PASS Capsule agrees with source VM: CornerMarksOnlyCornerNumber
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Над видом=True;Под видом=False
+PASS Capsule agrees with source VM: SheetCornerMarksAboveView
+PASS Capsule agrees with source VM: SheetCornerMarksBelowView
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab3 | 1264x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Номер помещения и номер угла=True;Только номер угла=False
+PASS Capsule agrees with source VM: CornerMarksWithRoomNumber
+PASS Capsule agrees with source VM: CornerMarksOnlyCornerNumber
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Над видом=True;Под видом=False
+PASS Capsule agrees with source VM: SheetCornerMarksAboveView
+PASS Capsule agrees with source VM: SheetCornerMarksBelowView
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-minimum | 1024x611 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab0-minimum | 1024x611 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Не размещать на листе=False;Создать новый лист=True;Добавить на существующий лист=False
+PASS Capsule agrees with source VM: DoNotPlaceViewsOnSheetMode
+PASS Capsule agrees with source VM: CreateNewSheetMode
+PASS Capsule agrees with source VM: ExistingSheetMode
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Автоматическое размещение=True;Ручные настройки=False
+PASS Capsule agrees with source VM: UseAutomaticSheetPlacement
+PASS Capsule agrees with source VM: UseManualSheetPlacement
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab1-minimum | 1024x611 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab2-minimum | 1024x611 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Номер помещения и номер угла=True;Только номер угла=False
+PASS Capsule agrees with source VM: CornerMarksWithRoomNumber
+PASS Capsule agrees with source VM: CornerMarksOnlyCornerNumber
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Над видом=True;Под видом=False
+PASS Capsule agrees with source VM: SheetCornerMarksAboveView
+PASS Capsule agrees with source VM: SheetCornerMarksBelowView
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE ElevationSettingsWindow-tab3-minimum | 1024x611 DIP | nativeDpi=96 renderDpi=96
+CAPTURE ElevationSettingsWindow-minimum-bottom | 1024x611 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Оформление развёрток: one footer Help resolves installed module HTML
+PASS SAB · Оформление развёрток: footer remains inside viewport
+PASS Decoration is one form without tabs
+PASS Spot and dimension cards stack left with16DIP gap
+PASS Tag selection card occupies right column across both rows
+PASS Tag dropdown/leader gap12DIP: Wall
+PASS Tag dropdown/leader center axis: Wall
+PASS Tag dropdown/leader gap12DIP: Floor
+PASS Tag dropdown/leader center axis: Floor
+PASS Tag dropdown/leader gap12DIP: Ceiling
+PASS Tag dropdown/leader center axis: Ceiling
+PASS Tag dropdown/leader gap12DIP: Plinth
+PASS Tag dropdown/leader center axis: Plinth
+PASS Tag dropdown/leader gap12DIP: Door
+PASS Tag dropdown/leader center axis: Door
+PASS Tag dropdown/leader gap12DIP: Window
+PASS Tag dropdown/leader center axis: Window
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Слева=True;Справа=False
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Оформление развёрток: Help accepts WPF keyboard focus
+PASS SAB · Оформление развёрток: WPF next-focus traversal is available
+CAPTURE ElevationDecorationWindow-normal | 1084x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Оформление развёрток: one footer Help resolves installed module HTML
+PASS SAB · Оформление развёрток: footer remains inside viewport
+PASS Decoration is one form without tabs
+PASS Spot and dimension cards stack left with16DIP gap
+PASS Tag selection card occupies right column across both rows
+PASS Tag dropdown/leader gap12DIP: Wall
+PASS Tag dropdown/leader center axis: Wall
+PASS Tag dropdown/leader gap12DIP: Floor
+PASS Tag dropdown/leader center axis: Floor
+PASS Tag dropdown/leader gap12DIP: Ceiling
+PASS Tag dropdown/leader center axis: Ceiling
+PASS Tag dropdown/leader gap12DIP: Plinth
+PASS Tag dropdown/leader center axis: Plinth
+PASS Tag dropdown/leader gap12DIP: Door
+PASS Tag dropdown/leader center axis: Door
+PASS Tag dropdown/leader gap12DIP: Window
+PASS Tag dropdown/leader center axis: Window
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Слева=True;Справа=False
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Оформление развёрток: Help accepts WPF keyboard focus
+PASS SAB · Оформление развёрток: WPF next-focus traversal is available
+CAPTURE ElevationDecorationWindow-minimum | 844x581 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Оформление развёрток: one footer Help resolves installed module HTML
+PASS SAB · Оформление развёрток: footer remains inside viewport
+PASS Decoration is one form without tabs
+PASS Spot and dimension cards stack left with16DIP gap
+PASS Tag selection card occupies right column across both rows
+PASS Tag dropdown/leader gap12DIP: Wall
+PASS Tag dropdown/leader center axis: Wall
+PASS Tag dropdown/leader gap12DIP: Floor
+PASS Tag dropdown/leader center axis: Floor
+PASS Tag dropdown/leader gap12DIP: Ceiling
+PASS Tag dropdown/leader center axis: Ceiling
+PASS Tag dropdown/leader gap12DIP: Plinth
+PASS Tag dropdown/leader center axis: Plinth
+PASS Tag dropdown/leader gap12DIP: Door
+PASS Tag dropdown/leader center axis: Door
+PASS Tag dropdown/leader gap12DIP: Window
+PASS Tag dropdown/leader center axis: Window
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Слева=True;Справа=False
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Оформление развёрток: Help accepts WPF keyboard focus
+PASS SAB · Оформление развёрток: WPF next-focus traversal is available
+CAPTURE decoration-tags-minimum | 844x581 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Оформление развёрток: one footer Help resolves installed module HTML
+PASS SAB · Оформление развёрток: footer remains inside viewport
+PASS Decoration is one form without tabs
+PASS Spot and dimension cards stack left with16DIP gap
+PASS Tag selection card occupies right column across both rows
+PASS Tag dropdown/leader gap12DIP: Wall
+PASS Tag dropdown/leader center axis: Wall
+PASS Tag dropdown/leader gap12DIP: Floor
+PASS Tag dropdown/leader center axis: Floor
+PASS Tag dropdown/leader gap12DIP: Ceiling
+PASS Tag dropdown/leader center axis: Ceiling
+PASS Tag dropdown/leader gap12DIP: Plinth
+PASS Tag dropdown/leader center axis: Plinth
+PASS Tag dropdown/leader gap12DIP: Door
+PASS Tag dropdown/leader center axis: Door
+PASS Tag dropdown/leader gap12DIP: Window
+PASS Tag dropdown/leader center axis: Window
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Слева=True;Справа=False
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS SAB · Оформление развёрток: Help accepts WPF keyboard focus
+PASS SAB · Оформление развёрток: WPF next-focus traversal is available
+CAPTURE decoration-tags | 1084x841 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Каталог оформления: one footer Help resolves installed module HTML
+PASS SAB · Каталог оформления: footer remains inside viewport
+PASS Shared table row/header geometry
+PASS Table has independent rounded frame
+PASS Header/value axis within one DIP: Типоразмер
+PASS Header/value axis within one DIP: Источник
+PASS SAB · Каталог оформления: Help accepts WPF keyboard focus
+PASS SAB · Каталог оформления: WPF next-focus traversal is available
+CAPTURE ElevationDecorationCatalogWindow-normal | 1004x681 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Каталог оформления: one footer Help resolves installed module HTML
+PASS SAB · Каталог оформления: footer remains inside viewport
+PASS Shared table row/header geometry
+PASS Table has independent rounded frame
+PASS Header/value axis within one DIP: Типоразмер
+PASS Header/value axis within one DIP: Источник
+PASS SAB · Каталог оформления: Help accepts WPF keyboard focus
+PASS SAB · Каталог оформления: WPF next-focus traversal is available
+CAPTURE ElevationDecorationCatalogWindow-minimum | 804x481 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Список помещений: one footer Help resolves installed module HTML
+PASS SAB · Список помещений: footer remains inside viewport
+PASS Shared table row/header geometry
+PASS Table has independent rounded frame
+PASS Header/value axis within one DIP: №
+PASS Header/value axis within one DIP: Групп линий
+PASS Header/value axis within one DIP: Выбрано линий
+PASS Header/value axis within one DIP: Статус
+PASS Actions header/group center within1DIP
+PASS SAB · Список помещений: Help accepts WPF keyboard focus
+PASS SAB · Список помещений: WPF next-focus traversal is available
+CAPTURE MultiRoomSelectionWindow-normal | 1264x701 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Список помещений: one footer Help resolves installed module HTML
+PASS SAB · Список помещений: footer remains inside viewport
+PASS Shared table row/header geometry
+PASS Table has independent rounded frame
+PASS Header/value axis within one DIP: №
+PASS Header/value axis within one DIP: Групп линий
+PASS Header/value axis within one DIP: Выбрано линий
+PASS Header/value axis within one DIP: Статус
+PASS Actions header/group center within1DIP
+PASS SAB · Список помещений: Help accepts WPF keyboard focus
+PASS SAB · Список помещений: WPF next-focus traversal is available
+CAPTURE MultiRoomSelectionWindow-minimum | 944x481 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Список помещений: one footer Help resolves installed module HTML
+PASS SAB · Список помещений: footer remains inside viewport
+PASS Shared table row/header geometry
+PASS Table has independent rounded frame
+PASS Header/value axis within one DIP: №
+PASS Header/value axis within one DIP: Групп линий
+PASS Header/value axis within one DIP: Выбрано линий
+PASS Header/value axis within one DIP: Статус
+PASS Actions header/group center within1DIP
+PASS SAB · Список помещений: Help accepts WPF keyboard focus
+PASS SAB · Список помещений: WPF next-focus traversal is available
+PASS Room text column grows with window
+PASS Room numeric/status/actions widths remain fixed
+PASS Room columns fill viewport to right edge without filler
+CAPTURE rooms-wide | 1524x481 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Смещение границ вида: one footer Help resolves installed module HTML
+PASS SAB · Смещение границ вида: footer remains inside viewport
+PASS View boundary diagram has dashed contour and no fill
+PASS Boundary label and value centered: Top
+PASS Boundary field on correct side: Top
+PASS Boundary label and value centered: Bottom
+PASS Boundary field on correct side: Bottom
+PASS Boundary label and value centered: Left
+PASS Boundary field on correct side: Left
+PASS Boundary label and value centered: Right
+PASS Boundary field on correct side: Right
+PASS SAB · Смещение границ вида: Help accepts WPF keyboard focus
+PASS SAB · Смещение границ вида: WPF next-focus traversal is available
+PASS SAB · Смещение границ вида: compact field/action bounds fit card: TopTextBox
+PASS SAB · Смещение границ вида: compact field/action bounds fit card: BottomTextBox
+PASS SAB · Смещение границ вида: compact field/action bounds fit card: LeftTextBox
+PASS SAB · Смещение границ вида: compact field/action bounds fit card: RightTextBox
+CAPTURE ElevationCropAdjustmentWindow-normal | 516x425 DIP | nativeDpi=96 renderDpi=96
+PASS Choice window sized to content and NoResize
+PASS SAB · Выбор групп линий: one footer Help resolves installed module HTML
+PASS SAB · Выбор групп линий: footer remains inside viewport
+PASS SAB · Выбор групп линий: Help accepts WPF keyboard focus
+PASS SAB · Выбор групп линий: WPF next-focus traversal is available
+PASS SAB · Выбор групп линий: compact field/action bounds fit card: SingleGroupButton
+PASS SAB · Выбор групп линий: compact field/action bounds fit card: MultipleGroupsButton
+CAPTURE LineGroupSelectionWindow-normal | 470x231 DIP | nativeDpi=96 renderDpi=96
+PASS Choice window sized to content and NoResize
+PASS SAB · Выбор следующей группы: one footer Help resolves installed module HTML
+PASS SAB · Выбор следующей группы: footer remains inside viewport
+PASS SAB · Выбор следующей группы: Help accepts WPF keyboard focus
+PASS SAB · Выбор следующей группы: WPF next-focus traversal is available
+PASS SAB · Выбор следующей группы: compact field/action bounds fit card: NextGroupButton
+PASS SAB · Выбор следующей группы: compact field/action bounds fit card: FinishButton
+CAPTURE LineGroupNextActionWindow-normal | 496x252 DIP | nativeDpi=96 renderDpi=96
+PASS Choice window sized to content and NoResize
+PASS SAB · Обрезка по примеру: one footer Help resolves installed module HTML
+PASS SAB · Обрезка по примеру: footer remains inside viewport
+PASS SAB · Обрезка по примеру: Help accepts WPF keyboard focus
+PASS SAB · Обрезка по примеру: WPF next-focus traversal is available
+PASS SAB · Обрезка по примеру: compact field/action bounds fit card: PickLineButton
+PASS SAB · Обрезка по примеру: compact field/action bounds fit card: CreateLineButton
+CAPTURE CropByExampleActionWindow-normal | 327x231 DIP | nativeDpi=96 renderDpi=96
+PASS Choice window sized to content and NoResize
+PASS SAB · Развёртка-пример: one footer Help resolves installed module HTML
+PASS SAB · Развёртка-пример: footer remains inside viewport
+PASS SAB · Развёртка-пример: Help accepts WPF keyboard focus
+PASS SAB · Развёртка-пример: WPF next-focus traversal is available
+CAPTURE CropByExampleLineCreationWindow-normal | 804x321 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Развёртка-пример: one footer Help resolves installed module HTML
+PASS SAB · Развёртка-пример: footer remains inside viewport
+PASS SAB · Развёртка-пример: Help accepts WPF keyboard focus
+PASS SAB · Развёртка-пример: WPF next-focus traversal is available
+CAPTURE CropByExampleLineCreationWindow-minimum | 744x281 DIP | nativeDpi=96 renderDpi=96
+PASS Source-derived real settings validator accepts fixture options
+PASS Source validator rejects invalid scale
+PASS Source sheet mode dependencies
+PASS Source no-sheet dependency
+PASS Source room mode mutual exclusion
+PASS Source host/link mutual exclusion
+PASS Original RichTextBox handler updates actual naming service result
+CAPTURE settings-long-formula | 1264x841 DIP | nativeDpi=96 renderDpi=96
+CAPTURE settings-render144 | 1264x841 DIP | nativeDpi=96 renderDpi=144
+PASS Production room VM starts with one invalid blank row
+PASS Production room VM validates completed fixture row
+PASS Production room validator rejects duplicate stable room IDs
+PASS Delete last room retains original blank-row contract
+PASS Original group action returns multiple=true
+PASS Original finish action returns next=false
+PASS Original crop action returns CreateLine
+PASS Original crop parser preserves negative numeric adjustment
+PASS Modeless initial gates
+PASS Synthetic PickLine response enables original source gate
+CAPTURE crop-line-selected | 804x321 DIP | nativeDpi=96 renderDpi=96
+PASS Synthetic CreateView response changes original source gates
+CAPTURE crop-sample-ready | 804x321 DIP | nativeDpi=96 renderDpi=96
+PASS Synthetic AcceptCrop completes separate session without API
+CAPTURE crop-accepted | 804x321 DIP | nativeDpi=96 renderDpi=96
+PASS Source decoration dependent controls enabled
+PASS Original decoration validation detects missing required types
+CAPTURE decoration-validation | 1084x841 DIP | nativeDpi=96 renderDpi=96
+PASS Catalog child returns without losing raw unsaved form input
+PASS Empty role uses real source collection
+CAPTURE catalog-empty | 1004x681 DIP | nativeDpi=96 renderDpi=96
+PASS Successful creation has green outcome and no warning block
+PASS Successful creation summary contains no zero/error/disabled rows
+PASS All plan and corner mark problems are separate warnings
+PASS All failed creation has red outcome and no false success summary
+PASS Failed views/unplaced/fallback all affect warning outcome
+PASS Repeated warning is deduplicated without losing other causes
+PASS Intentionally disabled sheet placement emits no problem or zero count
+PASS Single actual continuation sheet remains visible when different from target
+PASS No positive manual-placement claim when zero viewports were placed
+PASS Actual shared warning copy handler copies full warning text
+CAPTURE creation-notification-production | 416x423,52 DIP | nativeDpi=96 renderDpi=96
+PASS Notification uses actual plugin result composer: success
+PASS Creation outcome is emphasized: success
+PASS Creation outcome color: success
+CAPTURE creation-notification-success | 416x256 DIP | nativeDpi=96 renderDpi=96
+PASS Notification uses actual plugin result composer: warning
+PASS Creation outcome is emphasized: warning
+PASS Creation outcome color: warning
+PASS Warnings in filled readable frame: warning
+CAPTURE creation-notification-warning | 416x423 DIP | nativeDpi=96 renderDpi=96
+PASS Notification uses actual plugin result composer: error
+PASS Creation outcome is emphasized: error
+PASS Creation outcome color: error
+PASS Warnings in filled readable frame: error
+CAPTURE creation-notification-error | 416x281 DIP | nativeDpi=96 renderDpi=96
+PASS Notification uses actual plugin result composer: long
+PASS Creation outcome is emphasized: long
+PASS Creation outcome color: long
+PASS Warnings in filled readable frame: long
+CAPTURE creation-notification-long | 416x1360 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Очистить роль каталога?: one footer Help resolves installed module HTML
+PASS SAB · Очистить роль каталога?: footer remains inside viewport
+PASS SAB · Очистить роль каталога?: Help accepts WPF keyboard focus
+PASS SAB · Очистить роль каталога?: WPF next-focus traversal is available
+CAPTURE catalog-confirmation | 664x291 DIP | nativeDpi=96 renderDpi=96
+PASS Legacy constructed settings keep all spot categories
+PASS Schema1 migration retains all categories
+PASS Schema2 migration retains all categories
+PASS Schema3 migration retains all categories
+PASS Schema4 migration retains all categories
+PASS Schema5 migration retains all categories
+PASS Schema6 migration retains all categories
+PASS Schema7 migration retains all categories
+PASS Schema8 migration retains all categories
+PASS Schema9 roundtrip retains independent spot choices
+PASS Ceiling-only spots require only ceiling catalog role
+PASS Horizontal dimensions require FinishWall only
+PASS Both dimension directions require union of their catalog roles
+PASS All8category combinations persist: 0
+PASS Replacement preserves unselected category: 0 Spot.FinishFloor
+PASS Replacement preserves unselected category: 0 Spot.Ceiling
+PASS Replacement preserves unselected category: 0 Spot.StructuralSlab
+PASS All8category combinations persist: 1
+PASS Replacement preserves unselected category: 1 Spot.FinishFloor
+PASS Replacement preserves unselected category: 1 Spot.Ceiling
+PASS Replacement preserves unselected category: 1 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 1
+PASS All8category combinations persist: 2
+PASS Replacement preserves unselected category: 2 Spot.FinishFloor
+PASS Replacement preserves unselected category: 2 Spot.Ceiling
+PASS Replacement preserves unselected category: 2 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 2
+PASS All8category combinations persist: 3
+PASS Replacement preserves unselected category: 3 Spot.FinishFloor
+PASS Replacement preserves unselected category: 3 Spot.Ceiling
+PASS Replacement preserves unselected category: 3 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 3
+PASS All8category combinations persist: 4
+PASS Replacement preserves unselected category: 4 Spot.FinishFloor
+PASS Replacement preserves unselected category: 4 Spot.Ceiling
+PASS Replacement preserves unselected category: 4 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 4
+PASS All8category combinations persist: 5
+PASS Replacement preserves unselected category: 5 Spot.FinishFloor
+PASS Replacement preserves unselected category: 5 Spot.Ceiling
+PASS Replacement preserves unselected category: 5 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 5
+PASS All8category combinations persist: 6
+PASS Replacement preserves unselected category: 6 Spot.FinishFloor
+PASS Replacement preserves unselected category: 6 Spot.Ceiling
+PASS Replacement preserves unselected category: 6 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 6
+PASS All8category combinations persist: 7
+PASS Replacement preserves unselected category: 7 Spot.FinishFloor
+PASS Replacement preserves unselected category: 7 Spot.Ceiling
+PASS Replacement preserves unselected category: 7 Spot.StructuralSlab
+PASS Original window handler maps category checkboxes to production settings: 7
+PASS Empty spot categories rejected by real validator
+PASS Notification proposal is20percent narrower:416DIP
+PASS Notification proposal bold16DIP outcome
+CAPTURE notification-proposal | 416x1000 DIP | nativeDpi=96 renderDpi=96
+PASS SAB · Список помещений: one footer Help resolves installed module HTML
+PASS SAB · Список помещений: footer remains inside viewport
+PASS Shared table row/header geometry
+PASS Table has independent rounded frame
+PASS Header/value axis within one DIP: №
+PASS Header/value axis within one DIP: Номер помещения
+PASS Header/value axis within one DIP: Имя помещения
+PASS Header/value axis within one DIP: Групп линий
+PASS Header/value axis within one DIP: Выбрано линий
+PASS Header/value axis within one DIP: Статус
+PASS Actions header/group center within1DIP
+PASS SAB · Список помещений: Help accepts WPF keyboard focus
+PASS SAB · Список помещений: WPF next-focus traversal is available
+PASS Last room row reachable by bounded table scroll
+PASS Room icon actions retain vector content
+CAPTURE rooms-long-last-row-minimum | 944x481 DIP | nativeDpi=96 renderDpi=96
+PASS Catalog source role filter 0
+PASS Catalog source role filter 1
+PASS Catalog source role filter 2
+PASS Catalog source role filter 3
+PASS Catalog source role filter 4
+PASS Catalog source role filter 5
+PASS Catalog source role filter 6
+PASS Catalog source role filter 7
+PASS Original selection action returns request to controller
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+PASS Same source VM retains unsaved values across selection return
+PASS Original formula Enter handler suppresses newline
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+CAPTURE settings-selection-pending | 1264x841 DIP | nativeDpi=96 renderDpi=96
+PASS Incumbent progress16DIP and fixed window retained
+CAPTURE shared-progress | 504x246 DIP | nativeDpi=96 renderDpi=96
+PASS Original progress blocks premature close
+PASS Original progress completion releases close guard
+PASS Destructive confirmation retains production default No
+PASS Room Cancel preserves rows but does not transfer selection
+PASS Blank room blocks original Transfer action
+PASS Completed plus blank room cannot confirm selection
+PASS Validated source Transfer confirms selection
+PASS Next-group helper Cancel aborts without native-pick confirmation
+PASS Existing-line controller operation automatically reaches sample-ready gate
+CAPTURE crop-existing-sample-ready | 804x321 DIP | nativeDpi=96 renderDpi=96
+PASS Existing sheet requires original plan-selection validator
+PASS Synthetic point plus existing-plan selection satisfies original validator
+PASS Cancelled sheet pick preserves previous plan and coordinates
+PASS Crop action Cancel returns to same settings VM with unsaved input
+PASS SAB · Настройки развёрток: one footer Help resolves installed module HTML
+PASS SAB · Настройки развёрток: footer remains inside viewport
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Одно помещение=True;Несколько помещений=False
+PASS Capsule agrees with source VM: IsSingleRoomPerSheet
+PASS Capsule agrees with source VM: IsMultipleRoomsOnSheet
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Exactly one capsule option checked: Текущая модель=True;Связанный файл=False
+PASS Capsule agrees with source VM: PickRoomFromHost
+PASS Capsule agrees with source VM: PickRoomFromLink
+PASS Selected capsule has measured moving indicator
+PASS Capsule indicator matches checked source option
+PASS Capsule minimum fits shared track
+PASS Selected capsule has measured moving indicator
+PASS SAB · Настройки развёрток: Help accepts WPF keyboard focus
+PASS SAB · Настройки развёрток: WPF next-focus traversal is available
+PASS Cancelled crop action completed return through actual preview MainFlow
+NOT RUN Revit Document/transactions/native selection/ExternalEvent; physical keyboard/accessibility; OS DPI/monitor changes; browser launch
+COMPLETED

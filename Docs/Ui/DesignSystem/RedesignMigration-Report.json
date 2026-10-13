@@ -1,0 +1,1617 @@
+{
+  "schemaVersion": 1,
+  "task": "SAB1.1.0 Редизайн: approved production UI migration and standard MSI release",
+  "date": "2026-10-13",
+  "scope": "Production source/native WPF outside Revit; standard ReleaseMSI2022/2023/2024; installation not performed",
+  "sourceRevision": "565ebe7c2f3ced2611014b6e0363baa6ea5f1096 + reviewed dirty migration tree; release commit is recorded by Git",
+  "dirtyBaseline": "outputs/ui-production-preview/production-redesign-before.zip; prior user work preserved before migration",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/LayoutPatterns.md",
+    "Docs/Ui/DesignSystem/Elevations-Inventory.md",
+    "Tools/UiShowcase/elevations-production-migration.json",
+    "SAB/Cls_InteriorElevations/ViewModels/ElevationSettingsViewModel.cs",
+    "SAB/Cls_InteriorElevations/Commands/DecorateInteriorElevationsCommand.cs",
+    "SAB/UI/Notifications/NotificationCard.cs",
+    "SAB/UI/Notifications/NotificationStack.cs"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/Elevations-Layout.md",
+  "build": [
+    {
+      "command": "Tools/UiShowcase/Build.ps1 -Redesign",
+      "target": "Debug/net48/API2023 actual SAB.dll + source-derived session host",
+      "exitCode": 0
+    },
+    {
+      "command": "Build-Msi.bat (no version override)",
+      "target": "Release/Revit2022,2023,2024; MSI1.1.0 from FileVersion",
+      "exitCode": 0
+    },
+    {
+      "command": "Installer/Publish-GitHubRelease.ps1 -Version1.1.0 -ReleaseNameРедизайн -PrepareOnly",
+      "exitCode": 0
+    }
+  ],
+  "captures": {
+    "provenance": "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+    "actualAssertions": 225,
+    "actualPng": 59,
+    "isolatedSessionAssertions": 635,
+    "isolatedSessionPng": 44
+  },
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96,
+    144
+  ],
+  "independentReview": {
+    "role": "existingfeedback_finish_reviewer fallback after feedback05limit/capacity",
+    "disposition": "ship",
+    "scope": "All59actualPNG,6primaryuserimages,25migrationowners and source/APIboundaries; notRevit/installation/OS/physical",
+    "path": "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "approval": {
+    "approvedAt": "2026-10-12",
+    "productionMigrationAuthorized": true,
+    "installationAuthorized": false
+  },
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Inventory9active elevation windows, both previously migrated modules and shared notification owner; real Compile/XAML reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Approved Fluent Light resources; original progress retained; common production presentation without isolated UI replacements.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Formula/metadata aliases moved into shared SABFluentLight; all migrated windows use actual shared resources.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual naming/formula/apply/mode/draft handlers and preserved business source contracts tested; Revit API dispatch unverified. Immutable93baseline/8functional deltas/25migrationowners reconcile exact source changes; SourceHash114files tolerates LF/CRLF only and rejects content mutations.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Release compiled and MSI API references verified2022/2023/2024; actual Revit model transactions/geometry/native picking/ExternalEvent and native22runtime NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Explicit user approval12.10.2026 authorizes actual migration, standard MSI and commit/push/release1.1.0. Installation not requested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual SAB.dll constructors exercised in59native captures; all3ReleaseMSIs verified from embedded CAB.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Approved layout preserved; migration brief in Elevations-Layout; prior alternative composition decision remains historical.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "109actual elevation assertions/23PNG,81actual module assertions/27PNG and35actual notification assertions/9PNG; separated635isolatedsession assertions/44PNG.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Native runtime96DPI;144DPI captures are offscreen rendering only, not Windows150percent scaling. Actual SAB.dll WPF versus isolatedsessionfixtures recorded separately; realRevit/physicalinput/OSDPI-monitortransitions/nativeAPI22runtime NOTRUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Bounded normal/minimum/long/empty/validation/programmaticfocus states tested; full physical interaction/accessibility matrix NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Native Segoe UI/shared tokens; tab40/text14 and status16Bold measured and independently reviewed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Settled captures and indicator assertions pass; physical animation/reduced-motion quality and OS transitions NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Semantic headers, three independent selection cards and no decorative header glyphs; vector action icons retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Real rounded fields/collection contours and spatial dashed unfilled crop; emptyTargetSheetCard hidden in no-sheet mode and restored for New/Existing.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Empty default warning is collapsed and actual command no longer injects instruction prose; empty catalog keeps meaningful frame.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Visual field alignment and6measured tag pairs pass; every dynamic field edge not measured numerically.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Existing category preset validation/IDs/import routines tested in81module assertions; native FileDialog cancel and real fileI/O error flow NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual command default guidance removed; module descriptions stay out of windows; operational status/errors/results preserved.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Each working elevation window has one footer localHTML link; existing modules instruction paths checked; old progress retains explicit exemption; browser launch not exercised.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Host actual sources SourcePreview/NotificationPreview/RedesignProduction separated from14generated fixture copies;51component types tracked separately from complete state coverage.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No DockablePane in approved scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current70ID report and direct authority/status updated; historical evidence not overwritten; independent full reviewship in bounded native scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Existing actual dropdown open/edit captures retained; disclosure glyph direction was not asserted across all variants.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF module/elevation logs and59nativecaptures verify this criterion in the recorded outside-Revit scope; independent bounded ship. Original API/physical limitations remain.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual common notification416DIP, outcome16Bold, outline summary/filled warning and copy sections; bottomright16/newestbottom/growsup.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual shared copy handlers for IDs/support/warnings tested, including clipboard rejection feedback; physical input still unverified.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual NotificationLifetime active seconds, reading pause/resume and DispatcherTimer expiry tested; thin determinate progress retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual long notification text/body/stack bounded; title/status/close/timer visible; minimum and144offscreen capture separated from OS scaling.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual bottomrightstack, newestbottom, paused visible cards, focus and scroll retention tested; OSmonitor/DPI transitions unverified.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Actual parameter/result adapters and presentation tested; real Revit transaction/module-completion execution NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh stable launcher starts then reuses one exact-path current preview PID without rebuilding; current launch-check record retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/RedesignMigration-Launcher.json"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "All6actual tag dropdown/leader pairs have12DIP gap and centers within1DIP at minimum; source-derived normal/min matrix additionally preserved.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual room resize grows text columns and preserves fixed numeric/status/actions widths; independent visual review; exact header/group axes in source-derived same markup regression.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual compactchoice constructors honor SizeToContent/NoResize and centered actions; apply/group/finish handlers tested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Actual7UI→settings mappings, actualstorage8masks/schema1–8 migration and selected-role deletion gates pass outsideRevit; real geometry/transaction effect NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt",
+        "Tools/UiShowcase/elevations-production-migration.json"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual BuildNotification positive-only summary and all warnings/failures/fallback separation; actual sharedsuccess/warning/error cards416/16 shown; pure result cases and warning copy regression tested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-redesign-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-modules/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-redesign-notifications/verification.txt",
+        "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+        "Docs/Ui/DesignSystem/screenshots-redesign-sessions/verification.txt"
+      ],
+      "unverified": [
+        "Revit model geometry and transactions",
+        "Native Revit selection and ExternalEvent dispatch",
+        "Physical keyboard/accessibility",
+        "OS DPI and monitor transitions",
+        "Native API22 runtime"
+      ]
+    }
+  ]
+}

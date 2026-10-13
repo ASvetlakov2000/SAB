@@ -49,13 +49,16 @@ namespace SAB.InteriorElevations.Commands
                     warnings.Add("Не удалось загрузить настройки оформления: " + exception.Message);
                 }
 
+                IDictionary<string, string> decorationDraft = null;
                 ElevationDecorationWindow window;
                 while (true)
                 {
                     window = new ElevationDecorationWindow(document, savedSettings);
+                    window.RestoreDraft(decorationDraft);
                     bool? dialogResult = window.ShowDialog();
                     if (window.OpenCatalogRequested)
                     {
+                        decorationDraft = window.CaptureDraft();
                         if (document.ActiveView is ViewSheet)
                         {
                             ToastNotifier.ShowWarning(

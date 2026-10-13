@@ -7,7 +7,7 @@ const { pathToFileURL, fileURLToPath } = require('url');
 
 (async () => {
   const folder = path.resolve('Docs/PluginInstructions');
-  const output = path.resolve('outputs/instructions'); fs.mkdirSync(output, { recursive: true });
+  const output = path.resolve(process.env.SAB_INSTRUCTIONS_TEST_OUTPUT || 'outputs/ui-production-preview/instructions'); fs.mkdirSync(output, { recursive: true });
   const files = fs.readdirSync(folder).filter(f => f.endsWith('.html')).sort();
   if (files.length !== 23 || files.some(f => !f.startsWith('SAB_HTML_'))) throw Error('Expected SAB catalog and 22 current guides');
   const cssHash = crypto.createHash('sha256').update(fs.readFileSync(path.join(folder, 'assets/template.css'))).digest('hex');

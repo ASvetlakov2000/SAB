@@ -1,0 +1,37 @@
+{
+  "authorization": "User: independent spot categories including service replacement gates; final creation notification instead of report, clean success vs warnings. Production UI suite migration remains pending.",
+  "files": {
+    "SAB/Cls_InteriorElevations/Models/ElevationDecorationSettings.cs": {
+      "before": "8290a9bb097cae30b5ce20034b744d813e449f3518063e557dc5ba6e470ad2c8",
+      "after": "1612fb702cbe0e7112be6885295c0379b207bb043771f6b9e982df9cc750a54a"
+    },
+    "SAB/Cls_InteriorElevations/Services/Settings/ElevationDecorationSettingsStorageService.cs": {
+      "before": "e0cf00e1c46d1473314e2346f4f4d01d156f63daea78bc4c1a4585345404368b",
+      "after": "6ae6d13e1adcd1c82977432398f981888ab25cd8258838a42505ccfeeffbb6bd"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.cs": {
+      "before": "c0958985698e63d312db475b4be1759d39a4f7eed451d8efd8fac6215a9e1071",
+      "after": "49486fac76966385cc83793d795a03a3fad4d8f34f730e8d666acb76dc225987"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": {
+      "before": "241662d2da37c08a59a786d540e82a326397b9d500dd8cb4abae380e528862dc",
+      "after": "566579c342a3f73399198d9e42b8b84ac3fc7ae0156e94a4f1e468b63a742aa3"
+    },
+    "SAB/Cls_InteriorElevations/Services/Annotations/ElevationDecorationService.cs": {
+      "before": "5dabf0021c5a62b4d628c0dee9ded99c24152895fb5744d37dd317cfd77700a1",
+      "after": "9aaa6dc70e400093b2fd6b0318e4c25dea9f176f48253cecfabf2b59e3ac07bd"
+    },
+    "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs": {
+      "before": "6c58b0f10e2c78b2099a7138c7e8851f754ffcd95c2b082dad34e467e3b5b2ea",
+      "after": "599aa1ff37680e85c3b4b9b7c526bb5cda326ef37438461abfceeb4e030f49c3"
+    },
+    "SAB/Cls_InteriorElevations/Services/Annotations/ElevationAnnotationOwnershipService.cs": {
+      "before": "03583524c24281ca0a47a1bf96db5997f23a42de758bfaa69d757a3af3155a9a",
+      "after": "0c4ec0fc8583cffd33bf0abd412e7475a48180ab2d7bb6ceecc082c86253d46f"
+    },
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "0821b2ec595511653310265eccf2df189fe5ecbae6fd2e40818080954a7bd1cd",
+      "after": "feb4ffce0578e1f49291e795930cb7a5d6f3d929d3f8e02dadc75c85f33db997"
+    }
+  }
+}

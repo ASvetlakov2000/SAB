@@ -1,0 +1,58 @@
+﻿Native visual DPI 96x96. 144 dpi shots are RenderTargetBitmap scaling, not an OS display-setting change.
+SHOT 00-FluentLight.png | 1184x801 DIP | render 96 dpi
+SHOT 01-FluentCompact.png | 1184x801 DIP | render 96 dpi
+SHOT 02-MinimalSaas.png | 1184x801 DIP | render 96 dpi
+SHOT 03-Unified.png | 1184x801 DIP | render 96 dpi
+PASS Identical reference dataset: 8 rules
+PASS Unified resources resolve at runtime
+PASS Actual TextBox edit reaches Rule through Binding
+PASS Save command validates and saves in memory
+PASS Add command selects new rule
+PASS Remove command removes selected rule
+PASS ParameterPicker controls instantiated in real grid
+PASS Parameter search is local to each picker
+SHOT 10-parameter-search.png | 1184x801 DIP | render 96 dpi
+PASS Popup has a rendered visual
+SHOT 10b-parameter-popup.png | popup visual, separate HWND
+SEARCH open=True text=Площадь selected=SAB_Материал_Имя dc=Материал — имя
+KEY Return param=SAB_Элемент_Площадь model=SAB_Элемент_Площадь
+PASS Enter commits the filtered parameter through binding
+PASS Escape resets filter and preserves the committed parameter
+SHOT 11-tab-1.png | 1184x801 DIP | render 96 dpi
+SHOT 12-tab-2.png | 1184x801 DIP | render 96 dpi
+SHOT 13-tab-3.png | 1184x801 DIP | render 96 dpi
+PASS Category search filters visible categories
+PASS Space toggles the selected category
+PASS WPF validation error appears from IDataErrorInfo
+SHOT 20-validation-error.png | 1184x801 DIP | render 96 dpi
+SHOT 21-disabled.png | 1184x801 DIP | render 96 dpi
+SHOT 22-empty.png | 1184x801 DIP | render 96 dpi
+PASS Empty table offers an add action
+SHOT 23-focus.png | 1184x801 DIP | render 96 dpi
+PASS Keyboard focus reaches the editable entity field
+SHOT 24-minimum-long-text.png | 964x641 DIP | render 96 dpi
+SHOT 25-minimum-144dpi.png | 964x641 DIP | render 144 dpi
+PASS Primary action remains visible at minimum size
+SHOT 31-gallery-1.png | 1184x801 DIP | render 96 dpi
+SHOT 41-gallery-1-144dpi.png | 1184x801 DIP | render 144 dpi
+SHOT 32-gallery-2.png | 1184x801 DIP | render 96 dpi
+SHOT 42-gallery-2-144dpi.png | 1184x801 DIP | render 144 dpi
+SHOT 33-gallery-3.png | 1184x801 DIP | render 96 dpi
+SHOT 43-gallery-3-144dpi.png | 1184x801 DIP | render 144 dpi
+SHOT 51-pattern-1.png | 1184x801 DIP | render 96 dpi
+SHOT 52-pattern-2.png | 1184x801 DIP | render 96 dpi
+SHOT 53-pattern-3.png | 1184x801 DIP | render 96 dpi
+SHOT 54-pattern-4.png | 1184x801 DIP | render 96 dpi
+SHOT 55-pattern-5.png | 1184x801 DIP | render 96 dpi
+DockablePane capture: inner content scrolled to bottom; footer remains fixed.
+SHOT 56-pattern-6.png | 1184x801 DIP | render 96 dpi
+SHOT 60-components-bottom.png | 1184x801 DIP | render 96 dpi
+SHOT 61-states-bottom.png | 1184x801 DIP | render 96 dpi
+SHOT 62-loading.png | 1184x801 DIP | render 96 dpi
+PASS Loading state reports progress and disables repeat action
+SHOT 63-toast.png | 1184x801 DIP | render 96 dpi
+PASS DataGrid virtualizes 1008 rows
+SHOT 04-Unified-144dpi.png | 1184x801 DIP | render 144 dpi
+No Autodesk/Revit references or API calls. No production Window/ViewModel compiled into preview.
+Hover/pressed are interactive states in the templates; capture suite does not claim native mouse screenshots. OS multi-monitor DPI transition requires manual check.
+COMPLETED

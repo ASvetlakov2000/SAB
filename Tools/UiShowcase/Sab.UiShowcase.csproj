@@ -1,0 +1,34 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+    <Platform Condition="'$(Platform)'==''">AnyCPU</Platform>
+    <ProjectGuid>{679A6F78-BF1B-432C-A613-4CFEB24BDF67}</ProjectGuid>
+    <OutputType>WinExe</OutputType><RootNamespace>SAB.UiShowcase</RootNamespace>
+    <AssemblyName>SAB.UI.Preview</AssemblyName><TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <PlatformTarget>x64</PlatformTarget><LangVersion>latest</LangVersion>
+    <PluginDirectory Condition="'$(PluginDirectory)'==''">..\..\outputs\ui-production-preview\plugin\</PluginDirectory>
+    <RevitApiDirectory Condition="'$(RevitApiDirectory)'==''">C:\Program Files\Autodesk\Revit 2023</RevitApiDirectory>
+    <OutputPath>$(PluginDirectory)</OutputPath><DebugSymbols>true</DebugSymbols>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Xaml"/><Reference Include="System.Web.Extensions"/>
+    <Reference Include="WindowsBase"/><Reference Include="PresentationCore"/><Reference Include="PresentationFramework"/>
+    <Reference Include="SAB"><HintPath>$(PluginDirectory)SAB.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="RevitAPI"><HintPath>$(RevitApiDirectory)\RevitAPI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="RevitAPIUI"><HintPath>$(RevitApiDirectory)\RevitAPIUI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Newtonsoft.Json"><HintPath>$(PluginDirectory)Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- v0.1 sources are retained as history and excluded from the new host. -->
+    <Compile Include="SourcePreview.cs"/>
+    <Compile Include="NotificationPreview.cs"/>
+    <Compile Include="ElevationPreview.cs"/>
+    <Compile Include="RedesignProduction.cs"/>
+    <Compile Include="..\..\outputs\ui-production-preview\elevations-source\*.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Windows\PresentationFoundation\v4.0\Microsoft.WinFX.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\Windows\PresentationFoundation\v4.0\Microsoft.WinFX.targets')"/>
+</Project>

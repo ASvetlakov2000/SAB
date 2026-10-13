@@ -80,37 +80,46 @@ namespace SAB.ParameterTools.UI
                 Value = Profile.Levels.FirstOrDefault(x => x.LevelUniqueId == level.LevelUniqueId)?.Value }).ToList();
             _rules = new ObservableCollection<Rule>(Profile.Rules);
             _corpora = new ObservableCollection<CorpusItem>(Profile.Corpora.Select(c => new CorpusItem { Name = c }));
-            Title = "Настройки параметров"; Width = 1120; Height = 820; MinWidth = 980; MinHeight = 680; Theme.Window(this);
-            _status = Theme.Text(""); _status.MaxHeight = 64; _status.FontSize = 12;
-            _tabs = new TabControl(); Theme.Tabs(_tabs);
+            Title = "Настройки параметров"; Width = 1400; Height = 920; MinWidth = 980; MinHeight = 820; FluentTheme.Window(this);
+            _status = FluentTheme.Text(""); _status.Tag = "SabExplanation"; _status.MaxHeight = 64; _status.FontSize = 12;
+            _tabs = new TabControl(); FluentTheme.Tabs(_tabs);
             RulesTab(); SourcesTab(); LevelsTab(); CategoriesTab();
             _tabs.SelectionChanged += (s, e) => { if (!ReferenceEquals(e.Source, _tabs)) return;
                 if (_tabs.SelectedIndex == 1) RefreshSources(); if (_tabs.SelectedIndex == 2) RefreshValues(); };
             var footer = new DockPanel(); var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-            var instructions = Theme.Button("Инструкция", (s, e) => {
+            var instructions = FluentTheme.Button("Инструкция", (s, e) => {
                 string error;
                 if (!SAB.Instructions.InstructionLauncher.TryOpen(SAB.Instructions.InstructionLauncher.ParametersFile, out error))
                     MessageBox.Show(this, error, "Инструкция — заполнение параметров", MessageBoxButton.OK, MessageBoxImage.Information);
             });
             instructions.ToolTip = "Порядок настройки, работа с группами и разбор ошибок записи";
             DockPanel.SetDock(instructions, Dock.Left); footer.Children.Add(instructions);
-            buttons.Children.Add(Theme.Button("Отмена", (s, e) => Close()));
-            var save = Theme.Button("Сохранить настройки", (s, e) => Save()); Theme.Primary(this, save); buttons.Children.Add(save);
+            buttons.Children.Add(FluentTheme.Button("Отмена", (s, e) => Close()));
+            var save = FluentTheme.Button("Сохранить настройки", (s, e) => Save()); FluentTheme.Primary(this, save); buttons.Children.Add(save);
             DockPanel.SetDock(buttons, Dock.Right); footer.Children.Add(buttons); footer.Children.Add(_status);
             var body = new DockPanel(); var transfer = new StackPanel(); var transferButtons = new WrapPanel();
-            transferButtons.Children.Add(Theme.Button("Экспорт конфигурации…", (s, e) => TransferFile(false)));
-            transferButtons.Children.Add(Theme.Button("Импорт конфигурации…", (s, e) => TransferFile(true)));
-            transferButtons.Children.Add(Theme.Text("Правила и значения можно передать другому пользователю."));
-            transfer.Children.Add(transferButtons);
-            _configurationStatus = Theme.Text(""); _configurationStatus.Visibility = System.Windows.Visibility.Collapsed;
+            transferButtons.Children.Add(FluentTheme.Button("Экспорт конфигурации", (s, e) => TransferFile(false)));
+            transferButtons.Children.Add(FluentTheme.Button("Импорт конфигурации", (s, e) => TransferFile(true)));
+            var auxiliary = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+            footer.Children.Remove(instructions); auxiliary.Children.Add(instructions);
+            auxiliary.Children.Add(new TextBlock { Text = "Конфигурация", VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12,0,12,0), Foreground = (System.Windows.Media.Brush)FindResource("SabBrush.TextSecondary") });
+            foreach(var button in transferButtons.Children.OfType<Button>()) button.Content = ((string)button.Content).StartsWith("Импорт") ? "Импорт" : "Экспорт";
+            auxiliary.Children.Add(transferButtons);
+            footer.Children.Remove(_status); footer.Children.Remove(buttons);
+            DockPanel.SetDock(auxiliary,Dock.Left); footer.Children.Add(auxiliary);
+            DockPanel.SetDock(buttons,Dock.Right); footer.Children.Add(buttons);
+            var footerRoot = new StackPanel();
+            var statusFrame = SAB.UI.FluentLight.Presentation.Status(_status); statusFrame.Padding = new Thickness(12,0,12,0); statusFrame.MinHeight = 34; statusFrame.Margin = new Thickness(0,0,0,8); _status.Tag = null;
+            footerRoot.Children.Add(statusFrame); footerRoot.Children.Add(footer);
+            _configurationStatus = FluentTheme.Text(""); _configurationStatus.Visibility = System.Windows.Visibility.Collapsed;
             transfer.Children.Add(new ScrollViewer { Content = _configurationStatus, MaxHeight = 100, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
             DockPanel.SetDock(transfer, Dock.Top); body.Children.Add(transfer); body.Children.Add(_tabs);
-            Theme.Frame(this, "Настройки параметров", "Здесь задаются правила. Запись в элементы выполняется отдельной командой «Занести параметры».", body, footer);
+            FluentTheme.Frame(this, "Настройки параметров", "Здесь задаются правила. Запись в элементы выполняется отдельной командой «Занести параметры».", body, footerRoot);
             ObserveRules(); _rules.CollectionChanged += (s, e) => { ObserveRules(); ScheduleSources(); ScheduleStatus(); };
             foreach (var category in _categories) category.PropertyChanged += (s, e) => ScheduleStatus();
             ObserveCorpora(); _corpora.CollectionChanged += (s, e) => { ObserveCorpora(); if (_corpusCount != null) _corpusCount.Text = _corpora.Count.ToString(); ScheduleStatus(); };
             RefreshSources(); UpdateStatus();
-            Loaded += (s, e) => SAB.UI.SabLayoutAssist.Apply(this);
+            Loaded += (s, e) => SAB.UI.FluentLight.Presentation.Decorate(this);
         }
         private static ParameterRef Match(IList<ParameterRef> list, ParameterRef parameter)
         { return parameter == null ? null : list.FirstOrDefault(p => !string.IsNullOrEmpty(parameter.SharedGuid) ? string.Equals(p.SharedGuid, parameter.SharedGuid, StringComparison.OrdinalIgnoreCase) : p.Id == parameter.Id); }
@@ -156,11 +165,11 @@ namespace SAB.ParameterTools.UI
             _configurationStatus.Visibility = System.Windows.Visibility.Visible; _tabs.SelectedIndex = 0;
         }
         private void Tab(string title, UIElement content)
-        { _tabs.Items.Add(new TabItem { Header = title, Content = new Border { Padding = new Thickness(0, 10, 0, 0), Child = content } }); }
+        { _tabs.Items.Add(new TabItem { Header = title, Content = new Border { Padding = new Thickness(0), Child = content } }); }
         private FrameworkElement Combo(object source, string path, System.Collections.IEnumerable items, bool choices = false)
         {
             if (!choices) {
-                var parameter = new ParameterPicker { Parameters = items, Margin = new Thickness(4) };
+                var parameter = new ParameterPicker { Parameters = items, Margin = new Thickness(0,4,0,4) };
                 parameter.SetBinding(ParameterPicker.SelectedParameterProperty, Bind(source, path));
                 parameter.AddHandler(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler((s, e) => ScheduleStatus()));
                 return parameter;
@@ -186,7 +195,7 @@ namespace SAB.ParameterTools.UI
         private static Binding Bind(object source, string path)
         { return new Binding(path) { Source = source, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged }; }
         private void Field(System.Windows.Controls.Panel panel, string label, UIElement input)
-        { panel.Children.Add(Theme.Text(label, true)); panel.Children.Add(input); }
+        { panel.Children.Add(FluentTheme.Text(label, true)); panel.Children.Add(input); }
         private DataGrid GridFor(object source)
         {
             var grid = new DataGrid { ItemsSource = source as System.Collections.IEnumerable, AutoGenerateColumns = false, CanUserAddRows = false,
@@ -204,13 +213,13 @@ namespace SAB.ParameterTools.UI
         {
             if (!choices) {
                 var parameter = new FrameworkElementFactory(typeof(ParameterPicker)); parameter.SetValue(ParameterPicker.ParametersProperty, items);
-                parameter.SetValue(FrameworkElement.MarginProperty, new Thickness(4, 0, 4, 0));
+                parameter.SetValue(FrameworkElement.MarginProperty, new Thickness(0));
                 parameter.SetBinding(ParameterPicker.SelectedParameterProperty, new Binding(path) { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
                 parameter.AddHandler(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler((s, e) => ScheduleStatus()));
                 grid.Columns.Add(new DataGridTemplateColumn { Header = header, Width = new DataGridLength(weight, DataGridLengthUnitType.Star), CellTemplate = new DataTemplate { VisualTree = parameter } }); return;
             }
             var picker = new FrameworkElementFactory(typeof(ComboBox)); picker.SetValue(ItemsControl.ItemsSourceProperty, items);
-            picker.SetValue(ItemsControl.DisplayMemberPathProperty, choices ? "Label" : "Name"); picker.SetValue(FrameworkElement.MarginProperty, new Thickness(4, 0, 4, 0));
+            picker.SetValue(ItemsControl.DisplayMemberPathProperty, choices ? "Label" : "Name"); picker.SetValue(FrameworkElement.MarginProperty, new Thickness(0));
             if (!choices) { picker.SetValue(ItemsControl.DisplayMemberPathProperty, ""); picker.SetValue(ItemsControl.ItemTemplateProperty, ParameterTemplate());
                 picker.SetValue(FrameworkElement.HeightProperty, double.NaN); picker.SetValue(FrameworkElement.MinHeightProperty, 62.0); }
             picker.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center); picker.SetValue(Control.VerticalContentAlignmentProperty, VerticalAlignment.Center);
@@ -222,20 +231,20 @@ namespace SAB.ParameterTools.UI
         }
         private void RulesTab()
         {
-            var root = new DockPanel(); var header = Theme.Text("Каждая строка записывает один параметр. Выберите параметр и источник, затем нажмите «Настроить источник». «Проверять» ищет пустые значения и не влияет на запись.");
+            var root = new DockPanel(); var header = FluentTheme.Text("Каждая строка записывает один параметр. Выберите параметр и источник, затем нажмите «Настроить источник». «Проверять» ищет пустые значения и не влияет на запись.");
             DockPanel.SetDock(header, Dock.Top); root.Children.Add(header);
             var bottom = new StackPanel();
-            _ruleExplanation = Theme.Text(""); _ruleExplanation.MaxHeight = 84;
+            _ruleExplanation = FluentTheme.Text(""); _ruleExplanation.Tag = "SabDataExplanation"; _ruleExplanation.MaxHeight = 84;
             bottom.Children.Add(_ruleExplanation);
-            var actions = new WrapPanel(); var add = Theme.Button("Добавить правило", (s, e) => AddRule()); Theme.Primary(this, add); actions.Children.Add(add);
-            var configure = Theme.Button("Настроить источник", (s, e) => {
+            var actions = new WrapPanel(); var add = FluentTheme.Button("Добавить правило", (s, e) => AddRule()); actions.Children.Add(add);
+            var configure = FluentTheme.Button("Настроить источник", (s, e) => {
                 if (!(_rulesGrid.SelectedItem is Rule rule)) { _status.Text = "Выберите строку правила, чтобы настроить её источник."; return; }
                 CommitGrids(); _sourceRuleId = rule.Id; _tabs.SelectedIndex = rule.Source == RuleValueSource.Constant || rule.Source == RuleValueSource.Mapping || rule.Source == RuleValueSource.ManualChoice ? 2 : 1;
                 if (_tabs.SelectedIndex == 2) RefreshValues(); else RefreshSources();
             });
-            configure.ToolTip = "Открыть настройки источника выбранной строки"; actions.Children.Add(configure); bottom.Children.Add(actions);
+            configure.ToolTip = "Открыть настройки источника выбранной строки"; actions.Children.Add(configure); DockPanel.SetDock(actions,Dock.Top); root.Children.Insert(1,actions); actions.Margin = new Thickness(0,0,0,12);
             DockPanel.SetDock(bottom, Dock.Bottom); root.Children.Add(bottom);
-            _rulesGrid = GridFor(_rules); _rulesGrid.MinRowHeight = 74; _rulesGrid.RowHeight = double.NaN;
+            _rulesGrid = GridFor(_rules); _rulesGrid.MinRowHeight = 44; _rulesGrid.RowHeight = double.NaN;
             _rulesGrid.SelectionChanged += (s, e) => UpdateRuleExplanation();
             CheckColumn(_rulesGrid, "Вкл.", "Enabled", 46);
             TextColumn(_rulesGrid, "Сущность / название", "EntityName", 1.05);
@@ -246,24 +255,25 @@ namespace SAB.ParameterTools.UI
             CheckColumn(_rulesGrid, "Проверять", "Required", 78);
             RowActions(_rulesGrid, (row, addRow) => { if (addRow) AddRule(); else if (row is Rule rule) _rules.Remove(rule); }, false);
             // Keep the identifiers readable when the native DataGrid is resized.
-            _rulesGrid.Columns[1].Width = 145; _rulesGrid.Columns[3].Width = 300;
-            _rulesGrid.Columns[4].MinWidth = 210;
-            root.Children.Add(_rulesGrid); Tab("Правила", Theme.Card(this, "Правила заполнения", root));
+            _rulesGrid.Columns[1].Width = new DataGridLength(1, DataGridLengthUnitType.Star); _rulesGrid.Columns[1].MinWidth = 150; _rulesGrid.Columns[3].Width = new DataGridLength(1.4, DataGridLengthUnitType.Star); _rulesGrid.Columns[3].MinWidth = 220;
+            _rulesGrid.Columns[4].MinWidth = 180;
+            root.Children.Add(_rulesGrid); Tab("Правила", SAB.UI.FluentLight.Presentation.TableCard(this, "Правила заполнения", root));
             if (_rules.Count > 0) _rulesGrid.SelectedIndex = 0;
         }
         private void UpdateRuleExplanation()
         {
             if (_ruleExplanation == null) return;
             var rule = _rulesGrid?.SelectedItem as Rule;
-            _ruleExplanation.Text = rule == null ? "Выберите строку: здесь появится пояснение её действия." :
+            _ruleExplanation.Text = rule == null ? "Строка не выбрана." :
                 (rule.Enabled ? "Будет записано: " : "Правило выключено: ") + (rule.Target?.Name ?? "параметр ещё не выбран") + " ← "
                 + (Sources.FirstOrDefault(s => Equals(s.Value, rule.Source))?.Label ?? "источник не выбран")
-                + ". Название правила служит подписью и не определяет логику записи.\n" + (rule.Target?.Details ?? "Выберите параметр в таблице.");
+                + "\n" + (rule.Target?.Details ?? "Параметр не выбран.");
         }
         private void CheckColumn(DataGrid grid, string header, string path, double width)
         {
-            var style = new Style(typeof(CheckBox)); style.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center)); style.Setters.Add(new Setter(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center));
-            grid.Columns.Add(new DataGridCheckBoxColumn { Header = header, Binding = new Binding(path) { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged }, ElementStyle = style, EditingElementStyle = style, Width = width });
+            var style = new Style(typeof(CheckBox), (Style)FindResource(typeof(CheckBox))); style.Setters.Add(new Setter(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center)); style.Setters.Add(new Setter(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center));
+            var headerStyle = new Style(typeof(System.Windows.Controls.Primitives.DataGridColumnHeader), (Style)FindResource(typeof(System.Windows.Controls.Primitives.DataGridColumnHeader))); headerStyle.Setters.Add(new Setter(Control.PaddingProperty,new Thickness(4,0,4,0))); headerStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty,HorizontalAlignment.Center));
+            grid.Columns.Add(new DataGridCheckBoxColumn { Header = header, HeaderStyle = headerStyle, Binding = new Binding(path) { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged }, ElementStyle = style, EditingElementStyle = style, Width = width });
         }
         private void AddRule()
         {
@@ -273,17 +283,17 @@ namespace SAB.ParameterTools.UI
         private void RowActions(DataGrid grid, Action<object, bool> action, bool includePlus)
         {
             var panel = new FrameworkElementFactory(typeof(StackPanel)); panel.SetValue(StackPanel.OrientationProperty, Orientation.Horizontal);
-            panel.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center);
+            panel.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center); panel.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center); panel.SetValue(FrameworkElement.MarginProperty, new Thickness(8,0,8,0));
             foreach (var plus in includePlus ? new[] { true, false } : new[] { false })
             {
-                var isPlus = plus; var button = new FrameworkElementFactory(typeof(Button)); button.SetValue(ContentControl.ContentProperty, isPlus ? "+" : "×");
+                var isPlus = plus; var button = new FrameworkElementFactory(typeof(Button)); button.SetValue(ContentControl.ContentTemplateProperty, FluentTheme.ActionIcon(isPlus));
                 button.SetValue(FrameworkElement.ToolTipProperty, isPlus ? "Добавить строку ниже" : "Удалить строку"); button.SetValue(FrameworkElement.WidthProperty, 28.0);
                 button.SetValue(System.Windows.Automation.AutomationProperties.NameProperty, isPlus ? "Добавить строку ниже" : "Удалить строку");
                 button.SetValue(FrameworkElement.MinWidthProperty, 28.0); button.SetValue(FrameworkElement.HeightProperty, 28.0); button.SetValue(Control.PaddingProperty, new Thickness(0));
-                button.SetValue(FrameworkElement.MarginProperty, new Thickness(2)); button.SetValue(Control.FontSizeProperty, 18.0);
+                button.SetValue(FrameworkElement.MarginProperty, new Thickness(4,0,4,0)); button.SetValue(Control.FontSizeProperty, 18.0);
                 button.AddHandler(Button.ClickEvent, new RoutedEventHandler((s, e) => action(((FrameworkElement)s).DataContext, isPlus))); panel.AppendChild(button);
             }
-            grid.Columns.Add(new DataGridTemplateColumn { Header = "", Width = includePlus ? 68 : 34, CellTemplate = new DataTemplate { VisualTree = panel } });
+            grid.Columns.Add(new DataGridTemplateColumn { Header = "Действия", Width = 88, CellTemplate = new DataTemplate { VisualTree = panel } });
         }
         private void SourcesTab()
         {
@@ -305,34 +315,34 @@ namespace SAB.ParameterTools.UI
         {
             if (_corpusGrid != null) { _corpusGrid.CommitEdit(DataGridEditingUnit.Row, true); _grids.Remove(_corpusGrid); _corpusGrid = null; }
             _sourcesPanel.Children.Clear(); var rules = _rules.Where(r => r.Enabled).ToList();
-            if (rules.Count == 0) { _sourcesPanel.Children.Add(Theme.Text("Во вкладке «Правила» добавьте и включите хотя бы одну строку. Здесь появятся настройки её источника.")); return; }
+            if (rules.Count == 0) { _sourcesPanel.Children.Add(FluentTheme.Text("Во вкладке «Правила» добавьте и включите хотя бы одну строку. Здесь появятся настройки её источника.")); return; }
             var shared = new WrapPanel(); _sourcesPanel.Children.Add(shared);
             if (rules.Any(r => RuleEngine.UsesRoom(Profile, r)))
             {
                 var body = new StackPanel();
                 var mode = (ComboBox)Combo(Profile, "RoomSourceMode", new[] { new Choice(RoomSourceMode.ManualPick, "Выбрать вручную после команды"), new Choice(RoomSourceMode.Automatic, "Определить автоматически") }, true);
                 Field(body, "Как выбираем помещение", mode);
-                body.Children.Add(Theme.Text("Основной сценарий: выделите группу → «Занести параметры» → укажите помещение. Одно выбранное помещение используется для всего выделения; автоматическая проверка принадлежности не требуется."));
+                body.Children.Add(FluentTheme.Text("Основной сценарий: выделите группу → «Занести параметры» → укажите помещение. Одно выбранное помещение используется для всего выделения; автоматическая проверка принадлежности не требуется."));
                 var automatic = new StackPanel();
                 Field(automatic, "Сторона дверей и окон в автоматическом режиме", Combo(Profile, "DoorRoomSide", new[] {
                     new Choice(DoorRoomSide.RequireUnique, "Только однозначное помещение"), new Choice(DoorRoomSide.FromRoom, "Из помещения (FromRoom)"),
                     new Choice(DoorRoomSide.ToRoom, "В помещение (ToRoom)") }, true));
-                automatic.Children.Add(Theme.Text("Автоматически проверяются реальные координаты и контакты с помещениями текущего документа. Для стен, перекрытий, потолков и крыш нужен расчёт объёмов Revit. Несколько помещений или недостаточные данные — пропуск с причиной; ближайшее помещение не назначается."));
+                automatic.Children.Add(FluentTheme.Text("Автоматически проверяются реальные координаты и контакты с помещениями текущего документа. Для стен, перекрытий, потолков и крыш нужен расчёт объёмов Revit. Несколько помещений или недостаточные данные — пропуск с причиной; ближайшее помещение не назначается."));
                 automatic.Visibility = Profile.RoomSourceMode == RoomSourceMode.Automatic ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
                 mode.SelectionChanged += (s, e) => automatic.Visibility = Equals(mode.SelectedValue, RoomSourceMode.Automatic) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
                 body.Children.Add(automatic);
-                var card = Theme.Card(this, "Выбор помещения", body); card.Width = 433; shared.Children.Add(card);
+                var card = FluentTheme.Card(this, "Выбор помещения", body); card.Width = 433; shared.Children.Add(card);
             }
             if (rules.Any(r => RuleEngine.UsesLevel(Profile, r)))
             {
                 var body = new StackPanel(); Field(body, "Откуда брать уровень", Combo(Profile, "LevelSource", new[] { new Choice(LevelSource.ActivePlan, "Уровень текущего плана"), new Choice(LevelSource.Element, "Уровень элемента") }, true));
-                body.Children.Add(Theme.Text("Для выделения на нескольких этажах выберите «Уровень элемента». «Уровень текущего плана» обрабатывает только элементы этажа открытого плана."));
-                body.Children.Add(Theme.Button("Значения и сопоставления →", (s, e) => _tabs.SelectedIndex = 2)); var card = Theme.Card(this, "Уровень модели", body); card.Width = 433; shared.Children.Add(card);
+                body.Children.Add(FluentTheme.Text("Для выделения на нескольких этажах выберите «Уровень элемента». «Уровень текущего плана» обрабатывает только элементы этажа открытого плана."));
+                body.Children.Add(FluentTheme.Button("Значения и сопоставления →", (s, e) => _tabs.SelectedIndex = 2)); var card = FluentTheme.Card(this, "Уровень модели", body); card.Width = 433; shared.Children.Add(card);
             }
             var picker = new ComboBox { ItemsSource = rules.Select(r => new Choice(r.Id, r.ToString())).ToList(), SelectedValuePath = "Value", DisplayMemberPath = "Label", Margin = new Thickness(4), VerticalContentAlignment = VerticalAlignment.Center };
             if (!rules.Any(r => r.Id == _sourceRuleId)) _sourceRuleId = rules[0].Id; picker.SelectedValue = _sourceRuleId;
             picker.SelectionChanged += (s, e) => { _sourceRuleId = picker.SelectedValue as string; ScheduleSources(); };
-            _sourcesPanel.Children.Add(Theme.Text("Выберите правило, для которого настраиваете источник", true)); _sourcesPanel.Children.Add(picker);
+            _sourcesPanel.Children.Add(FluentTheme.Text("Выберите правило, для которого настраиваете источник", true)); _sourcesPanel.Children.Add(picker);
             foreach (var rule in rules.Where(r => r.Id == _sourceRuleId && r.Source != RuleValueSource.Level && r.Source != RuleValueSource.ManualCorpus))
             {
                 var body = new StackPanel(); var title = (rule.EntityName ?? Entity(rule.Group)) + " → " + (rule.Target?.Name ?? "параметр не выбран");
@@ -345,22 +355,22 @@ namespace SAB.ParameterTools.UI
                 }
                 else if (rule.Source == RuleValueSource.Constant || rule.Source == RuleValueSource.Mapping || rule.Source == RuleValueSource.ManualChoice)
                 {
-                    body.Children.Add(Theme.Text(rule.Source == RuleValueSource.Constant ? "Одна константа для этого правила, сохраняемая в текущей модели." : rule.Source == RuleValueSource.ManualChoice
+                    body.Children.Add(FluentTheme.Text(rule.Source == RuleValueSource.Constant ? "Одна константа для этого правила, сохраняемая в текущей модели." : rule.Source == RuleValueSource.ManualChoice
                         ? "Список значений задаётся в настройках; перед записью появится выбор. Последнее значение запоминается в модели." : "Исходное значение преобразуется по таблице. Если соответствия нет, запись пропускается с причиной."));
-                    body.Children.Add(Theme.Button("Значения и сопоставления →", (s, e) => _tabs.SelectedIndex = 2));
+                    body.Children.Add(FluentTheme.Button("Значения и сопоставления →", (s, e) => _tabs.SelectedIndex = 2));
                 }
                 else if (rule.Source == RuleValueSource.ElementParameter) Field(body, "Исходный параметр этого элемента", Combo(rule, "ElementParameter", _elementParameters));
-                _sourcesPanel.Children.Add(Theme.Card(this, title, body));
+                _sourcesPanel.Children.Add(FluentTheme.Card(this, title, body));
             }
             if (rules.Any(r => r.Id == _sourceRuleId && r.Source == RuleValueSource.ManualCorpus)) CorpusCard();
-            if (rules.Any(r => r.Id == _sourceRuleId && r.Source == RuleValueSource.Level)) _sourcesPanel.Children.Add(Theme.Text("Для этого правила заполните таблицу уровней во вкладке «Значения и сопоставления». На виде без определённого уровня появится выбор из заполненных строк."));
+            if (rules.Any(r => r.Id == _sourceRuleId && r.Source == RuleValueSource.Level)) _sourcesPanel.Children.Add(FluentTheme.Text("Для этого правила заполните таблицу уровней во вкладке «Значения и сопоставления». На виде без определённого уровня появится выбор из заполненных строк."));
         }
         private void CorpusCard()
         {
-            var root = new DockPanel(); var count = new WrapPanel(); count.Children.Add(Theme.Text("Количество", true));
+            var root = new DockPanel(); var count = new WrapPanel(); count.Children.Add(FluentTheme.Text("Количество", true));
             _corpusCount = new TextBox { Text = _corpora.Count.ToString(), Width = 58, Margin = new Thickness(4), FontWeight = FontWeights.Normal }; count.Children.Add(_corpusCount);
-            count.Children.Add(Theme.Button("Задать", (s, e) => ResizeCorpora()));
-            var choose = Theme.Button("Выбрать корпус…", (s, e) => SaveCore(SettingsAction.AssignCorpus));
+            count.Children.Add(FluentTheme.Button("Задать", (s, e) => ResizeCorpora()));
+            var choose = FluentTheme.Button("Выбрать корпус…", (s, e) => SaveCore(SettingsAction.AssignCorpus));
             choose.ToolTip = "Сохранить настройки и назначить корпус выделенным элементам.";
             count.Children.Add(choose); DockPanel.SetDock(count, Dock.Top); root.Children.Add(count);
             if (_corpora.Count == 0) _corpora.Add(new CorpusItem { Name = "" });
@@ -370,7 +380,7 @@ namespace SAB.ParameterTools.UI
                 if (plus) _corpora.Insert(_corpora.IndexOf(item) + 1, new CorpusItem { Name = "" });
                 else if (_corpora.Count > 1) _corpora.Remove(item); else item.Name = "";
             }, true);
-            root.Children.Add(_corpusGrid); _sourcesPanel.Children.Add(Theme.Card(this, "Корпуса для ручного выбора", root));
+            root.Children.Add(_corpusGrid); _sourcesPanel.Children.Add(FluentTheme.Card(this, "Корпуса для ручного выбора", root));
         }
         private void ObserveCorpora() { foreach (var item in _corpora) { item.PropertyChanged -= CorpusChanged; item.PropertyChanged += CorpusChanged; } }
         private void CorpusChanged(object sender, PropertyChangedEventArgs e) { ScheduleStatus(); }
@@ -389,7 +399,7 @@ namespace SAB.ParameterTools.UI
         {
             if (_valuesPanel == null) return;
             CommitGrids(); foreach (var old in _valueGrids) _grids.Remove(old); _valueGrids.Clear(); _valuesPanel.Children.Clear();
-            _valuesPanel.Children.Add(Theme.Text("Значения правил текущей модели: константы, таблица уровней и соответствия «исходное значение → записываемое». Получатель и способ заполнения выбираются во вкладке «Правила». Для прямого копирования любого параметра помещения или элемента таблица не нужна."));
+            _valuesPanel.Children.Add(FluentTheme.Text("Значения правил текущей модели: константы, таблица уровней и соответствия «исходное значение → записываемое». Получатель и способ заполнения выбираются во вкладке «Правила». Для прямого копирования любого параметра помещения или элемента таблица не нужна."));
             foreach (var rule in _rules.Where(r => r.Enabled && (r.Source == RuleValueSource.Constant || r.Source == RuleValueSource.Mapping || r.Source == RuleValueSource.ManualChoice)))
             {
                 var body = new StackPanel();
@@ -398,7 +408,7 @@ namespace SAB.ParameterTools.UI
                     var input = new TextBox { Margin = new Thickness(4) }; input.SetBinding(TextBox.TextProperty, Bind(rule, "Constant"));
                     input.TextChanged += (s, e) => ScheduleStatus(); Field(body, "Значение для подходящих элементов этой модели (включая 0)", input);
                 } else if (rule.Source == RuleValueSource.ManualChoice) {
-                    body.Children.Add(Theme.Text("Задайте допустимые значения. Перед каждым запуском будет предложен выбор, общий для подходящих элементов выделения. Последнее выбранное значение: " + (rule.LastManualValue ?? "ещё не выбрано") + ". Для записи без вопросов используйте «Постоянное значение»."));
+                    body.Children.Add(FluentTheme.Text("Задайте допустимые значения. Перед каждым запуском будет предложен выбор, общий для подходящих элементов выделения. Последнее выбранное значение: " + (rule.LastManualValue ?? "ещё не выбрано") + ". Для записи без вопросов используйте «Постоянное значение»."));
                     var choices = new ObservableCollection<CorpusItem>(rule.ManualValues.Select(v => new CorpusItem { Name = v }));
                     Action sync = () => { rule.ManualValues = choices.Select(v => v.Name).ToList(); ScheduleStatus(); };
                     Action observe = () => { foreach (var item in choices) { item.PropertyChanged -= ManualChanged; item.PropertyChanged += ManualChanged; } };
@@ -407,7 +417,7 @@ namespace SAB.ParameterTools.UI
                     var grid = GridFor(choices); grid.MinHeight = 100; grid.MaxHeight = 250; _valueGrids.Add(grid);
                     TextColumn(grid, "Значение для выбора перед записью", "Name", 1); grid.Columns[0].MinWidth = 220;
                     RowActions(grid, (row, plus) => { CommitGrids(); var item = (CorpusItem)row; if (plus) choices.Insert(choices.IndexOf(item) + 1, new CorpusItem()); else choices.Remove(item); }, true);
-                    body.Children.Add(grid); body.Children.Add(Theme.Button("Добавить значение", (s, e) => choices.Add(new CorpusItem())));
+                    body.Children.Add(grid); body.Children.Add(FluentTheme.Button("Добавить значение", (s, e) => choices.Add(new CorpusItem())));
                 } else {
                     var source = (ComboBox)Combo(rule, "MappingInput", MappingInputs, true); Field(body, "Откуда взять исходное значение", source);
                     var parameter = new StackPanel(); body.Children.Add(parameter);
@@ -427,32 +437,38 @@ namespace SAB.ParameterTools.UI
                     RowActions(grid, (row, plus) => { CommitGrids(); var item = (ValueMapping)row;
                         if (plus) rows.Insert(rows.IndexOf(item) + 1, new ValueMapping()); else rows.Remove(item); }, true);
                     rows.CollectionChanged += (s, e) => { rule.Mappings = rows.ToList(); ScheduleStatus(); };
-                    body.Children.Add(grid); body.Children.Add(Theme.Button("Добавить соответствие", (s, e) => rows.Add(new ValueMapping())));
-                    body.Children.Add(Theme.Text("Сопоставление точное; пробелы по краям исходного значения игнорируются. Нет строки или несколько строк — параметр не записывается."));
+                    body.Children.Add(grid); body.Children.Add(FluentTheme.Button("Добавить соответствие", (s, e) => rows.Add(new ValueMapping())));
+                    body.Children.Add(FluentTheme.Text("Сопоставление точное; пробелы по краям исходного значения игнорируются. Нет строки или несколько строк — параметр не записывается."));
                 }
-                _valuesPanel.Children.Add(Theme.Card(this, (rule.EntityName ?? Entity(rule.Group)) + (rule.Source == RuleValueSource.Constant ? " — постоянное значение"
+                _valuesPanel.Children.Add(FluentTheme.Card(this, (rule.EntityName ?? Entity(rule.Group)) + (rule.Source == RuleValueSource.Constant ? " — постоянное значение"
                     : rule.Source == RuleValueSource.ManualChoice ? " — выбор перед записью" : " — таблица сопоставления"), body));
             }
             var levelBody = new StackPanel();
             var levelTargets = _rules.Where(r => r.Enabled && RuleEngine.UsesLevel(Profile, r)).Select(r => r.Target?.Name).Where(n => n != null).ToList();
-            levelBody.Children.Add(Theme.Text("Существующая матрица сохранена. Получатели: " + (levelTargets.Count == 0 ? "правила с источником «Из модели: уровень»" : string.Join(", ", levelTargets)) + ". Привязка хранится по ID уровня, переименование её не ломает."));
+            levelBody.Children.Add(FluentTheme.Text("Существующая матрица сохранена. Получатели: " + (levelTargets.Count == 0 ? "правила с источником «Из модели: уровень»" : string.Join(", ", levelTargets)) + ". Привязка хранится по ID уровня, переименование её не ломает."));
             var levels = GridFor(Profile.Levels); levels.MinHeight = 130; levels.MaxHeight = 280; _valueGrids.Add(levels);
             TextColumn(levels, "Уровень модели", "LevelName", 2, true); TextColumn(levels, "Записываемое значение", "Value", 1);
             levels.Columns[0].MinWidth = 160; levels.Columns[1].MinWidth = 100;
             levelBody.Children.Add(levels);
-            _valuesPanel.Children.Add(Theme.Card(this, "Уровни → значения", levelBody));
+            _valuesPanel.Children.Add(FluentTheme.Card(this, "Уровни → значения", levelBody));
         }
         private void CategoriesTab()
         {
-            var root = new DockPanel(); var options = new StackPanel();
+            var root = new StackPanel(); var options = new StackPanel();
             var groups = new CheckBox { Content = "Обрабатывать элементы внутри выделенных групп, включая вложенные", Margin = new Thickness(4, 8, 4, 8) };
             groups.SetBinding(CheckBox.IsCheckedProperty, Bind(Profile, "ExpandSelectedGroups")); options.Children.Add(groups);
-            options.Children.Add(Theme.Text("В группе записываются только параметры, допускающие разные значения по экземплярам групп. Остальные пропускаются; отчёт содержит одну строку на параметр."));
+            options.Children.Add(FluentTheme.Text("В группе записываются только параметры, допускающие разные значения по экземплярам групп. Остальные пропускаются; отчёт содержит одну строку на параметр."));
             var extend = new CheckBox { Content = "Добавлять отсутствующие привязки параметров к выбранным категориям", Margin = new Thickness(4, 8, 4, 8),
                 ToolTip = "Расширяет категории существующего параметра проекта. Новые параметры не создаются; свойство изменения по группам сохраняется." };
             extend.SetBinding(CheckBox.IsCheckedProperty, Bind(Profile, "AddMissingCategoryBindings")); options.Children.Add(extend);
-            DockPanel.SetDock(options, Dock.Bottom); root.Children.Add(options);
-            root.Children.Add(new CategorySelectionControl(_categories)); Tab("Категории", Theme.Card(this, "Область заполнения", root));
+            var layout = new Grid(); layout.ColumnDefinitions.Add(new ColumnDefinition()); layout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(280) });
+            var categoryPicker = new CategorySelectionControl(_categories);
+            options.Children.Add(categoryPicker.DetachKeyboardHint());
+            groups.Content = new TextBlock { Text = (string)groups.Content, TextWrapping = TextWrapping.Wrap };
+            extend.Content = new TextBlock { Text = (string)extend.Content, TextWrapping = TextWrapping.Wrap };
+            var selectionCard = FluentTheme.Card(this,"Область заполнения",categoryPicker); selectionCard.Margin = new Thickness(0,0,16,0); layout.Children.Add(selectionCard);
+            var optionCard = FluentTheme.Card(this,"Обработка групп и привязки",new ScrollViewer { Content = options, VerticalScrollBarVisibility = ScrollBarVisibility.Auto }); optionCard.Margin = new Thickness(0); Grid.SetColumn(optionCard,1); layout.Children.Add(optionCard);
+            Tab("Категории",layout);
         }
         private void CommitGrids() { foreach (var grid in _grids) { grid.CommitEdit(DataGridEditingUnit.Cell, true); grid.CommitEdit(DataGridEditingUnit.Row, true); } }
         private static string Entity(ParameterGroup group) { return Groups.FirstOrDefault(c => Equals(c.Value, group))?.Label ?? "Сущность"; }

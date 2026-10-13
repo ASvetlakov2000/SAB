@@ -30,6 +30,9 @@ namespace SAB.InteriorElevations.Views
         private Button _okButton;
         private Button _cancelButton;
         private CheckBox _placeSpotElevations;
+        private CheckBox _placeFloorSpots;
+        private CheckBox _placeCeilingSpots;
+        private CheckBox _placeSlabSpots;
         private CheckBox _placeTags;
         private CheckBox _placeDimensions;
         private CheckBox _placeWallTags;
@@ -116,6 +119,7 @@ namespace SAB.InteriorElevations.Views
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
                 Height = loadedWindow.Height;
+                SizeToContent = loadedWindow.SizeToContent;
                 MinWidth = loadedWindow.MinWidth;
                 MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
@@ -134,7 +138,7 @@ namespace SAB.InteriorElevations.Views
                     WindowChrome.SetWindowChrome(this, (WindowChrome)loadedChrome.Clone());
                 }
 
-                WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationDecorationWindow.V1");
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.ElevationDecorationWindow.Redesign110");
             }
         }
 
@@ -147,6 +151,9 @@ namespace SAB.InteriorElevations.Views
             _okButton = Find<Button>("OkButton");
             _cancelButton = Find<Button>("CancelButton");
             _placeSpotElevations = Find<CheckBox>("PlaceSpotElevationsCheckBox");
+            _placeFloorSpots = Find<CheckBox>("PlaceFloorSpotsCheckBox");
+            _placeCeilingSpots = Find<CheckBox>("PlaceCeilingSpotsCheckBox");
+            _placeSlabSpots = Find<CheckBox>("PlaceSlabSpotsCheckBox");
             _placeTags = Find<CheckBox>("PlaceTagsCheckBox");
             _placeDimensions = Find<CheckBox>("PlaceDimensionsCheckBox");
             _placeWallTags = Find<CheckBox>("PlaceWallTagsCheckBox");
@@ -219,6 +226,7 @@ namespace SAB.InteriorElevations.Views
         {
             List<AnnotationTypeOption> options = new List<AnnotationTypeOption>();
             options.Add(CreateNoneOption());
+            if (_document == null) return options;
             options.AddRange(new FilteredElementCollector(_document)
                 .OfClass(typeof(SpotDimensionType))
                 .Cast<SpotDimensionType>()
@@ -235,6 +243,7 @@ namespace SAB.InteriorElevations.Views
         {
             List<AnnotationTypeOption> options = new List<AnnotationTypeOption>();
             options.Add(CreateNoneOption());
+            if (_document == null) return options;
             options.AddRange(new FilteredElementCollector(_document)
                 .OfCategory(category)
                 .WhereElementIsElementType()
@@ -252,6 +261,7 @@ namespace SAB.InteriorElevations.Views
         {
             List<AnnotationTypeOption> options = new List<AnnotationTypeOption>();
             options.Add(CreateNoneOption());
+            if (_document == null) return options;
             options.AddRange(new FilteredElementCollector(_document)
                 .OfClass(typeof(Level))
                 .Cast<Level>()
@@ -269,6 +279,7 @@ namespace SAB.InteriorElevations.Views
         {
             List<AnnotationTypeOption> options = new List<AnnotationTypeOption>();
             options.Add(CreateNoneOption());
+            if (_document == null) return options;
             options.AddRange(new FilteredElementCollector(_document)
                 .OfClass(typeof(DimensionType))
                 .Cast<DimensionType>()
@@ -309,6 +320,9 @@ namespace SAB.InteriorElevations.Views
         {
             ElevationDecorationSettings settings = _initialSettings ?? CreateDefaultSettings();
             _placeSpotElevations.IsChecked = settings.PlaceSpotElevations;
+            _placeFloorSpots.IsChecked = settings.PlaceFloorSpots;
+            _placeCeilingSpots.IsChecked = settings.PlaceCeilingSpots;
+            _placeSlabSpots.IsChecked = settings.PlaceSlabSpots;
             _placeTags.IsChecked = settings.PlaceTags;
             _placeDimensions.IsChecked = settings.PlaceDimensions;
             _placeWallTags.IsChecked = settings.PlaceWallTags;
@@ -405,6 +419,11 @@ namespace SAB.InteriorElevations.Views
             _cancelButton.Click += CancelButton_Click;
             _okButton.Click += OkButton_Click;
             _configureCatalogButton.Click += ConfigureCatalogButton_Click;
+            foreach (var toggle in new[] { _placeSpotElevations, _placeFloorSpots, _placeCeilingSpots, _placeSlabSpots,
+                _placeFinishFloorSpot, _placeSubfloorSpots, _placeStructuralBaseSpot, _placeTags, _placeWallTags,
+                _placeFloorTags, _placeCeilingTags, _placePlinthTags, _placeDoorTags, _placeWindowTags,
+                _placeDimensions, _placeVerticalDimensions, _placeHorizontalDimensions })
+                toggle.Click += delegate { RefreshCatalogStatus(); };
             Loaded += Window_Loaded;
         }
 
@@ -439,6 +458,9 @@ namespace SAB.InteriorElevations.Views
             }
 
             bool placeSpotElevations = _placeSpotElevations.IsChecked == true;
+            bool placeFloorSpots = placeSpotElevations && _placeFloorSpots.IsChecked == true;
+            bool placeCeilingSpots = placeSpotElevations && _placeCeilingSpots.IsChecked == true;
+            bool placeSlabSpots = placeSpotElevations && _placeSlabSpots.IsChecked == true;
             bool placeTags = _placeTags.IsChecked == true;
             bool placeDimensions = _placeDimensions.IsChecked == true;
             bool placeWallTags = placeTags && _placeWallTags.IsChecked == true;
@@ -455,6 +477,8 @@ namespace SAB.InteriorElevations.Views
             {
                 validationErrors.Add("Состав: выберите хотя бы один вид оформления.");
             }
+            if (placeSpotElevations && !placeFloorSpots && !placeCeilingSpots && !placeSlabSpots)
+                validationErrors.Add("Высотные отметки: выберите полы, потолки или перекрытия.");
             if (placeTags && !placeWallTags && !placeFloorTags &&
                 !placeCeilingTags && !placePlinthTags && !placeDoorTags &&
                 !placeWindowTags)
@@ -516,12 +540,12 @@ namespace SAB.InteriorElevations.Views
 
             if (placeSpotElevations)
             {
-                AddMissingSelection(
+                if (placeFloorSpots) AddMissingSelection(
                     validationErrors,
                     _floorSpotType,
                     "Высотные отметки: тип для пола",
                     "типы высотных отметок");
-                AddMissingSelection(
+                if (placeCeilingSpots || placeSlabSpots) AddMissingSelection(
                     validationErrors,
                     _overheadSpotType,
                     "Высотные отметки: тип для потолка/ЖБ-перекрытия",
@@ -571,6 +595,9 @@ namespace SAB.InteriorElevations.Views
             SelectedSettings = new ElevationDecorationSettings
             {
                 PlaceSpotElevations = _placeSpotElevations.IsChecked == true,
+                PlaceFloorSpots = _placeFloorSpots.IsChecked == true,
+                PlaceCeilingSpots = _placeCeilingSpots.IsChecked == true,
+                PlaceSlabSpots = _placeSlabSpots.IsChecked == true,
                 PlaceTags = _placeTags.IsChecked == true,
                 PlaceDimensions = _placeDimensions.IsChecked == true,
                 PlaceWallTags = placeWallTags,
@@ -668,6 +695,54 @@ namespace SAB.InteriorElevations.Views
                 MessageBoxImage.Warning);
         }
 
+        // Draft UI state survives the API-context catalog workflow, including unfinished numbers.
+        public IDictionary<string, string> CaptureDraft()
+        {
+            var draft = new Dictionary<string, string>();
+            foreach (FrameworkElement control in DraftControls(Content as DependencyObject))
+            {
+                if (string.IsNullOrEmpty(control.Name)) continue;
+                var input = control as TextBox;
+                var toggle = control as System.Windows.Controls.Primitives.ToggleButton;
+                var combo = control as ComboBox;
+                if (input != null) draft[control.Name] = input.Text;
+                else if (toggle != null) draft[control.Name] = toggle.IsChecked == true ? "true" : "false";
+                else if (combo != null && combo.SelectedItem is AnnotationTypeOption)
+                    draft[control.Name] = ((AnnotationTypeOption)combo.SelectedItem).Id.ToString();
+            }
+            return draft;
+        }
+
+        public void RestoreDraft(IDictionary<string, string> draft)
+        {
+            if (draft == null) return;
+            foreach (FrameworkElement control in DraftControls(Content as DependencyObject))
+            {
+                string value;
+                if (string.IsNullOrEmpty(control.Name) || !draft.TryGetValue(control.Name, out value)) continue;
+                var input = control as TextBox;
+                var toggle = control as System.Windows.Controls.Primitives.ToggleButton;
+                var combo = control as ComboBox;
+                if (input != null) input.Text = value;
+                else if (toggle != null) toggle.IsChecked = value == "true";
+                else if (combo != null)
+                {
+                    var option = combo.Items.OfType<AnnotationTypeOption>().FirstOrDefault(item => item.Id.ToString() == value);
+                    if (option != null) combo.SelectedItem = option;
+                }
+            }
+            RefreshCatalogStatus();
+        }
+
+        private static IEnumerable<FrameworkElement> DraftControls(DependencyObject root)
+        {
+            if (root == null) yield break;
+            if (root is FrameworkElement) yield return (FrameworkElement)root;
+            foreach (object child in LogicalTreeHelper.GetChildren(root))
+                if (child is DependencyObject)
+                    foreach (var control in DraftControls((DependencyObject)child)) yield return control;
+        }
+
         private void ConfigureCatalogButton_Click(object sender, RoutedEventArgs e)
         {
             OpenCatalogRequested = true;
@@ -700,8 +775,26 @@ namespace SAB.InteriorElevations.Views
         {
             ElevationDecorationCatalogService service =
                 new ElevationDecorationCatalogService();
-            return Enum.GetValues(typeof(ElevationDecorationCatalogRole))
-                .Cast<ElevationDecorationCatalogRole>()
+            var selection = new ElevationDecorationSettings {
+                PlaceSpotElevations = _placeSpotElevations.IsChecked == true,
+                PlaceFloorSpots = _placeFloorSpots.IsChecked == true,
+                PlaceCeilingSpots = _placeCeilingSpots.IsChecked == true,
+                PlaceSlabSpots = _placeSlabSpots.IsChecked == true,
+                PlaceFinishFloorSpotElevation = _placeFinishFloorSpot.IsChecked == true,
+                PlaceSubfloorSpotElevations = _placeSubfloorSpots.IsChecked == true,
+                PlaceStructuralBaseSpotElevation = _placeStructuralBaseSpot.IsChecked == true,
+                PlaceDimensions = _placeDimensions.IsChecked == true,
+                PlaceVerticalDimensions = _placeVerticalDimensions.IsChecked == true,
+                PlaceHorizontalDimensions = _placeHorizontalDimensions.IsChecked == true,
+                PlaceTags = _placeTags.IsChecked == true,
+                PlaceWallTags = _placeWallTags.IsChecked == true,
+                PlaceFloorTags = _placeFloorTags.IsChecked == true,
+                PlaceCeilingTags = _placeCeilingTags.IsChecked == true,
+                PlacePlinthTags = _placePlinthTags.IsChecked == true,
+                PlaceDoorTags = _placeDoorTags.IsChecked == true,
+                PlaceWindowTags = _placeWindowTags.IsChecked == true
+            };
+            return selection.RequiredCatalogRoles()
                 .Where(role => !service.HasRole(_catalog, role))
                 .ToList();
         }

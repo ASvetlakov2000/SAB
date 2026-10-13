@@ -23,13 +23,13 @@ namespace SAB.ParameterTools.UI
         private bool _updating, _cancelled;
         public ParameterPicker()
         {
-            MinHeight = 86; VerticalAlignment = VerticalAlignment.Center;
+            MinHeight = 34; VerticalAlignment = VerticalAlignment.Center;
             _combo = new ComboBox { IsEditable = true, IsTextSearchEnabled = false, StaysOpenOnEdit = true,
-                Height = 32, VerticalContentAlignment = VerticalAlignment.Center, ItemTemplate = Template(true), MaxDropDownHeight = 420,
+                Height = 34, VerticalContentAlignment = VerticalAlignment.Center, ItemTemplate = Template(true), MaxDropDownHeight = 420,
                 ToolTip = "Введите часть названия и выберите параметр из отфильтрованного списка. Одноимённые параметры различаются по GUID/ID." };
-            TextSearch.SetTextPath(_combo, "Name"); _combo.SetResourceReference(Control.ForegroundProperty, "SabBrush.Accent");
+            TextSearch.SetTextPath(_combo, "Name"); _combo.SetResourceReference(Control.ForegroundProperty, "SabBrush.Text");
             _details = new ContentControl { ContentTemplate = Template(false), Margin = new Thickness(8, 2, 4, 2), HorizontalContentAlignment = HorizontalAlignment.Stretch };
-            Children.Add(_combo); Children.Add(_details);
+            Children.Add(_combo); Children.Add(_details); Loaded += (s,e) => { DependencyObject parent = this; while(parent != null) { if(parent is DataGrid) { _details.Visibility = Visibility.Collapsed; break; } parent = System.Windows.Media.VisualTreeHelper.GetParent(parent); } };
             _combo.AddHandler(TextBox.TextChangedEvent, new TextChangedEventHandler(Search));
             _combo.SelectionChanged += (s, e) => {
                 if (_updating || e.AddedItems.Count == 0) return;

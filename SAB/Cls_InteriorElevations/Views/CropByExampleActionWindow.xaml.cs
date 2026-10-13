@@ -56,6 +56,7 @@ namespace SAB.InteriorElevations.Views
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
                 Height = loadedWindow.Height;
+                SizeToContent = loadedWindow.SizeToContent;
                 MinWidth = loadedWindow.MinWidth;
                 MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
@@ -68,7 +69,7 @@ namespace SAB.InteriorElevations.Views
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
 
-                WindowSizeSettingsService.Apply(this, "InteriorElevations.CropByExampleActionWindow.V4");
+                SabWindowBehaviorService.Apply(this);
             }
         }
 

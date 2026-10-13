@@ -1,0 +1,31 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <SolidColorBrush x:Key="SabBrush.WindowBackground" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="SabBrush.PanelBackground" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="SabBrush.TableHeaderBackground" Color="#FAFBFC" />
+  <SolidColorBrush x:Key="SabBrush.Border" Color="#DDE2E9" />
+  <SolidColorBrush x:Key="SabBrush.BorderWeak" Color="#EEF0F4" />
+  <SolidColorBrush x:Key="SabBrush.Text" Color="#202B3C" />
+  <SolidColorBrush x:Key="SabBrush.TextSecondary" Color="#626C7A" />
+  <SolidColorBrush x:Key="SabBrush.Accent" Color="#0F6CBD" />
+  <SolidColorBrush x:Key="SabBrush.AccentHover" Color="#095B9F" />
+  <SolidColorBrush x:Key="SabBrush.AccentLight" Color="#EAF3FF" />
+  <SolidColorBrush x:Key="SabBrush.Error" Color="#B42318" />
+  <SolidColorBrush x:Key="SabBrush.Warning" Color="#8A4B08" />
+  <SolidColorBrush x:Key="SabBrush.Success" Color="#067647" />
+  <SolidColorBrush x:Key="SabBrush.DisabledBackground" Color="#F2F4F7" />
+  <SolidColorBrush x:Key="SabBrush.DisabledText" Color="#667085" />
+  <SolidColorBrush x:Key="SabBrush.ScrollBarTrack" Color="Transparent" />
+  <SolidColorBrush x:Key="SabBrush.ScrollBarThumb" Color="#B6C0CE" />
+  <SolidColorBrush x:Key="SabBrush.ScrollBarThumbHover" Color="#8795A7" />
+  <SolidColorBrush x:Key="SabBrush.ScrollBarThumbPressed" Color="#65758C" />
+  <sys:Double x:Key="SabUi.ControlHeight">34</sys:Double>
+  <sys:Double x:Key="SabUi.RowHeight">66</sys:Double>
+  <sys:Double x:Key="SabUi.HeaderHeight">36</sys:Double>
+  <sys:Double x:Key="SabUi.TitleSize">24</sys:Double>
+  <Thickness x:Key="SabUi.PagePadding">28</Thickness>
+  <CornerRadius x:Key="SabUi.ControlRadius">3</CornerRadius>
+  <Thickness x:Key="SabUi.FieldBorder">0,0,0,1</Thickness>
+  <SolidColorBrush x:Key="SabUi.ErrorBackground" Color="#FEF3F2" />
+  <SolidColorBrush x:Key="SabUi.WarningBackground" Color="#FFFAEB" />
+  <SolidColorBrush x:Key="SabUi.SuccessBackground" Color="#ECFDF3" />
+</ResourceDictionary>

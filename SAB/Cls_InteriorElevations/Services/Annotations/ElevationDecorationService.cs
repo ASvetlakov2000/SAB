@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autodesk.Revit.DB;
@@ -53,9 +53,7 @@ namespace SAB.InteriorElevations.Services.Annotations
             }
 
             _catalog = _catalogService.Load();
-            List<ElevationDecorationCatalogRole> missingRoles = Enum
-                .GetValues(typeof(ElevationDecorationCatalogRole))
-                .Cast<ElevationDecorationCatalogRole>()
+            List<ElevationDecorationCatalogRole> missingRoles = settings.RequiredCatalogRoles()
                 .Where(role => !_catalogService.HasRole(_catalog, role))
                 .ToList();
             if (missingRoles.Count > 0)
@@ -267,8 +265,8 @@ namespace SAB.InteriorElevations.Services.Annotations
             ElevationDecorationSettings settings,
             IList<string> warnings)
         {
-            if (!IsValidSpotType(document, settings.FloorSpotElevationTypeId) ||
-                !IsValidSpotType(document, settings.OverheadSpotElevationTypeId))
+            if ((settings.PlaceFloorSpots && !IsValidSpotType(document, settings.FloorSpotElevationTypeId)) ||
+                ((settings.PlaceCeilingSpots || settings.PlaceSlabSpots) && !IsValidSpotType(document, settings.OverheadSpotElevationTypeId)))
             {
                 AddWarning(
                     warnings,
@@ -372,7 +370,7 @@ namespace SAB.InteriorElevations.Services.Annotations
             HostFaceCandidate finishFloor = FindFinishFloor(
                 finishFloorFaces,
                 floorReferenceElevation);
-            if (settings.PlaceFinishFloorSpotElevation && finishFloor == null)
+            if (settings.PlaceFloorSpots && settings.PlaceFinishFloorSpotElevation && finishFloor == null)
             {
                 AddWarning(
                     warnings,
@@ -387,7 +385,7 @@ namespace SAB.InteriorElevations.Services.Annotations
             HostFaceCandidate structuralBase = FindStructuralBase(
                 structuralFloorTopFaces,
                 floorReferenceElevation);
-            if (settings.PlaceStructuralBaseSpotElevation && structuralBase == null)
+            if (settings.PlaceFloorSpots && settings.PlaceStructuralBaseSpotElevation && structuralBase == null)
             {
                 AddWarning(
                     warnings,
@@ -413,7 +411,7 @@ namespace SAB.InteriorElevations.Services.Annotations
                 .OrderBy(candidate => candidate.Elevation)
                 .ToList();
             HostFaceCandidate upperSlab = slabCandidates.FirstOrDefault();
-            if (upperSlab == null)
+            if (settings.PlaceSlabSpots && upperSlab == null)
             {
                 AddWarning(
                     warnings,
@@ -423,12 +421,12 @@ namespace SAB.InteriorElevations.Services.Annotations
             }
 
             List<HostFaceCandidate> targets = new List<HostFaceCandidate>();
-            if (settings.PlaceFinishFloorSpotElevation && finishFloor != null)
+            if (settings.PlaceFloorSpots && settings.PlaceFinishFloorSpotElevation && finishFloor != null)
             {
                 targets.Add(finishFloor.WithRole("Spot.FinishFloor"));
             }
 
-            if (settings.PlaceSubfloorSpotElevations)
+            if (settings.PlaceFloorSpots && settings.PlaceSubfloorSpotElevations)
             {
                 AddUniqueElevationCandidates(
                     targets,
@@ -436,7 +434,7 @@ namespace SAB.InteriorElevations.Services.Annotations
                     "Spot.Subfloor");
             }
 
-            if (settings.PlaceStructuralBaseSpotElevation && structuralBase != null)
+            if (settings.PlaceFloorSpots && settings.PlaceStructuralBaseSpotElevation && structuralBase != null)
             {
                 targets.Add(structuralBase.WithRole("Spot.StructuralBase"));
             }
@@ -444,7 +442,7 @@ namespace SAB.InteriorElevations.Services.Annotations
             double maximumCeilingElevation = upperSlab != null
                 ? upperSlab.Elevation + UnitConversionUtils.MillimetersToFeet(ElevationToleranceMm)
                 : double.MaxValue;
-            AddUniqueElevationCandidates(
+            if (settings.PlaceCeilingSpots) AddUniqueElevationCandidates(
                 targets,
                 ceilingFaces
                     .Where(candidate =>
@@ -453,7 +451,7 @@ namespace SAB.InteriorElevations.Services.Annotations
                     .OrderBy(candidate => candidate.Elevation),
                 "Spot.Ceiling");
 
-            if (upperSlab != null)
+            if (settings.PlaceSlabSpots && upperSlab != null)
             {
                 targets.Add(upperSlab.WithRole("Spot.StructuralSlab"));
             }

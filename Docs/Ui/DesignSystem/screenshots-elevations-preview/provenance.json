@@ -1,0 +1,487 @@
+{
+  "scope": "Isolated source-derived preview outside Revit; not production UI migration",
+  "checksPassed": 635,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/catalog-confirmation.png",
+      "sha256": "64f759ccf70457129e52ef29441f5c41a5a445a4189bbe776d98e73a4741a7fb",
+      "width": 664,
+      "height": 291,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/catalog-empty.png",
+      "sha256": "2790f1bdb4d7155225aa7f5b5eb3cc09383fd07b8fbe67b3f3567de2c9e294eb",
+      "width": 1004,
+      "height": 681,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/creation-notification-error.png",
+      "sha256": "b62484bfeb0dccd0d792f99f9d3226cf895b5041d6e96bd3a2d3628db85c51ed",
+      "width": 416,
+      "height": 281,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/creation-notification-long.png",
+      "sha256": "a0bfc82bfb1239f47093515da6473b75cc7139e022f9c17d3413a0cfd7f76413",
+      "width": 416,
+      "height": 1360,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/creation-notification-production.png",
+      "sha256": "28443e94774ce6396222ba42a000490995d5948f46a713eccfb6dd773a6897f8",
+      "width": 520,
+      "height": 377,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/creation-notification-success.png",
+      "sha256": "1e04b5e74e7cd310f61a698c374cc1d31a936800b91a4d2ea1b176ce5addfb9c",
+      "width": 416,
+      "height": 256,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/creation-notification-warning.png",
+      "sha256": "f3aa726c1df5fb3309358a34dfc62c32c82a13cc599b2831f21ab416884d930d",
+      "width": 416,
+      "height": 423,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/crop-accepted.png",
+      "sha256": "4fee2c783e056ceab079f26e7aa65becbdc61c03604bb50321639929220363ed",
+      "width": 804,
+      "height": 321,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/crop-existing-sample-ready.png",
+      "sha256": "847c2634e501e32c07b31484395fca6380b6ee004eea1279712e3b79e0f8e5f1",
+      "width": 804,
+      "height": 321,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/crop-line-selected.png",
+      "sha256": "3f1a5da61421503dd72aebcfc1f892d27dd5cb95b7c025a4b12fdafbad81993e",
+      "width": 804,
+      "height": 321,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/crop-sample-ready.png",
+      "sha256": "847c2634e501e32c07b31484395fca6380b6ee004eea1279712e3b79e0f8e5f1",
+      "width": 804,
+      "height": 321,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/CropByExampleActionWindow-normal.png",
+      "sha256": "755fb1bc0fd34c3104b1690ae099b3de448dda7c4f47fb9640d98a9372587b48",
+      "width": 327,
+      "height": 231,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/CropByExampleLineCreationWindow-minimum.png",
+      "sha256": "e80bf6e10ecc11f61efad9ced2d2ff5f0f791f0980fda119d176213a49086a06",
+      "width": 744,
+      "height": 281,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/CropByExampleLineCreationWindow-normal.png",
+      "sha256": "a90ad0212782869bf357ae1b7f20fc54cc9c314acc8928043ac5da2a2f4a4e40",
+      "width": 804,
+      "height": 321,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/decoration-tags-minimum.png",
+      "sha256": "16b93bf3f9f653af18ea8ef5c2bb5e8563e78f235730607dd03d40872a08d247",
+      "width": 844,
+      "height": 581,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/decoration-tags.png",
+      "sha256": "f1969bc14ee4a45ed877250fbec79c7cbd67876821f1a8ad09c16bf49308195f",
+      "width": 1084,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/decoration-validation.png",
+      "sha256": "261cf8040ba50ff14a8c919f06438f407ff8b0932d05de60a367b6d3b823b08c",
+      "width": 1084,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationCropAdjustmentWindow-normal.png",
+      "sha256": "d9d6b539983081670080630fa5ece0a59de88b3094772b97a68a4b6a22134a1a",
+      "width": 516,
+      "height": 425,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationDecorationCatalogWindow-minimum.png",
+      "sha256": "e76a430bf1e66f2ef99467a32218ea4a58aecd46849611def8cd41f83be7d492",
+      "width": 804,
+      "height": 481,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationDecorationCatalogWindow-normal.png",
+      "sha256": "670a861110b5c8b62e7ab39ead521c4cb42678c6d04b0f118f5c7e473ecb2435",
+      "width": 1004,
+      "height": 681,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationDecorationWindow-minimum.png",
+      "sha256": "e52edc82ef92542b9329e769eab849dedc5387b88a6430f3b5113e07a637af8a",
+      "width": 844,
+      "height": 581,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationDecorationWindow-normal.png",
+      "sha256": "e6626722c222c525628bc271c586e78119ae7ee3e36a1dc3e5e3b527aa0d5a78",
+      "width": 1084,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-minimum-bottom.png",
+      "sha256": "aa44926e13604297ab1e610ce345172cbdb27690491496dfd2a652937c7b0e22",
+      "width": 1024,
+      "height": 611,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-minimum.png",
+      "sha256": "f6b17900d1e8dadfbccab10323e29a014d0f7f5d4eed984c4a4e19331197c331",
+      "width": 1024,
+      "height": 611,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-normal.png",
+      "sha256": "73dbfa851e8b76c82fdff4dc843cd5c506509a06aa888fcde1c74c5beac1ef22",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab0-minimum.png",
+      "sha256": "ef6a269345e4c8d43788da541a10e1413f347699f00f80867b0a8b9d14a07c75",
+      "width": 1024,
+      "height": 611,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab0.png",
+      "sha256": "73dbfa851e8b76c82fdff4dc843cd5c506509a06aa888fcde1c74c5beac1ef22",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab1-minimum.png",
+      "sha256": "8092967b467f0355b1c317135e96b53564b0211adde7a430ba3491652155a3ff",
+      "width": 1024,
+      "height": 611,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab1.png",
+      "sha256": "0f4a8420744a000213fe1b6e41504b3b86345015d6b57c62d57e9c0a55fbdd36",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab2-minimum.png",
+      "sha256": "b319165ab77d966f2a7929545ef7c30e07cff1bac745ff1b5632eb7795f1a7e4",
+      "width": 1024,
+      "height": 611,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab2.png",
+      "sha256": "90bd66b40935ae96d9bd55135bd909ac1be40dac6e775f61329a79d595c782a8",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab3-minimum.png",
+      "sha256": "f6b17900d1e8dadfbccab10323e29a014d0f7f5d4eed984c4a4e19331197c331",
+      "width": 1024,
+      "height": 611,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/ElevationSettingsWindow-tab3.png",
+      "sha256": "28f8938eda3eca98b6185a2dfee8fef18217e355bc542f10577bfe7c1dea76bf",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/LineGroupNextActionWindow-normal.png",
+      "sha256": "b6da5912fece6cbecfdc21991ec8819bedbb0a1bb7290301c96ac27949b1fd5f",
+      "width": 496,
+      "height": 252,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/LineGroupSelectionWindow-normal.png",
+      "sha256": "a208e20aefa1e4429c97e69a8fe4786eba789bfcfcbf838aff6c07133964707d",
+      "width": 470,
+      "height": 231,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/MultiRoomSelectionWindow-minimum.png",
+      "sha256": "542e730595159a2c8201516f8913a256b7a05020e849a59e86c3472cf7601432",
+      "width": 944,
+      "height": 481,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/MultiRoomSelectionWindow-normal.png",
+      "sha256": "e5f53666cab02d7732c6869bcaaf0fd54fb1c21a6ef33f32f3b198cdd1a21627",
+      "width": 1264,
+      "height": 701,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/notification-proposal.png",
+      "sha256": "83c6382a4e118c7c18f053d13b9e4dc6393d9a53bbed030d37eedb12e59c413a",
+      "width": 416,
+      "height": 1000,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/rooms-long-last-row-minimum.png",
+      "sha256": "5f9d5986788d3b9590d123743e72cd3b15af26e8d9ad1ca4c142f6cef9b17329",
+      "width": 944,
+      "height": 481,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/rooms-wide.png",
+      "sha256": "74a52ff1a98879b1d50f5e828b2800e2ed249255f940c4998172e5e4670b5602",
+      "width": 1524,
+      "height": 481,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/settings-long-formula.png",
+      "sha256": "6f918b888e8da4c7f895cd5e95ba01422b3609c6d247a12c550cd7f3b8ed5e0c",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/settings-render144.png",
+      "sha256": "51eb08512d16715814a08d5825b2ca5529337773ed0d5361a3ec74fbc16f2554",
+      "width": 1896,
+      "height": 1262,
+      "runtimeDpi": 96.0,
+      "renderDpi": 144.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/settings-selection-pending.png",
+      "sha256": "83e6bef2a4faf28e22f161732b25f952315a6f62aa898841f8747f2bdc766225",
+      "width": 1264,
+      "height": 841,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevations-preview/shared-progress.png",
+      "sha256": "1163f004fc7264b031e0add15fd34864f33af38fb98f3929e5ede0b51b267800",
+      "width": 504,
+      "height": 246,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "Actual source-derived WPF preview; explicit Document/session fixtures"
+    }
+  ],
+  "baselineFilesUnchanged": 85,
+  "authorizedFunctionalDelta": {
+    "authorization": "User: independent spot categories including service replacement gates; final creation notification instead of report, clean success vs warnings. Production UI suite migration remains pending.",
+    "files": {
+      "SAB/Cls_InteriorElevations/Models/ElevationDecorationSettings.cs": {
+        "before": "8290a9bb097cae30b5ce20034b744d813e449f3518063e557dc5ba6e470ad2c8",
+        "after": "1612fb702cbe0e7112be6885295c0379b207bb043771f6b9e982df9cc750a54a"
+      },
+      "SAB/Cls_InteriorElevations/Services/Settings/ElevationDecorationSettingsStorageService.cs": {
+        "before": "e0cf00e1c46d1473314e2346f4f4d01d156f63daea78bc4c1a4585345404368b",
+        "after": "6ae6d13e1adcd1c82977432398f981888ab25cd8258838a42505ccfeeffbb6bd"
+      },
+      "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.cs": {
+        "before": "c0958985698e63d312db475b4be1759d39a4f7eed451d8efd8fac6215a9e1071",
+        "after": "49486fac76966385cc83793d795a03a3fad4d8f34f730e8d666acb76dc225987"
+      },
+      "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": {
+        "before": "241662d2da37c08a59a786d540e82a326397b9d500dd8cb4abae380e528862dc",
+        "after": "566579c342a3f73399198d9e42b8b84ac3fc7ae0156e94a4f1e468b63a742aa3"
+      },
+      "SAB/Cls_InteriorElevations/Services/Annotations/ElevationDecorationService.cs": {
+        "before": "5dabf0021c5a62b4d628c0dee9ded99c24152895fb5744d37dd317cfd77700a1",
+        "after": "9aaa6dc70e400093b2fd6b0318e4c25dea9f176f48253cecfabf2b59e3ac07bd"
+      },
+      "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs": {
+        "before": "6c58b0f10e2c78b2099a7138c7e8851f754ffcd95c2b082dad34e467e3b5b2ea",
+        "after": "599aa1ff37680e85c3b4b9b7c526bb5cda326ef37438461abfceeb4e030f49c3"
+      },
+      "SAB/Cls_InteriorElevations/Services/Annotations/ElevationAnnotationOwnershipService.cs": {
+        "before": "03583524c24281ca0a47a1bf96db5997f23a42de758bfaa69d757a3af3155a9a",
+        "after": "0c4ec0fc8583cffd33bf0abd412e7475a48180ab2d7bb6ceecc082c86253d46f"
+      },
+      "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+        "before": "0821b2ec595511653310265eccf2df189fe5ecbae6fd2e40818080954a7bd1cd",
+        "after": "feb4ffce0578e1f49291e795930cb7a5d6f3d929d3f8e02dadc75c85f33db997"
+      }
+    }
+  },
+  "sourceContractSha256": "83ce5cdfc94e7c0a964f6c5b54711695327de32a6f02b8aee661431fc65b83b2",
+  "hostSources": {
+    "Tools/UiShowcase/ElevationPreview.cs": "2ce9e97969aab8956417ddeb2d41823e90416c9b01d8c7723c3b8ef029d5b86e",
+    "Tools/UiShowcase/GenerateElevationPreview.py": "58ae2868ac589fc6acfa714b73da1a2cd487be32815d7f77146b509a8571468d",
+    "Tools/UiShowcase/Sab.UiShowcase.csproj": "c505ce00c924f9d406e01b63a01c27644c15c122bd81b5bd2523a42b08cb6608"
+  },
+  "generatedSources": {
+    "outputs/ui-production-preview/elevations-source/CreateViewsAndSheetsProgressWindow.cs": "1053623cd6aa25d2f29c40f447bbc1dae8dd38eac225a9757e60ef5610023bf3",
+    "outputs/ui-production-preview/elevations-source/CropByExampleActionWindow.cs": "f7507470e0266f2bdb2c6a41f8bb8fe3b18d5c0792eef715d8368c3e205f6486",
+    "outputs/ui-production-preview/elevations-source/CropByExampleLineCreationWindow.cs": "9bcc07a1775bd0316217773eabcd339977a3484c8ca0c05c7a7374ef50376077",
+    "outputs/ui-production-preview/elevations-source/ElevationCropAdjustmentWindow.cs": "f0475028a967cea3952de17661e4d22e5e96b5b1d8903ef0e63f6e630720d9ee",
+    "outputs/ui-production-preview/elevations-source/ElevationDecorationCatalogWindow.cs": "c6512ef300993d57bfffecf6c7eac098771d858cf3164244e7e314adb0b25a07",
+    "outputs/ui-production-preview/elevations-source/ElevationDecorationWindow.cs": "81f5396271279659490077a8a0a634cf9d5a59a448190a6c20ad17df085eeb36",
+    "outputs/ui-production-preview/elevations-source/ElevationSettingsViewModel.cs": "0e8fe42ac030b351bc4fd00ed838e6fc5568a9d598a8cec49658b1c76a6d9acf",
+    "outputs/ui-production-preview/elevations-source/ElevationSettingsWindow.cs": "d018c891a4ae019658f7230eea00926827604c787538cb16d265536271c987be",
+    "outputs/ui-production-preview/elevations-source/LineGroupNextActionWindow.cs": "7c489b280e38f6ed99f715c394f6144ff25482a605a71534e29b65a85d22b2ca",
+    "outputs/ui-production-preview/elevations-source/LineGroupSelectionWindow.cs": "7d2cbc5842b272a3dc86b97377c68c73c2984fb528ca0c92aa49c7b00db1f62c",
+    "outputs/ui-production-preview/elevations-source/MultiRoomSelectionWindow.cs": "2ba2190704acf0258335a612b220db69ed0a017f74735a68cfc0ef50d9f92736",
+    "outputs/ui-production-preview/elevations-source/ProposalNotificationCard.cs": "d28efea3a49ec65ab7eb117799899dbb24698cdbbe4a996155287c3ab853428a",
+    "outputs/ui-production-preview/elevations-source/ProposalNotificationMessage.cs": "97fe1426c77562fcadd0baaedd9833468955700a5e2936e14c48098d00bcf35c",
+    "outputs/ui-production-preview/elevations-source/ProposalNotificationStack.cs": "aae6091420d39e1359fd23260be7b154c88f5b7d52615b078ae33aa0619e8894",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/CreateViewsAndSheetsProgressWindow.xaml": "fb22e0976bf77f6135914bb52ed2dc6a78eb509d28269681ba8e25223ec72c0c",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/CropByExampleActionWindow.xaml": "2985ba9a6da46e0efca8f5e653ea319bacb2efec194cba0676435581ee610ab1",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/CropByExampleLineCreationWindow.xaml": "3d5507d2186b1676b1e7de3fc5b75cab303a78f8e7938fc60d145c5c64c0409d",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/ElevationCropAdjustmentWindow.xaml": "bebc44471d79e948faeddca7ba8cdedd4d7204c21ffe7d450345ba94caac94b6",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/ElevationDecorationCatalogWindow.xaml": "09670e07087007ae4dfb8db17e9353df59510c32ef978631de0d8b344f580c63",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/ElevationDecorationWindow.xaml": "7183ff1b1c31b8c53acad1f1bcccdee290962b22ad73c116e90b797fd20529fe",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/ElevationSettingsWindow.xaml": "a790885499dc176b3fcc20939f23885e03cb2cd3e39a115b2d13b3fa04e707a0",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/LineGroupNextActionWindow.xaml": "203fcfd461a3ee67c2659c6e80d9da2a4380065c18662561ab3a7f011d908aaa",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/LineGroupSelectionWindow.xaml": "c2983c14a79e853d8c9438163d3ccd0d6b73545298336efe3ebb6180081dbe07",
+    "outputs/ui-production-preview/plugin/ElevationPreview/Views/MultiRoomSelectionWindow.xaml": "283c1edc6800357b988995b4282e9f5abb9f2e273ccc3f6188a11bc530a89a4b"
+  },
+  "loadedAssembly": {
+    "path": "outputs/ui-production-preview/plugin/SAB.dll",
+    "sha256": "975938d2dcfffe7fdd95600ee5460c7735c9a99cf5fbad8ad0757a6f1eb9e6f7",
+    "revitApiYear": 2023
+  },
+  "hostBinarySha256": "ce4e96da49531523e3f8b0b81ed0130b52b1937747e9b201125e9d77a68e2670",
+  "unverified": [
+    "Revit Document/transactions/native picking/ExternalEvent",
+    "Physical keyboard/accessibility",
+    "OS DPI and monitor transitions",
+    "Browser launch",
+    "API22 native runtime"
+  ],
+  "productionMigrationAuthorized": false,
+  "installationPerformed": false
+}

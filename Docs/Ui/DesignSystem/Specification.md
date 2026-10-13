@@ -1,0 +1,127 @@
+# SAB Fluent Light — единая актуальная спецификация
+
+Базовая визуальная версия0.5.0-source-review; текущий production-этап1.1.0 «Редизайн». [STATUS.json](STATUS.json) — единственный источник утверждения: **approved_for_production_migration; approvedConcept=FluentLightSource; approvedAt=2026-10-11; productionMigrationAuthorized=true; installationAuthorized=false**. Новый прямой запрос разрешил перенести ровно макеты0.5 в production двух модулей; это новое разрешение, а не ретроспективное утверждение исторических протоколов. Код перенесён; подтверждение выполнения, новые тесты и независимый verdict фиксируются отдельным отчётом миграции.
+
+Прямое утверждение пользователя12.10.2026 разрешило весь показанный комплект «Развёрток», общий notification416/status16 и tabs40/text14, production migration, штатный MSI и commit+push/release1.1.0 «Редизайн». Установка не разрешена. Исторический pending suite/proposal завершён этим новым разрешением; старые preview/review результаты не становятся production PASS. Фактические исходники перенесены, текущие build/MSI/review/release результаты фиксирует builder отдельно.
+
+Обязательная цепочка: [repo skill](../../../.agents/skills/sab-wpf-ui/SKILL.md) → STATUS → эта спецификация → [реестр70 проверок](ErrorRegistry.md) → [Workflow](Workflow.md) → [существующие роли](ReviewRoles.md). DESIGN/JSON описывают фактические ресурсы, не задают второй стандарт. Новое прямое требование пользователя имеет приоритет; конфликтующие нормы переносить в явную историю.
+
+## Функции и автономность
+
+Из картинки брать оформление и композиционные приёмы. Поля, значения, зависимости и команды — из кода SAB/задачи. Не выдумывать поиск, флажки строк или preview, которых нет в модуле. Разрешённое дополнение: Все/Выбранные и сохранение/загрузка категорий. Сохранять Binding, Command, DataContext, x:Name, handlers, VM, selection semantics и контекст Revit/ExternalEvent; дизайн не меняет алгоритмы. Проверять конфигурации .NET/Revit по проекту, не обновлять библиотеки ради оформления. Проверки001–005/053/054.
+
+Один общий визуальный каркас, несколько подходящих функции [Layout Patterns](LayoutPatterns.md). До UI-кода записать [Layout Specification](LayoutSpecification.md); для сложного окна сравнить2 схемы. Пользователь описывает функции; Codex выбирает обычную компоновку без повторных вопросов о цветах, отступах и контейнерах. Уточнять критический пробел функции или существенное отклонение от принятой системы.008/056.
+
+Разрешён текущий перенос **обоих** модулей: виды/листы с main и secondary settings; параметризация со всеми4 вкладками и настоящими ParameterPicker/CategorySelectionControl. Переносить ровно принятую композицию0.5, без новых вариантов. Это исторический scope11.10;12.10 отдельно разрешён весь показанный комплект «Развёрток». Остальные окна и установка не разрешены автоматически. Обычные цвета/отступы/контейнеры больше не требуют нового согласования.006/007; [остаток проверок](CoveragePlan.md).
+
+Прямой запрос12.10.2026 разрешил следующий этап: фактическое уведомление «Параметризации» по принятому дизайну, затем общий SAB-шаблон, затем правильный установочник через Build-Msi.bat. Установка не разрешена. Принятый дизайн11.10 и актуальная композиция/источники записаны в [Notification-Layout.md](Notification-Layout.md); notification-проверки059–064 дополняют нормы0.5, не изменяют прошлые approvals и доказательства миграции.
+
+## Ресурсы и токены
+
+Текущие владельцы: `SAB/UI/Styles/SABFluentLight.xaml`, `SAB/UI/FluentLight/Presentation.cs`, `SAB/UI/FluentLight/FluentResources.cs`, `SAB/Cls_ParameterTools/UI/FluentTheme.cs`. Main/secondary views XAML подключают scoped SABFluentLight; SettingsWindow параметров использует отдельный FluentTheme. Старые `SAB/UI/Styles/SABWindowStyles.xaml` и Theme в SmallWindows.cs сохранены; общие ресурсы Revit Application не переопределяются. CategorySelectionControl имеет локальный словарь, ParameterPicker сохраняет собственную view. Новый компонент добавлять в этот слой и [coverage](component-coverage.csv).003/007/048.
+
+Общий notification-слой — `SAB/UI/Notifications/{NotificationMessage,NotificationCard,NotificationStack}.cs` и notification-only styles в SABFluentLight; адаптер параметризации — `SAB/Cls_ParameterTools/UI/ParameterNotifications.cs`. SmallWindows.Toast теперь forwarding wrapper к нему; остальная legacy Theme и ReportWindow сохраняются. Общий компонент хранит строки/тон, без Revit DB objects/callbacks. Он не заменяет остальные notification-системы SAB автоматически.
+
+Build.ps1 собирает настоящие production-файлы без SourcePreview.targets/Compile-подмен; хост компилирует SourcePreview.cs, NotificationPreview.cs, ElevationPreview.cs/generated copies и RedesignProduction.cs. RedesignProduction открывает actual SAB.dll классы «Развёрток»; isolated session copies остаются отдельным scope. GenerateSourceViews.py — compatibility entry point к VerifyNotificationSource.py: проверяет исходники и записывает контракт, не генерирует UI. Старый трансформер хранится в [history](history/pre-migration-GenerateSourceViews.py.txt). Source-contract.json историчен; production-baseline.json/production-source-contract.json в Tools/UiShowcase фиксируют этап миграции до уведомлений и не переписываются под новые исходники. В том контракте десять бизнес-тел сравнивались по hash с единственной нормализацией FluentTheme.→Theme.; два тела имеют только это переименование, поэтому не называются побайтово неизменёнными. Последующие presentation call changes проверяются новым bounded notification proof отдельно. Code-behind main/secondary, их geometry persistence и VM/service layout не заменены.
+
+| Токен | Значение |
+|---|---|
+| Фон / поверхность | #F6F7FA / #FFFFFF |
+| Рамка / разделитель | #D6DEED / #E4E9F0 |
+| Основной / вторичный текст | #202B3C / #5A6780 |
+| Акцент / hover / selection | #0F6CBD / #095B9F / #E8F2FF |
+| Общие error / success / warning | #B42318 / #067647 / #8A4B08 |
+| Шрифт | Native Segoe UI24/16/13/12 DIP; source metadata11 |
+| Поля / текстовые кнопки |34 DIP, radius4; button paddingX12 |
+| Контейнер / коллекция | radius6, outline1 DIP |
+| Интервалы |8 действия;12 информационные блоки/под вкладками;16 карточки;20 колонки;24 страница |
+
+Вторичные кнопки нейтральные, основная синяя; текст по вертикальному центру. Не уменьшать шрифт ради сокрытия обрезки. Исходные локальные metadata brushes и цвета/символы VM-валидации сохраняются для точности, но не канонизируются как новые shared tokens.012/035/044.
+
+## Карточки, формы и инструкции
+
+- Отдельная карточка на смысловой раздел с header+content; без декоративных иконок/глифов заголовков и без карточек каждой строки. Сохранить условную Visibility.026/027.
+- Поля вертикальной формы имеют общие левый/правый края с labels/соседними рамками. Horizontal margin4 устраняется также в динамической фабрике ParameterPicker; интервалы horizontal toolbar/table editors сохраняются. Во вложенных рядах labels в Grid row0, fields34/actions28 в row1 с общим vertical center.033/034.
+- **В окнах нет описания назначения модуля или обучающих инструкций, даже коротких.** Не оставлять пустые рамки вместо текста. Labels, реальные metadata/errors/results/status сохранять. Metadata/status — светлый блок с рамкой; ready text «Настройки готовы.» без обучения.042/044.
+- Ровно1 footer «Инструкция» в каждом текущем/следующем окне, включая secondary settings → поставляемый локальный HTML модуля. Catalog fallback только для окна без собственного файла. Параметры: `SAB_HTML_Zapolnenie_parametrov.html`; виды/листы: `SAB_HTML_Sozdat_vidy_i_listy.html`.043.
+- Это правило footer относится к рабочим/настроечным окнам. Принятая transient notification-карточка содержит результат, копирование и закрытие; footer «Инструкция» в неё не добавлять.043 для этой поверхности N/A с такой причиной.
+- Сохранять имеющийся текстовый результат; не возвращать декоративные рисунки листа и не выдумывать preview в модуле где его нет.054.
+
+## Таблицы, списки и прокрутка
+
+- Все таблицы как виды/листы, включая «Правила»: header38, row44, horizontal separators1; без зебры/вертикальной сетки/постоянных cell outlines. При вводе одна focus-рамка.013/015.
+- Actions28×28, gap8/inset8, общий vertical center; «Действия» и точные доступные имена source ToolTip. Последний delete доступен на minimum.014/018/051.
+- Header/видимый text-editor — общая ось, left inset10 один раз. Numeric header/видимый editable text центрировать по одной оси (допуск1 DIP), проверять PART_EditableTextBox, не скрытый Label.016/017/058.
+- Каждая видимая вложенная DataGrid/ListBox/bound ItemsControl имеет1 contour1/radius6. Table frame inset16 от карточки; ItemsControl padding8. Переиспользовать category frame; у строк этажей только нижние разделители без второго полного frame.031/032.
+- Оболочка связанного ItemsControl без видимого содержимого не оставляет полоску18 DIP: CollectionChrome снимает её border/padding, сохраняя измерение дочернего содержимого/восстановление после заполнения. Это не правило скрывать рамку пустой DataGrid/ListBox: они сохраняют структурный контур и свой empty state. ClearRows возвращает исходную1 blank row, не0.030/052.
+- Все4 угла отсекать настоящей RectangleGeometry с учётом рамки; ClipToBounds недостаточен.028.
+- Длинное содержимое — в bounded region с неподвижной внешней рамкой; footer не перекрыт, продолжение доступно прокруткой, для длинных стеков fade12. Категории скроллят список, не всё окно.029/049/050.
+- Вертикальный DataGrid ScrollBar только в row area, ниже header и видимой верхней группы («Без раздела»). Header до края таблицы; group gutter получает фон/нижнюю линию группы без белого канала. Сохранить native parts/bindings/scrolling/group collapse; sticky groups не обещаны.045/046.
+- Обычные колонки помещаются на старте без лишнего horizontal bar; minimum/dynamic columns допускают прокрутку с доступными действиями. Текущий пример PlanKind150/ViewName min130 сохраняет полный «План стандартный».019.
+
+## Капсулы, вкладки и действия
+
+- Взаимоисключающие modes — capsule с движущимся индикатором; RadioButton/TabItem/GroupName/bindings/focus сохраняются. Независимые Enabled/Required/multiple selection не превращать в radio; категории — switches.020/053.
+- Outer min34, inner min30, inset2. Однострочная группа компактна как соседние кнопки; wrapped text растёт по содержимому с paddingY6. Сегменты общей высоты, indicator/radius по измерению. Скрытая опция не оставляет пустое место, одна опция занимает track−4.021/022.
+- Вкладки — capsule только по ширине headers, content не окрашивать. Текущий общий TabItem: Auto height, min40DIP, текст14, padding20,8; track и indicator измеряются по содержимому. Mode capsules сохраняют min34/30/inset2. До рабочей поверхности12 DIP во всех вкладках без двойного padding.023/024.
+- Движение160ms CubicEaseOut учитывает ClientAreaAnimation; выбор обновляется сразу. Static capture после settle (сейчас220ms), animation clock проверять отдельно.025.
+- Подписанный поиск непосредственно перед своей коллекцией; настройки/группы действий выше/рядом. Показать; Выборки:Сохранить/Загрузить; Выделение:Выделить все/Включить/Выключить. На узости переносить группу целиком.036/037.
+- Импорт/Экспорт конфигурации в footer рядом с Инструкцией, сгруппированы без описательного абзаца. Статус отдельной строкой, кнопки одного ряда одной высоты/gap8.038/055.
+- Не дублировать row plus второй кнопкой того же добавления; для фактически пустой коллекции один доступно названный plus.039.
+- Multiple selection:Все/Выбранные, Save/Load stable IDs +Format/Version; unknown IDs с отчётом, invalid/cancel без изменения выбора. Highlight не равен Selected.040/041.
+
+## Уведомления: результат и отдельные данные
+
+- Заголовок «SAB · Параметризация», текстовый исход «Завершено»/«Завершено с пропусками»/«Операция отменена»; для исходных служебных сообщений — «Сообщение». Цвет дополняет текст. Сводка — selectable read-only TextBox; нет обучающего prose. Крестик28 и Escape закрывают только свою карточку.059.
+- Только при наличии данных показывать подписанные блоки «ID элементов» и «Ошибка для поддержки». «Копировать ID» передаёт только положительные уникальные ID; «Копировать» — полный подготовленный контекст операции/параметра/элементов/причины/технических деталей. «Скопировано» только после успешного Clipboard.SetText; при исключении «Не скопировано» и причина в tooltip; feedback2секунды. Текст остаётся выделяемым.060/064.
+- Карточка: white/background/border из текущего словаря, outline1/radius6/padding16, ширина стека416DIP с ограничением work area. Title16Semibold, outcome16Bold, summary13 с line height20; code Consolas12/line height19.2, radius4/padding10,12. Это параметры общего notification-компонента, не новая глобальная типографика. Summary имеет прозрачный контур1/radius4/padding10; optional Warnings — отдельный selectable блок с серой заливкой/копированием. ID/support сохраняют neutral code frames. Header и footer остаются снаружи bounded scroll body; countdown12 и determinate ProgressBar высотой2.059/063.
+-10секунд активной полной видимости для каждой карточки. Stopwatch/monotonic delta; hover/focus/copy, невидимость, disabled/minimized owner приостанавливают расход. Снятие всех причин продолжает остаток, без reset после copy. Видимая строка показывает оставшиеся секунды; progress.Value отражает тот же остаток.061.
+- Один owner-bound немодальный stack Window, исключённый из общего SabWindowBehaviorService: новые снизу, рост стека вверх, gap12, независимые close/lifetimes, ShowActivated=false. Overflow сохраняет все карточки в bounded scrolling stack; частично/полностью невидимые не расходуют время. При добавлении во время чтения сохраняется позиция читаемой части. Закрытие последней/owner освобождает timer/events/static reference.062/063.
+- Позиционирование справа снизу work area монитора owner HWND, inset16; новые карточки у нижнего края, существующие поднимаются вверх. MonitorFromWindow/GetMonitorInfo/GetDpiForWindow и пересчёт каждые250ms. Наличие этой логики не доказывает реальные OS DPI/multi-monitor transitions: они NOT RUN без соответствующего окружения.063.
+- Адаптер берёт существующие counters/commit state/Issue данные синхронно в команде и формирует immutable текстовый DTO. Timer/input callbacks общего слоя выполняют clipboard/close/scroll, без Revit API/transactions. Исходный ReportWindow с сохранением/копированием/selection/show остаётся; краткое уведомление не подменяет полный отчёт.064.
+
+## Проверка и доказательства
+
+[Workflow](Workflow.md) обязателен для всех ролей. Каждый из65 ID получает applicability и PASS/FAIL/NOT RUN/N/A с доказательством и scope. Применимые состояния, длинный русский текст, minimum, последний столбец, keyboard проверять отдельно; один screenshot не закрывает все состояния.009–011/047/056–064.
+
+Исторический isolated preview до переноса: [27 native PNG0.5](screenshots-v0.5/), [75 программных PASS/COMPLETED](screenshots-v0.5/verification.txt), [source-contract](../../../Tools/UiShowcase/source-contract.json):135 main/103 secondary bindings,10 columns/10 unchanged methods. Full review0.5 был fix; финальный ship — по3 исправлениям Verdict Pass. [Протокол](FinishReview-0.5.md). Этот исторический verdict не заменяет новый production review; текущее approval получено отдельным прямым запросом. [Verification](Verification.md): Revit/Document/transactions/ExternalEvent, physical input/drag-drop/full keyboard/accessibility, actual browser launch, OS DPI transitions NOT RUN;144dpi только RenderTargetBitmap.
+
+Текущий production-хост использует actual SAB classes/resources с синтетическими DTO вне Revit. Новый пакет расположен в `screenshots-production-0.5`; его итоговые числа, provenance и независимый verdict сообщает отчёт миграции, а не исторические75 PASS. Этот documenter не запускал build/UI/capture и не объявляет новые runtime PASS. Installation, Revit Document/transactions/ExternalEvent, physical input/accessibility и OS DPI остаются отдельными проверками. Новый пользовательский дефект включать в реестр/общую проверку.
+
+Миграция двух модулей завершена отдельным [отчётом](ProductionMigration-Report.json)/[review](ProductionMigration-Review.md):27PNG/81native WPF PASS,25source checks относятся к тому этапу. Дополнение [Revit2022](Revit2022-Verification.md) подтверждает сборку, не native runtime/API22 execution. Эти proof/snapshot историчны относительно последующего notification-кода и не должны переписываться под него.
+
+Уведомления проверяются отдельным [native WPF-логом](screenshots-notifications/verification.txt) и9PNG в screenshots-notifications: actual SAB.dll classes, synthetic fixtures, real Windows clipboard success и injected failure, selectable text, bounded long text, stack/overflow.144dpi — RenderTargetBitmap, не системные150%. Свежий лог содержит35 PASS/COMPLETED; [независимый Verdict Pass](Notification-Review.md) дал scoped ship исправлению интеграции и показанным WPF-сценариям. Successor notification-source-contract.json содержит47source checks; applicability всей задачи фиксирует builder отдельно. Documenter не запускал UI/сборки. Revit execution/API22, physical hover/full keyboard/accessibility и реальные OS monitor/DPI transitions остаются NOT RUN. Table/capsule/category/source-picker критерии N/A только для самой notification-поверхности, не для затронутого module flow.
+
+Риск повторного использования: CategorySelectionControl также создаётся в legacy CategoryCheckWindow; внешняя legacy Theme-оболочка сохранена, но влияние нового контролa на это окно требует отдельной проверки. Не выдавать неизменность SmallWindows/global dictionary за доказательство отсутствия всех downstream-визуальных эффектов.
+
+## История, не текущие нормы
+
+[Отменённые правила](ErrorRegistry.md#отменённые-требования-и-история), [архив прежнего стандарта](history/Specification-through-0.5.txt). Redesign0.2/Refinement0.3–0.5/старые review сохраняют историю. Unified/UI-Lab, row86/sidebar300, жёсткие capsules34 и инструкции в рамках не применять. Прежнее согласование каждого окна отменено автономным workflow. Историческая gallery0.1 исключена из active csproj, её файлы не доказывают текущее coverage. Исторический Direction contract0.2 существует; нового approved comp/отдельного QUALITY BAR/five-block документа для0.5 нет.
+
+
+## Последние уточнения макетов «Развёрток» (12.10.2026)
+
+- Составное поле «тип марки + выноска»: структурный зазор12DIP, общий вертикальный центр≤1DIP. Generic field normalization не заменяет разделитель пары. Все6 пар проверяются normal/minimum, включая disabled/enabled. SAB-UI-066.
+- Таблица при горизонтальном растяжении: первая/последняя колонки следуют краям viewport. Растут только текстовые поля, служебные числовые/статус/действия остаются фиксированными. При нехватке места разрешён horizontal scroll. Actions header и геометрический центр всей группы кнопок совпадают≤1DIP; trailing margin не сдвигает группу. SAB-UI-067 и016.
+- Короткие диалоги выбора: NoResize, SizeToContent по кнопкам/заголовку, группа кнопок центрируется; лишней пустой карточки нет. SAB-UI-068.
+- Новые вкладки макетов: минимум40DIP, текст14; capsule mode selectors по-прежнему min34 и растут при переносе текста. Это уточнение текущей цели, ещё не перенос всех production-окон.
+- Независимые категории отметок Полы/Потолки/Перекрытия: прежний master switch остаётся. Schema9 хранит выбор,1–8 сохраняют прежнее включение всех категорий. Сервис отбирает цели/предупреждения по категориям; каталог требует только реальные роли выбранных операций. Горизонтальные размеры требуют FinishWall, вертикальные FinishFloor+Ceiling+StructuralSlab. SAB-UI-069.
+- Прогресс сохраняет прежнее окно и16DIP bar по прямому указанию пользователя. Для исходного progress HTML-footer N/A; функциональный close guard сохраняется.
+- Утверждённый общий notification template применён в production:416DIP вместо520, статус16Bold, summary в контуре без заливки, warning/copy секции с фоном; bottom-right/newest-bottom сохраняется. Прежний isolated proposal pending — история до approval12.10.
+
+История до approval12.10: сначала были разрешены только functional deltas и их MSI; оформление suite/proposal оставалось isolated. Этот scope заменён прямым утверждением всего комплекта. Первоначальный baseline93файла и historical635PASS/44PNG не перезаписывать; текущий production delta описан в Tools/UiShowcase/elevations-production-migration.json.
+
+
+## Уточнение развёрток: выбор, границы и итоговое уведомление
+
+Три самостоятельные карточки выбора: Высотные отметки над Размерами слева, Марки справа на общую высоту. Границы задаются пространственно вокруг прозрачного прямоугольника с пунктирным контуром, подписи/значения центрируются. Прежние combined WhatCreate и crop2×2 отменены последним запросом.
+
+Финальное создание развёрток выводит общий notification вместо modal report. Summary содержит только ненулевые успешные действия, листы с результатом; отдельный Warnings блок с серым фоном содержит все накопленные причины, FailedViews, неразмещённые виды и fallback. Цветные статусы: Success/Warning/Error по наличию результата и проблем. Исходный локальный диагностический журнал сохраняется. API objects читаются до открытия modeless UI; notification получает только строки. SAB-UI-070.
+
+Независимые категории высотных отметок управляют не только target creation, но и заменой прежних owned annotations: выключенная категория не удаляется при частичном оформлении. Проверять8комбинаций хранения/role gates и7валидных UI→model mappings. Показанный комплект утверждён12.10 и перенесён в9actual production views/classes; текущая VM имеет null-Document guard для host, реальные collectors остаются при наличии Document. Catalog CaptureDraft/RestoreDraft и command round trip сохраняют незаконченный raw input. Общие notification416/status16 и tabs40/text14 применены в production. Это не доказательство actual Revit/API/persistence runtime.
+
+## Текущий production-пакет1.1.0 «Редизайн»
+
+Владельцы:9 активных views/classes SAB/Cls_InteriorElevations, ElevationSettingsViewModel, catalog draft round trip в DecorateInteriorElevationsCommand; общий SABFluentLight/FluentLight и NotificationCard/Stack. [Production migration manifest](../../../Tools/UiShowcase/elevations-production-migration.json) фиксирует before/after файлов, отдельные прежние functional deltas не скрываются. Unreachable RoomPlanSchemeSettingsWindow не мигрируется как десятый active workflow; функция плана-схемы сохранена в main tab.
+
+Свежие COMPLETED native WPF пакеты: [actual production](screenshots-redesign-production/verification.txt)104PASS/21PNG; [shared notifications](screenshots-redesign-notifications/verification.txt)35PASS/9PNG; [прежние два модуля](screenshots-redesign-modules/verification.txt)81PASS/27PNG; [isolated sessions](screenshots-redesign-sessions/verification.txt)635PASS/44PNG. Их scope раздельный: sessions не actual production, DTO/Document-null host не Revit. Historical635/44 в screenshots-elevations-preview остаётся прежним approval packet. Build/MSI/independent review/release проверяются отдельно; не переносить предыдущий Installer PASS на1.1.0 без нового payload proof. Installation и Revit/physical input/OS transitions здесь NOT RUN.

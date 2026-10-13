@@ -1,0 +1,13 @@
+00-rules.png | 1120x820 | Production SettingsWindow; test data; tab 0
+01-sources.png | 1120x820 | Production SettingsWindow; test data; tab 1
+02-values.png | 1120x820 | Production SettingsWindow; test data; tab 2
+03-categories.png | 1120x820 | Production SettingsWindow; test data; tab 3
+04-editing.png | 1120x820 | Native DataGrid selected row and BeginEdit on entity name
+05-parameter-dropdown.png | 290x420 | Separate native ComboBox Popup visual; no compositing
+06-disabled.png | 1120x820 | Demo only: parameter combo and Save button disabled at runtime
+07-error.png | 1120x820 | Actual Problems/UpdateStatus path: first target missing; no save or Revit transaction
+08-empty-categories.png | 1120x820 | Actual category filter returning zero rows
+09-minimum.png | 980x680 | Production minimum size 980x680; same test data
+PASS: unchanged production SettingsWindow constructor; 4 tabs; native table edit, popup, disabled, validation, empty filter, minimum size.
+Runtime: .NET Framework 4.8 WPF; fresh SAB build for Revit 2023; Autodesk DLL resolution only, no running Revit or Document.
+Captures are RenderTargetBitmap of actual live WPF visuals, 96 dpi, not desktop screenshots. Entrance animation disabled for deterministic capture.

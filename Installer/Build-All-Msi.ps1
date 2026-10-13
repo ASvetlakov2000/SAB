@@ -42,6 +42,8 @@ function Resolve-RevitApiDirectory {
 
     $candidates = @((Join-Path $env:ProgramFiles "Autodesk\Revit $Year"))
     if ($Year -eq "2022") {
+        $workspaceRoot = Split-Path -Parent (Split-Path -Parent $repositoryRoot)
+        $candidates += Join-Path $workspaceRoot "lib\Revit2022"
         $candidates += Join-Path $scriptRoot ".tools\Revit2022Api"
     }
 
@@ -54,9 +56,11 @@ function Resolve-RevitApiDirectory {
             continue
         }
 
-        $actualMajorVersion = (Get-Item -LiteralPath $revitApiPath).VersionInfo.FileMajorPart
-        if ($actualMajorVersion -ne $expectedMajorVersion) {
-            throw "Expected Revit $Year API (version $expectedMajorVersion), found version $actualMajorVersion in: $candidate"
+        foreach ($apiPath in @($revitApiPath, $revitApiUiPath)) {
+            $actualMajorVersion = [Reflection.AssemblyName]::GetAssemblyName($apiPath).Version.Major
+            if ($actualMajorVersion -ne $expectedMajorVersion) {
+                throw "Expected Revit $Year API (version $expectedMajorVersion), found version $actualMajorVersion in: $apiPath"
+            }
         }
 
         return $candidate
@@ -189,8 +193,21 @@ foreach ($year in @("2022", "2023", "2024")) {
         throw "MSI file was not generated: $msiPath"
     }
 
+    # Each target has the same product version but different API references. Isolate
+    # reflection metadata in a fresh AppDomain/process instead of reusing year2022.
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $scriptRoot "Verify-MsiPayload.ps1") -MsiPath $msiPath -BinFolder $buildOutputPath -Year $year
+    if ($LASTEXITCODE -ne 0) { throw "MSI payload verification for Revit $year failed." }
+
     Write-Host "Built: $msiPath"
 }
 
 Write-Host ""
 Write-Host "All Revit installers were built successfully."
+$hashLines = foreach ($year in @("2022", "2023", "2024")) {
+    $msiPath = Join-Path $installerOutputPath "SAB_Revit_$year.msi"
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    $stream = [IO.File]::OpenRead($msiPath)
+    try { "{0}  {1}" -f [BitConverter]::ToString($algorithm.ComputeHash($stream)).Replace('-', ''), (Split-Path -Leaf $msiPath) }
+    finally { $stream.Dispose(); $algorithm.Dispose() }
+}
+$hashLines | Set-Content -LiteralPath (Join-Path $installerOutputPath "SHA256SUMS.txt") -Encoding ASCII

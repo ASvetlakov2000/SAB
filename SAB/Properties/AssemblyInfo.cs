@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -29,11 +29,7 @@ using System.Runtime.InteropServices;
 //      Номер сборки
 //      Редакция
 //
-#if REVIT2024
-[assembly: AssemblyVersion("1.0.2024.1")]
-#elif REVIT2023
-[assembly: AssemblyVersion("1.0.2023.1")]
-#else
-[assembly: AssemblyVersion("1.0.2022.1")]
-#endif
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
+
+[assembly: AssemblyInformationalVersion("1.1.0 Редизайн")]

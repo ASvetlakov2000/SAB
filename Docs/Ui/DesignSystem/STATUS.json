@@ -1,0 +1,102 @@
+{
+  "version": "1.1.0-redesign",
+  "status": "approved_for_production_migration",
+  "recommendedConcept": "FluentLightSource",
+  "userDirection": "Fluent Light; капсулы минимум34 с ростом при переносе текста; вкладки с движущимся выделением и зазором12 до содержимого; общие оси полей; собственный контур каждой таблицы/списка внутри карточки; инструкции только по кнопке к локальному HTML; остальные правила0.4 сохранены; вертикальная прокрутка таблицы только в области строк ниже шапки и верхней группы, без пустого канала заголовков",
+  "examples": [
+    "Параметризация",
+    "Создание видов и листов"
+  ],
+  "approvedConcept": "FluentLightSource",
+  "approvedAt": "2026-10-12",
+  "productionMigrationAuthorized": true,
+  "sourceAudit": "Docs/Ui/ReferenceAudit-2026-10-11/REPORT.md",
+  "previewProject": "Tools/UiShowcase/Sab.UiShowcase.csproj",
+  "approvalEvidence": "Прямой запрос пользователя12.10.2026: перенести утверждённые макеты в окна плагина, собрать Build-Msi.bat, commit+push и выпуск1.1.0 Редизайн.",
+  "migrationScope": [
+    "Создание видов и листов: main + secondary settings",
+    "Параметризация:4 tabs + ParameterPicker + CategorySelectionControl",
+    "Развёртки:9active windows, shared notifications416/16 and category services"
+  ],
+  "installationAuthorized": false,
+  "migrationCompleted": true,
+  "migrationEvidence": "Docs/Ui/DesignSystem/RedesignMigration-Report.json",
+  "independentReview": "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+  "verificationScope": "225actual outside-Revit assertions/59PNG;635isolatedsession assertions/44PNG separate; ReleaseMSI2022–24payloadPASS",
+  "revit2022Verification": "Docs/Ui/DesignSystem/Revit2022-Verification.md",
+  "notification": {
+    "authorized": true,
+    "authorizationDate": "2026-10-12",
+    "authorizationEvidence": "Direct user request: actual Parameterization notification matching accepted ChatGPT screenshot, then common template, then MSI",
+    "acceptedReference": "Docs/Ui/DesignSystem/Notification-Accepted.png",
+    "scope": "Shared production notification template and Parameterization/Elevations result adapters; original report/API flow retained where applicable",
+    "completed": true,
+    "layout": "Docs/Ui/DesignSystem/Notification-Layout.md",
+    "evidence": "Docs/Ui/DesignSystem/Notification-Report.json",
+    "independentReview": "Docs/Ui/DesignSystem/Notification-Review.md",
+    "installationPerformed": false,
+    "stackPlacement": "bottom-right; newest-bottom; grows-up",
+    "nativeAssertions": 35,
+    "visualProposal": {
+      "stage": "production_migrated",
+      "widthDip": 416,
+      "productionApplied": true,
+      "approvedAt": "2026-10-12",
+      "statusFontSize": 16,
+      "statusFontWeight": "Bold",
+      "evidence": "Docs/Ui/DesignSystem/RedesignMigration-Provenance.json"
+    }
+  },
+  "installer": {
+    "entryPoint": "Build-Msi.bat",
+    "configuration": "Release",
+    "years": [
+      2022,
+      2023,
+      2024
+    ],
+    "payloadVerified": true,
+    "evidence": "Docs/Ui/DesignSystem/Installer-Payload.json",
+    "installationPerformed": false,
+    "independentReview": "Docs/Ui/DesignSystem/Installer-Review.md",
+    "scope": "Approved actual production UI of three modules, shared notifications416/status16 and independent spot category services; all loose XAML, DLL, styles, instructions verified from CAB",
+    "version": "1.1.0"
+  },
+  "elevations": {
+    "stage": "production_migrated",
+    "previewAuthorized": true,
+    "productionMigrationAuthorized": true,
+    "approvalRequired": "User approval received2026-10-12",
+    "layout": "Docs/Ui/DesignSystem/Elevations-Layout.md",
+    "inventory": "Docs/Ui/DesignSystem/Elevations-Inventory.md",
+    "installationAuthorized": false,
+    "evidence": "Docs/Ui/DesignSystem/RedesignMigration-Report.json",
+    "verification": "Docs/Ui/DesignSystem/RedesignMigration-Verification.md",
+    "independentReview": "Docs/Ui/DesignSystem/RedesignMigration-Review.md",
+    "previewCompleted": true,
+    "nativeAssertions": 635,
+    "captures": 44,
+    "functionalDelta": {
+      "files": 8,
+      "msiYears": [
+        2022,
+        2023,
+        2024
+      ],
+      "uiMigration": true,
+      "sharedNotificationFiles": 2,
+      "scope": "Approved suite migrated to actual production classes and normal MSI; original8functional deltas retained"
+    },
+    "status": "production_migrated",
+    "approvalEvidence": "Прямой запрос пользователя 12.10.2026: применить макеты к окнам плагина, Build-Msi.bat, commit+push, обновление 1.1.0 Редизайн.",
+    "productionAssertions": 109,
+    "productionCaptures": 23,
+    "productionMigrationCompleted": true
+  },
+  "release": {
+    "version": "1.1.0",
+    "name": "Редизайн",
+    "installationAuthorized": false,
+    "status": "ready_for_commit_and_publish"
+  }
+}

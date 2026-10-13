@@ -127,6 +127,9 @@
     <Compile Include="Cls_ParameterTools\RoomResolver.cs" />
     <Compile Include="Cls_ParameterTools\RuntimeHost.cs" />
     <Compile Include="Cls_ParameterTools\Storage.cs" />
+    <Compile Include="Cls_ParameterTools\UI\FluentTheme.cs" />
+    <Compile Include="UI\FluentLight\Presentation.cs" />
+    <Compile Include="UI\FluentLight\FluentResources.cs" />
     <Compile Include="Cls_ParameterTools\UI\SettingsWindow.cs" />
     <Compile Include="Cls_ParameterTools\UI\ParameterPicker.cs" />
     <Compile Include="Cls_ParameterTools\UI\CategorySelectionControl.cs" />
@@ -480,6 +483,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UI\AdaptiveSettingsGrid.cs" />
+    <Compile Include="UI\Notifications\NotificationMessage.cs" />
+    <Compile Include="UI\Notifications\NotificationCard.cs" />
+    <Compile Include="UI\Notifications\NotificationStack.cs" />
+    <Compile Include="Cls_ParameterTools\UI\ParameterNotifications.cs" />
     <Compile Include="UI\SabWindowAnimationService.cs" />
     <Compile Include="UI\SabWindowBehaviorService.cs" />
     <Compile Include="UI\SabLayoutAssist.cs" />
@@ -610,6 +617,13 @@
     <EmbeddedResource Include="Resources\SyncReminderSettings_32.png" />
     <EmbeddedResource Include="Resources\GklFrameWall_16.png" />
     <EmbeddedResource Include="Resources\GklFrameWall_32.png" />
+    <Content Include="UI\Styles\SABFluentLight.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Docs\PluginInstructions\**\*.*">
+      <Link>Docs\PluginInstructions\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="UI\Styles\SABWindowStyles.xaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

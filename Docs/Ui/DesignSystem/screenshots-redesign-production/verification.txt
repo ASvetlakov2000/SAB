@@ -1,0 +1,134 @@
+PASS Actual command does not inject instructions into settings window
+PASS Actual production class: ElevationSettingsWindow
+PASS One local instruction link: SAB · Настройки развёрток
+PASS Actual footer keyboard focus: SAB · Настройки развёрток
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual production class: ElevationSettingsWindow
+PASS One local instruction link: SAB · Настройки развёрток
+PASS Actual footer keyboard focus: SAB · Настройки развёрток
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+CAPTURE settings-tab-0 | 1264x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Actual production class: ElevationSettingsWindow
+PASS One local instruction link: SAB · Настройки развёрток
+PASS Actual footer keyboard focus: SAB · Настройки развёрток
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+CAPTURE settings-tab-1 | 1264x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Actual production class: ElevationSettingsWindow
+PASS One local instruction link: SAB · Настройки развёрток
+PASS Actual footer keyboard focus: SAB · Настройки развёрток
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+CAPTURE settings-tab-2 | 1264x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Actual production class: ElevationSettingsWindow
+PASS One local instruction link: SAB · Настройки развёрток
+PASS Actual footer keyboard focus: SAB · Настройки развёрток
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+CAPTURE settings-tab-3 | 1264x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS No-sheet mode hides entire target sheet card
+PASS New-sheet mode restores target sheet card
+CAPTURE settings-sheet-new | 1264x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Existing-sheet mode restores target sheet selector
+CAPTURE settings-sheet-existing | 1264x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Switching back to no-sheet removes empty card
+PASS Actual production class: ElevationSettingsWindow
+PASS One local instruction link: SAB · Настройки развёрток
+PASS Actual footer keyboard focus: SAB · Настройки развёрток
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+PASS Actual tab40DIP/text14
+CAPTURE settings-minimum | 1024x611 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Actual formula handler updates real naming service
+CAPTURE settings-long-formula | 1024x611 DIP | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Actual reopened instance retains mark choice
+PASS Actual production class: ElevationDecorationWindow
+PASS One local instruction link: SAB · Оформление развёрток
+PASS Actual footer keyboard focus: SAB · Оформление развёрток
+PASS Actual decoration has one scrolling form
+PASS Actual three annotation selection cards
+CAPTURE decoration-normal | 1084x841 DIP | actualType=SAB.InteriorElevations.Views.ElevationDecorationWindow | actualAssembly=SAB
+PASS Actual production class: ElevationDecorationWindow
+PASS One local instruction link: SAB · Оформление развёрток
+PASS Actual footer keyboard focus: SAB · Оформление развёрток
+CAPTURE decoration-minimum | 844x581 DIP | actualType=SAB.InteriorElevations.Views.ElevationDecorationWindow | actualAssembly=SAB
+PASS Actual dropdown/leader12DIP: Wall
+PASS Actual dropdown/leader12DIP: Floor
+PASS Actual dropdown/leader12DIP: Ceiling
+PASS Actual dropdown/leader12DIP: Plinth
+PASS Actual dropdown/leader12DIP: Door
+PASS Actual dropdown/leader12DIP: Window
+CAPTURE decoration-tags | 844x581 DIP | actualType=SAB.InteriorElevations.Views.ElevationDecorationWindow | actualAssembly=SAB
+PASS Actual catalog roundtrip preserves unfinished raw text and category choice
+PASS Actual production UI→settings category mask 1
+PASS Actual production UI→settings category mask 2
+PASS Actual production UI→settings category mask 3
+PASS Actual production UI→settings category mask 4
+PASS Actual production UI→settings category mask 5
+PASS Actual production UI→settings category mask 6
+PASS Actual production UI→settings category mask 7
+PASS Actual production class: ElevationDecorationCatalogWindow
+PASS One local instruction link: SAB · Каталог оформления
+PASS Actual footer keyboard focus: SAB · Каталог оформления
+PASS Actual collection has own border
+CAPTURE catalog-normal | 1004x681 DIP | actualType=SAB.InteriorElevations.Views.ElevationDecorationCatalogWindow | actualAssembly=SAB
+CAPTURE catalog-minimum | 804x481 DIP | actualType=SAB.InteriorElevations.Views.ElevationDecorationCatalogWindow | actualAssembly=SAB
+PASS Actual production class: MultiRoomSelectionWindow
+PASS One local instruction link: SAB · Список помещений
+PASS Actual footer keyboard focus: SAB · Список помещений
+PASS Actual collection has own border
+PASS Actual resize grows text columns and retains numeric/actions widths
+CAPTURE rooms-wide | 1524x701 DIP | actualType=SAB.InteriorElevations.Views.MultiRoomSelectionWindow | actualAssembly=SAB
+CAPTURE rooms-last-row-minimum | 944x481 DIP | actualType=SAB.InteriorElevations.Views.MultiRoomSelectionWindow | actualAssembly=SAB
+PASS Actual production class: ElevationCropAdjustmentWindow
+PASS One local instruction link: SAB · Смещение границ вида
+PASS Actual footer keyboard focus: SAB · Смещение границ вида
+PASS Actual compact content-sized dialog: SAB · Смещение границ вида
+PASS Actual dashed transparent spatial boundary
+CAPTURE ElevationCropAdjustmentWindow | 516x425 DIP | actualType=SAB.InteriorElevations.Views.ElevationCropAdjustmentWindow | actualAssembly=SAB
+PASS Actual production class: LineGroupSelectionWindow
+PASS One local instruction link: SAB · Выбор групп линий
+PASS Actual footer keyboard focus: SAB · Выбор групп линий
+PASS Actual compact content-sized dialog: SAB · Выбор групп линий
+CAPTURE LineGroupSelectionWindow | 470x231 DIP | actualType=SAB.InteriorElevations.Views.LineGroupSelectionWindow | actualAssembly=SAB
+PASS Actual production class: LineGroupNextActionWindow
+PASS One local instruction link: SAB · Выбор следующей группы
+PASS Actual footer keyboard focus: SAB · Выбор следующей группы
+PASS Actual compact content-sized dialog: SAB · Выбор следующей группы
+CAPTURE LineGroupNextActionWindow | 496x252 DIP | actualType=SAB.InteriorElevations.Views.LineGroupNextActionWindow | actualAssembly=SAB
+PASS Actual production class: CropByExampleActionWindow
+PASS One local instruction link: SAB · Обрезка по примеру
+PASS Actual footer keyboard focus: SAB · Обрезка по примеру
+PASS Actual compact content-sized dialog: SAB · Обрезка по примеру
+CAPTURE CropByExampleActionWindow | 327x231 DIP | actualType=SAB.InteriorElevations.Views.CropByExampleActionWindow | actualAssembly=SAB
+PASS Actual production class: CropByExampleLineCreationWindow
+PASS One local instruction link: SAB · Развёртка-пример
+PASS Actual footer keyboard focus: SAB · Развёртка-пример
+CAPTURE CropByExampleLineCreationWindow | 804x321 DIP | actualType=SAB.InteriorElevations.Views.CropByExampleLineCreationWindow | actualAssembly=SAB
+PASS Actual boundary apply retains negative signed value
+PASS Actual line group action
+PASS Actual next group finish action
+PASS Actual common notification width416: success
+PASS Actual common status16Bold: success
+CAPTURE notification-success | 416x196,52 DIP | actualType=SAB.UI.Notifications.NotificationStack | actualAssembly=SAB
+PASS Actual common notification width416: warning
+PASS Actual common status16Bold: warning
+CAPTURE notification-warning | 416x303,52 DIP | actualType=SAB.UI.Notifications.NotificationStack | actualAssembly=SAB
+PASS Actual common notification width416: error
+PASS Actual common status16Bold: error
+CAPTURE notification-error | 416x281,52 DIP | actualType=SAB.UI.Notifications.NotificationStack | actualAssembly=SAB
+NOT RUN Revit Document geometry, transactions, interactive picking and ExternalEvent dispatch; physical keyboard/OS monitor transitions.
+COMPLETED

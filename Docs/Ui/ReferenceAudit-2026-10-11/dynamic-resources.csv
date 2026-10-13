@@ -1,0 +1,19 @@
+﻿path,line,kind,definition
+SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs,1799,DataTemplate,DataTemplate template = new DataTemplate();
+SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs,51,DataTemplate,_list.ItemTemplate = new DataTemplate { VisualTree = row };
+SAB/Cls_ParameterTools/UI/ParameterPicker.cs,98,DataTemplate,return new DataTemplate { VisualTree = panel };
+SAB/Cls_ParameterTools/UI/SettingsWindow.cs,184,DataTemplate,return new DataTemplate { VisualTree = panel };
+SAB/Cls_ParameterTools/UI/SettingsWindow.cs,210,DataTemplate,"grid.Columns.Add(new DataGridTemplateColumn { Header = header, Width = new DataGridLength(weight, DataGridLengthUnitType.Star), CellTemplate = new DataTemplate { VisualTree = parameter } }); return;"
+SAB/Cls_ParameterTools/UI/SettingsWindow.cs,221,DataTemplate,"grid.Columns.Add(new DataGridTemplateColumn { Header = header, Width = new DataGridLength(weight, DataGridLengthUnitType.Star), CellTemplate = new DataTemplate { VisualTree = picker } });"
+SAB/Cls_ParameterTools/UI/SettingsWindow.cs,286,DataTemplate,"grid.Columns.Add(new DataGridTemplateColumn { Header = """", Width = includePlus ? 68 : 34, CellTemplate = new DataTemplate { VisualTree = panel } });"
+SAB/Cls_ParameterTools/UI/SmallWindows.cs,28,ResourceDictionary,var resources = new ResourceDictionary
+SAB/Cls_ParameterTools/UI/SmallWindows.cs,113,ControlTemplate,<Setter Property='Template'><Setter.Value><ControlTemplate TargetType='TabItem'><Grid Background='Transparent' Cursor='Hand'>
+SAB/Cls_ParameterTools/UI/SmallWindows.cs,124,ControlTemplate,"toggle.Template = (ControlTemplate)XamlReader.Parse(@""<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' TargetType='ToggleButton'>"
+SAB/Cls_ParameterTools/UI/SmallWindows.cs,134,ResourceDictionary,"var resources = new ResourceDictionary { Source = new Uri(""pack://application:,,,/SAB;component/UI/Styles/SABWindowStyles.xaml"", UriKind.Absolute) };"
+SAB/Helpers/Notifications/ToastNotifications/SabStyledToastNotifier.cs,221,ControlTemplate,"style.Setters.Add(new Setter(Control.TemplateProperty,new ControlTemplate(typeof(Button)) { VisualTree=frame }));"
+SAB/Helpers/Notifications/ToastNotifications/SabStyledToastNotifier.cs,423,ControlTemplate,ControlTemplate template = new ControlTemplate(typeof(Button));
+SAB/Notifications/NotificationController.cs,298,ResourceDictionary,"notice.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(Path.Combine(Path.GetDirectoryName(typeof(NotificationController).Assembly.Location), ""UI"", ""Styles"", ""SABWindowStyles.xaml""), UriKind.Absolute) });"
+SAB/Notifications/NotificationController.cs,361,ResourceDictionary,"w.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(Path.Combine(Path.GetDirectoryName(typeof(NotificationController).Assembly.Location), ""UI"", ""Styles"", ""SABWindowStyles.xaml""), UriKind.Absolute) });"
+SAB/Notifications/NotificationController.cs,367,ControlTemplate,"enabled.Template = (ControlTemplate)System.Windows.Markup.XamlReader.Parse(@""<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='ToggleButton'><Border Name='Track' Background='#98A2B3' CornerRadius='14'><Ellipse Name='Thumb' Width='22' Height='22' Margin='3' Fill='White' HorizontalAlignment='Left'/></Border><ControlTemplate.Triggers><Trigger Property='IsChecked' Value='True'><Setter TargetName='Track' Property='Background' Value='#0F6CBD'/><Setter TargetName='Thumb' Property='HorizontalAlignment' Value='Right'/></Trigger></ControlTemplate.Triggers></ControlTemplate>"");"
+SAB/SyncReminder/SyncReminderSettingsWindow.cs,493,ResourceDictionary,ResourceDictionary dictionary = new ResourceDictionary();
+SAB/UI/SabWindowBehaviorService.cs,91,ResourceDictionary,window.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri(path) });

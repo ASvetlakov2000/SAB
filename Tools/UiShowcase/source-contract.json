@@ -1,0 +1,84 @@
+{
+  "version": "0.5-source-review",
+  "authorizedAddition": "Category selection filter/save/load; shared capsule and presentation refinement",
+  "sourceBindings": 135,
+  "missingBindings": [],
+  "addedBindings": [
+    "{Binding StatusText}"
+  ],
+  "sourceColumns": 10,
+  "newColumns": 10,
+  "newStyles": "Light.xaml + RefineSourceViews.py + RefineFourth.py + Presentation.cs + RefineHelpOnly.py + RefineFifth.py",
+  "overrides": {
+    "parameterSettings": {
+      "source": "SAB/Cls_ParameterTools/UI/SettingsWindow.cs",
+      "sha256": "8f84b294ac72c95b0b36400fef236b49b6dd25588a36b1d3af95fd1844aead59"
+    },
+    "parameterTheme": {
+      "source": "SAB/Cls_ParameterTools/UI/SmallWindows.cs",
+      "sha256": "ead5f0d953f6be1cf53af3bac9ed8baa653e8b11a64556b0688700bb2d4d5be6"
+    },
+    "viewsWindow": {
+      "source": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs",
+      "sha256": "1f68edabcdccc7f4f067d6082668158f82de08edb23ed889d8aa776caf35d73c"
+    },
+    "viewsMarkup": {
+      "source": "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml",
+      "sha256": "e0ac8bd0edfde3dff88ec4b81a8cdf3edd380046c51cf0d879871bc344094fc7"
+    },
+    "viewsVM": {
+      "source": "SAB/Cls_CreateViewsAndSheets/ViewModels/CreateViewsAndSheetsViewModel.cs",
+      "sha256": "d5a859144b1d8e44dca6e68bed453316341febbd5c30bd274f25a77a3b625573"
+    }
+  },
+  "productionFilesWritten": false,
+  "secondarySettingsBindings": 103,
+  "secondaryMissingBindings": [],
+  "inlineInstructions": false,
+  "instructionFiles": [
+    "SAB_HTML_Zapolnenie_parametrov.html",
+    "SAB_HTML_Sozdat_vidy_i_listy.html"
+  ],
+  "parameterBehaviorMethodsUnchanged": [
+    {
+      "method": "private void TransferFile(",
+      "sha256": "56b48d76c0192b1f0033355268b0496d93af96d01bf7c5533d5137607ee9bbef"
+    },
+    {
+      "method": "internal void ExportConfiguration(",
+      "sha256": "96ac19e65a0597f62b6de555d5cd9d08cfd342d548fe60746c1aa17e2cf8ed33"
+    },
+    {
+      "method": "internal void ImportConfiguration(",
+      "sha256": "a07e23f9eb759846df6f53895e4550fca7f72210b7183df50eb5c1abf409562b"
+    },
+    {
+      "method": "private void AddRule(",
+      "sha256": "5166de5eaf9f689b12b50158746c80fbf83348dcdcfd2266178f6e1ba253991a"
+    },
+    {
+      "method": "private void RefreshSources(",
+      "sha256": "7d2406af83a04f6c34c637e67e01828e36c2af5140921ee1469f7d0bd08f1784"
+    },
+    {
+      "method": "private void RefreshValues(",
+      "sha256": "0000807882615f5902c86820638f60c9d42ca52b78711591c206b0f7b7f0f165"
+    },
+    {
+      "method": "private void SyncProfile(",
+      "sha256": "5781280a41be511f35e23276bc1dae40ea29f18ec744461d0b4d70866ab6419f"
+    },
+    {
+      "method": "private List<string> Problems(",
+      "sha256": "8c21c326dbce8a2476489e4b353fb43cb28a707cffb3a4d26e11913b408dfab5"
+    },
+    {
+      "method": "private bool UpdateStatus(",
+      "sha256": "7084b7c0f119658b572db20caaed96fc9f9ec0e4aaf395b639f3cb68c3269c2b"
+    },
+    {
+      "method": "private void SaveCore(",
+      "sha256": "f7c09d58bf97bc71902ec082c5aa7d05f458d96e964955c9f1e449884da2b110"
+    }
+  ]
+}

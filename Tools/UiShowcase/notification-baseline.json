@@ -1,0 +1,81 @@
+{
+  "authorizedFiles": [
+    "SAB/Cls_ParameterTools/UI/SmallWindows.cs",
+    "SAB/SAB.csproj",
+    "SAB/UI/Styles/SABFluentLight.xaml",
+    "SAB/Cls_ParameterTools/Workflow.cs",
+    "SAB/Cls_ParameterTools/Commands.cs",
+    "SAB/UI/SabWindowBehaviorService.cs"
+  ],
+  "presentationChanges": {
+    "SAB/Cls_ParameterTools/Workflow.cs": {
+      "originalNormalizedSha256": "ca87e74e29509e0500112214baf6020498e0e55e1eec1838a007c9f23aee6bca",
+      "replacements": [
+        {
+          "name": "Workflow.cs:1",
+          "old": "",
+          "new": "        public IEnumerable<long> ElementIds { get; set; }\n"
+        },
+        {
+          "name": "Workflow.cs:3",
+          "old": "            if (targets.Count == 0) { issues.AddRange(GroupIssues(groupSkips)); if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, \"Правила не применены\"); else UI.Toast.Show(app.MainWindowHandle, \"Выделенные элементы не подходят под категории и условия правил.\"); return; }\n",
+          "new": "            if (targets.Count == 0) { issues.AddRange(GroupIssues(groupSkips)); if (issues.Count > 0) { UI.ParameterNotifications.ShowResult(app.MainWindowHandle, \"Правила не применены.\", issues, true, \"Заполнение параметров\"); UI.ReportWindow.Show(ui, issues, \"Правила не применены\"); } else UI.ParameterNotifications.Information(app.MainWindowHandle, \"Выделенные элементы не подходят под категории и условия правил.\"); return; }\n"
+        },
+        {
+          "name": "Workflow.cs:5",
+          "old": "            UI.Toast.Show(app.MainWindowHandle, summary, 8);\n",
+          "new": "            UI.ParameterNotifications.ShowResult(app.MainWindowHandle, summary, issues, committed, \"Заполнение параметров\");\n"
+        },
+        {
+          "name": "Workflow.cs:7",
+          "old": "            UI.Toast.Show(app.MainWindowHandle, \"Проверено: \" + targets.Count + \". Проблемных элементов: \" + issues.Select(i => i.ElementId).Distinct().Count());\n",
+          "new": "            UI.ParameterNotifications.ShowResult(app.MainWindowHandle, \"Проверено: \" + targets.Count + \". Проблемных элементов: \" + issues.Select(i => i.ElementId).Distinct().Count(), issues, true, \"Проверка параметров\");\n"
+        },
+        {
+          "name": "Workflow.cs:9",
+          "old": "                UI.Toast.Show(app.MainWindowHandle, \"Настройки параметров сохранены\");\n",
+          "new": "                UI.ParameterNotifications.ShowResult(app.MainWindowHandle, \"Настройки параметров сохранены\", null, true, \"Сохранение настроек\");\n"
+        },
+        {
+          "name": "Workflow.cs:11",
+          "old": "",
+          "new": "                        ElementIds = ids.Concat(additional).Select(Ids.Value).Distinct().ToList(),\n"
+        }
+      ]
+    },
+    "SAB/Cls_ParameterTools/Commands.cs": {
+      "originalNormalizedSha256": "fd32f93400e64ed69cb38c8714287ec000e6d6d59190e4f3f3afdabecd72a9e1",
+      "replacements": [
+        {
+          "name": "Commands.cs:1",
+          "old": "            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { return Result.Cancelled; }\n            catch (System.OperationCanceledException) { return Result.Cancelled; }\n",
+          "new": "            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { UI.ParameterNotifications.Cancelled(app.MainWindowHandle); return Result.Cancelled; }\n            catch (System.OperationCanceledException) { UI.ParameterNotifications.Cancelled(app.MainWindowHandle); return Result.Cancelled; }\n"
+        },
+        {
+          "name": "Commands.cs:3",
+          "old": "                var dialog = new TaskDialog(\"SAB — параметры\") { MainInstruction = \"Не удалось выполнить команду параметров\", MainContent = ex.Message,\n                    ExpandedContent = ex + \"\\n\\nЖурнал: \" + System.IO.Path.Combine(RuntimeHost.LogFolder, \"errors.log\"), CommonButtons = TaskDialogCommonButtons.Close };\n                dialog.Show(); return Result.Cancelled;\n",
+          "new": "                UI.ParameterNotifications.Error(app.MainWindowHandle, ex); return Result.Cancelled;\n"
+        }
+      ]
+    },
+    "SAB/UI/SabWindowBehaviorService.cs": {
+      "originalNormalizedSha256": "5e2b9572bb6f291f2737312b2c36590119305ca7a0699fb9541a0ad2d0081a19",
+      "replacements": [
+        {
+          "name": "SabWindowBehaviorService.cs:1",
+          "old": "            if (typeName.StartsWith(\"SAB.Helpers.Notifications.\") || typeName.StartsWith(\"SAB.Notifications.\") ||\n",
+          "new": "            if (typeName.StartsWith(\"SAB.Helpers.Notifications.\") || typeName.StartsWith(\"SAB.Notifications.\") || typeName.StartsWith(\"SAB.UI.Notifications.\") ||\n"
+        }
+      ]
+    }
+  },
+  "smallWindowsWithoutToastSha256": "22434fcbb120f23b32d2224882ddda87b02f69b92ecb5c1e239711ec1535e9dd",
+  "compileEntries": [
+    "    <Compile Include=\"UI\\Notifications\\NotificationMessage.cs\" />\n",
+    "    <Compile Include=\"UI\\Notifications\\NotificationCard.cs\" />\n",
+    "    <Compile Include=\"UI\\Notifications\\NotificationStack.cs\" />\n",
+    "    <Compile Include=\"Cls_ParameterTools\\UI\\ParameterNotifications.cs\" />\n"
+  ],
+  "projectNormalizedSha256": "9a66e554f4a302fe8349efc26afb4cb8a9e127c2ea0f08e6d0fc2769ad92e92f",
+  "resourcesPrefixNormalizedSha256": "68be406d659ea8395ff7f9c0629762f2898913d047ffa93376abc96cc39f31aa"
+}

@@ -129,26 +129,9 @@ namespace SAB.ParameterTools.UI
     }
     internal static class Toast
     {
-        internal static void Show(IntPtr owner, string text, int seconds = 3)
+        internal static void Show(IntPtr owner, string text, int seconds = 10)
         {
-            var resources = new ResourceDictionary { Source = new Uri("pack://application:,,,/SAB;component/UI/Styles/SABWindowStyles.xaml", UriKind.Absolute) };
-            var content = new StackPanel();
-            content.Children.Add(new TextBlock { Text = "SAB  ПАРАМЕТРЫ", Foreground = (Brush)resources["SabBrush.Accent"], FontWeight = FontWeights.SemiBold,
-                FontSize = 12, Margin = new Thickness(0, 0, 0, 8) });
-            content.Children.Add(new TextBlock { Text = text, Foreground = (Brush)resources["SabBrush.Text"], FontSize = 13, TextWrapping = TextWrapping.Wrap });
-            var w = new Window { Width = 540, MaxHeight = 420, SizeToContent = SizeToContent.Height, WindowStyle = WindowStyle.None,
-                AllowsTransparency = true, Background = Brushes.Transparent, FontFamily = new FontFamily("Segoe UI"),
-                ShowInTaskbar = false, ShowActivated = false, Topmost = true, ResizeMode = ResizeMode.NoResize,
-                Content = new Border { Background = (Brush)resources["SabBrush.PanelBackground"], BorderBrush = (Brush)resources["SabBrush.Border"],
-                    BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(8), Padding = new Thickness(16),
-                    Child = new ScrollViewer { MaxHeight = 380, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                        Content = content } } };
-            new WindowInteropHelper(w).Owner = owner;
-            w.Left = SystemParameters.WorkArea.Right - w.Width - 24;
-            w.Show();
-            w.Top = Math.Max(SystemParameters.WorkArea.Top, SystemParameters.WorkArea.Bottom - w.ActualHeight - 24);
-            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(seconds) };
-            timer.Tick += (s, e) => { timer.Stop(); w.Close(); }; timer.Start();
+            ParameterNotifications.Information(owner, text);
         }
     }
     public sealed class ModelSourceChoice

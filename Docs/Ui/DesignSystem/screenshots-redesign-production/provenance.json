@@ -1,0 +1,145 @@
+{
+  "scope": "Actual SAB.dll elevation Window constructors; synthetic option data only",
+  "checksPassed": 109,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/catalog-minimum.png",
+      "sha256": "34f743206270f413cc5c455241ea6993cdab89aa2ae6d134b6072bdf02e103f3",
+      "width": 804,
+      "height": 481
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/catalog-normal.png",
+      "sha256": "d85589ae9e06288301344ca73d487efd0e627b8c97778b3e6daeb916821adf36",
+      "width": 1004,
+      "height": 681
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/CropByExampleActionWindow.png",
+      "sha256": "755fb1bc0fd34c3104b1690ae099b3de448dda7c4f47fb9640d98a9372587b48",
+      "width": 327,
+      "height": 231
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/CropByExampleLineCreationWindow.png",
+      "sha256": "9f4657f18badcf3d11f370f7798ee139083e6db91ca4692c268ce20009501b2b",
+      "width": 804,
+      "height": 321
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/decoration-minimum.png",
+      "sha256": "cea341d2f271a704fd65facfec86ed8dead17d4049ed8fab07cc40f93052280e",
+      "width": 844,
+      "height": 581
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/decoration-normal.png",
+      "sha256": "ebb1014ca13b732cb4923722e0520d42fff662a19bec80c6d8ef3e7a5291ae52",
+      "width": 1084,
+      "height": 841
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/decoration-tags.png",
+      "sha256": "ef08a3d934633d945989453289482d70db2ae09ca271e2803afe7e8cf7535b9f",
+      "width": 844,
+      "height": 581
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/ElevationCropAdjustmentWindow.png",
+      "sha256": "bad89ba0fadc366d42c6bcc1d5bd0e3848f5c7002599d29a84338b3cf3a22009",
+      "width": 516,
+      "height": 425
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/LineGroupNextActionWindow.png",
+      "sha256": "b6da5912fece6cbecfdc21991ec8819bedbb0a1bb7290301c96ac27949b1fd5f",
+      "width": 496,
+      "height": 252
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/LineGroupSelectionWindow.png",
+      "sha256": "a208e20aefa1e4429c97e69a8fe4786eba789bfcfcbf838aff6c07133964707d",
+      "width": 470,
+      "height": 231
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/notification-error.png",
+      "sha256": "9e88b8531d557f6c542ed9ed610b267030cf635dadc0278775dca9d429c1b996",
+      "width": 416,
+      "height": 282
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/notification-success.png",
+      "sha256": "52755e513b334c0eb62922f4ac771df6ec225bfe14e78f14594db15254e3a68b",
+      "width": 416,
+      "height": 197
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/notification-warning.png",
+      "sha256": "ab2613ecf81e609a21eef81610a60ed6bf143d52623914c1b25dbbead516c77a",
+      "width": 416,
+      "height": 304
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/rooms-last-row-minimum.png",
+      "sha256": "c93db11e79c69db46bafeffc80da7afa15489381466e693cf456e38085c076b7",
+      "width": 944,
+      "height": 481
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/rooms-wide.png",
+      "sha256": "d2f3b900b57c6713406500760e8e9d07131ebee9fc912d8b193bf11d36240037",
+      "width": 1524,
+      "height": 701
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-long-formula.png",
+      "sha256": "7a0d9ce9ae7e86582254c20ec305be0b8f64e0edf6ed976a89bfbc20a99a64d8",
+      "width": 1024,
+      "height": 611
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-minimum.png",
+      "sha256": "46db5a132c715403269ce6033c269492135daa873e9a2bebd88a98fbdd69c592",
+      "width": 1024,
+      "height": 611
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-sheet-existing.png",
+      "sha256": "75a6f3502e9c6ad3d21aeaa67ce4fe69973406cdb1d8a1f9c221a8adec4ea65e",
+      "width": 1264,
+      "height": 841
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-sheet-new.png",
+      "sha256": "d4c83472e3d75b605ab20ef20d219b9e18753bd3b02cd4c9a6025e5da259c0f2",
+      "width": 1264,
+      "height": 841
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-tab-0.png",
+      "sha256": "b93861679c9e801b98b274e93373e21e667b59fb18511543e1178eea169e49f7",
+      "width": 1264,
+      "height": 841
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-tab-1.png",
+      "sha256": "8d7774a33a21c670d14fbaf9ef24691a86652fcacbb801932c674112979954b1",
+      "width": 1264,
+      "height": 841
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-tab-2.png",
+      "sha256": "58eccbca9ccb4acd4d6befadcde40fdb7320bf01457914819cfb0622f725efb7",
+      "width": 1264,
+      "height": 841
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-production/settings-tab-3.png",
+      "sha256": "4eb74bd4a1d3642310bf6c3e97782c297d384ba78860f403a50ed6968409549e",
+      "width": 1264,
+      "height": 841
+    }
+  ],
+  "logSha256": "c5aac213c274298397df3990f3f9124c06627298b1c6ff5dc41f7fcaf5114f86"
+}

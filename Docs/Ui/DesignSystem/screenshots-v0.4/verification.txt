@@ -1,0 +1,63 @@
+Native DPI 96. 144 dpi is render only, not OS scaling.
+PASS Real parameter SettingsWindow has all four source tabs
+PASS One instruction button resolves the module HTML file: Настройки параметров
+PASS Native capsule tab items fit 34 DIP outer track
+PASS Native tab indicator actually runs its movement animation
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+SHOT 00-parameters-rules | 1384x881 DIP | render 96 dpi
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+SHOT 01-parameters-sources | 1384x881 DIP | render 96 dpi
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+SHOT 02-parameters-values | 1384x881 DIP | render 96 dpi
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+SHOT 03-parameters-categories | 1384x881 DIP | render 96 dpi
+PASS All source rule columns retained including Required and row action
+PASS Real parameter rule Binding updates source model
+SHOT 04-parameters-editing | 1384x881 DIP | render 96 dpi
+SHOT 05-parameter-dropdown | 398,545454545455x420 DIP | render 96 dpi
+SHOT 06-parameters-validation | 1384x881 DIP | render 96 dpi
+SHOT 07-categories-empty | 1384x881 DIP | render 96 dpi
+PASS Category selection saves and loads stable IDs
+PASS Selected-only capsule filters actual categories
+SHOT 19-categories-selected | 1384x881 DIP | render 96 dpi
+PASS Unknown saved category IDs are skipped without selecting other categories
+SHOT 20-categories-loaded | 1384x881 DIP | render 96 dpi
+PASS Invalid selection file is rejected before changing selection
+SHOT 08-parameters-minimum | 964x781 DIP | render 96 dpi
+SHOT 23-categories-minimum | 964x781 DIP | render 96 dpi
+SHOT 09-parameters-144dpi | 1384x881 DIP | render 144 dpi
+PASS One instruction button resolves the module HTML file: SAB — Создание видов и листов
+PASS Visible window has no inline module description or instructional prose: SAB — Создание видов и листов
+PASS Real views/sheets grid retains original ten columns plus dynamic browser columns
+PASS Real VM initializes five source SessionRows
+SHOT 10-views-sheets | 1464x901 DIP | render 96 dpi
+PASS Table container has actual rounded geometry clip at all four corners
+PASS Visible view mode capsules have same 34 DIP height as form buttons
+PASS Row number header shares centered alignment with row values
+PASS Visible editable scale text shares its header axis within one DIP
+PASS One instruction button resolves the module HTML file: Настройки создания видов и листов
+PASS Visible window has no inline module description or instructional prose: Настройки создания видов и листов
+SHOT 21-views-secondary-settings | 1184x861 DIP | render 96 dpi
+PASS Secondary source settings has no decorative heading glyphs
+SHOT 22-views-secondary-minimum | 1024x721 DIP | render 96 dpi
+SHOT 24-views-secondary-zones | 1024x721 DIP | render 96 dpi
+PASS Conditional placement capsule uses one full-width segment without phantom option
+PASS Real InsertRowAfterCommand inserts row
+PASS Real DeleteRowCommand removes inserted row
+PASS Real CopySheetNamesToViewNamesCommand updates name
+PASS Actual view-name editor updates the production VM
+SHOT 11-views-editing | 1464x901 DIP | render 96 dpi
+PASS Capsule choice updates actual structure VM
+SHOT 12-views-multi-story | 1464x901 DIP | render 96 dpi
+SHOT 13-views-multi-view | 1464x901 DIP | render 96 dpi
+SHOT 14-views-validation | 1464x901 DIP | render 96 dpi
+PASS Source validation disables creation for incomplete row
+SHOT 15-views-minimum | 1084x721 DIP | render 96 dpi
+PASS Create action visible at minimum
+SHOT 16-views-settings-bottom | 1464x901 DIP | render 96 dpi
+SHOT 17-views-144dpi | 1464x901 DIP | render 144 dpi
+SHOT 18-views-empty | 1464x901 DIP | render 96 dpi
+PASS Real ClearRowsCommand restores one blank row, as production code requires
+Source-generated views: 135 original XAML bindings retained, all 10 original columns; actual SAB command/validation code.
+No Document, transaction, external event execution or installed plugin replacement. Geometry preference persistence disabled only in preview copy.
+COMPLETED

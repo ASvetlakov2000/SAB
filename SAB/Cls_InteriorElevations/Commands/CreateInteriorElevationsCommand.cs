@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Interop;
@@ -997,10 +997,7 @@ namespace SAB.InteriorElevations.Commands
 
                 if (manualBoundaryRequired)
                 {
-                    ToastNotifier.ShowWarning(
-                        "SAB Развертки",
-                        "Границу вида создать не удалось. На активном виде созданы вспомогательные линии для ручной правки.",
-                        15);
+                    warnings.Add("Границу вида создать не удалось. На активном виде созданы вспомогательные линии для ручной правки.");
                 }
 
                 reportService.ShowFinalReport(
@@ -1373,7 +1370,7 @@ namespace SAB.InteriorElevations.Commands
 
         private string GetDefaultWindowInfoText()
         {
-            return "Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане.";
+            return string.Empty;
         }
 
         private string BuildWindowInfoText(IList<string> warningMessages)

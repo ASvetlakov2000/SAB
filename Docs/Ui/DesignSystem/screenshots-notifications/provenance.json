@@ -1,0 +1,107 @@
+{
+  "scope": "Native WPF outside Revit; production initialization and classes; synthetic result DTOs",
+  "checksPassed": 35,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/01-success.png",
+      "sha256": "5fad995e2312fd15c4a773fa50bb65980de3edf0d2ffa15b2bf294640e841de7",
+      "width": 520,
+      "height": 169,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/02-warning.png",
+      "sha256": "10a1e49287aa3b6f670a2e78e4c7f67d8bd56f9aa6e80a96367424366fdb5d95",
+      "width": 520,
+      "height": 447,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/03-selected-copied.png",
+      "sha256": "38c4e52b7e0ee978c5ac8a8823ed1bbf6369d42a229b3360c0d34c68f5d9e945",
+      "width": 520,
+      "height": 447,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/04-error.png",
+      "sha256": "d8698a8e00deb9f46eaac8dd0942c4a0f573ba714525e5b90f8c033d65b47631",
+      "width": 520,
+      "height": 337,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/05-clipboard-failure.png",
+      "sha256": "2383c497f5411ecd3280ef724ab10ac7c42fa24b05719cab567cc914cb6d2ac0",
+      "width": 520,
+      "height": 447,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/06-long-minimum.png",
+      "sha256": "36264a95f4c813f894e9c14dc4daa73c84a6645f7343e92dd59d63d51ec606b3",
+      "width": 380,
+      "height": 550,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/07-long-144dpi-render.png",
+      "sha256": "f1a2b5da9879b9461fee7fae745633cd67dad6ae2fa46abb157d720353fcc997",
+      "width": 570,
+      "height": 825,
+      "runtimeDpi": 96.0,
+      "renderDpi": 144.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/08-stack.png",
+      "sha256": "ea432358e5b53d13ab600faef1f286cd30759debb9f4151e6e19b0f3aa57c480",
+      "width": 520,
+      "height": 978,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notifications/09-overflow.png",
+      "sha256": "c06f41651ee07bf54b3a0ea5df1986103916f290dbdf32be9a32ce28d79c5853",
+      "width": 520,
+      "height": 1360,
+      "runtimeDpi": 96.0,
+      "renderDpi": 96.0,
+      "source": "actual SAB.UI.Notifications production controls; synthetic result fixtures"
+    }
+  ],
+  "sourceContractSha256": "9c273082636a16988831c91ae631332d315f075ff4e239d316a4250e10d3979a",
+  "hostSources": {
+    "SourcePreview.cs": "c6aa6899449f177c9e4fefe5807dc038622cb031725aeb28abedd84c22d69788",
+    "NotificationPreview.cs": "83519cd49556ae0bb59a65d9b4d69dbfd097c397a8b9f5d1b75eb505f472ac34",
+    "Sab.UiShowcase.csproj": "c505ce00c924f9d406e01b63a01c27644c15c122bd81b5bd2523a42b08cb6608"
+  },
+  "loadedAssembly": {
+    "path": "outputs/ui-production-preview/plugin/SAB.dll",
+    "sha256": "0dbe6305f9f0eb7297b479e86863790883f079dcc273d2afc561b7975a3c28c8",
+    "configuration": "Debug",
+    "revitApiYear": 2023
+  },
+  "unverified": [
+    "Actual Revit operations/transactions",
+    "Physical pointer and keyboard traversal",
+    "Multiple monitor transitions",
+    "OS DPI transitions",
+    "Native API22 runtime"
+  ],
+  "installationPerformed": false
+}

@@ -1,0 +1,15 @@
+# Revit2022 — проверка обновлённых окон, 12.10.2026
+
+Scope: сборка тех же production-окон «Создание видов и листов» main+secondary и четырёх вкладок «Параметризации» против настоящих API22. Отдельные копии XAML/C# и новый дизайн не создаются.
+
+Локальные зависимости: `C:\Users\svetl\Desktop\Codex\lib\Revit2022`; источник пользователя — `C:\Users\svetl\Yandex.Disk\For_Revit\RVT22_dll`. После первоначального облачного placeholder пользователь предоставил читаемые локальные файлы. Оба сохранены и проверены: assembly22.0.0.0/file22.0.2.392. SHA256 RevitAPI.dll `A60011776A7B4994235150EA3FF14929626DB97C115FF59AC7524153BB98B48B`; RevitAPIUI.dll `65ADA14A92857DEBB7CA985A927D75577D1B4BD189FC9D8A061496BD6A19DDBF`.
+
+Добавлен `Tools/Build-Revit2022.ps1`: проверяет обе assembly major22, собирает обычный SAB.csproj с REVIT2022 в отдельные outputs/ui-production-2022, сохраняет build-provenance.json, опционально собирает host против того же API и пишет отдельные screenshots-production-2022. Host получает путь API через SAB_PREVIEW_REVIT_API_DIRECTORY; default2023 сохранён. При успешном capture отдельный MakeRevit2022Evidence.py проверяет COMPLETED/отсутствие FAIL/27 PNG/реально загруженный API22 и его путь, сохраняет SHA и source provenance; пакет2023 не перезаписывается. Production-окна, их ресурсы и бизнес-логика не изменены.
+
+Сборка2022: **PASS**, Debug/net48, SAB assembly1.0.2022.1, 0 warnings/0 errors. DLL: `outputs/ui-production-2022/plugin/SAB.dll`; журнал: `outputs/ui-production-2022/build.log`; hashes/dependencies: `outputs/ui-production-2022/build-provenance.json`. Предварительная попытка без читаемой UI DLL завершилась ошибками отсутствия Autodesk.Revit.UI; повторная сборка с новой локальной парой прошла.
+
+Native capture2022: **NOT RUN / blocked by missing native Revit2022 runtime**. Host собран против API22, но CLR не загрузил RevitAPI22: отсутствуют её native зависимости. PE import table включает RevitDB.dll, RevitAPIFoundation.dll, RevitDBCore.dll и другие модули2022; здесь установлены только Revit2023/2024. Ошибка сохранена в `outputs/ui-production-2022/plugin/diagnostics/error.txt`. Подмена native runtime компонентами2023/2024 не выполнялась. Новые PNG/81PASS для2022 не заявлены; существующий production WPF-пакет2023 остаётся доказательством неизменённого дизайна вне Revit. Исторические ограничения2022 в ProductionMigration-Report.json сохранены; этот отдельный отчёт уточняет их по новым данным.
+
+Проверки внутри Revit2022, транзакции/API, физический ввод и системная смена DPI не выполнялись. Установка плагина, commit/push не выполнялись.
+
+Независимый bounded review `feedback05_finish_reviewer`: disposition **ship**, только tooling/честность статуса. SAB-UI-009 resolved: отдельный writer проверяет завершение capture,27PNG, реально загруженный API22 и его путь, production hashes; создаёт SHA/provenance только2022. Проверенные версии/хеши DLL совпадают с build manifest; материальных регрессий tooling не обнаружено. Reviewer отдельно не запускал сборку или UI; успешная ветка capture ещё не выполнялась. Этот verdict не является native UI/Revit2022-приёмкой.

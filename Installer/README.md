@@ -31,7 +31,7 @@
 Запустите из корня репозитория:
 
 ```powershell
-.\Build-Msi.bat Release 1.0.0
+.\Build-Msi.bat Release 1.1.0
 ```
 
 Без аргументов используется конфигурация `Release`, версия берётся из `SAB.dll`.
@@ -39,7 +39,7 @@
 версии в формате `Major.Minor.Build`, например `1.0.1`: этот номер записывается в MSI.
 
 Для сборки нужны API всех трёх версий Revit. Для 2022 поддерживаются установленный
-Revit 2022 и локальный кэш `Installer/.tools/Revit2022Api`. API 2023 и 2024
+Revit 2022, общий локальный `C:\Users\svetl\Desktop\Codex\lib\Revit2022` и резервный кэш `Installer/.tools/Revit2022Api`. API 2023 и 2024
 ищутся в `C:\Program Files\Autodesk\Revit <год>`.
 Библиотеки Autodesk и локальный кэш в Git не включаются.
 
@@ -81,6 +81,17 @@ Revit 2022 и локальный кэш `Installer/.tools/Revit2022Api`. API 202
 - `SAB_Revit_2023.msi`
 - `SAB_Revit_2024.msi`
 
+Обычный `Build-Msi.bat` пересобирает исходники обоих окон и уведомлений для каждого года.
+После упаковки `Verify-MsiPayload.ps1` извлекает CAB без установки и сравнивает SHA256
+фактической DLL, Fluent-ресурсов, Toolkit и всех HTML-инструкций с текущими файлами.
+Проверяются версии ссылок API, наличие компонентов уведомлений и отсутствие библиотек
+самого Revit и тестового WPF-хоста. Несовпадение прерывает сборку. `SHA256SUMS.txt`
+обновляется только после успешной проверки всех трёх пакетов.
+
+Для установки используйте только `Installer/output`. Повторяемые служебные проверки
+ведутся в одном существующем `outputs/ui-production-preview`; остальные исторические
+Outputs не являются текущей поставкой. Последний протокол: [Installer-Verification](../Docs/Ui/DesignSystem/Installer-Verification.md).
+
 ## Публикация на GitHub
 
 MSI размещаются в **GitHub Releases**, в исходники Git их добавлять не нужно.
@@ -95,10 +106,10 @@ MSI размещаются в **GitHub Releases**, в исходники Git и�
 
 ```powershell
 # Только проверки и подготовка контрольных сумм, без публикации.
-.\Installer\Publish-GitHubRelease.ps1 -Version 1.0.0 -PrepareOnly
+.\Installer\Publish-GitHubRelease.ps1 -Version 1.1.0 -PrepareOnly
 
 # Создание выпуска, загрузка файлов и публикация.
-.\Installer\Publish-GitHubRelease.ps1 -Version 1.0.0
+.\Installer\Publish-GitHubRelease.ps1 -Version 1.1.0
 ```
 
 Для публикации нужен доступ на запись к репозиторию: используется `GH_TOKEN`,
@@ -113,3 +124,6 @@ MSI размещаются в **GitHub Releases**, в исходники Git и�
 
 Установщики пока не подписаны цифровым сертификатом. Это указывается в описании
 выпуска; Windows может показать предупреждение о неизвестном издателе.
+
+
+Текущий выпуск: **1.1.0 — Редизайн**. Обычный `Build-Msi.bat` берёт1.1.0 из AssemblyFileVersion; все три MSI содержат актуальные окна. Проверка CAB включает каждую XAML-форму обоих XAML-модулей. Метаданные разных Revit-target проверяются отдельными PowerShell-процессами, чтобы одинаковый product version не смешивал API references. Для публикации названия: `Installer/Publish-GitHubRelease.ps1 -Version 1.1.0 -ReleaseName "Редизайн"`. MSI находятся в `Installer/output` и публикуются GitHub Release assets; не коммитить build/cache или extracted CAB.

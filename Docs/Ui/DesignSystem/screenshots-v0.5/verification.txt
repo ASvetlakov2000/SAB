@@ -1,0 +1,108 @@
+Native DPI 96. 144 dpi is render only, not OS scaling.
+PASS Real parameter SettingsWindow has all four source tabs
+PASS One instruction button resolves the module HTML file: Настройки параметров
+PASS Native capsule tab items fit 34 DIP outer track
+PASS Native tab indicator actually runs its movement animation
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Every parameter tab has a twelve-DIP gap before its working surface
+SHOT 00-parameters-rules | 1384x881 DIP | render 96 dpi
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Every parameter tab has a twelve-DIP gap before its working surface
+PASS Form pickers share both edges with their vertical field/label container
+SHOT 01-parameters-sources | 1384x881 DIP | render 96 dpi
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Every parameter tab has a twelve-DIP gap before its working surface
+PASS Form pickers share both edges with their vertical field/label container
+SHOT 02-parameters-values | 1384x881 DIP | render 96 dpi
+PASS Form pickers share both edges with their vertical field/label container
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+AXIS source=54 label=54 width=1264 reference=1264 pickerMargin=0,4,0,4 comboMargin=0,0,0,0 parent=StackPanel
+PASS Actual source parameter outline shares axes with its label and preceding field
+SHOT 25-parameters-mapping-input | 1384x881 DIP | render 96 dpi
+SHOT 26-parameters-values-bottom | 1384x881 DIP | render 96 dpi
+PASS Visible window has no inline module description or instructional prose: Настройки параметров
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Every parameter tab has a twelve-DIP gap before its working surface
+SHOT 03-parameters-categories | 1384x881 DIP | render 96 dpi
+PASS All source rule columns retained including Required and row action
+PASS Real parameter rule Binding updates source model
+SHOT 04-parameters-editing | 1384x881 DIP | render 96 dpi
+POPUP items=6 offset=0 labels=SAB_Элемент_Корпус:352,181818181818x17,29:True | Текст:352,181818181818x14,63:True | В группах: изменяется:352,181818181818x14,63:True | GUID: 00000001-0000-0000-0000-000000000000:352,181818181818x14,63:True | SAB_Элемент_Уровень:352,181818181818x17,29:True | Текст:352,181818181818x14,63:True | В группах: изменяется:352,181818181818x14,63:True | GUID: 00000002-0000-0000-0000-000000000000:352,181818181818x14,63:True | SAB_Элемент_Помещение:352,181818181818x17,29:True | Текст:352,181818181818x14,63:True | В группах: изменяется:352,181818181818x14,63:True | GUID: 00000003-0000-0000-0000-000000000000:352,181818181818x14,63:True | SAB_Элемент_Зона:352,181818181818x17,29:True | Текст:352,181818181818x14,63:True | В группах: не изменяется:352,181818181818x14,63:True | GUID: 00000004-0000-0000-0000-000000000000:352,181818181818x14,63:True | Номер:352,181818181818x17,29:True | Текст:352,181818181818x14,63:True | В группах: изменяется:352,181818181818x14,63:True | GUID: 00000005-0000-0000-0000-000000000000:352,181818181818x14,63:True | Имя:352,181818181818x17,29:True | Текст:352,181818181818x14,63:True | В группах: изменяется:352,181818181818x14,63:True | GUID: 00000006-0000-0000-0000-000000000000:352,181818181818x14,63:True
+PASS Open parameter dropdown contains visible parameter names
+SHOT 05-parameter-dropdown | 386,181818181818x420 DIP | render 96 dpi
+SHOT 06-parameters-validation | 1384x881 DIP | render 96 dpi
+SHOT 07-categories-empty | 1384x881 DIP | render 96 dpi
+PASS Category selection saves and loads stable IDs
+PASS Selected-only capsule filters actual categories
+SHOT 19-categories-selected | 1384x881 DIP | render 96 dpi
+PASS Unknown saved category IDs are skipped without selecting other categories
+SHOT 20-categories-loaded | 1384x881 DIP | render 96 dpi
+PASS Invalid selection file is rejected before changing selection
+SHOT 08-parameters-minimum | 964x781 DIP | render 96 dpi
+SHOT 23-categories-minimum | 964x781 DIP | render 96 dpi
+SHOT 09-parameters-144dpi | 1384x881 DIP | render 144 dpi
+PASS One instruction button resolves the module HTML file: SAB — Создание видов и листов
+PASS Visible window has no inline module description or instructional prose: SAB — Создание видов и листов
+PASS Real views/sheets grid retains original ten columns plus dynamic browser columns
+PASS Real VM initializes five source SessionRows
+SHOT 10-views-sheets | 1464x901 DIP | render 96 dpi
+PASS Table container has actual rounded geometry clip at all four corners
+PASS Capsules fit wrapped labels with two-DIP inset and matching indicator height
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Column headers span the scrollbar gutter without a blank channel
+PASS Ordinary columns fit the initial table without horizontal overflow
+PASS Two-line structure labels expand the capsule above the compact minimum
+PASS Row number header shares centered alignment with row values
+PASS Visible editable scale text shares its header axis within one DIP
+PASS One instruction button resolves the module HTML file: Настройки создания видов и листов
+PASS Visible window has no inline module description or instructional prose: Настройки создания видов и листов
+SHOT 21-views-secondary-settings | 1184x861 DIP | render 96 dpi
+PASS Capsules fit wrapped labels with two-DIP inset and matching indicator height
+PASS Secondary source settings has no decorative heading glyphs
+SHOT 22-views-secondary-minimum | 1024x721 DIP | render 96 dpi
+PASS Capsules fit wrapped labels with two-DIP inset and matching indicator height
+SHOT 24-views-secondary-zones | 1024x721 DIP | render 96 dpi
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Conditional placement capsule uses one full-width segment without phantom option
+PASS Real InsertRowAfterCommand inserts row
+PASS Real DeleteRowCommand removes inserted row
+PASS Real CopySheetNamesToViewNamesCommand updates name
+PASS Actual view-name editor updates the production VM
+SHOT 11-views-editing | 1464x901 DIP | render 96 dpi
+PASS Capsule choice updates actual structure VM
+SHOT 12-views-multi-story | 1464x901 DIP | render 96 dpi
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+SHOT 13-views-multi-view | 1464x901 DIP | render 96 dpi
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+SHOT 14-views-validation | 1464x901 DIP | render 96 dpi
+PASS Source validation disables creation for incomplete row
+SHOT 15-views-minimum | 1084x721 DIP | render 96 dpi
+PASS Capsules fit wrapped labels with two-DIP inset and matching indicator height
+PASS Every visible table/list has one independent rounded one-DIP collection outline
+PASS Zero-height collection content does not leave an empty outlined strip
+PASS Column headers span the scrollbar gutter without a blank channel
+PASS Vertical scrollbar starts below the visible group row and inside data rows
+PASS Create action visible at minimum
+PASS Native row scrolling remains functional at minimum size
+PASS Column headers span the scrollbar gutter without a blank channel
+PASS Vertical scrollbar starts below the visible group row and inside data rows
+PASS Native group collapse hides its rows without replacing group behavior
+SHOT 16-views-settings-bottom | 1464x901 DIP | render 96 dpi
+SHOT 17-views-144dpi | 1464x901 DIP | render 144 dpi
+SHOT 18-views-empty | 1464x901 DIP | render 96 dpi
+PASS Real ClearRowsCommand restores one blank row, as production code requires
+Source-generated views: 135 original XAML bindings retained, all 10 original columns; actual SAB command/validation code.
+No Document, transaction, external event execution or installed plugin replacement. Geometry preference persistence disabled only in preview copy.
+COMPLETED

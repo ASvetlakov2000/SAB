@@ -31,7 +31,7 @@ namespace SAB.InteriorElevations.Views
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
             AttachHandlers();
-            Loaded += (s, e) => SabLayoutAssist.Apply(this);
+            // Shared Fluent templates own table layout.
         }
 
         public MultiRoomSelectionWindowAction RequestedAction { get; private set; }
@@ -75,6 +75,7 @@ namespace SAB.InteriorElevations.Views
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
                 Height = loadedWindow.Height;
+                SizeToContent = loadedWindow.SizeToContent;
                 MinWidth = loadedWindow.MinWidth;
                 MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
@@ -87,7 +88,7 @@ namespace SAB.InteriorElevations.Views
                 Resources = loadedWindow.Resources;
                 Content = loadedWindow.Content;
 
-                WindowSizeSettingsService.Apply(this, "InteriorElevations.MultiRoomSelectionWindow");
+                WindowSizeSettingsService.Apply(this, "InteriorElevations.MultiRoomSelectionWindow.Redesign110");
             }
         }
 

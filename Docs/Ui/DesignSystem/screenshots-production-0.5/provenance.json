@@ -1,0 +1,148 @@
+{
+  "version": "0.5-production-migration",
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/00-parameters-rules.png",
+      "sha256": "5fd8661125c7b7d56e294a6764945174e5460ecb5aff7f0a14a9c82aec5b3eb8",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/01-parameters-sources.png",
+      "sha256": "bb146da64c04d1ea25be73c8b46d23d75d8ba6f2aa6c1371518a2d3a8df8758b",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/02-parameters-values.png",
+      "sha256": "1cd3e3b7fff80b030ff2c699ab5d96c80fe391a64cd206e635cc80c93569bffe",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/03-parameters-categories.png",
+      "sha256": "0d0fdfcd8254db513f1b6da22b3cc3c9377be353099d0a948df9e9bdc6265440",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/04-parameters-editing.png",
+      "sha256": "5a0bc652f6faf0db33291c1643f3f0b420b217e224264f782a0d0511613e3f0f",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/05-parameter-dropdown.png",
+      "sha256": "b58af361eb796cde88b0c45adfcc3e458e89f010c8ad9f6a6a2a5b4741e9eae3",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/06-parameters-validation.png",
+      "sha256": "cac2b5b8bf50a2b9d39b2d3f4da2592770ed4454eb139f9b707b9c45e9f3e367",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/07-categories-empty.png",
+      "sha256": "2addc09ac5217b8a89354d00f148706eeae8d1afd1eb62ef8793cf68bd3e33ae",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/08-parameters-minimum.png",
+      "sha256": "42d2030c51ffe691bcc2c2777e8dd91d27e45274c6891ff08fda257fd7824604",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/09-parameters-144dpi.png",
+      "sha256": "c26de6ab78895f542f4caeda4266d7906d319467b7fd30d14a8561dc7d077266",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/10-views-sheets.png",
+      "sha256": "0406d4eb97095bae7fb8fbe43c01aa3c302bc1e7de7a524cb45053915b4b875c",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/11-views-editing.png",
+      "sha256": "76399384c795d7f1fcde90308ecbdb588206fcb953350d0bb0174e64efafa67f",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/12-views-multi-story.png",
+      "sha256": "685e243a4ca3c776c27ced40ce33539b2b4855cf5d28a18b4f43ee55d2a2af60",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/13-views-multi-view.png",
+      "sha256": "c576e38ba1b87bf591589cec29a14f7aeb78ea562ad554f696355e9c2ce03ab0",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/14-views-validation.png",
+      "sha256": "859b7625f6d74917efe05732e04ab04f93335b2c464cd0b73aa290911a36cefc",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/15-views-minimum.png",
+      "sha256": "9586318534ba633b5d2b1c22e46f31b04a9c20b4f63bac8bc3f6864afa1a09ad",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/16-views-settings-bottom.png",
+      "sha256": "00b84d0d0232f686e978177325c342944b1526bd7bc989a9c9037be3dbb49fc9",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/17-views-144dpi.png",
+      "sha256": "60630e642030ebae9f65a4a14962f40d9c1232cb274bfcd38cf52c5f543a704f",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/18-views-empty.png",
+      "sha256": "7969081994967483d7240fba664cd7cb54fe742fe687f26dfe33a5ded637d224",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/19-categories-selected.png",
+      "sha256": "55009efaaed27a3bb4545917a5c726ec20d44a760acdb8cdf2e0ce0d27704582",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/20-categories-loaded.png",
+      "sha256": "eb8ed4a84a6d4838e51c3256a8d5a51433b11564c4ee77885c1019047e73c7fc",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/21-views-secondary-settings.png",
+      "sha256": "ff652d1f489d878424ddd0451c0ef3829f6e06a8ea93fb139206686c636a9f6c",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/22-views-secondary-minimum.png",
+      "sha256": "f2a0673a5d66b83625e4a9bbbd24e61b628cd93d60c62956a412e71d599227bd",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/23-categories-minimum.png",
+      "sha256": "495efd8ed384d2875f2f1313d265afc693625c7c961c5f597ae6feac513a4fd3",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/24-views-secondary-zones.png",
+      "sha256": "2615fc9b9b6111b77c89d9bc5256579eaaa5a636591a700e850b2081a0e410ff",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/25-parameters-mapping-input.png",
+      "sha256": "3c6a0cc78ea75df9032942eb43ccea25e75ace9ddee5f523e9da340f1a338b75",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-production-0.5/26-parameters-values-bottom.png",
+      "sha256": "97fa31934369d858f35a42cb39dd6543855db31689aba4ada809252c7ca96731",
+      "origin": "Actual production SAB UI/VM/classes and scoped resources; synthetic DTOs outside Revit; no presentation overrides"
+    }
+  ],
+  "productionContract": "Tools/UiShowcase/production-source-contract.json",
+  "passCount": 81,
+  "limitations": [
+    "No Revit Document/API execution",
+    "Programmatic input; physical input not tested",
+    "144dpi is offscreen rendering, not OS scaling",
+    "External HTML browser launch not tested"
+  ]
+}

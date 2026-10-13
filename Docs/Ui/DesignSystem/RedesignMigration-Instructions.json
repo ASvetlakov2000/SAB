@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-13",
+  "command": "node Tests/Instructions/verify-html.cjs",
+  "exitCode": 0,
+  "viewportWidths": [
+    1440,
+    390
+  ],
+  "checksPassed": 46,
+  "templateCssSha256": "78ffaf94af5fe1dbde191e97895d8abb0c3943f48277f9c4aea3d771ff176e1a",
+  "changedGuides": {
+    "SAB_HTML_Oformlenie_razvertok.html": "56bf76406b5dcd5adce18549f1f81906dd734298ee01b8541b4db14b7aba374b",
+    "SAB_HTML_Sozdanie_i_korrektirovka_razvertok.html": "32ab84e2416e559d37e97153847f7ab23ad8f68c6286ffd11db739e1b19b9753"
+  },
+  "logSha256": "b6ca097f21ec9fb1ae74daf02b7a4d05d62c86d34d005eae75bd6053a232b332",
+  "revitButtonBrowserLaunch": "NOT RUN"
+}

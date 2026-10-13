@@ -1,0 +1,461 @@
+{
+  "scope": "Git line-ending conversion only; expected raw historical/migration digests stay immutable",
+  "files": {
+    "SAB/Cls_CreateViewsAndSheets/Services/CreateViewsAndSheetsWindowLayoutService.cs": {
+      "rawSha256": "979aa99255ba5176cb8c3311baad60efc5c755a22922ef22de1016cfcf17207b",
+      "lfSha256": "4516bff754c49a2e99901cedd47b97f89e185d1fe2f12debdcc9458fc5b445a6"
+    },
+    "SAB/Cls_CreateViewsAndSheets/ViewModels/CreateViewsAndSheetsViewModel.cs": {
+      "rawSha256": "d5a859144b1d8e44dca6e68bed453316341febbd5c30bd274f25a77a3b625573",
+      "lfSha256": "c8a1578d66d2d2402a8850a3a066593e44c63e31dbc2a1a009e1fd67c837b73d"
+    },
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.cs": {
+      "rawSha256": "c0a67cb376a063c69ae7caff57e2b1c70c8b627ccdbe31b7a792fe3b7c746194",
+      "lfSha256": "fbe64d68723fd5b8fbc2d39fd108b6fba568f33599f4de1585281c91917467a9"
+    },
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsSettingsWindow.xaml": {
+      "rawSha256": "fbcce40bae8419fb78fe840ab8b7182e9bea99eddc3df7b4d1aba516de6acea7",
+      "lfSha256": "ba1528b0097e550af5714f61de119e203140000d0b74ae66990ad27e6e245cc5"
+    },
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml": {
+      "rawSha256": "7c14a8536451234da75f3b88ac74e7254f2f44f8627483e3c7445a9a0ce2afbc",
+      "lfSha256": "92af28ef458c4647b2df813318233b7ddfe250aabfefe6c925ca4d95b614315a"
+    },
+    "SAB/Cls_CreateViewsAndSheets/Views/CreateViewsAndSheetsWindow.xaml.cs": {
+      "rawSha256": "1f68edabcdccc7f4f067d6082668158f82de08edb23ed889d8aa776caf35d73c",
+      "lfSha256": "52cafed8b9cb4e5c68d242680fbac6911f0e24807193abf7c4930aac5ae16e94"
+    },
+    "SAB/Cls_InteriorElevations/Commands/AdjustElevationCropCommand.cs": {
+      "rawSha256": "11946cb00100702830ef9a900a4a69a618b84387f71fca1123cb634432968e21",
+      "lfSha256": "11946cb00100702830ef9a900a4a69a618b84387f71fca1123cb634432968e21"
+    },
+    "SAB/Cls_InteriorElevations/Commands/ConfigureElevationDecorationCatalogCommand.cs": {
+      "rawSha256": "856924cbdb9801d099d74d543136622595bbe350d801dc243ec390e9ee2aba70",
+      "lfSha256": "856924cbdb9801d099d74d543136622595bbe350d801dc243ec390e9ee2aba70"
+    },
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "rawSha256": "cf6f73108ef5252b10179ae4d0956b3abbfc947ebb545ebe5b334ccb7ee5d5ee",
+      "lfSha256": "6a304f3726d0e1f4b7eabe37ee8b01fd17f5d345a6dee8348cefdaaf8491fda0"
+    },
+    "SAB/Cls_InteriorElevations/Commands/DecorateInteriorElevationsCommand.cs": {
+      "rawSha256": "266c7b18a157b6c5a6196c8e8a92e8316115480f01f2ea9f361e5cdcfcf82f58",
+      "lfSha256": "8453e6a406d70737c44a933064fbeccd7e4e109f78efc07d6e10317bc8cbabd8"
+    },
+    "SAB/Cls_InteriorElevations/Commands/FlipElevation180ByLineCommand.cs": {
+      "rawSha256": "a7d015dbd5ebc9ac833a28658b0ad5453b5a13b238553d78de03c0339c929e86",
+      "lfSha256": "ea555f6e726e550aa7efd136bc143bea0461ee8e3fd679008102aa7f54c38576"
+    },
+    "SAB/Cls_InteriorElevations/Commands/MoveElevationViewportsToNewSheetCommand.cs": {
+      "rawSha256": "5b5a30b6be089491572c67e6e2fec36400a049636615416988adfb3ffd0fb305",
+      "lfSha256": "1273e74d90f3b07ff84d162ebc2f8e0646e4f52715b51429b422482a798adc51"
+    },
+    "SAB/Cls_InteriorElevations/Models/AnnotationTypeOption.cs": {
+      "rawSha256": "7d4f2395f245dd88d3f9651f8bb8ec8439a66b8ecb8880c75a2e9d01ffea4acb",
+      "lfSha256": "7d4f2395f245dd88d3f9651f8bb8ec8439a66b8ecb8880c75a2e9d01ffea4acb"
+    },
+    "SAB/Cls_InteriorElevations/Models/CropByExampleSession.cs": {
+      "rawSha256": "c780b2eb7d28fa4360fc9f0f728aa14dd61f292563248410b802b12e823b5561",
+      "lfSha256": "b8e408497d8ea1a2bfcfe7e4d32f829e955a59c353c935a83e7be9a0850c85a1"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationCropAdjustmentResult.cs": {
+      "rawSha256": "7da490b2cd63a11408e02078d84f24c55e2a10eb2381fbcffb77ee8ea902e9d5",
+      "lfSha256": "7da490b2cd63a11408e02078d84f24c55e2a10eb2381fbcffb77ee8ea902e9d5"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationCropAdjustmentSettings.cs": {
+      "rawSha256": "1f26795c55103d4a7b6fdc94f985f0f40e60e1503b0ae042a28b2a1a7c1df87a",
+      "lfSha256": "1f26795c55103d4a7b6fdc94f985f0f40e60e1503b0ae042a28b2a1a7c1df87a"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationDecorationCatalog.cs": {
+      "rawSha256": "e312dcb3b67a7284e910ae63968a7a940e9607d8dde2b4609bc80c594753d5d7",
+      "lfSha256": "e312dcb3b67a7284e910ae63968a7a940e9607d8dde2b4609bc80c594753d5d7"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationDecorationSettings.cs": {
+      "rawSha256": "1612fb702cbe0e7112be6885295c0379b207bb043771f6b9e982df9cc750a54a",
+      "lfSha256": "13b88cc60f0295d5f365e8f2b5280ce68e879c17f42900a22764a8486490ba6d"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationFlipResult.cs": {
+      "rawSha256": "503913a1913622486c9b5213ec389eac1a61323d97d0d3fb331e1c52e20262d2",
+      "lfSha256": "2974aafef0a3cd5310d1042c03bbeb63f4708ad4e34eb562b39942106507927f"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationLineData.cs": {
+      "rawSha256": "bb245dc15780b0a45c93fba70124559a3c2b672a594e034519875a3d306937bc",
+      "lfSha256": "628fa0ee3825062d9e9b9bda419be28ff626223680bf25631e2e9bf7e56ae258"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationMarkPreferences.cs": {
+      "rawSha256": "8a18f4d90e2231612c1a01b9f8badbf0b68913fa0d93e7f997603fe311bf4a3a",
+      "lfSha256": "8a18f4d90e2231612c1a01b9f8badbf0b68913fa0d93e7f997603fe311bf4a3a"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationSettings.cs": {
+      "rawSha256": "baa4d430f08c5493f7a072377accb5af4207503f9cbb9740be9f01bc117ee085",
+      "lfSha256": "2db02f9fa65fa2f49bd5697db86117d8eecd924726a797b7cb7b275f1f61c23e"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationViewData.cs": {
+      "rawSha256": "e72fe77703fb07ff15669a80dde97751df58e3b1bc79dbe4fa8b512ebedc1503",
+      "lfSha256": "4009888dc209092d8795d8b5af4d5d07f3aadde4da2b9c805d4f6701f9f7ce67"
+    },
+    "SAB/Cls_InteriorElevations/Models/MultiRoomSelectionItem.cs": {
+      "rawSha256": "bc6adac22e8150a7890f6cee807ec0660b70ce1ca4d960bf357b02afe0d11526",
+      "lfSha256": "bc6adac22e8150a7890f6cee807ec0660b70ce1ca4d960bf357b02afe0d11526"
+    },
+    "SAB/Cls_InteriorElevations/Models/PlacedViewportData.cs": {
+      "rawSha256": "5cdb58e7a573e5a3c0f5528cd8849fd4adc966eb8ed2fd76c94d4f1c74aa72fa",
+      "lfSha256": "6cefff38c12d1a388ee6c89992f0ac5ff194fc9812baae7d08d00e115cbb2c98"
+    },
+    "SAB/Cls_InteriorElevations/Models/PlanCornerMarkLayoutModels.cs": {
+      "rawSha256": "a75eee423d80e08f3cb75f42c7be4ead5036f94a2648fc7d8ba2d70dfb6ed389",
+      "lfSha256": "a75eee423d80e08f3cb75f42c7be4ead5036f94a2648fc7d8ba2d70dfb6ed389"
+    },
+    "SAB/Cls_InteriorElevations/Models/RoomData.cs": {
+      "rawSha256": "4bd46a280bff34b06fa9739aa1371531736b2dc3c7388c74e4874215bda09931",
+      "lfSha256": "227df7141a629c45c14c7370f47da0f9ed0d01a132b39a33364d05c8bc65bce7"
+    },
+    "SAB/Cls_InteriorElevations/Models/RoomPlanSchemeCreationSummary.cs": {
+      "rawSha256": "6c3da26c4600b56b46d29340d3e7b192cb9ecc39007c33cf9f0c1d4c8c9932ab",
+      "lfSha256": "1a0b2675303e6b340e82d43cc62e957230e0512ebd14c72931c1e690cb426782"
+    },
+    "SAB/Cls_InteriorElevations/Models/RoomPlanSchemeSettings.cs": {
+      "rawSha256": "bba9d08c5db1e20f3c0c7d38c30645ca9c0263e7afea83cdbd925061a7c18049",
+      "lfSha256": "341e358f97b1639b7a3ab3cc6934bd58cf99da07ee2a7da15bd2a64f7e8cd226"
+    },
+    "SAB/Cls_InteriorElevations/Models/SheetLayoutSettings.cs": {
+      "rawSha256": "e88a2b51a3ab97068a6a25129b3dba379e26ae6a7f3545a4c0b6ad22e9e19f91",
+      "lfSha256": "1ebc6fae76fd189d001627d67b1008e20baeb4d1133fce0ca75f4f0abe981860"
+    },
+    "SAB/Cls_InteriorElevations/Models/ViewportPlacementResult.cs": {
+      "rawSha256": "a561fbe9bab6250564811ce4f077519e7b10719439fa5cef631f7b13b11270b2",
+      "lfSha256": "b1b0e2df8f1d1a6b34a6065d799ab5505395a0d3ea7d591818a04df36ca80aa1"
+    },
+    "SAB/Cls_InteriorElevations/Models/ViewportTransferResult.cs": {
+      "rawSha256": "7958ab4ca7074b396899bea7263707ae2a18180a7174789d35c6132a8a7bda61",
+      "lfSha256": "fac8f9d398573e3d763edd2bc1e0e884fb82acd7ee449fc43df6ce357c891caf"
+    },
+    "SAB/Cls_InteriorElevations/Services/Annotations/ElevationAnnotationOwnershipService.cs": {
+      "rawSha256": "0c4ec0fc8583cffd33bf0abd412e7475a48180ab2d7bb6ceecc082c86253d46f",
+      "lfSha256": "0c4ec0fc8583cffd33bf0abd412e7475a48180ab2d7bb6ceecc082c86253d46f"
+    },
+    "SAB/Cls_InteriorElevations/Services/Annotations/ElevationDecorationService.cs": {
+      "rawSha256": "9aaa6dc70e400093b2fd6b0318e4c25dea9f176f48253cecfabf2b59e3ac07bd",
+      "lfSha256": "61d71f36c32c0c39d4f06499f07a01e49116e202deef8c3f7e3f0cb0781da448"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/CropByExampleExternalEventHandler.cs": {
+      "rawSha256": "7415756c5c17415839c61f07c4f871d4ea39276d39bd33d941ef65a1810e184f",
+      "lfSha256": "824155be5bc848433b664564e49bbec69a4d6aa7898d918bb2b972b187c91b2d"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationCropAdjustmentService.cs": {
+      "rawSha256": "f7d6ad9c50f2a656cb3676bf8810f66768f6fd193fdf7afdd7e1cbe227279fd1",
+      "lfSha256": "f7d6ad9c50f2a656cb3676bf8810f66768f6fd193fdf7afdd7e1cbe227279fd1"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationCropByExampleService.cs": {
+      "rawSha256": "5f865d19bd66cd01c0d4bfc52e1d2fb7e185084c052e3534ec400eec6bf86389",
+      "lfSha256": "29b14e83319dd0df1afc07b23364954aa6695ccd7074957345398e42dee7140e"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationCropService.cs": {
+      "rawSha256": "01aaa88aa253e6303f2dba8140a0c975638d2b0884e0d2afca21e059bcce129c",
+      "lfSha256": "7d5cc1fb6a861fa81f4421f60d1b94e78ac7ecccb8c70f3d96120b4617e920f8"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationFlipService.cs": {
+      "rawSha256": "147e937c7c770dd1885950b7b0d4c74709539fbd3e104e583cf0436fa2f83d4d",
+      "lfSha256": "db5dc1fc393a9fc7cf5ef28714703195516aa0030748f39ce2fa663ca9dd16cb"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationGridExtentService.cs": {
+      "rawSha256": "aef5528e9d83cae908330dc2b289db5e3bf5e7eb0fd1210929efedf0f0a01656",
+      "lfSha256": "aef5528e9d83cae908330dc2b289db5e3bf5e7eb0fd1210929efedf0f0a01656"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationMarkerService.cs": {
+      "rawSha256": "29a75f3d4bab716d63961debecfc20bf089df73d3b502259ff6d37a8a98bd044",
+      "lfSha256": "bf304b0c00f518095873b5f5f414f037585d1f2f69966a011ac3a57b16be4748"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationNamingService.cs": {
+      "rawSha256": "f5a6656dd431188ee1f44b16a65fc6fa26663a7c9714a1ebc850839b521e4acc",
+      "lfSha256": "2c5fa4321e933ef06c564c842d6a6f1f97aaeb9432eacc4e66e549e168cc0b37"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationViewCreationService.cs": {
+      "rawSha256": "9c41da715fe222852b1198a1e2816707cd90ed4a99674062beec9eb577fad664",
+      "lfSha256": "97e42119d54fb8769c0cd57d7b3e81f34c07bcb52a84d79a8319a80ac209529a"
+    },
+    "SAB/Cls_InteriorElevations/Services/Geometry/ElevationGeometryService.cs": {
+      "rawSha256": "68486708f878d3d58d1f406c13d5d22af2f28c816a6a8c730c39043ff77bc370",
+      "lfSha256": "ed8c65fc2c13359a05cf199807e576ce8f660230c8ccc3fe00be40135ff09e07"
+    },
+    "SAB/Cls_InteriorElevations/Services/Geometry/LineOrientationService.cs": {
+      "rawSha256": "5b6a69ee471f7000c25ed5933134c2ed387d1bc53e7702ec0f47a1961b9d1513",
+      "lfSha256": "fc9057f12f2d9ec0c19e33536854444e9ed6f9568d427abf3faadd8ab1a6d775"
+    },
+    "SAB/Cls_InteriorElevations/Services/Marks/CornerMarkConstants.cs": {
+      "rawSha256": "23595ca07be63f408ff2d4ddf4b6e6ee089f9d807d9ccdf0853048c9667c97cb",
+      "lfSha256": "4499a0fd1f53fc7da7c2d6f04175ac650e88132589dfa1d5db376d43b2062412"
+    },
+    "SAB/Cls_InteriorElevations/Services/Marks/PlanCornerMarkLayoutService.cs": {
+      "rawSha256": "4b75bf9ba15460320f70499bafb063f9c02c7748f554e21798717ca7f31806ac",
+      "lfSha256": "4b75bf9ba15460320f70499bafb063f9c02c7748f554e21798717ca7f31806ac"
+    },
+    "SAB/Cls_InteriorElevations/Services/Marks/PlanCornerMarkPlacementService.cs": {
+      "rawSha256": "80f44d509662033d5c7aaecfd122530e4530c32c40835495201a78615e6251f4",
+      "lfSha256": "4a0cbf67403253ed299218ed144cbee84be1e63d4eec0392cc581bb02312485f"
+    },
+    "SAB/Cls_InteriorElevations/Services/Marks/RoomPlanRoomTagPlacementService.cs": {
+      "rawSha256": "74b3efdfc21b51d56b9f09191b9e951bb48716a6e209826a5f68648c2047b6c7",
+      "lfSha256": "70bc0b997835afd2e851083abbf54c3ecb4954c5f629daac6031857768725583"
+    },
+    "SAB/Cls_InteriorElevations/Services/Marks/SheetCornerMarkPlacementService.cs": {
+      "rawSha256": "0f74e2b48e1f04767cdedb5e843318687b281a5e90df4221aaccf32c1e25d82f",
+      "lfSha256": "9075145c917a0fb4e4f655278d190011f9ee98cba7cda3d337e7df6f03e3c378"
+    },
+    "SAB/Cls_InteriorElevations/Services/Plans/RoomPlanSchemeCreationService.cs": {
+      "rawSha256": "a0d4806c1712ebf3497309142507f62ea3c5c39bae7be1311fa784d053f67dec",
+      "lfSha256": "2e69eed7d9fbad09dd674e8ee3581931104f32dc9a024b657bd2082112c7a98b"
+    },
+    "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs": {
+      "rawSha256": "599aa1ff37680e85c3b4b9b7c526bb5cda326ef37438461abfceeb4e030f49c3",
+      "lfSha256": "23df8766960264266613e18419fb26d0cb2a60e16fa8aea948e351b0cc5582f2"
+    },
+    "SAB/Cls_InteriorElevations/Services/Rooms/RoomDetectionService.cs": {
+      "rawSha256": "289f58e23e3ee5b2ee593f4f3fba482aa666870500094b366816253fe282ac5e",
+      "lfSha256": "ea8f36c59b0d0f016bcd15d1cba7dead9658c9ba28318822a24e0023fd35ed1b"
+    },
+    "SAB/Cls_InteriorElevations/Services/Rooms/RoomPlanSelectionService.cs": {
+      "rawSha256": "4bc50dc3e77492fc40c4dff4daea58a89d0641621a721d802aba8a06c57cbc1d",
+      "lfSha256": "1a29393df8a84d17fcf8a8ef70f08c6c9e245512b0c76d70b72d7c616c559767"
+    },
+    "SAB/Cls_InteriorElevations/Services/Rooms/RoomVisibilityService.cs": {
+      "rawSha256": "877ddfb9a456c769222e6cb3e3bf649433112096f02d9e4536a3372f359521a8",
+      "lfSha256": "c8625ac20b183d7b19e3f06649966197828bb34bcbef3ca695ca89d220ca18bd"
+    },
+    "SAB/Cls_InteriorElevations/Services/Selection/DetailLineSelectionService.cs": {
+      "rawSha256": "6eee5a3fe91e8b69b5767b8419da0801d21a6f6a4d1e715fae335fe5181ec0cd",
+      "lfSha256": "c1e06cd658dbf3db536ac5d944667d49fce148fc2951a62550ddfbb9c8c3fe14"
+    },
+    "SAB/Cls_InteriorElevations/Services/Selection/ElevationDecorationCatalogWorkflowService.cs": {
+      "rawSha256": "dc0cfb69191e97a33e1b2990cf8898f19a78694a8d655bbecdfb25c4599cc1d6",
+      "lfSha256": "dc0cfb69191e97a33e1b2990cf8898f19a78694a8d655bbecdfb25c4599cc1d6"
+    },
+    "SAB/Cls_InteriorElevations/Services/Settings/ElevationDecorationCatalogService.cs": {
+      "rawSha256": "17cbc41e8d13db0ebbd089b718fca07935ffec4bc7ff6b976cf8e08e51b66cbd",
+      "lfSha256": "17cbc41e8d13db0ebbd089b718fca07935ffec4bc7ff6b976cf8e08e51b66cbd"
+    },
+    "SAB/Cls_InteriorElevations/Services/Settings/ElevationDecorationSettingsStorageService.cs": {
+      "rawSha256": "6ae6d13e1adcd1c82977432398f981888ab25cd8258838a42505ccfeeffbb6bd",
+      "lfSha256": "6600b0de0f636ad3e867fb0c08805e2b36266cb7b88c3e24d4978e7a6eec05c4"
+    },
+    "SAB/Cls_InteriorElevations/Services/Settings/ElevationSettingsStorageService.cs": {
+      "rawSha256": "716b0177371eb7c1b53bf0e304ccf6e750b44896c728b02b9320baf7e3f1731b",
+      "lfSha256": "95a482769725543c1f7bc7143432688fda29575ede7aabc606ac64826c5c7a77"
+    },
+    "SAB/Cls_InteriorElevations/Services/Settings/RoomPlanSchemeSettingsStorageService.cs": {
+      "rawSha256": "146252ac291c955ca78b5c964d4ec1ddc8d4bf26d504a6bec1b601848ca397b5",
+      "lfSha256": "4c747abe19d75e295e0c0eb55be19346cf45a497349c942d4abe1c3c97b622ac"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/AutomaticElevationSheetPlacementService.cs": {
+      "rawSha256": "6de4f96ced4fb8aa6b5470916ef5b7c3ab01a102b2c3049c29008c03ea7cc984",
+      "lfSha256": "6de4f96ced4fb8aa6b5470916ef5b7c3ab01a102b2c3049c29008c03ea7cc984"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/SheetContinuationService.cs": {
+      "rawSha256": "75c72bfaefb5d2b5790a601fb164180a3f0c31944d9f98bb9caa21b2d04f3962",
+      "lfSha256": "75c72bfaefb5d2b5790a601fb164180a3f0c31944d9f98bb9caa21b2d04f3962"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/SheetCreationService.cs": {
+      "rawSha256": "d29e66264ffb93cca019db0faae5b40d49d566cc59aa5de5a54d17432ee275b8",
+      "lfSha256": "7030cdbd944aabe9544da1c56ca13f6e0a405b2ab9eac995afddd489940d2488"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/SheetFrameDetectionService.cs": {
+      "rawSha256": "cd2b6f4e8dc7b9d5215715db0b3221dc115738d350c578a93009deba35b6c585",
+      "lfSha256": "cd2b6f4e8dc7b9d5215715db0b3221dc115738d350c578a93009deba35b6c585"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/SheetLayoutGeometry.cs": {
+      "rawSha256": "3e14e800fa1f9221d453019bdf1d527796e132dad032ca269d5abbe82f50ff02",
+      "lfSha256": "3e14e800fa1f9221d453019bdf1d527796e132dad032ca269d5abbe82f50ff02"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/SheetPointSelectionService.cs": {
+      "rawSha256": "b5970ec1eff30f946873b4c77772351d938852998dec4a77fd4854fd9d0ed461",
+      "lfSha256": "b95ac5cac733206d4eb16a65ad8d63eaf3912a0bbcb197225514086686183bc4"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/SheetWorkspaceService.cs": {
+      "rawSha256": "e6fc8e09578667aa56cdacc09e1d81d371fef31d009e79c76c77f49901639b3e",
+      "lfSha256": "e6fc8e09578667aa56cdacc09e1d81d371fef31d009e79c76c77f49901639b3e"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/ViewportPlacementService.cs": {
+      "rawSha256": "892cda7ec53c7ef28e17a6e81076cbd77ae0542b5ff98dcc6647ff03b06b8e51",
+      "lfSha256": "860dd5cfdb9a32753bbbd33c0d2b61c78d62a8fa48478ff4070afdc03cd84791"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/ViewportTransferService.cs": {
+      "rawSha256": "1f5c8c78f939b957a500231ae2c6140562ea4fa124c815a165f7ba74a9cb0730",
+      "lfSha256": "ad9d105ce4f0a052dcc51b3c47f4f4e582e70c7f1feaddc55059ef9efcd37a0e"
+    },
+    "SAB/Cls_InteriorElevations/Utils/RevitElementIdUtils.cs": {
+      "rawSha256": "0c63187b0205a04af7ba779ac976c490b05f9d4038fd22d483e607aeb8c4a893",
+      "lfSha256": "6143e332aeed119c51be36a04ed7890fb5603814724cfca8026982abb4f3f71d"
+    },
+    "SAB/Cls_InteriorElevations/Utils/RevitNameUtils.cs": {
+      "rawSha256": "132a43fa6b6770347bfbd398e2f3eaa6fdcb753ecb26be43ffaeb73371cefc5f",
+      "lfSha256": "d0f3a1913c028f512fd5f2273fda36b543386ef9e03b9cc2350bb8a70183d552"
+    },
+    "SAB/Cls_InteriorElevations/Utils/UnitConversionUtils.cs": {
+      "rawSha256": "46d57180738b699161f95026a5df667141d515e07c3d287c629c2414cd51bcab",
+      "lfSha256": "1fc28629730fb365ba481e66d809f21d0fe5beb05028e0d95fd234ff8d05a0f4"
+    },
+    "SAB/Cls_InteriorElevations/ViewModels/ElevationSettingsViewModel.cs": {
+      "rawSha256": "ade643f68f5ccbcd217a06009d1d09ad7d7f1aa42eae97b69ea2045399e0efa8",
+      "lfSha256": "b448241aab5c990ab137a1336f2a7a67797b8f1e1ac1e58611b1d95d0dbdf0bd"
+    },
+    "SAB/Cls_InteriorElevations/ViewModels/MultiRoomSelectionViewModel.cs": {
+      "rawSha256": "56c7fd84c09738407b07a8f1b2761aa38a927ba3f69ad6694aeebe0433a30447",
+      "lfSha256": "56c7fd84c09738407b07a8f1b2761aa38a927ba3f69ad6694aeebe0433a30447"
+    },
+    "SAB/Cls_InteriorElevations/ViewModels/RoomPlanSchemeSettingsViewModel.cs": {
+      "rawSha256": "45875d7c28a3e901e117bd4f71cb06a2933dbe45f922030f11c09c8fcd890071",
+      "lfSha256": "0ac42aa706aa581920bd0e3f72fb5e53a32147761d693d54215a75e3abb68f47"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleActionWindow.xaml": {
+      "rawSha256": "f2a00749dbfad403a419d7cafa09861f44633e5b172bbcab8524e1b3276b1435",
+      "lfSha256": "a110f47f5132076c045bdc0196f2453dae33a167e6cc67a3b9c8f5d4b9898649"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleActionWindow.xaml.cs": {
+      "rawSha256": "c72f79070231aca26edfc8911988fe2fa6f4262258321d01cb4333a614d5735a",
+      "lfSha256": "154a95b22fb25d21ea4fa70017ca8439bbff7a0ad611ccd1358e1c6e3f5fe9c0"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleLineCreationWindow.xaml": {
+      "rawSha256": "773194f5224af9b4116543bd2c33d9c8dd84d8fd470d387a6d73706e553bca24",
+      "lfSha256": "cd75a525f69fd8780cfe4d2f9421492899793de6bb38d1854d5407ad0a25b8f9"
+    },
+    "SAB/Cls_InteriorElevations/Views/CropByExampleLineCreationWindow.xaml.cs": {
+      "rawSha256": "44e334117f495a33c0c26a55aa5aac3991d40f8aedc3088442ce331dbb810fd4",
+      "lfSha256": "37e4a2c90af78fb980cafe8935d574eb8419e39149826d3bdc1df9635ff01cb1"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationCropAdjustmentWindow.xaml": {
+      "rawSha256": "c763291c0bcac28c0b9dc16af00d9a971068b4cd7ef68793a29d101ed6328edf",
+      "lfSha256": "b7b2ee4196884d2eec5886ca3978ef806a8b22efef7fbf14ea913c5d732736e7"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationCropAdjustmentWindow.xaml.cs": {
+      "rawSha256": "1e139169c0f0d634caedf23874435fe1062a053d15b228bd36b0264b1e46c43f",
+      "lfSha256": "20a485f3faefe7166f9f4779ae1d489ee7c0a7a0a20f63171662a1e356292460"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationCatalogWindow.cs": {
+      "rawSha256": "ef9d12e0c6b4589d9af1a64640bd45f738b8d1e34a5494648af2eded96374e1f",
+      "lfSha256": "06d520dd9e2432118dd067c505f860eab5ec6a8575baf4e9a66a1abb2a7f6c3b"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationCatalogWindow.xaml": {
+      "rawSha256": "8b8dcfbd61cca690661952158a583ffdd42f8500eb543112bcf213ffb641f71f",
+      "lfSha256": "23099678acfb03459ca15e1569376b014cf2b25aa831b78747067ef5188904e4"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.cs": {
+      "rawSha256": "bdb9498d080ee2c20333277fabcb4b82a7e851002a0568ba15c83d2a41dca1ba",
+      "lfSha256": "eb5341ac45dc518cd000027277229fe3619cf203004f6ca6587b1ffd6d752912"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": {
+      "rawSha256": "e6cb22a83e3bf6f71d80d5194190be077f187c68fb812005523a6b3474df964f",
+      "lfSha256": "a2810c8e49f08620bbe0b354ab99c95e7edc327382c11d5fde4be07808ef949a"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
+      "rawSha256": "3e247ec18b436ed567d1ba1007d2f2993537b015e40854a6a786e021b91f269f",
+      "lfSha256": "6b467767eafa25486f96f2b92baa37082046022324ec992c98773c62126fa91f"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": {
+      "rawSha256": "8bb72ae536ae4b1196c30b4fad8a40a59aa652e4c584561a6c082531baf19ddf",
+      "lfSha256": "48df396b42edcb6287effc4434fb4c03276ef7069f946177683de41167ff8a09"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml": {
+      "rawSha256": "e27a239ffb2b439c9adf63e1790e60d83f396d5989108ce92e24656c47313a0b",
+      "lfSha256": "11c18f5079467b543bedb3730edc6b5499ce3af85c0c39d86b2252b3eb63b52c"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml.cs": {
+      "rawSha256": "5874c2f1a454df9fac2f2e9a9bfb6c385b0f7fb0ab1f66ad9d3d1b35ec579a3d",
+      "lfSha256": "19e7be83e1e0a7e2e077538567cd6715e4eb4d96402064cb407fa89ec36d230f"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupSelectionWindow.xaml": {
+      "rawSha256": "515c1403645b34d5ee01264cacf3a712a82ff05f35e0b1e5aafaaa89b40867ff",
+      "lfSha256": "36d162aa09a4d9d3238d169c626f13decf5ff11058ae6d695d08224b71e9c40e"
+    },
+    "SAB/Cls_InteriorElevations/Views/LineGroupSelectionWindow.xaml.cs": {
+      "rawSha256": "772bb9bd9075130b72b9d0ca7bbc72dc8eebbd3cb0b8993e93645b439167d0d9",
+      "lfSha256": "7553b7896a907a43451ceeaec0848fb6daee8cb7a838627ea10448e18fdf57f8"
+    },
+    "SAB/Cls_InteriorElevations/Views/MultiRoomSelectionWindow.xaml": {
+      "rawSha256": "84fa1c27ce9766fc5a9f4b0ff155956178060b6a3fa016ad98bb70265ae175b5",
+      "lfSha256": "d234746cae82b2b22b4c9243b81985e28d36b740283e952208919c049e497a34"
+    },
+    "SAB/Cls_InteriorElevations/Views/MultiRoomSelectionWindow.xaml.cs": {
+      "rawSha256": "b12d9f065c1c6d41144675d6c694da19fe6fb9df4e825c7ff4e114691911e468",
+      "lfSha256": "949dde447489a60f3afc85ecb8e6068ede7a3ce96783b96889b6789dda6b6acd"
+    },
+    "SAB/Cls_InteriorElevations/Views/RoomPlanSchemeSettingsWindow.xaml": {
+      "rawSha256": "17c71c86d33d4c78576572b9efc009366bf5fe6bf10a376fb1c082f7b8af59a6",
+      "lfSha256": "a01ad58fa9554ea0e20f38431516e8afbb0e623c886ff6ccc4776c9bbbcd2200"
+    },
+    "SAB/Cls_InteriorElevations/Views/RoomPlanSchemeSettingsWindow.xaml.cs": {
+      "rawSha256": "386700d94e444a163c11b827f91f88a044bdbc84a6abe8c6ac939bc9c0fb2d26",
+      "lfSha256": "7882e3e10f84d91ea5375e46357ee6898b645f56ab65403017e42bc5651b15e5"
+    },
+    "SAB/Cls_ParameterTools/Commands.cs": {
+      "rawSha256": "eb0e0442ffe47bf07aa3011f226373e77ebd1cf3438fa9e177b2182fa7a38120",
+      "lfSha256": "4245dae28ceb6ab500f0a166de87c717233e7421fffcce93e92ebcbf7e0ea5c5"
+    },
+    "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs": {
+      "rawSha256": "6ca2c0660770aa57c3f0505cbbf99d65620d5efb6bef7c31cd10ec0048704cf7",
+      "lfSha256": "9ffc5f9eacf9dfce008bc48b69dc54a6e2120bdd8129a9b889a60a58b16437f5"
+    },
+    "SAB/Cls_ParameterTools/UI/FluentTheme.cs": {
+      "rawSha256": "b28114e85406b687a5e133baec16db2dd7a5c41a95a6aebc87d53a3845660150",
+      "lfSha256": "95f299ce47918f7aca371ab41f90f949dbf76ed76c080364f09325f8d7e073ec"
+    },
+    "SAB/Cls_ParameterTools/UI/ParameterNotifications.cs": {
+      "rawSha256": "fb876f3ec22b01f3266ca8b1e98a72af6d1776b778fe2edae18a603a7d1fe2ed",
+      "lfSha256": "fb876f3ec22b01f3266ca8b1e98a72af6d1776b778fe2edae18a603a7d1fe2ed"
+    },
+    "SAB/Cls_ParameterTools/UI/ParameterPicker.cs": {
+      "rawSha256": "13bbee84870109211b9ae96836c86d0577769669354c8b4303d71dd31b6653cf",
+      "lfSha256": "2941055209eddf6fc34e29c2e5e5f147690334c23fd9cafdcc967949b6e8aa75"
+    },
+    "SAB/Cls_ParameterTools/UI/SettingsWindow.cs": {
+      "rawSha256": "8e07aadf5b8a79dcff95176d19512c785538a0288c013b838203bb81063554b6",
+      "lfSha256": "2ea58cf3fb1f8a409627e6291e5f953c552a987385d65b7f9816cba436e5cd0c"
+    },
+    "SAB/Cls_ParameterTools/UI/SmallWindows.cs": {
+      "rawSha256": "dc38d8b361b55bc6c46e49e811320252d50a759e2b8af1c6797d6ed79e2820e2",
+      "lfSha256": "dc38d8b361b55bc6c46e49e811320252d50a759e2b8af1c6797d6ed79e2820e2"
+    },
+    "SAB/Cls_ParameterTools/Workflow.cs": {
+      "rawSha256": "574782e188ad21aa5ca6a56cf25c4f9314ebe0491a844ead23aab56ccf39bf16",
+      "lfSha256": "8d4afffcfd1cebca37e7b2b0014e5d550b89730440cc0a206b4f5b80ed6f2784"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "rawSha256": "9cef747f5ee937af4b69d9127922cbfe7136189daef8e40ccb683bb3de0b1e7e",
+      "lfSha256": "9a98e1e908eccb574b71adaefa5e0f24d96223b18f298a488a4eceee53ab5449"
+    },
+    "SAB/SAB.csproj": {
+      "rawSha256": "248214a35b7689e1212f7983384f870b18a41e3818a2f8db130663cd7e3731b5",
+      "lfSha256": "1861d7a45254b3731ccb56d147fb4524bed18832239d02f8c283afe53583f9d9"
+    },
+    "SAB/UI/FluentLight/FluentResources.cs": {
+      "rawSha256": "2ce5f025c4d12d405ac9c4c5024894fcbdd9e2b9c1336962d827ef8e7ecf17e6",
+      "lfSha256": "2ce5f025c4d12d405ac9c4c5024894fcbdd9e2b9c1336962d827ef8e7ecf17e6"
+    },
+    "SAB/UI/FluentLight/Presentation.cs": {
+      "rawSha256": "5574abbe46fd9dd33b63cfe121041686b71e017aead711b175170a1fb3ff09f0",
+      "lfSha256": "f5efe1fbe16703e07db97fee7cc435a2b85fedcd952e29ae556f9a5f695e0a74"
+    },
+    "SAB/UI/Notifications/NotificationCard.cs": {
+      "rawSha256": "59d92d397a7d03d738e85374408bb9f0cfa95e8dd7be27660c2a6ee4191fa05c",
+      "lfSha256": "33ca90454e92c3e76e8875d4a2ce9f80c83206a5dea20c6f9adbc4256bd454a8"
+    },
+    "SAB/UI/Notifications/NotificationMessage.cs": {
+      "rawSha256": "2e76a600f83c619b8554aba2c0dbe12361ab14ad4611df54375551b95ef57cf7",
+      "lfSha256": "2e76a600f83c619b8554aba2c0dbe12361ab14ad4611df54375551b95ef57cf7"
+    },
+    "SAB/UI/Notifications/NotificationStack.cs": {
+      "rawSha256": "3e1e9e0cfa504034830510f61aa889bf3afbbe738ffa4b2021e8d9d5d18b08cf",
+      "lfSha256": "55b1038e81ac5f98eebbdb236db6018c937da7682cc0c36891f0d996e46e05ff"
+    },
+    "SAB/UI/SabWindowBehaviorService.cs": {
+      "rawSha256": "a01aed6269a3facccc5f67c88598eb377ef45eaf2f55e895a0a2be357316f142",
+      "lfSha256": "394a5aac07742498beacac951af90c8717d85f63f0cb9f5de62e51c68d128d86"
+    },
+    "SAB/UI/Styles/SABFluentLight.xaml": {
+      "rawSha256": "1c4fd0c2feaf9554b2b44d1163dbc8c0c0aec95a325b515bed7e69998f25e9c3",
+      "lfSha256": "3bf5d4886bad209c4eed3d10640d6d8d82100cc9767db809703271ffef00cdaf"
+    },
+    "SAB/UI/Styles/SABWindowStyles.xaml": {
+      "rawSha256": "7d10f47996a69c8ce805884b1e4b9b17a602f4a14f275753d1d29c8d516887e0",
+      "lfSha256": "15b8f80b7b7836fa34e73d66aab56828ac4a0d43a3fb61a1bf6c05ba91feb085"
+    }
+  }
+}

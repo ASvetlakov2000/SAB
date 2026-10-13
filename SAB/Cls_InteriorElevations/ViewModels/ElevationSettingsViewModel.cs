@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -138,15 +138,18 @@ namespace SAB.InteriorElevations.ViewModels
             _createRoomPlanScheme = true;
             _placeRoomPlanSchemeOnSheet = true;
 
-            LoadElevationViewFamilyTypes();
-            LoadViewTemplates();
-            LoadTitleBlockTypes();
-            LoadViewportTypes();
-            LoadCornerMarkTypes(PlanCornerMarkTypes);
-            LoadCornerMarkTypes(SheetCornerMarkTypes);
-            LoadRoomPlanViewTemplates();
-            LoadRoomPlanRoomTagTypes();
-            LoadExistingSheets();
+            if (document != null)
+            {
+                LoadElevationViewFamilyTypes();
+                LoadViewTemplates();
+                LoadTitleBlockTypes();
+                LoadViewportTypes();
+                LoadCornerMarkTypes(PlanCornerMarkTypes);
+                LoadCornerMarkTypes(SheetCornerMarkTypes);
+                LoadRoomPlanViewTemplates();
+                LoadRoomPlanRoomTagTypes();
+                LoadExistingSheets();
+            }
             LoadViewTitleAnchors();
 
             ExistingSheetsView = CollectionViewSource.GetDefaultView(ExistingSheets);
@@ -197,8 +200,8 @@ namespace SAB.InteriorElevations.ViewModels
             get
             {
                 return HasNamingPreview
-                    ? "Пример для первого вида."
-                    : "Выберите линии и помещение — здесь появятся итоговые имена и заголовки.";
+                    ? "Первый вид."
+                    : "Нет данных для наименований.";
             }
         }
 

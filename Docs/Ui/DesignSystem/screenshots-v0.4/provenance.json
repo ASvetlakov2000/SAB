@@ -1,0 +1,130 @@
+{
+  "reference": "User-provided image: Docs/Ui/DesignSystem/reference/user-direction.png",
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/00-parameters-rules.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "cd294e5d639737fad88b38d4a9aca167b06ba8e08903c5a90b6f0d0fb1980e31"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/01-parameters-sources.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "e2fbd339c37e56e5599e0259b6ecea2a59b2cc16517aca7f4457a001e65fa844"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/02-parameters-values.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "fc3cef3f230ee37eb4a577453d06e0bbb295a8f7c491388ef6963a7e81d283be"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/03-parameters-categories.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "61458b18beccda7c96a0606a39c319242be2df3053752f952155be169166033f"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/04-parameters-editing.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "0f8aa75a808f3826336577158db414208eb6a064e53ae6c5f7feff736554fbad"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/05-parameter-dropdown.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "e46dd2b693c70f7df358e777eafd50e9a21eed7727d119707f8e41e44ffa534e"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/06-parameters-validation.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "203aab282b59a5d10fa9d0329da2f45c19c4db6b6774d8d98db6649460b899df"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/07-categories-empty.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "20fe1030b5994f252244c1bb0cb54417c6ae956f89fb99ac989ae38ec26e9458"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/08-parameters-minimum.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "ac45bb5878571e87e9cb46be596c9bf98f7e5fac4b407a537ec7fb7767adac52"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/09-parameters-144dpi.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "d17098bf3bb79656031c98bfe86cafbedb725a887f1fcb9b648bb93160ba4a4c"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/10-views-sheets.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "a9892afd891c107fa5dcf7fbc5e641f6623eeb5dc2c66f312ae664b1c1e07105"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/11-views-editing.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "2d869d86e4b223808c28f5442bdd8bcee1b9003ae60a9193c6fef8649e2d5a8c"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/12-views-multi-story.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "71cf6e812a2527e3afcee66d9f59786e398c487281a59baf40ca701f20199a5b"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/13-views-multi-view.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "a82fdb6cbd55c572b8fd585505ecf489b75a6c2ca88c69196b4f240fa3aa43ee"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/14-views-validation.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "d15a4a46121b76ceb290a7f0f383a596750518ce26538deaa7878e1a389745b8"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/15-views-minimum.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "0db77e91e4f471142ab39182095a758f41afc60945a31f263983d57577d40b01"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/16-views-settings-bottom.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "bd409bc3349b5bad5c89a2617d6adb4aa49736e737373d94bf8eee8c73e0cf80"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/17-views-144dpi.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "bcb5e263cb0b992ada063d80c16beddc254ba8e55bbf359bdcec37872f4422f0"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/18-views-empty.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "526a33c46eb7eadd848db112babf3e1a86a61c5dc334de852204019fe126499d"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/19-categories-selected.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "f8a961d2e88363c8d41435a495f396f817c7ca4637b92a3ac1fb110dcdb87a29"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/20-categories-loaded.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "80d8600303f23627bea92507c656f7c7c6c2fae5adac8fb32b010de3a74200df"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/21-views-secondary-settings.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "1fc4dfca3b2b25f40b55bfb47d23596a4a1cbfa9462ac0e1fb3778376f26d6d1"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/22-views-secondary-minimum.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "208c4de66ee4318565d170f2291797f37983dbe7238299fb4c18ac15142e6670"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/23-categories-minimum.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "f9cd3371c56c4291d21a16a69af624fb073ea029b3ba882ef1f5bb85768d8aca"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-v0.4/24-views-secondary-zones.png",
+      "origin": "SourcePreview.cs: live WPF visual of isolated source-based SAB; synthetic DTOs; no image composition",
+      "sha256": "971af55767f55f355c0db803fd5f22871f2e3199a5d7479d5b0fea2754f631d9"
+    }
+  ]
+}

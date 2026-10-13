@@ -33,7 +33,7 @@ namespace SAB.InteriorElevations.Views
         private Button _removeSelectedButton;
         private Button _clearRoleButton;
         private ComboBox _roleComboBox;
-        private ListView _entriesListView;
+        private DataGrid _entriesListView;
 
         public ElevationDecorationCatalogWindow(
             ElevationDecorationCatalog catalog,
@@ -100,6 +100,7 @@ namespace SAB.InteriorElevations.Views
                 Title = loadedWindow.Title;
                 Width = loadedWindow.Width;
                 Height = loadedWindow.Height;
+                SizeToContent = loadedWindow.SizeToContent;
                 MinWidth = loadedWindow.MinWidth;
                 MinHeight = loadedWindow.MinHeight;
                 WindowStartupLocation = loadedWindow.WindowStartupLocation;
@@ -120,7 +121,7 @@ namespace SAB.InteriorElevations.Views
 
                 WindowSizeSettingsService.Apply(
                     this,
-                    "InteriorElevations.ElevationDecorationCatalogWindow.V1");
+                    "InteriorElevations.ElevationDecorationCatalogWindow.Redesign110");
             }
         }
 
@@ -134,7 +135,7 @@ namespace SAB.InteriorElevations.Views
             _removeSelectedButton = Find<Button>("RemoveSelectedButton");
             _clearRoleButton = Find<Button>("ClearRoleButton");
             _roleComboBox = Find<ComboBox>("RoleComboBox");
-            _entriesListView = Find<ListView>("EntriesListView");
+            _entriesListView = Find<DataGrid>("EntriesListView");
 
             if (_titleBar == null || _closeButton == null || _doneButton == null ||
                 _addHostButton == null || _addLinkedButton == null ||

@@ -1,0 +1,61 @@
+{
+  "scope": "Actual SAB.dll shared notification classes and parameter adapter; synthetic results",
+  "checksPassed": 35,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/01-success.png",
+      "sha256": "7a958006dfd70c5ed175f022a00854bb14c6bf9fe035aa15ec862c524ad25c70",
+      "width": 416,
+      "height": 196
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/02-warning.png",
+      "sha256": "25dc25410982d2b32553312a7371d3006ba24b6a76d2083dcd51adab57fef923",
+      "width": 416,
+      "height": 474
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/03-selected-copied.png",
+      "sha256": "13655941c1d26debe48ea42901376bd4a77ab988cf666d1a9a9b769d089ce794",
+      "width": 416,
+      "height": 474
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/04-error.png",
+      "sha256": "c8c2cf9c60989de2ab5c0ec18dd655be79e12d3a2fb4f94aa0c3ca81e97e5c32",
+      "width": 416,
+      "height": 364
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/05-clipboard-failure.png",
+      "sha256": "8f29f427e0ae73b36d66122c5563e01c5b84c9c367dc41c2140918ced27ca169",
+      "width": 416,
+      "height": 474
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/06-long-minimum.png",
+      "sha256": "788a793d915ec5816ea5021f1463357def372a9baa988c672cc5746877c927e8",
+      "width": 380,
+      "height": 550
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/07-long-144dpi-render.png",
+      "sha256": "4bec05ff490f3db4b86a42f2b33906382680c8682164dbbcb215ae88c2f4f6bc",
+      "width": 570,
+      "height": 825
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/08-stack.png",
+      "sha256": "619d9525a89f3e3559b7eb35a9e75d58d0158b4807889a8a1b29eba82e4b5213",
+      "width": 416,
+      "height": 1060
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-redesign-notifications/09-overflow.png",
+      "sha256": "78d907e4c3c4325ea8c3065f3f7581c2caea0749174bea5e3f43b2d0ef9abcaa",
+      "width": 416,
+      "height": 1360
+    }
+  ],
+  "logSha256": "db8d976d95d3d298c12139daee454f5054a05195f655c02deba6174c8ce68fc1"
+}

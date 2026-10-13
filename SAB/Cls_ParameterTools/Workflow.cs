@@ -22,6 +22,7 @@ namespace SAB.ParameterTools
     internal sealed class Issue
     {
         public ElementId ElementId { get; set; }
+        public IEnumerable<long> ElementIds { get; set; }
         public string Element { get; set; }
         public string Parameter { get; set; }
         public string Actual { get; set; }
@@ -231,7 +232,7 @@ namespace SAB.ParameterTools
                     return false;
                 }).ToList();
             targets = targets.Where(e => perElement[e.Id].Count > 0 && !issues.Any(i => i.ElementId == e.Id)).ToList();
-            if (targets.Count == 0) { issues.AddRange(GroupIssues(groupSkips)); if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Правила не применены"); else UI.Toast.Show(app.MainWindowHandle, "Выделенные элементы не подходят под категории и условия правил."); return; }
+            if (targets.Count == 0) { issues.AddRange(GroupIssues(groupSkips)); if (issues.Count > 0) { UI.ParameterNotifications.ShowResult(app.MainWindowHandle, "Правила не применены.", issues, true, "Заполнение параметров"); UI.ReportWindow.Show(ui, issues, "Правила не применены"); } else UI.ParameterNotifications.Information(app.MainWindowHandle, "Выделенные элементы не подходят под категории и условия правил."); return; }
             var relevantRules = targets.SelectMany(e => perElement[e.Id]).Distinct().ToList();
             bool manualSelection = relevantRules.Any(r => RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus || RuleEngine.Source(profile, r) == RuleValueSource.ManualChoice);
             if (corpus == null && relevantRules.Any(r => RuleEngine.Source(profile, r) == RuleValueSource.ManualCorpus))
@@ -437,7 +438,7 @@ namespace SAB.ParameterTools
             if (groupSkips.Parameters.Count > 0) summary += "\nПропущено параметров в группах: " + groupSkips.Parameters.Count + ". Причины — в отчёте.";
             var writtenNames = rules.Where(r => applied[r.Id].Count > 0).Select(r => r.Target.Name).Distinct().ToList();
             if (writtenNames.Count > 0) summary += "\nЗаполненные параметры:\n" + string.Join("\n", writtenNames);
-            UI.Toast.Show(app.MainWindowHandle, summary, 8);
+            UI.ParameterNotifications.ShowResult(app.MainWindowHandle, summary, issues, committed, "Заполнение параметров");
             if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Результат заполнения");
         }
         private static IEnumerable<Issue> GroupIssues(GroupSkipSummary summary)
@@ -474,7 +475,7 @@ namespace SAB.ParameterTools
             ParameterToolsModule.Host.Highlight.Restore(ui.Document, ui.ActiveView.Id);
             HighlightService.ClearLegacy(ui.Document, ui.ActiveView);
             ViewFilterService.Apply(ui, profile, window.CategoryIds);
-            UI.Toast.Show(app.MainWindowHandle, "Проверено: " + targets.Count + ". Проблемных элементов: " + issues.Select(i => i.ElementId).Distinct().Count());
+            UI.ParameterNotifications.ShowResult(app.MainWindowHandle, "Проверено: " + targets.Count + ". Проблемных элементов: " + issues.Select(i => i.ElementId).Distinct().Count(), issues, true, "Проверка параметров");
             if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Проверка параметров");
         }
         internal static void AssignCorpus(UIApplication app)
@@ -504,7 +505,7 @@ namespace SAB.ParameterTools
                     t.Start(); Storage.Save(ui.Document, profile);
                     if (t.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Настройки не сохранены.");
                 }
-                UI.Toast.Show(app.MainWindowHandle, "Настройки параметров сохранены");
+                UI.ParameterNotifications.ShowResult(app.MainWindowHandle, "Настройки параметров сохранены", null, true, "Сохранение настроек");
                 if (window.Action == UI.SettingsAction.AssignCorpus) AssignCorpus(app);
                 return;
             }
@@ -527,6 +528,7 @@ namespace SAB.ParameterTools
                 string reason = failure.GetDescriptionText();
                 if (!Issues.Any(i => i.Reason == reason && i.Technical == technical))
                     Issues.Add(new Issue { Element = "Revit · " + severity, ElementId = ids.Count == 1 ? ids[0] : null,
+                        ElementIds = ids.Concat(additional).Select(Ids.Value).Distinct().ToList(),
                         Parameter = "Диагностика транзакции", Reason = reason, Technical = technical });
             }
             return error ? FailureProcessingResult.ProceedWithRollBack : FailureProcessingResult.Continue;

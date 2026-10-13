@@ -1,0 +1,10 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+ <Target Name="UseIsolatedSourcePresentation" BeforeTargets="CoreCompile">
+  <ItemGroup>
+   <Compile Remove="Cls_ParameterTools\UI\SettingsWindow.cs;Cls_ParameterTools\UI\SmallWindows.cs;Cls_ParameterTools\UI\ParameterPicker.cs;Cls_ParameterTools\UI\CategorySelectionControl.cs;Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsWindow.xaml.cs"/>
+   <Compile Include="$(SourcePreviewGenerated)\SettingsWindow.cs;$(SourcePreviewGenerated)\SmallWindows.cs;$(SourcePreviewGenerated)\ParameterPicker.cs;$(SourcePreviewGenerated)\CategorySelectionControl.cs;$(SourcePreviewGenerated)\CreateViewsAndSheetsWindow.xaml.cs"/>
+   <Compile Remove="Cls_CreateViewsAndSheets\Views\CreateViewsAndSheetsSettingsWindow.cs"/>
+   <Compile Include="$(SourcePreviewGenerated)\Presentation.cs;$(SourcePreviewGenerated)\CreateViewsAndSheetsSettingsWindow.cs"/>
+  </ItemGroup>
+ </Target>
+</Project>
