@@ -97,6 +97,11 @@
     "version": "1.1.0",
     "name": "Редизайн",
     "installationAuthorized": false,
-    "status": "ready_for_commit_and_publish"
+    "status": "published",
+    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.0",
+    "sourceCommit": "b09cd84dd50d85ec44554a4c7a369b59e98c7ee0",
+    "tag": "v1.1.0",
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.0.json",
+    "assetsSha256Verified": true
   }
 }

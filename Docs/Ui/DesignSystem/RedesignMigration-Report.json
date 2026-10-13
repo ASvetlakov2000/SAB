@@ -3,7 +3,7 @@
   "task": "SAB1.1.0 Редизайн: approved production UI migration and standard MSI release",
   "date": "2026-10-13",
   "scope": "Production source/native WPF outside Revit; standard ReleaseMSI2022/2023/2024; installation not performed",
-  "sourceRevision": "565ebe7c2f3ced2611014b6e0363baa6ea5f1096 + reviewed dirty migration tree; release commit is recorded by Git",
+  "sourceRevision": "b09cd84dd50d85ec44554a4c7a369b59e98c7ee0",
   "dirtyBaseline": "outputs/ui-production-preview/production-redesign-before.zip; prior user work preserved before migration",
   "readFiles": [
     "AGENTS.md",
@@ -1613,5 +1613,6 @@
         "Native API22 runtime"
       ]
     }
-  ]
+  ],
+  "releaseEvidence": "Docs/Ui/DesignSystem/Release-1.1.0.json"
 }

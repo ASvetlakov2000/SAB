@@ -1,0 +1,37 @@
+{
+  "name": "SAB 1.1.0 — Редизайн",
+  "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.0",
+  "tag": "v1.1.0",
+  "installationPerformed": false,
+  "assets": [
+    {
+      "size": 16069409,
+      "digest": "sha256:83238a52bb3e0042bb132840afa0565667b30d38d3ba7c24700bc9d77e264cc8",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.0/SAB_Revit_2022.msi",
+      "name": "SAB_Revit_2022.msi"
+    },
+    {
+      "size": 16442411,
+      "digest": "sha256:6d63aa5a6ae42c6eb9531d11de149757306fccbf5cc949bcffca082ee61ce66a",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.0/SAB_Revit_2023.msi",
+      "name": "SAB_Revit_2023.msi"
+    },
+    {
+      "size": 16438315,
+      "digest": "sha256:86672482e980975cc3e126523b7766df3999401e77d8ddad16888a8a92219c07",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.0/SAB_Revit_2024.msi",
+      "name": "SAB_Revit_2024.msi"
+    },
+    {
+      "size": 258,
+      "digest": "sha256:6da3f61b2d728d633155b9ad36590aa2b513f9abdac870f276a53232bec6f73b",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.0/SHA256SUMS.txt",
+      "name": "SHA256SUMS.txt"
+    }
+  ],
+  "status": "published",
+  "sourceCommit": "b09cd84dd50d85ec44554a4c7a369b59e98c7ee0",
+  "version": "1.1.0",
+  "tagCommit": "b09cd84dd50d85ec44554a4c7a369b59e98c7ee0",
+  "publishedAt": "2026-10-13T16:08:06Z"
+}
