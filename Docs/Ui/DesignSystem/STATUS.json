@@ -50,17 +50,17 @@
   "installer": {
     "entryPoint": "Build-Msi.bat",
     "configuration": "Release",
+    "version": "1.1.2",
     "years": [
       2022,
       2023,
       2024
     ],
     "payloadVerified": true,
-    "evidence": "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+    "evidence": "Docs/Ui/DesignSystem/SelectionGuidance-Installer.json",
+    "independentReview": "Docs/Ui/DesignSystem/SelectionGuidance-Review.md",
     "installationPerformed": false,
-    "independentReview": "Docs/Ui/DesignSystem/ParameterCheck-Review.md",
-    "scope": "Current parameterization fixes plus retained Elevations1.1.1; ReleaseMSI2022–24 extracted payload and APIrefs verified",
-    "version": "1.1.2"
+    "scope": "Published selection-stage guide plus prior compact Directions window; fresh extracted DLL/resources/families/instructions and API references verified"
   },
   "elevations": {
     "stage": "production_migrated",
@@ -94,15 +94,16 @@
     "productionMigrationCompleted": true
   },
   "release": {
-    "version": "1.1.0",
-    "name": "Редизайн",
+    "version": "1.1.2",
+    "name": "Подсказки выбора развёрток",
     "installationAuthorized": false,
     "status": "published",
-    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.0",
-    "sourceCommit": "b09cd84dd50d85ec44554a4c7a369b59e98c7ee0",
-    "tag": "v1.1.0",
-    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.0.json",
-    "assetsSha256Verified": true
+    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.2",
+    "sourceCommit": "a60afdf7c7e63cd8bc7f3eebae385144d4d89383",
+    "tag": "v1.1.2",
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.2.json",
+    "assetsSha256Verified": true,
+    "sequentialPredecessor": "v1.1.1"
   },
   "historicalInstaller1_1_0": {
     "entryPoint": "Build-Msi.bat",
@@ -171,7 +172,7 @@
   },
   "directionsWindow": {
     "version": "1.1.1",
-    "status": "local_msi_verified_with_independent_review",
+    "status": "published",
     "authorizationEvidence": "Direct user screenshots and sequential release correction16.10.2026",
     "layout": "Docs/Ui/DesignSystem/DirectionsWindow-Layout.md",
     "report": "Docs/Ui/DesignSystem/DirectionsWindow-Report.json",
@@ -187,11 +188,12 @@
     "installationPerformed": false,
     "publicationAuthorized": true,
     "publicationVerified": true,
-    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.1"
+    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.1",
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.1.json"
   },
   "selectionGuidance": {
     "version": "1.1.2",
-    "status": "local_msi_verified_with_independent_review",
+    "status": "published",
     "layout": "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md",
     "report": "Docs/Ui/DesignSystem/SelectionGuidance-Report.json",
     "guideAssertions": 33,
@@ -200,7 +202,35 @@
     "serviceChecks": 66,
     "installationPerformed": false,
     "publicationAuthorized": true,
-    "publicationVerified": false,
-    "independentReview": "Docs/Ui/DesignSystem/SelectionGuidance-Review.md"
+    "publicationVerified": true,
+    "independentReview": "Docs/Ui/DesignSystem/SelectionGuidance-Review.md",
+    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.2",
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.2.json"
+  },
+  "historicalParameterCheckInstaller1_1_2": {
+    "entryPoint": "Build-Msi.bat",
+    "configuration": "Release",
+    "years": [
+      2022,
+      2023,
+      2024
+    ],
+    "payloadVerified": true,
+    "evidence": "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+    "installationPerformed": false,
+    "independentReview": "Docs/Ui/DesignSystem/ParameterCheck-Review.md",
+    "scope": "Current parameterization fixes plus retained Elevations1.1.1; ReleaseMSI2022–24 extracted payload and APIrefs verified",
+    "version": "1.1.2"
+  },
+  "historicalRelease1_1_0": {
+    "version": "1.1.0",
+    "name": "Редизайн",
+    "installationAuthorized": false,
+    "status": "published",
+    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.0",
+    "sourceCommit": "b09cd84dd50d85ec44554a4c7a369b59e98c7ee0",
+    "tag": "v1.1.0",
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.0.json",
+    "assetsSha256Verified": true
   }
 }

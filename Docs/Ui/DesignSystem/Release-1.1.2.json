@@ -1,0 +1,43 @@
+{
+  "version": "1.1.2",
+  "name": "SAB 1.1.2 — Подсказки выбора развёрток",
+  "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.2",
+  "tag": "v1.1.2",
+  "sourceCommit": "a60afdf7c7e63cd8bc7f3eebae385144d4d89383",
+  "tagCommit": "a60afdf7c7e63cd8bc7f3eebae385144d4d89383",
+  "status": "published",
+  "latestAtVerification": true,
+  "publishedAt": "2026-10-16T12:10:08Z",
+  "verifiedAt": "2026-10-16T12:12:35.0960549Z",
+  "assets": [
+    {
+      "name": "SAB_Revit_2022.msi",
+      "size": 16442742,
+      "digest": "sha256:65c9b9b3694b02799aaf95d5f6f92d2541abacb87d872b208802981f2c680c23",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.2/SAB_Revit_2022.msi"
+    },
+    {
+      "name": "SAB_Revit_2023.msi",
+      "size": 16815744,
+      "digest": "sha256:d71f6a339ebddef69efc1065d81be4be85d5bfe525cfa140b5fd799f4a706c9c",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.2/SAB_Revit_2023.msi"
+    },
+    {
+      "name": "SAB_Revit_2024.msi",
+      "size": 16819840,
+      "digest": "sha256:31e205f436dd26846917904c3defbdec24239381202952aeeda28d3c3b596f03",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.2/SAB_Revit_2024.msi"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 258,
+      "digest": "sha256:96088a80eead6ac17af66c376a8fdc62608648d4f7ce146b41d479dacc842591",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.2/SHA256SUMS.txt"
+    }
+  ],
+  "assetsSha256Verified": true,
+  "checksumDownloadedVerified": true,
+  "installerEvidence": "Docs/Ui/DesignSystem/SelectionGuidance-Installer.json",
+  "installationPerformed": false,
+  "liveRevitValidation": "NOT RUN"
+}
