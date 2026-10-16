@@ -24,7 +24,8 @@ namespace SAB.InteriorElevations.Views
         Create = 2,
         PickSheetPoint = 3,
         PickCropByExample = 4,
-        PickRoomPlanPoint = 5
+        PickRoomPlanPoint = 5,
+        ShowDirectionPreview = 6
     }
 
     public partial class ElevationSettingsWindow : Window
@@ -40,17 +41,18 @@ namespace SAB.InteriorElevations.Views
 
         private readonly ElevationSettingsViewModel _viewModel;
         private readonly bool _initialHasSelection;
+        private readonly List<ElevationSelectionListItem> _selectionRows;
         private readonly string _initialSelectionStatusText;
         private readonly string _initialWarningInfoText;
         private readonly bool _initialOnlyCornerNumber;
         private readonly bool _initialBelowView;
 
         private Button _okButton;
-        private Button _cancelButton;
         private Button _pickLinesButton;
         private Button _pickSheetPointButton;
         private Button _pickRoomPlanPointButton;
         private Button _pickCropByExampleButton;
+        private Button _showDirectionPreviewButton;
         private Button _minimizeWindowButton;
         private Button _closeWindowButton;
         private TabControl _settingsTabControl;
@@ -80,9 +82,11 @@ namespace SAB.InteriorElevations.Views
             ElevationSettingsViewModel viewModel,
             bool initialHasSelection,
             string initialSelectionStatusText,
-            string initialWarningInfoText)
+            string initialWarningInfoText,
+            IEnumerable<ElevationSelectionListItem> selectionRows = null)
         {
             _viewModel = viewModel;
+            _selectionRows = selectionRows == null ? new List<ElevationSelectionListItem>() : new List<ElevationSelectionListItem>(selectionRows);
             _initialOnlyCornerNumber = viewModel.CornerMarksOnlyCornerNumber;
             _initialBelowView = viewModel.SheetCornerMarksBelowView;
             _initialHasSelection = initialHasSelection;
@@ -129,11 +133,11 @@ namespace SAB.InteriorElevations.Views
                 }
 
                 _okButton = loadedWindow.FindName("OkButton") as Button;
-                _cancelButton = loadedWindow.FindName("CancelButton") as Button;
                 _pickLinesButton = loadedWindow.FindName("PickLinesButton") as Button;
                 _pickSheetPointButton = loadedWindow.FindName("PickSheetPointButton") as Button;
                 _pickRoomPlanPointButton = loadedWindow.FindName("PickRoomPlanPointButton") as Button;
                 _pickCropByExampleButton = loadedWindow.FindName("PickCropByExampleButton") as Button;
+                _showDirectionPreviewButton = loadedWindow.FindName("ShowDirectionPreviewButton") as Button;
                 _minimizeWindowButton = loadedWindow.FindName("MinimizeWindowButton") as Button;
                 _closeWindowButton = loadedWindow.FindName("CloseWindowButton") as Button;
                 _settingsTabControl = loadedWindow.FindName("SettingsTabControl") as TabControl;
@@ -474,11 +478,6 @@ namespace SAB.InteriorElevations.Views
                 _okButton = FindElementByName<Button>(Content as DependencyObject, "OkButton");
             }
 
-            if (_cancelButton == null)
-            {
-                _cancelButton = FindElementByName<Button>(Content as DependencyObject, "CancelButton");
-            }
-
             if (_pickLinesButton == null)
             {
                 _pickLinesButton = FindElementByName<Button>(Content as DependencyObject, "PickLinesButton");
@@ -515,7 +514,6 @@ namespace SAB.InteriorElevations.Views
             }
 
             if (_okButton == null ||
-                _cancelButton == null ||
                 _pickLinesButton == null ||
                 _pickSheetPointButton == null ||
                 _pickRoomPlanPointButton == null ||
@@ -525,11 +523,17 @@ namespace SAB.InteriorElevations.Views
             }
 
             _okButton.Click += OkButton_Click;
-            _cancelButton.Click += CancelButton_Click;
             _pickLinesButton.Click += PickLinesButton_Click;
+            FindElementByName<Button>(Content as DependencyObject, "SelectionListButton").Click += (sender, args) =>
+            {
+                var list = new ElevationSelectionListWindow(_selectionRows) { Owner = this };
+                list.ShowDialog();
+            };
             _pickSheetPointButton.Click += PickSheetPointButton_Click;
             _pickRoomPlanPointButton.Click += PickRoomPlanPointButton_Click;
             _pickCropByExampleButton.Click += PickCropByExampleButton_Click;
+            _showDirectionPreviewButton.IsEnabled = _initialHasSelection;
+            _showDirectionPreviewButton.Click += ShowDirectionPreviewButton_Click;
         }
 
         private void SelectRequiredWorkflowTab()
@@ -640,6 +644,19 @@ namespace SAB.InteriorElevations.Views
             RequestedAction = ElevationSettingsWindowAction.PickSelection;
             DialogResult = true;
             Close();
+        }
+
+        private void ShowDirectionPreviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            CaptureMarkChoicesFromControls();
+            ElevationSettings settings; string validationMessage;
+            if (!_viewModel.TryBuildSettings(out settings, out validationMessage))
+            {
+                SetWarningInfoText(validationMessage); SelectRequiredWorkflowTab(); return;
+            }
+            SelectedSettings = settings;
+            RequestedAction = ElevationSettingsWindowAction.ShowDirectionPreview;
+            DialogResult = true; Close();
         }
 
         private void PickSheetPointButton_Click(object sender, RoutedEventArgs e)

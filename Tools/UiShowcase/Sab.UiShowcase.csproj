@@ -27,6 +27,10 @@
     <Compile Include="NotificationPreview.cs"/>
     <Compile Include="ElevationPreview.cs"/>
     <Compile Include="RedesignProduction.cs"/>
+    <Compile Include="ElevationHotfixPreview.cs"/>
+    <Compile Include="ElevationNumberingPreview.cs"/>
+    <Compile Include="ElevationDirectionPreviewEvidence.cs"/>
+    <Compile Include="ParameterCheckPreview.cs"/>
     <Compile Include="..\..\outputs\ui-production-preview\elevations-source\*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

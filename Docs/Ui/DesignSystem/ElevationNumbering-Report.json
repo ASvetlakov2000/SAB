@@ -1,0 +1,1113 @@
+{
+  "schemaVersion": 1,
+  "task": "SAB: numbering affixes and family load policy; geometry research",
+  "date": "2026-10-15",
+  "scope": "production",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\elevation-research-baseline",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/LayoutPatterns.md"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md",
+  "build": [
+    {
+      "command": "MSBuild SAB.csproj Debug Revit2023 + Sab.UiShowcase.csproj",
+      "exitCode": 0
+    },
+    {
+      "command": "dotnet run Tests/InteriorElevations.Numbering -c Release",
+      "exitCode": 0,
+      "assertions": 20
+    },
+    {
+      "command": "GeometryCounterexamples.py",
+      "exitCode": 0,
+      "assertions": 12
+    },
+    {
+      "command": "Installer/Build-All-Msi.ps1 -Configuration Release (Build-Msi.bat backend)",
+      "exitCode": 0,
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "payload": "extracted DLL/XAML/styles/Toolkit/instructions SHA256; API references verified; no installation"
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/numbering-empty.png",
+      "sha256": "571d65bddfc4c35cf71fc93a33939401cb90aecf99b8f7852d9c3380016e2c9c"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/numbering-minimum-long.png",
+      "sha256": "2e50850d82940a3765a214549a9b49840cd2e6edb034e00a54b72d17baf3020f"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/numbering-normal.png",
+      "sha256": "fc97412cdfd5d51434fb0dc9a4edd9807c97a9c33eea0ee602d66b3f65a2751b"
+    }
+  ],
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Independent bounded finish review; scope and limits in report.",
+    "scope": "production source and actual WPF outside Revit",
+    "report": "Docs/Ui/DesignSystem/ElevationNumbering-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Build, binding, JSON and programmatic focus checks passed; actual Revit context and complete physical input/state matrix unavailable.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Build, binding, JSON and programmatic focus checks passed; actual Revit context and complete physical input/state matrix unavailable.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Build, binding, JSON and programmatic focus checks passed; actual Revit context and complete physical input/state matrix unavailable.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "This bounded change adds two text editors to the naming card; table/picker/category/notification/other-window scenario and existing capsules/footer contracts are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded naming-card/source scope only; other components unchanged.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-numbering/verification.txt",
+        "Docs/Ui/DesignSystem/ElevationNumbering-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit model/transactions/rotation",
+        "physical keyboard/accessibility",
+        "OS DPI transitions",
+        "installation"
+      ]
+    }
+  ]
+}

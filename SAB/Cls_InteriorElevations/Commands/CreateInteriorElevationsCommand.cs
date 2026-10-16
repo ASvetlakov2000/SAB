@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Interop;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
@@ -128,6 +129,8 @@ namespace SAB.InteriorElevations.Commands
                     return Result.Failed;
                 }
 
+                if (ElevationDirectionPreviewController.ActivateExisting()) return Result.Succeeded;
+
                 View activeView = document.ActiveView;
                 if (!IsSupportedPlanView(activeView))
                 {
@@ -156,7 +159,6 @@ namespace SAB.InteriorElevations.Commands
 
                 List<string> warnings = new List<string>();
                 PluginFamilyResourceService pluginFamilyResourceService = new PluginFamilyResourceService();
-                pluginFamilyResourceService.EnsureCommandFamiliesLoaded(document, typeof(CreateInteriorElevationsCommand), warnings);
 
                 RoomVisibilityService roomVisibilityService = new RoomVisibilityService();
 
@@ -171,15 +173,22 @@ namespace SAB.InteriorElevations.Commands
                     warnings.Add("Не удалось загрузить сохраненные настройки: " + loadException.Message);
                 }
 
-                ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document, savedSettings);
+                ElevationMarkPreferences markPreferences = null;
                 try
                 {
-                    settingsViewModel.ApplyMarkPreferences(settingsStorageService.LoadMarkPreferences());
+                    markPreferences = settingsStorageService.LoadMarkPreferences();
                 }
                 catch (Exception loadException)
                 {
                     warnings.Add("Не удалось загрузить настройки марок: " + loadException.Message);
                 }
+                pluginFamilyResourceService.EnsureCornerMarkFamiliesLoaded(document, typeof(CreateInteriorElevationsCommand),
+                    markPreferences != null ? markPreferences.PlanMarkTypeId : null,
+                    savedSettings != null ? savedSettings.PlanCornerMarkTypeId : null,
+                    markPreferences != null ? markPreferences.SheetMarkTypeId : null,
+                    savedSettings != null ? savedSettings.SheetCornerMarkTypeId : null, warnings);
+                ElevationSettingsViewModel settingsViewModel = new ElevationSettingsViewModel(document, savedSettings);
+                settingsViewModel.ApplyMarkPreferences(markPreferences);
                 ViewSheet sheetContainingActivePlan = FindSheetContainingView(document, activePlanView.Id);
                 if (sheetContainingActivePlan != null)
                 {
@@ -203,6 +212,7 @@ namespace SAB.InteriorElevations.Commands
                     new ObservableCollection<MultiRoomSelectionItem>();
                 bool hasTransferredSelection = false;
                 ElevationSettings settings = null;
+                bool showDirectionPreview = false;
 
                 while (true)
                 {
@@ -216,7 +226,8 @@ namespace SAB.InteriorElevations.Commands
                         settingsViewModel,
                         hasTransferredSelection && HasCompletedSelections(selectionPackages),
                         selectionStatusText,
-                        windowInfoText);
+                        windowInfoText,
+                        ElevationSelectionListItem.FromSelections(selectionPackages));
                     if (choiceState != null)
                     {
                         choiceState.Restore(settingsViewModel);
@@ -457,6 +468,7 @@ namespace SAB.InteriorElevations.Commands
                         continue;
                     }
 
+                    showDirectionPreview = settingsWindow.RequestedAction == ElevationSettingsWindowAction.ShowDirectionPreview;
                     break;
                 }
 
@@ -470,7 +482,6 @@ namespace SAB.InteriorElevations.Commands
                 }
 
                 ElevationGeometryService elevationGeometryService = new ElevationGeometryService();
-                LineOrientationService lineOrientationService = new LineOrientationService();
                 List<RoomExecutionData> roomExecutionDataList = new List<RoomExecutionData>();
                 int selectedLinesCount = 0;
 
@@ -496,20 +507,7 @@ namespace SAB.InteriorElevations.Commands
                         continue;
                     }
 
-                    bool orientationAssigned = lineOrientationService.TryAssignInsideNormals(
-                        document,
-                        elevationLines,
-                        currentSelectionPackage.RoomData,
-                        settings.MarkerOffsetMm,
-                        warnings);
-                    if (!orientationAssigned)
-                    {
-                        warnings.Add(
-                            "Помещение " + currentSelectionPackage.RoomData.RoomNumber + " " +
-                            currentSelectionPackage.RoomData.RoomName +
-                            ": не удалось определить направление разверток.");
-                        continue;
-                    }
+                    AssignContourDirections(currentSelectionPackage, elevationLines, settings, warnings);
 
                     RoomExecutionData roomExecutionData = new RoomExecutionData();
                     roomExecutionData.SelectionPackage = currentSelectionPackage;
@@ -525,6 +523,46 @@ namespace SAB.InteriorElevations.Commands
                     return Result.Cancelled;
                 }
 
+                // An open chain cannot determine which side is interior from its lines alone.
+                if (showDirectionPreview || roomExecutionDataList.Any(room => room.ElevationLines.Any(line => line.IsOpenContour)))
+                {
+                    ReservePreviewNumbers(document, roomExecutionDataList, settings);
+                    var previewLines = roomExecutionDataList.SelectMany(room => room.ElevationLines).ToList();
+                    ElevationDirectionPreviewController.Start(uiApplication, activePlanView, previewLines,
+                        application => CreatePreparedElevations(application, activePlanView, activePlanLevelId,
+                            settings, roomExecutionDataList, selectedLinesCount, warnings));
+                    return Result.Succeeded;
+                }
+                return CreatePreparedElevations(uiApplication, activePlanView, activePlanLevelId,
+                    settings, roomExecutionDataList, selectedLinesCount, warnings);
+            }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
+            {
+                return Result.Cancelled;
+            }
+            catch (Exception exception)
+            {
+                message = exception.Message;
+                ToastNotifier.ShowError("SAB Развертки", "Неожиданная ошибка: " + exception.Message);
+                return Result.Failed;
+            }
+            finally
+            {
+                CloseProgressWindow(progressWindow);
+            }
+        }
+
+        private Result CreatePreparedElevations(UIApplication uiApplication, ViewPlan activePlanView,
+            ElementId activePlanLevelId, ElevationSettings settings, List<RoomExecutionData> roomExecutionDataList,
+            int selectedLinesCount, List<string> warnings)
+        {
+            CreateViewsAndSheetsProgressWindow progressWindow = null;
+            try
+            {
+                UIDocument uiDocument = uiApplication.ActiveUIDocument;
+                Document document = activePlanView.Document;
+                if (uiDocument == null || !document.Equals(uiDocument.Document))
+                    throw new InvalidOperationException("Вернитесь в исходный документ развёрток.");
                 ElevationNamingService namingService = new ElevationNamingService(document);
                 ElevationMarkerService markerService = new ElevationMarkerService();
                 ElevationCropService cropService = new ElevationCropService();
@@ -1018,19 +1056,37 @@ namespace SAB.InteriorElevations.Commands
 
                 return creationResult.CreatedViews.Count > 0 ? Result.Succeeded : Result.Cancelled;
             }
-            catch (Autodesk.Revit.Exceptions.OperationCanceledException)
-            {
-                return Result.Cancelled;
-            }
+            catch (Autodesk.Revit.Exceptions.OperationCanceledException) { return Result.Cancelled; }
             catch (Exception exception)
             {
-                message = exception.Message;
-                ToastNotifier.ShowError("SAB Развертки", "Неожиданная ошибка: " + exception.Message);
+                ToastNotifier.ShowError("SAB Развертки", "Не удалось создать развёртки: " + exception.Message);
                 return Result.Failed;
             }
-            finally
+            finally { CloseProgressWindow(progressWindow); }
+        }
+
+        private void ReservePreviewNumbers(Document document, IList<RoomExecutionData> rooms, ElevationSettings settings)
+        {
+            var used = new List<string>(new FilteredElementCollector(document).OfClass(typeof(Viewport))
+                .Cast<Viewport>().Select(ElevationDetailNumberService.Read));
+            foreach (var room in rooms)
             {
-                CloseProgressWindow(progressWindow);
+                var numbers = ElevationDetailNumberService.ResolveGroupNumbers(used, room.ElevationLines.Select(line => line.Index),
+                    settings.DetailNumberPrefix, settings.DetailNumberSuffix);
+                foreach (var line in room.ElevationLines) line.PlannedDetailNumber = numbers[line.Index];
+                used.AddRange(numbers.Values);
+            }
+        }
+
+        private void AssignContourDirections(MultiRoomSelectionItem selection, IList<ElevationLineData> lines,
+            ElevationSettings settings, IList<string> warnings)
+        {
+            var orientation = new ContourLineOrientationService();
+            foreach (var group in selection.LineGroups)
+            {
+                var ids = new HashSet<long>(group.Select(line => RevitElementIdUtils.GetElementIdValue(line.Id)));
+                var groupLines = lines.Where(line => ids.Contains(RevitElementIdUtils.GetElementIdValue(line.LineElementId))).ToList();
+                orientation.Assign(groupLines, selection.RoomData, settings.MarkerOffsetMm, warnings);
             }
         }
 
@@ -1217,6 +1273,8 @@ namespace SAB.InteriorElevations.Commands
                 savedSettings.EnableRoomObjectCategory = settingsViewModel.EnableRoomObjectCategory;
                 savedSettings.CornerMarksOnlyCornerNumber = settingsViewModel.CornerMarksOnlyCornerNumber;
                 savedSettings.SheetCornerMarksBelowView = settingsViewModel.SheetCornerMarksBelowView;
+                savedSettings.DetailNumberPrefix = settingsViewModel.DetailNumberPrefix;
+                savedSettings.DetailNumberSuffix = settingsViewModel.DetailNumberSuffix;
                 savedSettings.CreateRoomPlanScheme = settingsViewModel.CreateRoomPlanScheme;
                 savedSettings.PlaceRoomPlanSchemeOnSheet = settingsViewModel.CreateRoomPlanScheme &&
                     settingsViewModel.PlaceViewsOnSheet && settingsViewModel.PlaceRoomPlanSchemeOnSheet;

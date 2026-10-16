@@ -1,0 +1,10 @@
+EXPECTED BASELINE FAILURE: System.Windows.ResourceReferenceKeyNotFoundException: Ресурс "SabBrush.DisabledBackground" не найден.
+   в MS.Internal.Helper.FindResourceHelper.DoTryCatchWhen(Object arg)
+   в System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   в System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+   в MS.Internal.Helper.FindResourceHelper.TryCatchWhen()
+   в System.Windows.FrameworkElement.FindResource(Object resourceKey)
+   в SAB.UI.Notifications.NotificationCard.Brush(String key) в C:\Users\svetl\Desktop\Codex\Projects\SAB\SAB\UI\Notifications\NotificationCard.cs:строка 71
+   в SAB.UI.Notifications.NotificationCard.CopySection(String title, String label, String value, Boolean mono) в C:\Users\svetl\Desktop\Codex\Projects\SAB\SAB\UI\Notifications\NotificationCard.cs:строка 86
+   в SAB.UI.Notifications.NotificationCard..ctor(NotificationMessage message, Action`1 clipboardWriter) в C:\Users\svetl\Desktop\Codex\Projects\SAB\SAB\UI\Notifications\NotificationCard.cs:строка 57
+   в SAB.UiShowcase.SourcePreview.Run(String[] args) в C:\Users\svetl\Desktop\Codex\Projects\SAB\Tools\UiShowcase\SourcePreview.cs:строка 50

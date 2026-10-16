@@ -90,7 +90,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                     var layout = settings.SheetLayoutSettings;
                     SheetLayoutDiagnostics.Write("Forced placement: columns=" + layout.ColumnsCount);
                     var result = _placement.PlaceRoomViewGroupsOnSheet(document, sheet, groups, null, layout,
-                        settings.ViewportTypeId, warnings, progress);
+                        settings.ViewportTypeId, warnings, progress, settings.DetailNumberPrefix, settings.DetailNumberSuffix);
                     result.ForcedPlacementUsed = true;
                     var marks = new SheetCornerMarkPlacementService();
                     for (int group = 0; group < groups.Count; group++)
@@ -231,7 +231,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                     for (int group = 0; group < groups.Count; group++)
                     {
                         var placed = _placement.PlaceViewsOnSheet(document, firstSheet, groups[group], layout,
-                            settings.ViewportTypeId, warnings);
+                            settings.ViewportTypeId, warnings, settings.DetailNumberPrefix, settings.DetailNumberSuffix);
                         if (placed.PlacedViewports.Count != groups[group].Count)
                             throw new InvalidOperationException("Не все развертки удалось подготовить для измерения. Временное размещение отменено.");
                         markService.PlaceSheetCornerMarks(document, firstSheet, rooms[group], settings.SheetCornerMarkTypeId,

@@ -56,11 +56,11 @@
       2024
     ],
     "payloadVerified": true,
-    "evidence": "Docs/Ui/DesignSystem/Installer-Payload.json",
+    "evidence": "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
     "installationPerformed": false,
-    "independentReview": "Docs/Ui/DesignSystem/Installer-Review.md",
-    "scope": "Approved actual production UI of three modules, shared notifications416/status16 and independent spot category services; all loose XAML, DLL, styles, instructions verified from CAB",
-    "version": "1.1.0"
+    "independentReview": "Docs/Ui/DesignSystem/ParameterCheck-Review.md",
+    "scope": "Current parameterization fixes plus retained Elevations1.1.1; ReleaseMSI2022–24 extracted payload and APIrefs verified",
+    "version": "1.1.2"
   },
   "elevations": {
     "stage": "production_migrated",
@@ -103,5 +103,70 @@
     "tag": "v1.1.0",
     "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.0.json",
     "assetsSha256Verified": true
+  },
+  "historicalInstaller1_1_0": {
+    "entryPoint": "Build-Msi.bat",
+    "configuration": "Release",
+    "years": [
+      2022,
+      2023,
+      2024
+    ],
+    "payloadVerified": true,
+    "evidence": "Docs/Ui/DesignSystem/Installer-Payload.json",
+    "installationPerformed": false,
+    "independentReview": "Docs/Ui/DesignSystem/Installer-Review.md",
+    "scope": "Approved actual production UI of three modules, shared notifications416/status16 and independent spot category services; all loose XAML, DLL, styles, instructions verified from CAB",
+    "version": "1.1.0"
+  },
+  "elevationHotfix": {
+    "version": "1.1.1",
+    "status": "local_msi_built_and_payload_verified",
+    "authorizationEvidence": "Latest direct user runtime feedback and exact footer/list requests13.10.2026",
+    "layout": "Docs/Ui/DesignSystem/ElevationHotfix-Layout.md",
+    "report": "Docs/Ui/DesignSystem/ElevationHotfix-Report.json",
+    "verification": "Docs/Ui/DesignSystem/ElevationHotfix-Verification.md",
+    "independentReview": "Docs/Ui/DesignSystem/ElevationHotfix-Review.md",
+    "actualAssertions": 282,
+    "actualPng": 17,
+    "sharedNotificationAssertions": 35,
+    "sharedNotificationPng": 9,
+    "isolatedSessionAssertions": 635,
+    "isolatedSessionPng": 44,
+    "published": false,
+    "installationPerformed": false,
+    "independentDisposition": "ship_ui_code_payload"
+  },
+  "historicalInstaller1_1_1": {
+    "entryPoint": "Build-Msi.bat",
+    "configuration": "Release",
+    "years": [
+      2022,
+      2023,
+      2024
+    ],
+    "payloadVerified": true,
+    "evidence": "Docs/Ui/DesignSystem/ElevationHotfix-Installer.json",
+    "installationPerformed": false,
+    "independentReview": "Docs/Ui/DesignSystem/ElevationHotfix-Review.md",
+    "scope": "Bounded Elevations regression fix: scoped resources, safe result delivery, footer and immutable readonlyroomlist; current ReleaseMSI2022–24 payload verified",
+    "version": "1.1.1"
+  },
+  "parameterCheckFix": {
+    "version": "1.1.2",
+    "status": "local_msi_verified_with_independent_review",
+    "authorizationEvidence": "User primary feedback13.10.2026 + latest explicit cancellation of highlightreports, onlyactivationnotification",
+    "layout": "Docs/Ui/DesignSystem/ParameterCheck-Layout.md",
+    "verification": "Docs/Ui/DesignSystem/ParameterCheck-Verification.md",
+    "report": "Docs/Ui/DesignSystem/ParameterCheck-Report.json",
+    "independentReview": "Docs/Ui/DesignSystem/ParameterCheck-Review.md",
+    "actualAssertions": 90,
+    "actualPng": 14,
+    "regressionAssertions": 81,
+    "regressionPng": 27,
+    "published": false,
+    "installationPerformed": false,
+    "completedAt": "2026-10-14",
+    "independentDisposition": "ship_ui_code_payload"
   }
 }

@@ -95,7 +95,29 @@ namespace SAB.InteriorElevations.Services.Reports
                     message.Outcome + Environment.NewLine + "Выбрано линий: " + selectedLinesCount + Environment.NewLine + message.Summary + Environment.NewLine + message.Warnings);
             }
             catch { /* Diagnostics must not prevent displaying the result. */ }
-            NotificationStack.Show(Process.GetCurrentProcess().MainWindowHandle, message);
+            DeliverNotificationSafely(
+                () => NotificationStack.Show(Process.GetCurrentProcess().MainWindowHandle, message),
+                error =>
+                {
+                    try
+                    {
+                        File.WriteAllText(Path.Combine(SheetLayoutDiagnostics.DirectoryPath, "last-notification-error.txt"), error.ToString());
+                    }
+                    catch { /* UI diagnostics must not change the completed operation result. */ }
+                    Autodesk.Revit.UI.TaskDialog.Show("SAB · Развёртки",
+                        message.Outcome + Environment.NewLine + message.Summary + Environment.NewLine + message.Warnings);
+                });
+        }
+        // This boundary runs only after the command has completed its transactions.
+        // Never turn a presentation failure into Result.Failed and undo completed Revit work.
+        private static void DeliverNotificationSafely(Action show, Action<Exception> fallback)
+        {
+            try { show(); }
+            catch (Exception error)
+            {
+                try { fallback(error); }
+                catch { /* A second UI/log failure must not escape into the command failure path. */ }
+            }
         }
     }
 }

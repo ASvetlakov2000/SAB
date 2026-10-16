@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory=$true)][string]$MsiPath,
     [Parameter(Mandatory=$true)][string]$BinFolder,
     [Parameter(Mandatory=$true)][ValidateSet('2022','2023','2024')][string]$Year
@@ -40,8 +40,19 @@ public static class SabMsiPayloadReader {
 }
 $reader = New-Object -ComObject WindowsInstaller.Installer
 $database = $reader.OpenDatabase([IO.Path]::GetFullPath($MsiPath), 0)
-$fileView = $null; $mediaView = $null
+$fileView = $null; $mediaView = $null; $propertyView = $null
 try {
+    $propertyView = $database.OpenView('SELECT `Property`, `Value` FROM `Property`'); $propertyView.Execute(); $properties = @{}
+    while ($record = $propertyView.Fetch()) {
+        $properties[$record.StringData(1)] = $record.StringData(2)
+        [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($record)
+    }
+    $versionSource = Get-Content (Join-Path $repositoryRoot 'SAB/Properties/AssemblyInfo.cs') -Raw
+    $expectedVersion = [regex]::Match($versionSource, 'AssemblyFileVersion\("(\d+\.\d+\.\d+)\.\d+"\)').Groups[1].Value
+    $installerSource = Get-Content (Join-Path $repositoryRoot 'Installer/WixSharpInstaller/Program.cs') -Raw
+    $expectedUpgrade = [regex]::Match($installerSource, ('UpgradeCode'+$Year+' = "([^"]+)"')).Groups[1].Value
+    if ($properties.ProductVersion -ne $expectedVersion -or $properties.ProductName -ne "SAB Revit $Year") { throw "$Year MSI version/name differs from current source" }
+    if ($properties.UpgradeCode.Trim('{}') -ne $expectedUpgrade) { throw "$Year MSI has incorrect upgrade identity" }
     $fileView = $database.OpenView('SELECT File, FileName, FileSize FROM File'); $fileView.Execute()
     $files = @{}
     while ($record = $fileView.Fetch()) {
@@ -84,7 +95,16 @@ try {
             $required[$sourceView.Name] = $builtView
         }
     }
-    foreach ($guide in (Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'Docs\PluginInstructions') -Filter '*.html' -File)) { $required[$guide.Name] = $guide.FullName }
+    foreach ($guide in (Get-ChildItem -LiteralPath (Join-Path $repositoryRoot 'Docs\PluginInstructions') -File)) { $required[$guide.Name] = $guide.FullName }
+    $familyYear = if ($Year -eq '2022') { '2022' } else { '2023-2024' }
+    if (-not $files.ContainsKey('families.manifest.tsv')) { throw "$Year MSI missing family manifest" }
+    $previewRelativePath = "CreateInteriorElevationsCommand\$familyYear\SAB_Развертки_Направление.rfa"
+    $previewEntries = @(Get-Content -LiteralPath (Join-Path $work $files['families.manifest.tsv'].id) | ForEach-Object {
+        $parts = $_.Split([char]9)
+        if ($parts.Length -eq 2 -and $parts[1] -eq $previewRelativePath) { $parts[0] }
+    })
+    if ($previewEntries.Count -ne 1) { throw "$Year MSI must contain one direction-preview family in its manifest" }
+    $required[[IO.Path]::GetFileName($previewEntries[0])] = Join-Path $repositoryRoot "SAB\Families for Plugin\$previewRelativePath"
     foreach ($name in $required.Keys) {
         if (-not $files.ContainsKey($name)) { throw "$Year MSI missing $name" }
         $packaged = Join-Path $work $files[$name].id
@@ -98,10 +118,11 @@ try {
     $api = @($assembly.GetReferencedAssemblies() | Where-Object { $_.Name -in @('RevitAPI','RevitAPIUI') })
     if ($api.Count -ne 2 -or @($api | Where-Object { $_.Version.Major -ne ([int]$Year-2000) }).Count -gt 0) { throw "$Year payload has incorrect Revit API references" }
     $metadata = [Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes($assemblyPath))
-    foreach ($type in @('NotificationCard','NotificationStack','ParameterNotifications','CategorySelectionControl','CreateViewsAndSheetsWindow','ElevationCreationNotificationData','BuildNotification','get_PlaceFloorSpots','get_PlaceCeilingSpots','get_PlaceSlabSpots','ElevationAnnotationOwnershipService')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing compiled UI component: $type" } }
-    [ordered]@{ year=$Year; status='PASS'; msi=[IO.Path]::GetFullPath($MsiPath); msiSha256=(Get-PayloadHash $MsiPath); sourceBin=[IO.Path]::GetFullPath($BinFolder); assemblyVersion=$assembly.GetName().Version.ToString(); apiReferences=@($api | ForEach-Object { $_.FullName }); verifiedPayload=$verified; installationPerformed=$false } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $work 'verification.json') -Encoding UTF8
+    foreach ($type in @('ElevationDirectionPreviewWindow','ElevationDirectionPreviewController','ElevationDirectionPreviewService','ContourDirectionGeometry','ContourLineOrientationService','get_PlannedDetailNumber')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing direction preview component: $type" } }
+    foreach ($type in @('NotificationCard','NotificationStack','ParameterNotifications','CategorySelectionControl','CreateViewsAndSheetsWindow','ElevationCreationNotificationData','BuildNotification','get_PlaceFloorSpots','get_PlaceCeilingSpots','get_PlaceSlabSpots','ElevationAnnotationOwnershipService','ElevationSelectionListWindow','ElevationSelectionListItem','DeliverNotificationSafely','CheckSettingsCommand','CheckSettings','CheckCategories','ArmSearch')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing compiled UI component: $type" } }
+    [ordered]@{ year=$Year; status='PASS'; productVersion=$properties.ProductVersion; productCode=$properties.ProductCode; upgradeCode=$properties.UpgradeCode; msi=[IO.Path]::GetFullPath($MsiPath); msiSha256=(Get-PayloadHash $MsiPath); sourceBin=[IO.Path]::GetFullPath($BinFolder); assemblyVersion=$assembly.GetName().Version.ToString(); apiReferences=@($api | ForEach-Object { $_.FullName }); verifiedPayload=$verified; installationPerformed=$false } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $work 'verification.json') -Encoding UTF8
     Write-Host "PASS Revit $Year MSI: extracted DLL, Fluent styles, Toolkit and all instructions match current build; notifications compiled; API references correct."
 }
 finally {
-    foreach ($com in @($fileView,$mediaView,$database,$reader)) { if ($null -ne $com) { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($com) } }
+    foreach ($com in @($propertyView,$fileView,$mediaView,$database,$reader)) { if ($null -ne $com) { [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($com) } }
 }

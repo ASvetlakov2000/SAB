@@ -1,0 +1,49 @@
+{
+  "version": "1.1.2",
+  "authorization": "Parameterization runtime feedback13October2026 and latest explicit cancellation of highlighting reports; only activation notification",
+  "baseCommit": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "precedingUncommittedTask": "Tools/UiShowcase/elevations-hotfix-delta.json",
+  "files": {
+    "SAB/Cls_ParameterTools/UI/ParameterPicker.cs": {
+      "before": "13bbee84870109211b9ae96836c86d0577769669354c8b4303d71dd31b6653cf",
+      "after": "1a79a0a533de47734a13c481e7a39043c60127f2604aed645701fc058e3fc395"
+    },
+    "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs": {
+      "before": "6ca2c0660770aa57c3f0505cbbf99d65620d5efb6bef7c31cd10ec0048704cf7",
+      "after": "60f766e65a69db4b98061d2d0d52cb432825a80266ee365f674be871f7161375"
+    },
+    "SAB/Cls_ParameterTools/Catalog.cs": {
+      "before": "fc40f238eaaeaf7818399c8d6585d228f0e7e9fc3ce29a4f60cc7b5d47d08c65",
+      "after": "f56d37c36c51c7e1041d993725eedf977c0f0183e391ce80357bc9f82de42b08"
+    },
+    "SAB/Cls_ParameterTools/Workflow.cs": {
+      "before": "574782e188ad21aa5ca6a56cf25c4f9314ebe0491a844ead23aab56ccf39bf16",
+      "after": "4c8c3fdb281612c4376d06c70c3893d3e065f11f46a12ea163fe292551d04115"
+    },
+    "SAB/Cls_ParameterTools/Commands.cs": {
+      "before": "eb0e0442ffe47bf07aa3011f226373e77ebd1cf3438fa9e177b2182fa7a38120",
+      "after": "32386e4c2efab0b0a7460dca0eba774a233463cd475ebfe525a5464856d7c294"
+    },
+    "SAB/Cls_ParameterTools/ParameterToolsModule.cs": {
+      "before": "4792ba55099c1406a19106d4507974cc3f683f99d48e7fee80f567ccb28dd5f8",
+      "after": "8185706120fce40d31a8f27101db0818ff3f410d52b18f8166230d03c59407fc"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "c1d8d31f4702c273affaf38a736e7f12066532f9fad020861f5db38c6014c3ce",
+      "after": "fcdf6081de51da60e97c8525c19cf017c002c4090b183b19059c906220bb32d1"
+    }
+  },
+  "presentationReversals": {
+    "SAB/Cls_ParameterTools/Workflow.cs": {
+      "beforeNormalizedSha256": "8d4afffcfd1cebca37e7b2b0014e5d550b89730440cc0a206b4f5b80ed6f2784",
+      "old": "        internal static void Check(UIApplication app)\n        {\n            var ui = app.ActiveUIDocument; var profile = RequireProfile(ui.Document);\n            var targets = Targets(ui, profile, false);\n            var categories = targets.GroupBy(e => Ids.Category(e.Category.Id)).Select(g => new CategoryChoice {\n                Id = g.Key, Name = g.First().Category.Name,\n                Selected = profile.CheckCategoryIds.Count > 0 ? profile.CheckCategoryIds.Contains(g.Key) : g.Key == (int)BuiltInCategory.OST_Walls\n            }).OrderBy(c => c.Name).ToList();\n            var window = new UI.CheckCategoriesWindow(categories);\n            new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;\n            if (window.ShowDialog() != true) return;\n            targets = targets.Where(e => window.CategoryIds.Contains(Ids.Category(e.Category.Id))).ToList();\n            // Remember only the check scope; filling keeps its own category selection.\n            profile.CheckCategoryIds = window.CategoryIds;\n            using (var settings = new Transaction(ui.Document, \"SAB: категории проверки\"))\n            { settings.Start(); Storage.Save(ui.Document, profile); if (settings.Commit() != TransactionStatus.Committed) throw new InvalidOperationException(\"Не удалось сохранить категории проверки.\"); }\n            var issues = new List<Issue>();\n            var required = profile.Rules.Where(r => r.Enabled && r.Required).ToList();\n            foreach (var element in targets)\n                foreach (var rule in required.Where(r => r.CategoryIds.Count == 0 || r.CategoryIds.Contains(Ids.Category(element.Category.Id))))\n                {\n                    var parameter = Catalog.Parameter(element, rule.Target);\n                    if (parameter == null) issues.Add(Problem(element, Catalog.Describe(rule.Target), \"Параметр с выбранным GUID/ID отсутствует у экземпляра. Проверьте привязку к категории.\"));\n                    else if (!parameter.HasValue || parameter.StorageType == StorageType.String && string.IsNullOrEmpty(parameter.AsString()))\n                        issues.Add(Problem(element, Catalog.Describe(rule.Target, parameter), \"Обязательный параметр не заполнен.\"));\n                }\n            ParameterToolsModule.Host.Highlight.Restore(ui.Document, ui.ActiveView.Id);\n            HighlightService.ClearLegacy(ui.Document, ui.ActiveView);\n            ViewFilterService.Apply(ui, profile, window.CategoryIds);\n            UI.ParameterNotifications.ShowResult(app.MainWindowHandle, \"Проверено: \" + targets.Count + \". Проблемных элементов: \" + issues.Select(i => i.ElementId).Distinct().Count(), issues, true, \"Проверка параметров\");\n            if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, \"Проверка параметров\");\n        }\n",
+      "new": "        internal static void Check(UIApplication app)\n        {\n            var ui = app.ActiveUIDocument;\n            var profile = RequireProfile(ui.Document);\n            var categoryIds = Catalog.CheckCategories(ui.Document, profile).Where(c => c.Selected).Select(c => c.Id).ToList();\n            if (categoryIds.Count == 0) throw new InvalidOperationException(\"Выберите категории в «Настройки проверок».\");\n            ParameterToolsModule.Host.Highlight.Restore(ui.Document, ui.ActiveView.Id);\n            HighlightService.ClearLegacy(ui.Document, ui.ActiveView);\n            ViewFilterService.Apply(ui, profile, categoryIds);\n            UI.Toast.Show(app.MainWindowHandle, \"Подсветка элементов активирована\");\n        }\n        internal static void CheckSettings(UIApplication app)\n        {\n            var ui = app.ActiveUIDocument;\n            var profile = RequireProfile(ui.Document);\n            var window = new UI.CheckCategoriesWindow(Catalog.CheckCategories(ui.Document, profile));\n            new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;\n            if (window.ShowDialog() != true) return;\n            // The check scope is independent from filling and saved in the same model profile.\n            profile.CheckCategoryIds = window.CategoryIds;\n            using (var settings = new Transaction(ui.Document, \"SAB: категории проверки\"))\n            {\n                settings.Start(); Storage.Save(ui.Document, profile);\n                if (settings.Commit() != TransactionStatus.Committed)\n                    throw new InvalidOperationException(\"Не удалось сохранить категории проверки.\");\n            }\n            Check(app);\n        }\n"
+    },
+    "SAB/Cls_ParameterTools/Commands.cs": {
+      "beforeNormalizedSha256": "4245dae28ceb6ab500f0a166de87c717233e7421fffcce93e92ebcbf7e0ea5c5",
+      "old": "",
+      "new": "    [Transaction(TransactionMode.Manual)]\n    public sealed class CheckSettingsCommand : Nice3point.Revit.Toolkit.External.ExternalCommand\n    {\n        public override void Execute()\n        {\n            string message = null;\n            Result = CommandRunner.Run(Application, () => Workflow.CheckSettings(Application), ref message);\n            ErrorMessage = message;\n        }\n    }\n"
+    }
+  },
+  "categoryControlUnchangedPrefixSha256": "d694c4032c025acf0f23b187e2550957d24b0812d72c7c407bc6f6f3e0043498"
+}

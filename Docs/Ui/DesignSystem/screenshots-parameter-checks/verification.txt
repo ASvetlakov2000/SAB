@@ -1,0 +1,106 @@
+PASS Clean Application without global host dictionaries
+PASS Sources tab load/reload does not open any parameter popup: 0
+PASS Sources tab preserves selected duplicate-name GUID: 0
+PASS Sources tab load/reload does not open any parameter popup: 1
+PASS Sources tab preserves selected duplicate-name GUID: 1
+PASS Sources tab load/reload does not open any parameter popup: 2
+PASS Sources tab preserves selected duplicate-name GUID: 2
+CAPTURE sources-closed-after-load | 1384x881 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.SettingsWindow | actualAssembly=SAB
+CAPTURE sources-minimum | 964x781 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.SettingsWindow | actualAssembly=SAB
+PASS Standalone picker programmatic construction stays closed with selection
+PASS Focused programmatic text change is not treated as user search
+PASS Explicit routed text input opens filtered unique match
+PASS Search remains isolated from second picker
+PASS Escape cancels search and retains duplicate-name identity
+PASS Enter commits sole filtered parameter by identity
+CAPTURE picker-after-selection | 664x391 DIP | nativeDpi=96 | actualType=System.Windows.Window | actualAssembly=PresentationFramework
+PASS Explicit dropdown remains available after search
+PASS Explicit popup contains visible actual parameter names
+CAPTURE picker-explicit-popup | nativeDpi=96 | actualOwner=SAB.ParameterTools.UI.ParameterPicker | actualAssembly=SAB | actualPART_Popup.Child
+PASS Check scope contains exact full parameterization category catalog120
+PASS Saved check selection independent from seven filling categories
+PASS Check choices are detached copies and do not mutate fill selection
+PASS First check preserves incumbent default Walls independently of filling
+PASS Category list retains usable height at minimum and with validation
+PASS Requested explanatory text has its own filled frame
+PASS Explanatory frame stays above action row with gap
+PASS Cancel and Check share one axis
+PASS Instruction shares footer action row
+PASS Footer button remains inside viewport: Инструкция
+PASS Footer button remains inside viewport: Отмена
+PASS Footer button remains inside viewport: Проверить
+PASS Instruction links to installed parameterization HTML
+PASS No highlighting report button in settings
+CAPTURE check-settings-normal | 744x781 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Category list retains usable height at minimum and with validation
+PASS Requested explanatory text has its own filled frame
+PASS Explanatory frame stays above action row with gap
+PASS Cancel and Check share one axis
+PASS Instruction shares footer action row
+PASS Footer button remains inside viewport: Инструкция
+PASS Footer button remains inside viewport: Отмена
+PASS Footer button remains inside viewport: Проверить
+PASS Instruction links to installed parameterization HTML
+PASS No highlighting report button in settings
+CAPTURE check-settings-minimum | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Check category viewer retains full list without eight-category cap
+PASS Last category remains fully readable at minimum
+CAPTURE check-settings-minimum-last-row | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Full check catalog supports search including last category
+CAPTURE check-settings-search-last | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Empty scope validates without closing settings
+PASS Category list retains usable height at minimum and with validation
+PASS Requested explanatory text has its own filled frame
+PASS Explanatory frame stays above action row with gap
+PASS Cancel and Check share one axis
+PASS Instruction shares footer action row
+PASS Footer button remains inside viewport: Инструкция
+PASS Footer button remains inside viewport: Отмена
+PASS Footer button remains inside viewport: Проверить
+PASS Instruction links to installed parameterization HTML
+PASS No highlighting report button in settings
+CAPTURE check-settings-validation | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Category list retains usable height at minimum and with validation
+PASS Requested explanatory text has its own filled frame
+PASS Explanatory frame stays above action row with gap
+PASS Cancel and Check share one axis
+PASS Instruction shares footer action row
+PASS Footer button remains inside viewport: Инструкция
+PASS Footer button remains inside viewport: Отмена
+PASS Footer button remains inside viewport: Проверить
+PASS Instruction links to installed parameterization HTML
+PASS No highlighting report button in settings
+CAPTURE check-settings-empty | 744x781 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Category list retains usable height at minimum and with validation
+PASS Requested explanatory text has its own filled frame
+PASS Explanatory frame stays above action row with gap
+PASS Cancel and Check share one axis
+PASS Instruction shares footer action row
+PASS Footer button remains inside viewport: Инструкция
+PASS Footer button remains inside viewport: Отмена
+PASS Footer button remains inside viewport: Проверить
+PASS Instruction links to installed parameterization HTML
+PASS No highlighting report button in settings
+CAPTURE check-settings-empty-minimum | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Check category viewer retains full list without eight-category cap
+PASS Full check catalog supports search including last category
+CAPTURE check-settings-empty-search | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Empty scope validates without closing settings
+PASS Category list retains usable height at minimum and with validation
+PASS Requested explanatory text has its own filled frame
+PASS Explanatory frame stays above action row with gap
+PASS Cancel and Check share one axis
+PASS Instruction shares footer action row
+PASS Footer button remains inside viewport: Инструкция
+PASS Footer button remains inside viewport: Отмена
+PASS Footer button remains inside viewport: Проверить
+PASS Instruction links to installed parameterization HTML
+PASS No highlighting report button in settings
+CAPTURE check-settings-empty-validation | 664x721 DIP | nativeDpi=96 | actualType=SAB.ParameterTools.UI.CheckCategoriesWindow | actualAssembly=SAB
+PASS Check settings dialog returns exact separate category scope
+PASS Actual existing toast adapter shows exact requested activation text
+PASS Activation adapter does not open report window
+CAPTURE check-activation-notification | 416x176,52 DIP | nativeDpi=96 | actualType=SAB.UI.Notifications.NotificationStack | actualAssembly=SAB
+PASS All parameter surfaces retain zero host dictionaries
+NOT RUN actual Revit Catalog enumeration, commands/hotkeys/ribbon, profile transactions/native filters and model effects; physical input/F4/paste/IME/accessibility; OS DPI.
+COMPLETED

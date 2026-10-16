@@ -16,7 +16,8 @@ namespace SAB.ParameterTools
             fill.AddPushButton(Data<FillParametersCommand>("Fill", "Занести\nпараметры", "Выделить элементы, запустить команду и выбрать помещение.", "Apply"));
             fill.AddPushButton(Data<SettingsCommand>("Settings", "Настройки параметров", "Параметры, источники, категории и матрица уровней.", "Settings"));
             panel.AddStackedItems(
-                Data<CheckParametersCommand>("Check", "Проверить параметры", "Выбрать категории текущего вида и включить динамические фильтры пустых обязательных параметров.", "Check"),
+                Data<CheckParametersCommand>("Check", "Проверка параметров", "Включить подсветку пустых обязательных параметров на текущем виде по сохранённым настройкам проверок.", "Check"),
+                Data<CheckSettingsCommand>("CheckSettings", "Настройки проверок", "Выбрать и сохранить категории проверки заполненности параметров.", "Settings"),
                 Data<ClearHighlightCommand>("Clear", "Снять подсветку", "Снять фильтры проверки с текущего вида и восстановить подсветку старой версии.", "Clear"));
             Host = new RuntimeHost();
             application.ControlledApplication.DocumentSaving += Saving;

@@ -155,19 +155,30 @@ namespace SAB.ParameterTools.UI
         internal List<int> CategoryIds { get; private set; }
         internal CheckCategoriesWindow(List<CategoryChoice> categories)
         {
-            Title = "Проверка заполненности параметров"; Width = 470; Height = 550; MinWidth = 420; MinHeight = 430; Theme.Window(this);
+            Title = "SAB · Настройки проверок"; Width = 760; Height = 820; MinWidth = 680; MinHeight = 760; FluentTheme.Window(this);
             var picker = new CategorySelectionControl(categories);
-            var bottom = new DockPanel(); var errors = Theme.Text(""); errors.Foreground = System.Windows.Media.Brushes.Firebrick;
+            var footer = new StackPanel();
+            var description = new Border { Name = "CheckDescriptionBorder", Style = (Style)FindResource("SabInformationBorderStyle"), Margin = new Thickness(0,0,0,8),
+                Child = new TextBlock { Text = "Фильтры пустых обязательных параметров для выбранных категорий текущего вида. После заполнения подсветка снимается автоматически.", TextWrapping = TextWrapping.Wrap } };
+            footer.Children.Add(description);
+            var errors = new TextBlock { Name = "CheckValidationText", Foreground = System.Windows.Media.Brushes.Firebrick, TextWrapping = TextWrapping.Wrap, Visibility = Visibility.Collapsed, Margin = new Thickness(0,0,0,8) };
+            footer.Children.Add(errors);
+            var actions = new Grid();
+            actions.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            actions.ColumnDefinitions.Add(new ColumnDefinition());
+            actions.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            var help = FluentTheme.Button("Инструкция", (s,e) => { });
+            SAB.UI.FluentLight.Instructions.SetFile(help, SAB.Instructions.InstructionLauncher.ParametersFile);
+            actions.Children.Add(help);
             var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-            buttons.Children.Add(Theme.Button("Отмена", (s, e) => Close()));
-            var check = Theme.Button("Проверить", (s, e) => {
-                var ids = categories.Where(c => c.Selected).Select(c => c.Id).ToList();
-                if (ids.Count == 0) { errors.Text = "Выберите категории для проверки."; return; }
+            buttons.Children.Add(FluentTheme.Button("Отмена", (s, e) => Close()));
+            var check = FluentTheme.Button("Проверить", (s, e) => {
+                var ids = categories.Where(c => c.Selected).Select(c => c.Id).Distinct().ToList();
+                if (ids.Count == 0) { errors.Text = "Выберите категории для проверки."; errors.Visibility = Visibility.Visible; return; }
                 CategoryIds = ids; DialogResult = true;
-            }); Theme.Primary(this, check); buttons.Children.Add(check);
-            DockPanel.SetDock(buttons, Dock.Right); bottom.Children.Add(buttons); bottom.Children.Add(errors);
-            Theme.Frame(this, "Что проверяем", "Фильтры пустых обязательных параметров для выбранных категорий текущего вида. После заполнения подсветка снимается автоматически.",
-                Theme.Card(this, "Категории проверки", picker), bottom);
+            }); FluentTheme.Primary(this, check); check.Margin = new Thickness(0); buttons.Children.Add(check);
+            Grid.SetColumn(buttons,2); actions.Children.Add(buttons); footer.Children.Add(actions);
+            FluentTheme.Frame(this, "Что проверяем", null, FluentTheme.Card(this, "Категории проверки", picker), footer);
         }
     }
 }

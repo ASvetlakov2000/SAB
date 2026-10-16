@@ -127,3 +127,8 @@ Builder сообщил план isolated clones в `outputs/ui-production-previe
 
 
 Актуальные последние правки:635PASS/44PNG,70ID;3selection cards, spatial dashed crop, positive-only creation notification with separate warnings. Independent category creation/storage and selected-role replacement are in production;8Elevation deltas+2optional shared warning files packaged for2022–24.85baseline unchanged. UI suite/416-16proposal migration pending. Previous565/41 and526/47 references describe history. See Elevations-Verification/Report and current Installer-Payload.
+
+
+## Дополнение1.1.1 — список по запросу
+
+Десятая actual поверхность `ElevationSelectionListWindow` — отдельный readonlyviewer из main footer «Список помещений». ImmutableDTO получает номер/имя/контуры/линии/статус из actual selectionPackages синхронно; безDBreferences и APIcallbacks. Нетadd/delete/edit/transfer; Help/Close, totals, собственная рамка/прокрутка;0/3/100rows actualnativecaptured. Min740×420, default860×520. Это дополнение не переписывает исходный9view migration inventory. См. [Layout](ElevationHotfix-Layout.md), [Verification](ElevationHotfix-Verification.md).

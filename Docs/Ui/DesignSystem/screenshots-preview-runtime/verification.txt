@@ -1,0 +1,48 @@
+PASS Preview entry enabled after line selection
+PASS Existing numbering affix editors retained
+PASS Settings retains one Instruction footer
+PASS Five footer actions match requested order
+PASS Main Cancel action removed; preview cancellation retained separately
+PASS Preview, Pick lines and Create use shared blue primary style
+PASS Instruction and room list retain neutral white style
+PASS Footer remains one row with 34 DIP minimum targets
+PASS All five actions stay inside minimum window width
+PASS Footer buttons keep at least 8 DIP horizontal gaps
+CAPTURE settings-preview-entry; actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=1084x841; nativeDPI=96; renderDPI=96
+PASS Five footer actions match requested order
+PASS Main Cancel action removed; preview cancellation retained separately
+PASS Preview, Pick lines and Create use shared blue primary style
+PASS Instruction and room list retain neutral white style
+PASS Footer remains one row with 34 DIP minimum targets
+PASS All five actions stay inside minimum window width
+PASS Footer buttons keep at least 8 DIP horizontal gaps
+CAPTURE settings-minimum-footer; actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=784x611; nativeDPI=96; renderDPI=96
+PASS Five footer actions match requested order
+PASS Main Cancel action removed; preview cancellation retained separately
+PASS Preview, Pick lines and Create use shared blue primary style
+PASS Instruction and room list retain neutral white style
+PASS Footer remains one row with 34 DIP minimum targets
+PASS All five actions stay inside minimum window width
+PASS Footer buttons keep at least 8 DIP horizontal gaps
+CAPTURE settings-minimum-validation; actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=784x611; nativeDPI=96; renderDPI=96
+PASS Footer preview action returns prepared settings through actual modal window
+PASS Preview entry disabled without selected lines
+PASS Compact preview has Flip, Instruction, Cancel and Create only
+PASS All preview action targets at least 34 DIP
+PASS Actual windows load scoped resources without Revit application dictionary
+PASS Preview Instruction points to packaged local guide
+PASS Actual UI buttons emit distinct controller actions
+PASS Flip action accepts keyboard focus
+PASS Tab traversal reaches Instruction after Flip
+CAPTURE preview-normal; actualType=SAB.InteriorElevations.Views.ElevationDirectionPreviewWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=594x281; nativeDPI=96; renderDPI=96
+PASS Pending action disables duplicate commands
+PASS Window X is held while cleanup request is pending
+CAPTURE preview-busy; actualType=SAB.InteriorElevations.Views.ElevationDirectionPreviewWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=594x281; nativeDPI=96; renderDPI=96
+PASS Long Russian failure message has bounded vertical scrolling
+PASS Minimum width retains footer with long status
+PASS Failure text wraps inside preview
+CAPTURE preview-minimum-error; actualType=SAB.InteriorElevations.Views.ElevationDirectionPreviewWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=574x432; nativeDPI=96; renderDPI=96
+PASS Window X requests cleanup before it can close
+PASS Escape requests cancellation without bypassing cleanup
+PASS Controller cleanup completion closes actual window
+COMPLETED; actual SAB.dll WPF; simulated routed input only; live Revit/RFA placement and physical input/OS DPI transitions NOT RUN.

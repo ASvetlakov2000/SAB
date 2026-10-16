@@ -1,0 +1,1555 @@
+{
+  "schemaVersion": 1,
+  "task": "SAB1.1.2: parameter source picker and separate immediate highlighting/check settings",
+  "date": "2026-10-13",
+  "scope": "Actual WPF production classes and bounded source/compiled command contracts outside Revit; current ReleaseMSI2022–24 extracted payload; no installation",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2 + preserved Elevations1.1.1 delta + parameter-check-delta.json",
+  "dirtyBaseline": "Prior uncommitted1.1.1 work preserved; touched source snapshot in outputs/ui-production-preview/parameter-check-before.zip",
+  "readFiles": [
+    "AGENTS.md",
+    "SAB/Cls_ParameterTools/AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "C:/Users/svetl/.codex/skills/revit-command-and-application/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/ParameterCheck-Layout.md",
+    "SAB/Cls_ParameterTools/UI/ParameterPicker.cs",
+    "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs",
+    "SAB/Cls_ParameterTools/Catalog.cs",
+    "SAB/Cls_ParameterTools/Workflow.cs",
+    "SAB/Cls_ParameterTools/Commands.cs",
+    "SAB/Cls_ParameterTools/ParameterToolsModule.cs",
+    "SAB/Properties/AssemblyInfo.cs"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/ParameterCheck-Layout.md",
+  "build": [
+    {
+      "command": "Tools/UiShowcase/Build.ps1 -ParameterChecks",
+      "exitCode": 0,
+      "target": "Debug/net48/API2023 actual SAB.dll classes with zero Application host dictionaries"
+    },
+    {
+      "command": "Build-Msi.bat (no arguments)",
+      "exitCode": 0,
+      "target": "Release/API2022/2023/2024; MSI1.1.2 from source FileVersion"
+    }
+  ],
+  "captures": {
+    "provenance": "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+    "actualAssertions": 90,
+    "actualPng": 14,
+    "regressionAssertions": 81,
+    "regressionPng": 27
+  },
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "disposition": "ship",
+    "reason": "Recapture accepted; no material UI/code findings. Final independent payload gate confirms all three current MSI1.1.2 and packaged ParameterTools.md.",
+    "scope": "Actual WPF/source/compiled command and extracted MSI payload, outside Revit; no installation/physical/OS acceptance",
+    "report": "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Latest two primaryimages plus explicit cancellation of all highlight reports define scope; real command/catalog/picker inventory recorded.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "WhatCheck moved from incumbent legacy shell to existing approved Fluent scoped shell; shared category implementation preserved.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Shared ParameterPicker input boundary fixed once; check settings reuse FluentTheme/CategorySelectionControl and canonical resources.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Incumbent CheckParametersCommand and ribbonID retained, existing fill handlers/report flow unchanged; GUID identity/selection tests pass.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Latest direct user request authorizes bounded changes and overrides earlier reportbutton idea. No automatic publication or installation.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual SAB.dll SettingsWindow/CheckCategoriesWindow/ParameterPicker captured; no source replacement for altered controls.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Selected shared settings+direct command pattern versus discarded automatic-report flow documented before implementation.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Actual WPF types/assemblies, fixtures/routed input, scoped clean resources and image/source/binary hashes recorded.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Actual96DPI WPF render explicitly outsideRevit; native Revit/physical/OS acceptance not claimed.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Native Fluent controls/styles reused; no new visual direction.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New category list has no row action buttons.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New check list is a ListBox, not table cell editors.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No editable numeric column in check list or changed picker surface.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Existing CategorySelectionControl capsule preserved; common control code prefix hash unchanged.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Main4tabs shared style preserved; Sources open/reopen tested; remaining module states captured separately.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Shared tab/body gap retained in source and fresh Sources/minimum captures.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Host captures settled layout with animations explicitly disabled; physical animation not asserted.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "New check card/title no icons or blue accent stub; common GroupBox used.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded category work area separate from explanatory footer/actions.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "List remains bounded above footer at minimum760 and validation, last row readable.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "No empty accent stub or stale instructional header container.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Existing CategorySelectionControl own outline retained; no unframed list introduced.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No nested floor table in changed surfaces.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No nested floor icon action pair.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Footer common buttons retained on same axis and within viewport normal/minimum/validation.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Existing category search remains directly above list; last category and empty-search tested.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Separate direct Check and CheckSettings follow requested actions; exact ribbon construction order checked.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No import/export relocation in this task; existing category selection tools retained.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No add-row or duplicate-add action in check settings.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Full120category fixture, independent check selection and exact returned IDs; shared selection implementation preserved.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Existing shared category import/export implementation unchanged; fresh prior-module regression tests retain category JSON behavior.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Requested explanatory footer is explicit latest-user exception; other plugin instructions remain external.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "WhatCheck one Help button links installed parameterization HTML; current23HTML+CSS in allMSIs verified.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Description preserved as requested, errors displayed; selected parameter metadata/GUID retained.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual open PART_Popup.Child captured separately and contains visible parameter names.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "New actual host entry, current evidence/provenance and bounded coverage added; old1.1.0/1.1.1 screenshots unchanged.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No dockable pane in this task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No row action icons in check list.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No clear-rows command in changed surfaces.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Shared picker preserves deliberate filtering/Enter/Escape/explicit open and per-instance isolation; check category copies do not mutate filling.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No elevation/sheet textual result visualization in this task; highlight reports explicitly removed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Requested footer description and validation above action row, not overlapping buttons.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "New074–077 rules/criteria and nested AGENTS updated with latest user steering.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No disclosure changed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No new table headers added; category list has label rows.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual existing toast adapter emits exact activation text without report. Other lifetime states unchanged, not rerun here.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Activation notice has noID/copy/support sections; highlightreports removed byuser.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed native states/source contracts checked; full criterion including physical input, other controls/states or native Revit execution not run in this bounded task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No modeless report callbacks added; only existing detached notice text emitted.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Preview launcher not changed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation tag/leader fields not touched.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No new table columns/actions; check list uses existing shared implementation.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No compact choice helper in this task.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation spot categories/services unchanged.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation result adapter unchanged.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Prior notification resource fix retained unchanged; no new brush/template change.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Prior Elevations footer fix unchanged; this task has separate new check footer.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Prior Elevations read-only list unchanged.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual Sources3open/reopen cycles closed and duplicate GUID preserved; focused programmatic text ignored; deliberate routed search, Enter/Escape and isolated picker verified.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual helper preserves exact full catalog IDs120 independent from fillselection; source document overload calls same Catalog.Categories, savedcheckscope preserved.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual Fluent WhatCheck normal/minimum/empty/lastrow/validation has filled description frame above Cancel/Check, no blue stub. List height>=90DIP.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Existing command/buttonID retained; source Check has noShowDialog/noReport/noTargets, applies filters before exact activationnotice; separate Toolkitsettings entry commits scope then invokes Check; compiled in allMSIs. Actual native execution NOTRUN.",
+      "evidence": [
+        "Tools/UiShowcase/parameter-check-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/provenance.json",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/verification.txt",
+        "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+        "Docs/Ui/DesignSystem/ParameterCheck-Review.md"
+      ],
+      "unverified": [
+        "Actual Revit Catalog enumeration/profile transactions/filter application/model effects",
+        "Native ribbon/hotkey execution",
+        "Physical input/F4/paste/IME/accessibility",
+        "OS DPI/monitor transitions",
+        "Native runtime/API22"
+      ]
+    }
+  ],
+  "installerEvidence": "Docs/Ui/DesignSystem/ParameterCheck-Installer.json",
+  "installationPerformed": false,
+  "completedAt": "2026-10-14"
+}

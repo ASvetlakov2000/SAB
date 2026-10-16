@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using SAB.InteriorElevations.Models;
@@ -8,137 +8,81 @@ namespace SAB.InteriorElevations.Services.Elevations
 {
     public class ElevationMarkerService
     {
-        public ViewSection CreateElevationForLine(
-            Document document,
-            ViewPlan planView,
-            ElevationLineData lineData,
-            ElementId elevationViewFamilyTypeId,
-            int viewScale,
-            out ElementId markerElementId,
-            IList<string> warnings)
+        private const double MaximumStep = Math.PI / 6.0;
+        private const double AngularTolerance = Math.PI / 1800.0;
+
+        public ViewSection CreateElevationForLine(Document document, ViewPlan planView, ElevationLineData lineData,
+            ElementId elevationViewFamilyTypeId, int viewScale, out ElementId markerElementId, IList<string> warnings)
         {
             markerElementId = ElementId.InvalidElementId;
-
-            if (document == null || planView == null || lineData == null)
+            if (document == null || planView == null || lineData == null) return null;
+            using (var attempt = new SubTransaction(document))
             {
-                return null;
-            }
-
-            ElevationMarker marker = ElevationMarker.CreateElevationMarker(
-                document,
-                elevationViewFamilyTypeId,
-                lineData.MarkerPoint,
-                viewScale);
-
-            int elevationIndex = GetAvailableMarkerIndex(marker);
-            if (elevationIndex < 0)
-            {
-                if (warnings != null)
+                attempt.Start();
+                var marker = ElevationMarker.CreateElevationMarker(document, elevationViewFamilyTypeId, lineData.MarkerPoint, viewScale);
+                int index = GetAvailableMarkerIndex(marker);
+                if (index < 0)
                 {
-                    warnings.Add(
-                        "Не удалось создать развертку для линии " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
-                        ": у маркера нет свободного индекса вида.");
+                    if (warnings != null) warnings.Add("У маркера развёртки нет свободного индекса вида.");
+                    attempt.RollBack(); return null;
                 }
-
-                return null;
+                var view = marker.CreateElevation(document, planView.Id, index);
+                document.Regenerate();
+                if (!AlignMarker(document, marker, lineData.MarkerPoint, lineData.InsideNormal, view))
+                {
+                    if (warnings != null) warnings.Add("Линия " + RevitElementIdUtils.GetElementIdValue(lineData.LineElementId) +
+                        ": Revit не подтвердил выбранное направление. Маркер и вид отменены.");
+                    attempt.RollBack(); return null;
+                }
+                if (attempt.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Revit не подтвердил создание маркера развёртки.");
+                markerElementId = marker.Id; return view;
             }
+        }
 
-            ViewSection viewSection = marker.CreateElevation(document, planView.Id, elevationIndex);
-            markerElementId = marker.Id;
+        public bool IsDirectionAligned(ViewSection view, XYZ target)
+        {
+            XYZ current = Horizontal(view != null ? view.ViewDirection : null), desired = Horizontal(target);
+            return current.GetLength() > 1e-9 && desired.GetLength() > 1e-9 && Math.Abs(SignedAngle(current, desired)) <= AngularTolerance;
+        }
 
-            // Важный блок: разворот маркера к внутренней нормали помещения.
-            RotateMarkerToDirection(document, marker, lineData.MarkerPoint, lineData.InsideNormal, viewSection, warnings, lineData.LineElementId);
-            return viewSection;
+        private bool AlignMarker(Document document, ElevationMarker marker, XYZ point, XYZ target, ViewSection view)
+        {
+            XYZ desired = Horizontal(target);
+            if (desired.GetLength() <= 1e-9) return false;
+            var axis = Line.CreateBound(point, point + XYZ.BasisZ);
+            for (int correction = 0; correction < 3; correction++)
+            {
+                XYZ current = Horizontal(view.ViewDirection);
+                if (current.GetLength() <= 1e-9) return false;
+                double remaining = SignedAngle(current, desired);
+                if (Math.Abs(remaining) <= AngularTolerance) return true;
+                // Avoid large-angle marker rotations. Correct the measured residual, never a blind PI.
+                while (Math.Abs(remaining) > 1e-9)
+                {
+                    double step = Math.Sign(remaining) * Math.Min(Math.Abs(remaining), MaximumStep);
+                    ElementTransformUtils.RotateElement(document, marker.Id, axis, step);
+                    document.Regenerate(); remaining -= step;
+                }
+            }
+            return IsDirectionAligned(view, desired);
         }
 
         private int GetAvailableMarkerIndex(ElevationMarker marker)
         {
-            for (int index = 0; index < 4; index++)
-            {
-                if (marker.IsAvailableIndex(index))
-                {
-                    return index;
-                }
-            }
-
+            for (int index = 0; index < 4; index++) if (marker.IsAvailableIndex(index)) return index;
             return -1;
         }
 
-        private void RotateMarkerToDirection(
-            Document document,
-            ElevationMarker marker,
-            XYZ markerPoint,
-            XYZ targetInsideNormal,
-            ViewSection viewSection,
-            IList<string> warnings,
-            ElementId lineElementId)
+        private static XYZ Horizontal(XYZ source)
         {
-            XYZ currentDirection = GetHorizontalDirection(viewSection.ViewDirection);
-            XYZ targetDirection = GetHorizontalDirection(targetInsideNormal);
-
-            if (currentDirection.GetLength() <= 1e-9 || targetDirection.GetLength() <= 1e-9)
-            {
-                if (warnings != null)
-                {
-                    warnings.Add(
-                        "Не удалось повернуть маркер развертки для линии " + RevitElementIdUtils.GetElementIdValue(lineElementId) +
-                        ": векторы направления некорректны.");
-                }
-
-                return;
-            }
-
-            double angle = CalculateSignedAngle(currentDirection, targetDirection);
-            if (Math.Abs(angle) > 1e-9)
-            {
-                Line axis = Line.CreateBound(markerPoint, markerPoint + XYZ.BasisZ);
-                ElementTransformUtils.RotateElement(document, marker.Id, axis, angle);
-                document.Regenerate();
-            }
-
-            XYZ alignedDirection = GetHorizontalDirection(viewSection.ViewDirection);
-            double dotAfterRotation = alignedDirection.DotProduct(targetDirection);
-
-            if (dotAfterRotation < 0.99)
-            {
-                // Возвращаем прежнюю механику: дополнительный поворот на 180°, если направление осталось противоположным.
-                Line axis = Line.CreateBound(markerPoint, markerPoint + XYZ.BasisZ);
-                ElementTransformUtils.RotateElement(document, marker.Id, axis, Math.PI);
-                document.Regenerate();
-
-                alignedDirection = GetHorizontalDirection(viewSection.ViewDirection);
-                dotAfterRotation = alignedDirection.DotProduct(targetDirection);
-            }
-
-            if (dotAfterRotation < 0.95 && warnings != null)
-            {
-                warnings.Add(
-                    "Проверка направления развертки для линии " + RevitElementIdUtils.GetElementIdValue(lineElementId) +
-                    " не прошла строгий порог совпадения после поворота.");
-            }
+            if (source == null || double.IsNaN(source.X) || double.IsInfinity(source.X) || double.IsNaN(source.Y) || double.IsInfinity(source.Y)) return XYZ.Zero;
+            var direction = new XYZ(source.X, source.Y, 0);
+            return direction.GetLength() > 1e-9 ? direction.Normalize() : XYZ.Zero;
         }
 
-        private XYZ GetHorizontalDirection(XYZ source)
+        private static double SignedAngle(XYZ from, XYZ to)
         {
-            XYZ horizontal = new XYZ(source.X, source.Y, 0.0);
-            if (horizontal.GetLength() <= 1e-9)
-            {
-                return XYZ.Zero;
-            }
-
-            return horizontal.Normalize();
-        }
-
-        private double CalculateSignedAngle(XYZ fromDirection, XYZ toDirection)
-        {
-            double angle = fromDirection.AngleTo(toDirection);
-            double crossZ = fromDirection.CrossProduct(toDirection).Z;
-            if (crossZ < 0.0)
-            {
-                angle = -angle;
-            }
-
-            return angle;
+            return Math.Atan2(from.CrossProduct(to).Z, from.DotProduct(to));
         }
     }
 }

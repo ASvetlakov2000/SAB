@@ -43,9 +43,9 @@ namespace SAB.InteriorElevations.Services.Elevations
 
                 double minimumSizeFeet = UnitConversionUtils.MillimetersToFeet(10.0);
 
-                // Ширина по правилу точки 0-1: start это левая точка, end - правая.
-                double minX = startLocal.X - leftOffsetFeet;
-                double maxX = endLocal.X + rightOffsetFeet;
+                // Screen left/right are determined after projecting both endpoints into the actual view.
+                double minX = Math.Min(startLocal.X, endLocal.X) - leftOffsetFeet;
+                double maxX = Math.Max(startLocal.X, endLocal.X) + rightOffsetFeet;
                 EnsureMinMax(ref minX, ref maxX, minimumSizeFeet);
 
                 // Высота относительно средней высоты линии.
@@ -66,7 +66,8 @@ namespace SAB.InteriorElevations.Services.Elevations
                 viewSection.CropBox = newCropBox;
 
                 // Блок управления глубиной проецирования по выбранной линии.
-                ApplyFarClipOffset(viewSection, settings.ViewDepthMm, settings.MarkerOffsetMm, warnings);
+                ApplyFarClipOffset(viewSection, settings.ViewDepthMm,
+                    UnitConversionUtils.FeetToMillimeters(lineData.MarkerPoint.DistanceTo(lineData.MidPoint)), warnings);
 
                 return true;
             }

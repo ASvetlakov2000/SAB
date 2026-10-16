@@ -1,7 +1,9 @@
 ﻿param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
-    [string]$InstallerVersion = ""
+    [string]$InstallerVersion = "",
+    [ValidateSet("2022", "2023", "2024")]
+    [string[]]$Years = @("2022", "2023", "2024")
 )
 
 Set-StrictMode -Version Latest
@@ -16,7 +18,8 @@ $families2022SourcePath = Join-Path $repositoryRoot "SAB\Families for Plugin\Cre
 $familiesSharedSourcePath = Join-Path $repositoryRoot "SAB\Families for Plugin\CreateInteriorElevationsCommand\2023-2024"
 $requiredFamilyFileNames = @(
     "SAB_Марка угла_План.rfa",
-    "SAB_Марка угла_Развертки.rfa"
+    "SAB_Марка угла_Развертки.rfa",
+    "SAB_Развертки_Направление.rfa"
 )
 
 foreach ($filePath in @($projectPath, $installerScriptPath)) {
@@ -114,13 +117,14 @@ function Assert-InteriorElevationFamilies {
 
     foreach ($familyFile in (Get-ChildItem -LiteralPath $SourcePath -Filter "*.rfa" -File)) {
         $familyFormat = [Autodesk.Revit.DB.BasicFileInfo]::Extract($familyFile.FullName).Format
-        if ($familyFormat -ne $ExpectedFormat) {
+        $allowedFormats = if ($familyFile.Name -eq "SAB_Развертки_Направление.rfa" -and $ExpectedFormat -eq "2023") { @("2022", "2023") } else { @($ExpectedFormat) }
+        if ($familyFormat -notin $allowedFormats) {
             throw "Expected a Revit $ExpectedFormat family, found format $familyFormat in: $($familyFile.FullName)"
         }
     }
 }
 
-foreach ($year in @("2022", "2023", "2024")) {
+foreach ($year in $Years) {
     Write-Host ""
     Write-Host "Building SAB and MSI for Revit $year..."
 
@@ -203,7 +207,7 @@ foreach ($year in @("2022", "2023", "2024")) {
 
 Write-Host ""
 Write-Host "All Revit installers were built successfully."
-$hashLines = foreach ($year in @("2022", "2023", "2024")) {
+$hashLines = foreach ($year in $Years) {
     $msiPath = Join-Path $installerOutputPath "SAB_Revit_$year.msi"
     $algorithm = [Security.Cryptography.SHA256]::Create()
     $stream = [IO.File]::OpenRead($msiPath)

@@ -45,8 +45,16 @@ namespace SAB.UI.Notifications
             NotificationStack stack;
             if (!stacks.TryGetValue(owner, out stack))
             {
-                stack = new NotificationStack(owner); stacks.Add(owner, stack);
-                stack.Add(message); stack.Show(); stack.Place(); stack.timer.Start();
+                stack = new NotificationStack(owner);
+                try
+                {
+                    stack.Add(message); stacks.Add(owner, stack);
+                    stack.Show(); stack.Place(); stack.timer.Start();
+                }
+                catch
+                {
+                    stacks.Remove(owner); stack.Close(); throw;
+                }
             }
             else stack.Add(message);
             return stack;

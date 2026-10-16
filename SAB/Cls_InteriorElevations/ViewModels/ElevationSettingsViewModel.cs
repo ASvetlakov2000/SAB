@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -314,6 +315,30 @@ namespace SAB.InteriorElevations.ViewModels
         public string GridBottomExtensionPaperMmText { get; set; }
 
         public string ElevationNamePart1Text { get; set; }
+
+        private string _detailNumberPrefix = string.Empty;
+        private string _detailNumberSuffix = "-Р";
+
+        public string DetailNumberPrefix
+        {
+            get { return _detailNumberPrefix; }
+            set { _detailNumberPrefix = value ?? string.Empty; OnPropertyChanged("DetailNumberPrefix"); OnPropertyChanged("DetailNumberPreview"); }
+        }
+
+        public string DetailNumberSuffix
+        {
+            get { return _detailNumberSuffix; }
+            set { _detailNumberSuffix = value ?? string.Empty; OnPropertyChanged("DetailNumberSuffix"); OnPropertyChanged("DetailNumberPreview"); }
+        }
+
+        public string DetailNumberPreview
+        {
+            get
+            {
+                return string.Join(", ", Enumerable.Range(1, 3).Select(index =>
+                    SAB.InteriorElevations.Services.Sheets.ElevationDetailNumberService.BuildNumber(index, DetailNumberPrefix, DetailNumberSuffix)));
+            }
+        }
 
         public string ElevationNamePart2Text { get; set; }
 
@@ -1053,6 +1078,8 @@ namespace SAB.InteriorElevations.ViewModels
             elevationSettings.ElevationTitlePart1 = ElevationTitlePart1Text ?? string.Empty;
             elevationSettings.ElevationTitlePart2 = ElevationTitlePart2Text ?? string.Empty;
             elevationSettings.ElevationTitlePart3 = ElevationTitlePart3Text ?? string.Empty;
+            elevationSettings.DetailNumberPrefix = DetailNumberPrefix;
+            elevationSettings.DetailNumberSuffix = DetailNumberSuffix;
 
             elevationSettings.CreateSheet = CreateSheet;
             elevationSettings.UseExistingSheet = UseExistingSheet;
@@ -1973,6 +2000,8 @@ namespace SAB.InteriorElevations.ViewModels
             ElevationTitlePart1Text = NormalizeFormulaSyntax(initialSettings.ElevationTitlePart1);
             ElevationTitlePart2Text = NormalizeFormulaSyntax(initialSettings.ElevationTitlePart2);
             ElevationTitlePart3Text = NormalizeFormulaSyntax(initialSettings.ElevationTitlePart3);
+            DetailNumberPrefix = initialSettings.DetailNumberPrefix ?? string.Empty;
+            DetailNumberSuffix = initialSettings.DetailNumberSuffix ?? string.Empty;
 
             if (initialSettings.SheetFormatAValue.HasValue)
             {

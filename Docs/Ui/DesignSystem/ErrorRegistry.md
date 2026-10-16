@@ -1,6 +1,6 @@
 # Реестр ошибок и обязательных проверок SAB UI
 
-70 действующих проверок, составленные из доступной истории запросов, изображений, принятых требований и независимых review. Это приложение к [единой спецификации](Specification.md), а не второй стандарт. [Workflow](Workflow.md) требует проверять применимость каждого ID до реализации и его результат после неё; [роли](ReviewRoles.md) используют те же ID.059–064 — профилактические критерии принятого notification-контракта, не заявление, что пользователь уже наблюдал все перечисленные отказы.
+70 исходных проверок, дополненные новыми ID ниже; составлены из доступной истории запросов, изображений, принятых требований и независимых review. Это приложение к [единой спецификации](Specification.md), а не второй стандарт. [Workflow](Workflow.md) требует проверять применимость каждого ID до реализации и его результат после неё; [роли](ReviewRoles.md) используют те же ID.059–064 — профилактические критерии принятого notification-контракта, не заявление, что пользователь уже наблюдал все перечисленные отказы.
 
 Статус системы берётся только из [STATUS.json](STATUS.json): approved_for_production_migration, approvedConcept=FluentLightSource, approvedAt2026-10-11, productionMigrationAuthorized=true, installationAuthorized=false. Новый прямой запрос разрешил ровно макеты0.5 в двух модулях, не установку. Исторические строки preview0.5 ниже не переписываются в production PASS. Новый source/runtime/independent-review отчёт оценивает58ID отдельно;75старых программных PASS не означают58 закрытых production требований.
 
@@ -147,3 +147,45 @@ Notification059–064 применимы к текущей задаче. Для 
 | <a id="sab-ui-070"></a>SAB-UI-070 · U-ELEV-RESULT | Итог смешивает нули/успешные действия/проблемы; ошибки отдельных видов и марок теряются в зелёном результате. | ElevationCreationReportService.BuildNotification + shared optional Warnings section. | Positive-only summary; all accumulated warnings/FailedViews/unplaced/fallback in separate filled block; green only without problems, amber partial, red no created views. Keep actual continuation sheet; do not claim manual placement at zero viewports. No modal final report. | Fresh native result fixtures + actual shared copy handler; actual Revit operation NOT RUN. |
 
 Текущий критерий общего template (003/023/035/059/063): tabs Auto/min40DIP, text14/padding20,8; modes остаются min34/30; notification width≤416, outcome16Bold, summary outline1/radius4/padding10 без заливки. Новый ID для этих утверждённых значений не создаётся. Fresh actual production [104PASS/21PNG](screenshots-redesign-production/verification.txt), shared notification [35PASS/9PNG](screenshots-redesign-notifications/verification.txt), modules [81PASS/27PNG](screenshots-redesign-modules/verification.txt) не закрывают Revit/installation/OS/physical input и полный70-ID scope автоматически.
+
+
+## Регрессии после установки1.1.0 —13.10.2026
+
+| ID / источник | Ошибка | Общий владелец | Критерий | Проверка |
+|---|---|---|---|---|
+| <a id="sab-ui-071"></a>SAB-UI-071 · U-RUN-dbbf8492 | Warning notification выбрасывает ResourceReferenceKeyNotFoundException; host global dictionary скрывает отсутствие scoped brush. | SABFluentLight + NotificationCard/Stack + result-delivery boundary. | Actual success/warning/error incl warning/copy sections создаются при пустых Application resources; all explicit resource keys resolve locally. UI delivery exception после завершения операции не уходит в command failure; secondary fallback/log exception безопасны. | Clean resource probe reproduces beforefix, passes after; injected delivery failures. Revit operation NOTRUN отдельно. |
+| <a id="sab-ui-072"></a>SAB-UI-072 · U-RUN-6a1f6cf9 | Непустой validation/status перекрывает actionfooter: out-of-range Grid.Row coerces into buttons row. | Shared footer layout contract / ElevationSettingsWindow. | Optional status row0, actions row1; normal/minimum/nonempty long validation геометрически не пересекаются. Все5buttons одного ряда, bounded и gap8. | Actual WPF bounds, user message regression. |
+| <a id="sab-ui-073"></a>SAB-UI-073 · latest user footer/list text | Полный перечень помещений в main layout мешает сужению. | Main footer + detached selection snapshot + read-only room list. | Только2mode capsules вверху; exact footer order Инструкция/Отмена/Список помещений/Выбрать линии/Создать развёртки; details открываются on demand. Actual selectionPackages→immutable plain DTO; table read-only, noadd/delete, empty/100longrows/lastrow; main width does not depend on names/counts. | Actual constructor/buttons/snapshot/capture matrix; existing picking workflow retained. | Актуальное уточнение15.10: main footer Инструкция/Список помещений/Показать превью/Выбрать линии/Создать развёртки; main Отмена удалена, последние3sharedprimaryblue, первые2white; прежний порядок отменён прямым запросом.
+
+
+## Исправления параметризации13.10.2026
+
+| ID / источник | Ошибка | Владелец | Критерий | Проверка |
+|---|---|---|---|---|
+| <a id="sab-ui-074"></a>SAB-UI-074 · U-PARAM-c964924e | Исходный ParameterPicker сам открывает popup при загрузке Sources tab. | ParameterPicker input event boundary. | Programmatic load/template/text refresh do not open popup or clear selected GUID/ID; deliberate focused edit still filters and opens; Enter/Escape retain original semantics. | Actual native WPF/source contract; Revit execution separately NOTRUN. |
+| <a id="sab-ui-075"></a>SAB-UI-075 · U-PARAM-categories | Check category subset limited by fill profile/visible elements. | Catalog.Categories + separate CheckCategoryIds. | Check list uses exact same full model category catalog as parameterization, independent of fill selection/view contents; saved check IDs preserved; fill category selection unchanged. | Actual native WPF/source contract; Revit execution separately NOTRUN. |
+| <a id="sab-ui-076"></a>SAB-UI-076 · U-PARAM-df824ecf | Legacy WhatCheck blue artifact and unframed header description. | CheckCategoriesWindow shared Fluent shell/footer. | Requested explanatory text in filled frame immediately above Cancel/Check; no accent stub; bounded category list, help footer, normal/minimum/validation. | Actual native WPF/source contract; Revit execution separately NOTRUN. |
+| <a id="sab-ui-077"></a>SAB-UI-077 · latest user command/report steering | Hotkey opens settings/reports rather than activating highlight. | CheckParametersCommand/CheckSettingsCommand/ParameterToolsModule/Workflow. | Existing check identity retained; Check immediate using saved scope, Settings separate; ribbon order Проверка параметров/Настройки проверок/Снять подсветку; no highlight reports/report button/cache, only successful activation notification. | Actual native WPF/source contract; Revit execution separately NOTRUN. |
+
+## Нумерация развёрток —15.10.2026
+
+| ID / источник | Ошибка | Владелец | Критерий | Проверка |
+|---|---|---|---|---|
+| <a id="sab-ui-078"></a>SAB-UI-078 · U-ELEV-numbering текущий чат/изображение | Автоматический числовой номер Revit скрывает последовательность; настройки префикса/суффикса отсутствуют. | ElevationSettingsWindow / VM / SettingsStorage / ElevationDetailNumberService. | Два поля после наименований в той же карточке; literal prefix/suffix, live example, schema15 round trip и legacy defaults; конфликт меняет общий суффикс группы, сохраняя source index. | [Layout](ElevationNumbering-Layout.md), [actual WPF](screenshots-elevation-numbering/verification.txt), [отчёт](ElevationNumbering-Report.json); actual Revit separately NOT RUN. |
+
+
+## Предпросмотр направлений15.10.2026
+
+| ID / источник | Ошибка | Общий владелец | Критерий | Проверка |
+|---|---|---|---|---|
+| <a id="sab-ui-079"></a>SAB-UI-079 · direct user direction-preview request + supplied RFA | Направление зависит от Room и непроверенного поворота; пользователь видит ошибку после создания. | ContourDirectionGeometry / ContourLineOrientationService / ElevationDirectionPreviewService+Controller+Window / MarkerService / CropService. | Normals from source lines, independent closed contours inward; open chains require preview; no self intersections/backtracking/branches. Change Side updates pose and same creation draft. Preview labels equal reserved final numbers. Close/Create/Cancel clean only owned instances; DocumentClosing read-only, save/sync clean before write. Family reused if present. Actual measured ViewDirection validated; crop min/max before screen offsets. | Fresh actual SAB.dll WPF4PNG;46linked geometry/rotation/crop/lifecycle checks with API doubles; MSI22/23 extracted RFA+DLL proof. Live Revit/RFA placement and noncancellable cleanup failures NOT RUN. |
+
+## Runtime превью и виртуальное замыкание15.10
+
+| ID / источник | Ошибка | Общий владелец | Критерий | Проверка |
+|---|---|---|---|---|
+| <a id="sab-ui-080"></a>SAB-UI-080 · user Create false wrong-document / Flip never picks | Reference equality Document wrappers блокирует родной проект; тест с тем же managed object скрывал дефект. | PreviewService.IsSourceDocument / PreviewController / CreatePreparedElevations. | Document.Equals and value plan ID across API callbacks, same-native fresh wrappers accepted; different docs with same titles/IDs rejected; all save/close callbacks use identity; no-preselection reaches owned PickObjects, hidden window/foreground Revit, Escape recovery. | Before-fix failed wrapper regression; fresh linked API doubles after; real Revit/foreground/picking NOT RUN отдельно. |
+| <a id="sab-ui-081"></a>SAB-UI-081 · user virtual closing edge | Arbitrary side on open U-chain forces mass flips. | ContourDirectionGeometry / orientation adapter / preview metadata. | Free topology endpoints define one computational closing segment independent of selection/source endpoint order. Accept simple nonzero-area polygon only; local inward normals and clearance include virtual edge. No synthetic Revit element/view/number, open flag and mandatory preview retained; crossing/overlap/straight closure fallback manual. | Linked geometry tests reversed/shuffled/translated U, virtual crossing/overlap/clearance/zero-area; actual Revit NOT RUN отдельно. |
+
+
+Уточнение SAB-UI-079 от16.10: anchor preview — кончик стрелки в midpoint source line, при Flip точка preview неподвижна. Реальный elevation MarkerPoint сохраняет независимый отступ. Новый suppliedRFA2022 и прежнее правило no-reload; [реализация и пределы проверки](ElevationPreviewTip-Implementation.md). Native label readability и actual Revit placement требуют отдельной проверки; WPF не изменён.

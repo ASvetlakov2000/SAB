@@ -56,17 +56,24 @@ $assetNames += 'SHA256SUMS.txt'
 if ($PrepareOnly) { Write-Host "Проверки пройдены. Файлы выпуска: $outputFolder"; return }
 
 # Выпуск привязывается к сохранённым и отправленным исходникам.
-$origin = & git -C $repositoryRoot remote get-url origin
+$gitCommand = Get-Command git -ErrorAction SilentlyContinue
+$gitPath = if ($gitCommand) { $gitCommand.Source } else {
+    Join-Path ${env:ProgramFiles} 'Microsoft Visual Studio\18\Community\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\cmd\git.exe'
+}
+if (-not (Test-Path -LiteralPath $gitPath -PathType Leaf)) { throw 'Git не найден. Установите Git или добавьте его в PATH.' }
+$origin = & $gitPath -C $repositoryRoot remote get-url origin
 if ($LASTEXITCODE -ne 0 -or $origin -notmatch '^https://github\.com/ASvetlakov2000/SAB(?:\.git)?/?$') {
     throw 'Ожидался origin репозитория ASvetlakov2000/SAB.'
 }
-& git -C $repositoryRoot diff --quiet HEAD --
+& $gitPath -C $repositoryRoot diff --quiet HEAD --
 if ($LASTEXITCODE -ne 0) { throw 'Сначала сохраните изменения отслеживаемых файлов в Git.' }
-& git -C $repositoryRoot ls-files --error-unmatch Installer/ReleaseNotes.md Installer/Publish-GitHubRelease.ps1 | Out-Null
+$pendingFiles = @(& $gitPath -C $repositoryRoot status --porcelain --untracked-files=normal)
+if ($LASTEXITCODE -ne 0 -or $pendingFiles.Count -ne 0) { throw 'Сначала сохраните все исходники и ресурсы выпуска в Git.' }
+& $gitPath -C $repositoryRoot ls-files --error-unmatch Installer/ReleaseNotes.md Installer/Publish-GitHubRelease.ps1 | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Сначала добавьте описание и скрипт выпуска в Git.' }
-$commit = & git -C $repositoryRoot rev-parse HEAD
+$commit = & $gitPath -C $repositoryRoot rev-parse HEAD
 if ($LASTEXITCODE -ne 0) { throw 'Не удалось определить исходный коммит.' }
-$remoteHead = & git -C $repositoryRoot ls-remote origin refs/heads/master
+$remoteHead = & $gitPath -C $repositoryRoot ls-remote origin refs/heads/master
 if ($LASTEXITCODE -ne 0 -or ($remoteHead -split '\s+')[0] -ne $commit) {
     throw 'Сначала отправьте текущий коммит в origin/master.'
 }
@@ -78,7 +85,7 @@ if ([string]::IsNullOrWhiteSpace($token)) {
     $previousInteractive = $env:GCM_INTERACTIVE
     try {
         $env:GCM_INTERACTIVE = 'Never'
-        $credentialLines = @('protocol=https', 'host=github.com', '') | git -C $repositoryRoot credential fill 2>$null
+        $credentialLines = @('protocol=https', 'host=github.com', '') | & $gitPath -C $repositoryRoot credential fill 2>$null
         foreach ($line in $credentialLines) {
             if ($line.StartsWith('password=')) { $token = $line.Substring(9) }
         }

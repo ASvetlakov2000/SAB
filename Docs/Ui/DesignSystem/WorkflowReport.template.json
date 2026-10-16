@@ -718,6 +718,116 @@
       "reason": "Форма ещё не заполнена",
       "evidence": [],
       "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
     }
   ]
 }

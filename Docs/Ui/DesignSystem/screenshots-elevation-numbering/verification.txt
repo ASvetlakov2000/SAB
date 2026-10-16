@@ -1,0 +1,24 @@
+PASS Actual SAB.dll window and VM
+PASS Default affix fields and live example
+PASS Number controls stay inside requested naming card
+PASS Number fields follow existing names
+PASS Shared 34 DIP editors
+PASS Equal field columns
+CAPTURE numbering-normal; actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=784x941; nativeDPI=96; renderDPI=96
+PASS Actual TextBox edits update VM immediately
+PASS Live example reflects both affixes
+PASS Prefix accepts programmatic keyboard focus
+PASS Programmatic next focus reaches suffix
+PASS Actual settings validation accepts fixture: 
+PASS VM exports numbering to model
+PASS Schema15 JSON persistence round trip
+PASS Reopened VM restores both numbering affixes
+PASS Schema14 migration supplies numbering defaults
+PASS Explicit empty affixes survive persistence
+CAPTURE numbering-empty; actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=784x941; nativeDPI=96; renderDPI=96
+PASS Long text retains full values at minimum size
+PASS Long preview wraps inside naming card
+PASS Both minimum-size editors remain usable
+PASS Single instruction footer retained
+CAPTURE numbering-minimum-long; actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=784x611; nativeDPI=96; renderDPI=96
+COMPLETED; actual WPF runtime outside Revit; no physical input or OS DPI transitions tested.

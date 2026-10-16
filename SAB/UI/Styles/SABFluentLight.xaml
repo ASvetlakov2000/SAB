@@ -748,6 +748,7 @@
     <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
   </Style>
     <!-- Shared notification template: selectable text and real thin lifetime progress. -->
+    <SolidColorBrush x:Key="SabBrush.DisabledBackground" Color="#F2F4F7" />
     <Style x:Key="SabNotificationTextStyle" TargetType="TextBox">
         <Setter Property="FontFamily" Value="Segoe UI"/><Setter Property="FontSize" Value="13"/>
         <Setter Property="Foreground" Value="{StaticResource SabBrush.Text}"/>

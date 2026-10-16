@@ -97,6 +97,16 @@ namespace SAB.ParameterTools
                 .OrderBy(c => c.Name).Select(c => new CategoryChoice { Id = Ids.Category(c.Id), Name = c.Name,
                     Selected = p.CategoryIds.Contains(Ids.Category(c.Id)) }).ToList();
         }
+        internal static List<CategoryChoice> CheckCategories(Document doc, Profile profile)
+        { return CheckCategories(Categories(doc, profile), profile.CheckCategoryIds); }
+        internal static List<CategoryChoice> CheckCategories(IEnumerable<CategoryChoice> categories, IEnumerable<int> selectedIds)
+        {
+            var selected = new HashSet<int>(selectedIds ?? new int[0]);
+            if (selected.Count == 0) selected.Add((int)BuiltInCategory.OST_Walls);
+            return categories.Select(category => new CategoryChoice {
+                Id = category.Id, Name = category.Name, Selected = selected.Contains(category.Id)
+            }).ToList();
+        }
         internal static Parameter Parameter(Element element, ParameterRef reference)
         {
             if (element == null || reference == null) return null;

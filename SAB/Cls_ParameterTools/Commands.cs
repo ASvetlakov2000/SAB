@@ -39,6 +39,16 @@ namespace SAB.ParameterTools
         { return CommandRunner.Run(data.Application, () => Workflow.Check(data.Application), ref message); }
     }
     [Transaction(TransactionMode.Manual)]
+    public sealed class CheckSettingsCommand : Nice3point.Revit.Toolkit.External.ExternalCommand
+    {
+        public override void Execute()
+        {
+            string message = null;
+            Result = CommandRunner.Run(Application, () => Workflow.CheckSettings(Application), ref message);
+            ErrorMessage = message;
+        }
+    }
+    [Transaction(TransactionMode.Manual)]
     public sealed class ClearHighlightCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData data, ref string message, ElementSet elements)

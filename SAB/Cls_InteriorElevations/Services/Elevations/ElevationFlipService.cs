@@ -6,6 +6,7 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Utils;
+using SAB.InteriorElevations.Services.Sheets;
 
 namespace SAB.InteriorElevations.Services.Elevations
 {
@@ -628,6 +629,8 @@ namespace SAB.InteriorElevations.Services.Elevations
                 document.Delete(sourceViewport.Id);
                 document.Delete(sourceElevationView.Id);
                 document.Regenerate();
+                ElevationDetailNumberService.Apply(replacementViewport,
+                    sourceViewportState != null ? sourceViewportState.DetailNumber : null);
                 RestoreViewportTitleState(document, replacementViewport, sourceTitleState, warnings);
                 return true;
             }
@@ -1013,6 +1016,7 @@ namespace SAB.InteriorElevations.Services.Elevations
             {
                 BoxCenter = viewport.GetBoxCenter(),
                 TypeId = viewport.GetTypeId(),
+                DetailNumber = ElevationDetailNumberService.Read(viewport),
                 TitleState = CaptureViewportTitleState(viewport)
             };
         }
@@ -1405,6 +1409,8 @@ namespace SAB.InteriorElevations.Services.Elevations
 
         private class ViewportStateSnapshot
         {
+            public string DetailNumber { get; set; }
+
             public XYZ BoxCenter { get; set; }
 
             public ElementId TypeId { get; set; }

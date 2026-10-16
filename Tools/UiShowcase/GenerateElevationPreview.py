@@ -322,6 +322,7 @@ def generate():
         s=s.replace('ToastNotifier.ShowWarning(', 'SAB.UiShowcase.Elevations.ElevationSession.Warning(')
         if n=='ElevationDecorationCatalogWindow':s=re.sub(r'\bListView\b','DataGrid',s)
         if n=='ElevationSettingsWindow':
+            s=s.replace('using SAB.UI;', 'using SAB.UI;\nusing SAB.InteriorElevations.Views;')
             s=s.replace('Content = loadedWindow.Content;', 'Content = loadedWindow.Content;\n                string radioScope = Guid.NewGuid().ToString("N");\n                foreach (var radio in SAB.UiShowcase.Elevations.ElevationSession.Logical<RadioButton>(Content as DependencyObject))\n                    if (!string.IsNullOrEmpty(radio.GroupName)) radio.GroupName += radioScope;')
             s=s.replace('"Перед созданием нажмите Выбрать линии, затем укажите линии детализации и помещение в активном плане."','string.Empty')
             s=s.replace('_warningInfoTextBlock.Text = string.IsNullOrWhiteSpace(text)', 'if (_warningInfoBorder != null) _warningInfoBorder.Visibility = string.IsNullOrWhiteSpace(text) ? Visibility.Collapsed : Visibility.Visible;\n            _warningInfoTextBlock.Text = string.IsNullOrWhiteSpace(text)')

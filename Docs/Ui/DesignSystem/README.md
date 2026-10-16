@@ -1,3 +1,11 @@
+## Параметризация1.1.2 —13.10.2026
+
+Исправлено самораскрытие исходного параметра. Полный каталог категорий проверки и отдельные команды: Проверка параметров / Настройки проверок / Снять подсветку. По последнему уточнению отчёты подсветки удалены, только уведомление активации. [Layout](ParameterCheck-Layout.md), [снимки](ParameterCheck.html), [verification](ParameterCheck-Verification.md), [report77ID](ParameterCheck-Report.json), [review](ParameterCheck-Review.md), [MSI1.1.2](ParameterCheck-Installer.json). Предыдущие этапы ниже — история.
+
+## Исправления развёрток1.1.1 —13.10.2026
+
+Последний запрос: точная кнопка «Список помещений», все пять действий внизу. [Компоновка](ElevationHotfix-Layout.md), [реальные снимки](ElevationHotfix.html), [протокол](ElevationHotfix-Verification.md), [отчёт73ID](ElevationHotfix-Report.json), [review](ElevationHotfix-Review.md), [MSI1.1.1](ElevationHotfix-Installer.json). История и опубликованный выпуск1.1.0 ниже сохранены отдельно.
+
 # Текущий выпуск SAB1.1.0 — Редизайн
 
 Пользователь утвердил перенос12.10.2026. [Actualproductionпроверки](RedesignMigration-Verification.md), [снимки](RedesignMigration.html), [independentreview](RedesignMigration-Review.md), [MSIpayload1.1.0](Installer-Payload.json). Общие tabs40/text14 и notification416/status16Bold применены в рабочие окна. Ниже сохранена история предыдущих этапов; её pending/неперенесённые статусы не являются текущимauthority.
@@ -26,3 +34,14 @@ Build-Msi.bat Release завершён для2022/2023/2024; Verify-MsiPayload.p
 
 
 Актуальные последние правки:635PASS/44PNG,70ID;3selection cards, spatial dashed crop, positive-only creation notification with separate warnings. Independent category creation/storage and selected-role replacement are in production;8Elevation deltas+2optional shared warning files packaged for2022–24.85baseline unchanged. UI suite/416-16proposal migration pending. Previous565/41 and526/47 references describe history. See Elevations-Verification/Report and current Installer-Payload.
+
+Нумерация развёрток15.10: [компоновка](ElevationNumbering-Layout.md), [20actual WPF checks/3PNG](screenshots-elevation-numbering/provenance.json), [78-ID отчёт](ElevationNumbering-Report.json), [независимый bounded review](ElevationNumbering-Review.md), [MSI2022–24](ElevationNumbering-Installer.json). [Исследование ориентации и обрезки](../../InteriorElevationOrientation_Research.md) отделяет подтверждённые code defects от исторического Revit bug; геометрические исправления пока не внесены. Revit/physical/OS/installation NOT RUN.
+
+
+Предпросмотр направлений15.10: [компоновка](ElevationDirectionPreview-Layout.md), [свежий протокол](screenshots-direction-preview/verification.txt), [79-ID отчёт](ElevationDirectionPreview-Report.json). Текущий план Revit, временные annotation instances, shared modeless Compact Dialog; live Revit/RFA NOT RUN.
+
+
+Runtime fix1.1.3: [layout](ElevationPreviewRuntime-Layout.md), [протокол](screenshots-preview-runtime/verification.txt), [отчёт](ElevationPreviewRuntime-Report.json). Main footer обновлён прямым запросом; same-native Document wrappers и virtual closure проверяются отдельно от live Revit.
+
+
+16.10,1.1.4: [кончик превью на source line](ElevationPreviewTip-Implementation.md), [отчёт](ElevationPreviewTip-Report.json). Изменены backend placement и RFA22/23; WPF captures не переснимались.

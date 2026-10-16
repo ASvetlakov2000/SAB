@@ -116,6 +116,7 @@ namespace SAB.InteriorElevations.Services.Sheets
                 ElementId viewId = sourceViewport.ViewId;
                 ElementId viewportTypeId = sourceViewport.GetTypeId();
                 XYZ viewportCenter = sourceViewport.GetBoxCenter();
+                string detailNumber = ElevationDetailNumberService.Read(sourceViewport);
                 View sourceView = document.GetElement(viewId) as View;
 
                 if (IsFloorPlanView(sourceView))
@@ -142,33 +143,34 @@ namespace SAB.InteriorElevations.Services.Sheets
 
                 try
                 {
-                    document.Delete(sourceViewport.Id);
-
-                    if (!Viewport.CanAddViewToSheet(document, targetSheet.Id, viewId))
+                    using (var move = new SubTransaction(document))
                     {
-                        TryRestoreViewport(document, sourceSheet, viewId, viewportTypeId, viewportCenter, warnings);
-                        result.FailedViewportCount++;
-                        AddWarning(warnings, "Вид не удалось добавить на новый лист. Вид восстановлен на исходном листе.");
-                        continue;
-                    }
+                        move.Start();
+                        document.Delete(sourceViewport.Id);
+                        if (!Viewport.CanAddViewToSheet(document, targetSheet.Id, viewId))
+                        {
+                            throw new InvalidOperationException("Вид нельзя добавить на новый лист.");
+                        }
 
-                    Viewport targetViewport = Viewport.Create(document, targetSheet.Id, viewId, viewportCenter);
-                    if (targetViewport == null)
-                    {
-                        TryRestoreViewport(document, sourceSheet, viewId, viewportTypeId, viewportCenter, warnings);
-                        result.FailedViewportCount++;
-                        AddWarning(warnings, "Не удалось создать viewport на новом листе. Вид восстановлен на исходном листе.");
-                        continue;
-                    }
+                        Viewport targetViewport = Viewport.Create(document, targetSheet.Id, viewId, viewportCenter);
+                        if (targetViewport == null)
+                        {
+                            throw new InvalidOperationException("Не удалось создать viewport на новом листе.");
+                        }
 
-                    TryApplyViewportType(targetViewport, viewportTypeId);
+                        TryApplyViewportType(targetViewport, viewportTypeId);
+                        ElevationDetailNumberService.Apply(targetViewport, detailNumber);
+                        if (move.Commit() != TransactionStatus.Committed)
+                        {
+                            throw new InvalidOperationException("Revit не подтвердил перенос вида.");
+                        }
+                    }
                     result.MovedViewportCount++;
                 }
                 catch (Exception exception)
                 {
-                    TryRestoreViewport(document, sourceSheet, viewId, viewportTypeId, viewportCenter, warnings);
                     result.FailedViewportCount++;
-                    AddWarning(warnings, "Ошибка переноса viewport: " + exception.Message);
+                    AddWarning(warnings, "Перенос viewport отменен; исходный вид и его номер сохранены: " + exception.Message);
                 }
             }
         }

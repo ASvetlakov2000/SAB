@@ -125,3 +125,31 @@ Build.ps1 собирает настоящие production-файлы без Sourc
 Владельцы:9 активных views/classes SAB/Cls_InteriorElevations, ElevationSettingsViewModel, catalog draft round trip в DecorateInteriorElevationsCommand; общий SABFluentLight/FluentLight и NotificationCard/Stack. [Production migration manifest](../../../Tools/UiShowcase/elevations-production-migration.json) фиксирует before/after файлов, отдельные прежние functional deltas не скрываются. Unreachable RoomPlanSchemeSettingsWindow не мигрируется как десятый active workflow; функция плана-схемы сохранена в main tab.
 
 Свежие COMPLETED native WPF пакеты: [actual production](screenshots-redesign-production/verification.txt)104PASS/21PNG; [shared notifications](screenshots-redesign-notifications/verification.txt)35PASS/9PNG; [прежние два модуля](screenshots-redesign-modules/verification.txt)81PASS/27PNG; [isolated sessions](screenshots-redesign-sessions/verification.txt)635PASS/44PNG. Их scope раздельный: sessions не actual production, DTO/Document-null host не Revit. Historical635/44 в screenshots-elevations-preview остаётся прежним approval packet. Build/MSI/independent review/release проверяются отдельно; не переносить предыдущий Installer PASS на1.1.0 без нового payload proof. Installation и Revit/physical input/OS transitions здесь NOT RUN.
+
+
+## Исправления после runtime feedback13.10
+
+Текущая композиция «Развёрток»: две modeкапсулы сверху, без длинного inline selectionsummary; footer exactorder Инструкция/Отмена/Список помещений/Выбрать линии/Создать развёртки. Сведения выбора — отдельная readonlycollection на detachedsnapshot, безadd/delete. Optionalfooterstatus толькоrow0, actionsrow1, обе строки проверяются при непустом тексте. Notificationresources полностьюscoped: чистый Application безlegacyfallback обязателен; presentationfailureне превращает completedoperation в commandfailure. Критерии071–073; прежняяtopstatus композиция отменена последними текстовыми указаниями.
+
+
+## Параметризация: актуальное уточнение13.10
+
+Проверка заполненности использует полный Catalog.Categories как main parameterization, собственные CheckCategoryIds независимы отfillprofile/visibleelements. Existing check command/hotkey запускает подсветку напрямую, отдельные настройки доступны соседней кнопкой. Ribbonorder сверху вниз: Проверка параметров / Настройки проверок / Снять подсветку. Последний прямой ответ отменяет отчёты подсветки и кнопку отчёта: только успешное уведомление «Подсветка элементов активирована». Отчёты заполнения не затронуты. WhatCheck имеет запрошенный explanatoryfooter вfilledframe надCancel/Check (узкое явное исключение прежнего общего запрета inlineinstructions), no bluestub. EditableParameterPicker открывает popup только от пользовательского ввода/явного раскрытия; template/load/обновлениеSources не меняет выбраннуюGUID/ID identity. Критерии074–077.
+
+## Дополнение15.10: нумерация развёрток
+
+В карточке «Наименование вида» после существующих наименований располагаются «Номер вида», поля «Префикс» / «Суффикс» и пример первых трёх номеров. Существующие scoped field styles и две равные адаптивные колонки; введённый текст сохраняется буквально. При коллизии суффикс всей группы изменяется согласованно, числовая последовательность берётся из исходных индексов линий. SAB-UI-078; [компоновка](ElevationNumbering-Layout.md).
+
+Предпросмотр направлений использует текущий план Revit и временные GenericAnnotation instances. Кнопка «Показать превью» — в карточке «Параметры вида»; фиксированный footer настроек сохраняется. Modeless Compact Dialog использует общие scoped styles, metadata/status и действия «Сменить сторону», «Отмена», «Создать развёртки» с одной footer «Инструкция». Направление и точка меняются совместно, подтверждение использует тот же draft и номера; X/Escape ожидают cleanup. Сохранение/SaveAs/синхронизация завершают preview перед записью модели. Масштаб плана настраивает пользователь. SAB-UI-079; [контракт](ElevationDirectionPreview-Layout.md).
+
+
+## Актуальное runtime уточнение15.10
+
+Прямой запрос отменяет прежнее расположение Preview в Parameters card и main Cancel. Новый fixed main footer: Инструкция / Список помещений / Показать превью / Выбрать линии / Создать развёртки; первые2white/outline, последние3sharedprimaryblue. Одна строка наminimum800; close chrome остаётся. Modeless preview Cancel сохраняется для cleanup. SAB-UI-073/080; [компоновка и сценарии](ElevationPreviewRuntime-Layout.md).
+
+Document identity во всех preview lifecycle callbacks и continuation определяется Document.Equals, план — значением ElementId. Виртуальное замыкание открытой цепочки соединяет только свободные topology endpoints и используется только после проверки simple polygon/nonzero area; без Revit element/view/number. Virtual clearance учитывается; preview остаётся обязательным для открытых цепочек. SAB-UI-081.
+
+
+## Привязка preview16.10
+
+По прямому запросу annotation origin находится на кончике стрелки и вставляется в середину source line. Flip вращает annotation на месте, real elevation MarkerPoint отдельно меняет сторону с прежним MarkerDistance. Новый RFA2022 применяется в пакетах22/23; существующее в модели семейство автоматически не перезагружается. Читаемость подписей — native Keep Readable каждой метки, без обещания постоянно горизонтального текста. WPF/footer не менялись; предыдущие captures относятся к1.1.3. [Контракт и evidence](ElevationPreviewTip-Implementation.md).

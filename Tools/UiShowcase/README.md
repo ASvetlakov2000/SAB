@@ -34,3 +34,15 @@ WPF RenderTargetBitmap и программный focus не physical input;144dp
 Build-Msi.bat должен включать текущие DLL/XAML/styles/Toolkit/HTML для2022/2023/2024. Текущий1.1.0 MSI требует нового payload verification; старый Installer PASS не использовать как новый. Commit+push/release разрешены, результат не объявлять до remote verification. Установка не разрешена. Канонический рабочий output — outputs/ui-production-preview/Installer/output, без timestamp каталогов на каждый прогон и без удаления исторических evidence.
 
 [Coverage](../../Docs/Ui/DesignSystem/component-coverage.csv):51тип=31current/11resource/9missing;29/11/11 и28/11/12 — прежние этапы. Current example не all-states/in-Revit PASS. [CoveragePlan](../../Docs/Ui/DesignSystem/CoveragePlan.md) сохраняет детали и оставшиеся среды; historical pending в прежних документах относится к моменту до нового approval12.10.
+
+
+Текущий bounded hotfix1.1.1: [компоновка/порядокfooter](../../Docs/Ui/DesignSystem/ElevationHotfix-Layout.md), [actual captures](../../Docs/Ui/DesignSystem/ElevationHotfix.html), [verification](../../Docs/Ui/DesignSystem/ElevationHotfix-Verification.md). `Build.ps1 -ElevationHotfix` запускает actual классы с чистыми Application resources;17actualPNG,9shared notificationPNG и44source-derived sessionPNG сохраняются отдельно от1.1.0. Production включает новый read-only ElevationSelectionListWindow и immutable snapshot;2mode capsules/mainMin800, listMin740×420; footer status row0, actions row1. Установка и Revitexecution NOT RUN.
+
+
+Текущие исправления параметризации1.1.2: [layout](../../Docs/Ui/DesignSystem/ParameterCheck-Layout.md), [verification](../../Docs/Ui/DesignSystem/ParameterCheck-Verification.md), [actualcaptures](../../Docs/Ui/DesignSystem/ParameterCheck.html). `Build.ps1 -ParameterChecks` — actual90/14, separateactualregression81/27 сcleanresources; source71boundedchecks. ParameterPicker gates actualedit events, CheckCategoriesWindow Fluentfooter/noaccentstub/min680×760, fullcatalog with independentCheckCategoryIds. ExistingCheckcommand/ribbonID retained; newToolkitCheckSettingsCommand; highlightingreports removed, onlyactivationnotice. NativeRevit/physical/OS/installation NOTRUN.
+
+
+Direction preview: `Build.ps1 -DirectionPreview` собирает actual SAB.dll/host и снимает4surface captures; затем проверяет свежие MSI22/23 proofs. Сначала `Installer/Build-All-Msi.ps1 -Years 2022,2023` в PowerShell с массивом Years. [Протокол](../../Docs/Ui/DesignSystem/screenshots-direction-preview/verification.txt), [layout](../../Docs/Ui/DesignSystem/ElevationDirectionPreview-Layout.md). Исторические generators/proofs для этого прохода не перезаписываются.
+
+
+Preview runtime1.1.3: `Build.ps1 -PreviewRuntime` снимает actual main footer normal/minimum/validation и modeless states в screenshots-preview-runtime. [Контракт](../../Docs/Ui/DesignSystem/ElevationPreviewRuntime-Layout.md); перед генерацией итогового evidence требуются свежие MSI22/23 и service tests. Старый DirectionPreview evidence исторический.

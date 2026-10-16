@@ -1,0 +1,479 @@
+{
+  "version": "1.1.1",
+  "baseCommit": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "sourceDelta": "Tools/UiShowcase/elevations-hotfix-delta.json",
+  "parts": {
+    "actual": {
+      "scope": "Actual SAB.dll classes; no Application host/legacy dictionaries; detached option/selection fixtures",
+      "checksPassed": 282,
+      "captures": [
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-0-minimum.png",
+          "sha256": "0e86bdc573ee3574bdf00cdeeb3e8f38ac3b41de22028a95a1a92bcebab0f512",
+          "width": 724,
+          "height": 381
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-0-normal.png",
+          "sha256": "6dda34f7332006ed30ebe12120dad2c52506ce92d735f57ee30b438f9f381b4f",
+          "width": 844,
+          "height": 481
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-100-minimum.png",
+          "sha256": "820f302adfdacb69ee1cffd3122b4b29aa55763a1271bc449be22f61c802ce0c",
+          "width": 724,
+          "height": 381
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-100-normal.png",
+          "sha256": "47337a9f92441d1417124b3fdbf0316f35e589e2529a169278f4d0d70632b477",
+          "width": 724,
+          "height": 381
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-3-minimum.png",
+          "sha256": "068e93cc560c5e7aeef84b7a93c5849c2dd8cf4fb1e2dd1c47ea49e35f6138c3",
+          "width": 724,
+          "height": 381
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-3-normal.png",
+          "sha256": "c72267e0076c2e694e2c961865ef8e22162442e3b36516e969fd0717f227dd94",
+          "width": 724,
+          "height": 381
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/list-from-footer.png",
+          "sha256": "6aab452f20da27eb9602c57a6dcbb6d294dd2d5f6ee6dade58cacaaf0a7ee641",
+          "width": 844,
+          "height": 481
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-minimum-many-selections.png",
+          "sha256": "340332db6ff22ad9b724314dc72e8b17d4e4f61eef425bf70e4c8df871aedf5b",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-minimum-tab-0.png",
+          "sha256": "340332db6ff22ad9b724314dc72e8b17d4e4f61eef425bf70e4c8df871aedf5b",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-minimum-tab-1.png",
+          "sha256": "77b53e5bbf88775790d9c6a6d051a67b2d0e704aa40a54959aaf9a28da90cb12",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-minimum-tab-2.png",
+          "sha256": "b48ab39efee26f35983b23e3696f9d57094bc0d864c4c5f681e1300c918e4d2a",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-minimum-tab-3.png",
+          "sha256": "076abb044fec43224194a5f6b39cbd7ad67cca3f172924c5657ae1b1a7800319",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-minimum-validation.png",
+          "sha256": "052eb9d12a35d4c156f8d656e44d87790e03fd286850b9edf2567288194c41ed",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/main-normal.png",
+          "sha256": "e528abf7dc11795dd644dcfa30061dcb83afcc2cf88994828c1c0b77300d870d",
+          "width": 1024,
+          "height": 1066
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notification-clean-error.png",
+          "sha256": "0f0f1f935be443f3c4638cab661719a344e33e8c58a5a720a01e43c728c9931c",
+          "width": 416,
+          "height": 524
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notification-clean-success.png",
+          "sha256": "fa98a0e878bc417a863707715fe4ac0388da30def6af4151aef0b14251504437",
+          "width": 416,
+          "height": 177
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notification-clean-warning.png",
+          "sha256": "27ae5ceb7472af171284697cd5217efd1ba6fa64ee152369837dcf535a436352",
+          "width": 416,
+          "height": 524
+        }
+      ],
+      "logSha256": "27dc7bd2e3677995321994feeddd190e357e5dc5685feb206fd28cb1b0779043"
+    },
+    "notifications": {
+      "scope": "Actual shared timer/clipboard/stack and parameter adapter with clean Application resources",
+      "checksPassed": 35,
+      "captures": [
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/01-success.png",
+          "sha256": "23f1342fb33917eb2c0dd7fb6d15afad6e17d3c894c3cbe9efff4a254d82354a",
+          "width": 416,
+          "height": 197
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/02-warning.png",
+          "sha256": "4f2a33b6a93ff467d773ac4025503899b1789812dcaa35c885ae33826e91bdb0",
+          "width": 416,
+          "height": 475
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/03-selected-copied.png",
+          "sha256": "a95c4f5a7b0215f593ce2a0f0372039debf6e5406ec76cc6f82f4940769b56ee",
+          "width": 416,
+          "height": 475
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/04-error.png",
+          "sha256": "1d24c59904230501cc181536c04d848dea6830a9c2f04b60ef6cddc71ce543e4",
+          "width": 416,
+          "height": 365
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/05-clipboard-failure.png",
+          "sha256": "71c92f7f994294ff8411a26c032ff0e688fa12f76390ea7142af19c92568a065",
+          "width": 416,
+          "height": 475
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/06-long-minimum.png",
+          "sha256": "436b455a09036eb1580b21475105cbf30a56af8ba8ad9bc4e94ce9f434710d4f",
+          "width": 380,
+          "height": 550
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/07-long-144dpi-render.png",
+          "sha256": "728a45c1f528be15a45fbf838584fae48599a0ab40d28c0cccef43d183044e33",
+          "width": 570,
+          "height": 825
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/08-stack.png",
+          "sha256": "3ee1521d087900545a119a7ed692e2ef0be33e5450444fb46c5f91a87120c9a2",
+          "width": 416,
+          "height": 1060
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/09-overflow.png",
+          "sha256": "29c3340f8629ba5179ac8b634c428a0073fa4a2de48755f505df5f9644985497",
+          "width": 416,
+          "height": 1360
+        }
+      ],
+      "logSha256": "db8d976d95d3d298c12139daee454f5054a05195f655c02deba6174c8ce68fc1"
+    },
+    "sessions": {
+      "scope": "Source-derived session adapters; API/ExternalEvent not dispatched",
+      "checksPassed": 635,
+      "captures": [
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/catalog-confirmation.png",
+          "sha256": "64f759ccf70457129e52ef29441f5c41a5a445a4189bbe776d98e73a4741a7fb",
+          "width": 664,
+          "height": 291
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/catalog-empty.png",
+          "sha256": "b73ec4a9c5b5d8c38c971e422ba638d3e0fcd4471a63a36630b09ad56d00e7d7",
+          "width": 1004,
+          "height": 681
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/creation-notification-error.png",
+          "sha256": "5e546b312f2e22026a1d526359851cf05ca864d702598eb1873e69b43d5cd629",
+          "width": 416,
+          "height": 281
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/creation-notification-long.png",
+          "sha256": "a0bfc82bfb1239f47093515da6473b75cc7139e022f9c17d3413a0cfd7f76413",
+          "width": 416,
+          "height": 1360
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/creation-notification-production.png",
+          "sha256": "6fde7db53823b4cb89173ea02a0407e7d3fc928ce25caaf1974b310af4b980e3",
+          "width": 416,
+          "height": 424
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/creation-notification-success.png",
+          "sha256": "ce64feb1d4767ef42aba0cc2053cee180842bb3eb8b70fa08749b0d820c1ab28",
+          "width": 416,
+          "height": 256
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/creation-notification-warning.png",
+          "sha256": "f3aa726c1df5fb3309358a34dfc62c32c82a13cc599b2831f21ab416884d930d",
+          "width": 416,
+          "height": 423
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/crop-accepted.png",
+          "sha256": "b57ce9e42223103a449aa4578a3f7bcf33fd6e7a73a5dddd07c6aa8f2684ed9d",
+          "width": 804,
+          "height": 321
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/crop-existing-sample-ready.png",
+          "sha256": "139975068b0b809a6a6d76886faf66f01301c6ef600cf964058db69ecd54c66c",
+          "width": 804,
+          "height": 321
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/crop-line-selected.png",
+          "sha256": "564e2263ab96caef98b623c0187c999ee0282825b501011594be7055a687de76",
+          "width": 804,
+          "height": 321
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/crop-sample-ready.png",
+          "sha256": "139975068b0b809a6a6d76886faf66f01301c6ef600cf964058db69ecd54c66c",
+          "width": 804,
+          "height": 321
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/CropByExampleActionWindow-normal.png",
+          "sha256": "755fb1bc0fd34c3104b1690ae099b3de448dda7c4f47fb9640d98a9372587b48",
+          "width": 327,
+          "height": 231
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/CropByExampleLineCreationWindow-minimum.png",
+          "sha256": "720eafc9972d1e9c9d075310ceea7eb6b5b289bb408661f67b75fc8425b8a69c",
+          "width": 744,
+          "height": 281
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/CropByExampleLineCreationWindow-normal.png",
+          "sha256": "9f4657f18badcf3d11f370f7798ee139083e6db91ca4692c268ce20009501b2b",
+          "width": 804,
+          "height": 321
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/decoration-tags-minimum.png",
+          "sha256": "15998606347f6da9c2a77c8d903f02bb1042a40b2a76ae8c5f235ef3ba6583b8",
+          "width": 844,
+          "height": 581
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/decoration-tags.png",
+          "sha256": "2854f3ca152cb78198c987583a9aea861066ff1eb9006d27de5744cbda1529a9",
+          "width": 1084,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/decoration-validation.png",
+          "sha256": "de00e462535e5fbc9a6733ea9283b7777b19e96cfcd8fd0e15be7a34535e525d",
+          "width": 1084,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationCropAdjustmentWindow-normal.png",
+          "sha256": "bad89ba0fadc366d42c6bcc1d5bd0e3848f5c7002599d29a84338b3cf3a22009",
+          "width": 516,
+          "height": 425
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationDecorationCatalogWindow-minimum.png",
+          "sha256": "b35149b47849224e31d7d685a57ea5b63c23542e55f0074550c62b4762751ba7",
+          "width": 804,
+          "height": 481
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationDecorationCatalogWindow-normal.png",
+          "sha256": "d85589ae9e06288301344ca73d487efd0e627b8c97778b3e6daeb916821adf36",
+          "width": 1004,
+          "height": 681
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationDecorationWindow-minimum.png",
+          "sha256": "c3877653264421e964d33983f448495d102a31748be4d2046b14660c4ed8b779",
+          "width": 844,
+          "height": 581
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationDecorationWindow-normal.png",
+          "sha256": "b81dcbf56616ee7502a6c6ba2772ebcb1a06a8d4ce81bb0e3b64d553037f2c43",
+          "width": 1084,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-minimum-bottom.png",
+          "sha256": "0397ff719c36404b47152da325dfe55d98eee00dd60b6292e1b3efe7ba8a50da",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-minimum.png",
+          "sha256": "057939f8963510a65b2b029cf58247f8c1f61b18441cd21fe4f1010327186ecf",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-normal.png",
+          "sha256": "928b20b9994cf0ba649e8af0b2e3bb73e71e458aee0e1286ed4056bce417ae9c",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab0-minimum.png",
+          "sha256": "f05d8f6e7ad186ac5a219e566321a5161b767ceef32d7b9574dca4c6e9ba8330",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab0.png",
+          "sha256": "928b20b9994cf0ba649e8af0b2e3bb73e71e458aee0e1286ed4056bce417ae9c",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab1-minimum.png",
+          "sha256": "bca092b2d041e772ae7c530d6595f7cfe14418cd10878466aec3814d27ebdc64",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab1.png",
+          "sha256": "a6b468d299b7c6235eb7987a41a1d8a0a175e3ff57c9de867d87a1a1b9da01d8",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab2-minimum.png",
+          "sha256": "98e89ad629620a5506665456c2815bd614fe52763771bb6768fc1a4a26b9b31d",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab2.png",
+          "sha256": "04e7e9af08f5503538d9dfbce3ba3ff0cfbeed621b9a6f8bc0f8c2522e7cb104",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab3-minimum.png",
+          "sha256": "057939f8963510a65b2b029cf58247f8c1f61b18441cd21fe4f1010327186ecf",
+          "width": 784,
+          "height": 611
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/ElevationSettingsWindow-tab3.png",
+          "sha256": "1dac837f09d0e5f85154776813bd3c228a2a35373a3960ebe755b7d1d42da441",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/LineGroupNextActionWindow-normal.png",
+          "sha256": "b6da5912fece6cbecfdc21991ec8819bedbb0a1bb7290301c96ac27949b1fd5f",
+          "width": 496,
+          "height": 252
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/LineGroupSelectionWindow-normal.png",
+          "sha256": "a208e20aefa1e4429c97e69a8fe4786eba789bfcfcbf838aff6c07133964707d",
+          "width": 470,
+          "height": 231
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/MultiRoomSelectionWindow-minimum.png",
+          "sha256": "702ff28a196d42acef5527c7e1c5be83f7ba9fbdddc9319b7037eb771706cd81",
+          "width": 944,
+          "height": 481
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/MultiRoomSelectionWindow-normal.png",
+          "sha256": "72ec4738cd9eb1ed82ea70e5f942e3ab31384a929dcebdb346890cf81a35a8d8",
+          "width": 1264,
+          "height": 701
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/notification-proposal.png",
+          "sha256": "306d6f9f60a2543ba03a53ea928d1bbb975796cf85ad67e311a4251d3a54f978",
+          "width": 416,
+          "height": 1000
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/rooms-long-last-row-minimum.png",
+          "sha256": "0711da1d627c0fbebfda349d94c2da46e71f8775aabedd65b6070ae05da1e886",
+          "width": 944,
+          "height": 481
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/rooms-wide.png",
+          "sha256": "17a2a9467e958972ba523b13727edc91ba6f090b844e26e38039ceb9206ec0f8",
+          "width": 1524,
+          "height": 481
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/settings-long-formula.png",
+          "sha256": "02a8a650c708a24d9e837336eaa3e53cbc2510cb340896f531476eb476d4a9e8",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/settings-render144.png",
+          "sha256": "2b76b373e0f8c20415cd27a65d7b2d569b261d8719fac001f6335accdc2ddedd",
+          "width": 1896,
+          "height": 1262
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/settings-selection-pending.png",
+          "sha256": "688dc632aacc7f4d3c1b04b584c8fbe9e6d5c45b792274680e160f726372cfb1",
+          "width": 1264,
+          "height": 841
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/sessions/shared-progress.png",
+          "sha256": "1163f004fc7264b031e0add15fd34864f33af38fb98f3929e5ede0b51b267800",
+          "width": 504,
+          "height": 246
+        }
+      ],
+      "logSha256": "bb8b87bc9d846eeab9f90d98dcfd7405a9328a2709f3257e19e012bdfc5dc1c3"
+    }
+  },
+  "applicationHostDictionaries": 0,
+  "nativeDpi": 96,
+  "renderDpi": 96,
+  "installationPerformed": false,
+  "sources": {
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": "f31117af289cfc47cf3c4ca262088dee24a790092644186c451609e204c87e32",
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.xaml": "bad4f6ed1e4293f2656e26c75cc6cda28cc56ad2050313b91a64888e0b3c82ed",
+    "SAB/UI/Styles/SABFluentLight.xaml": "eec112739368840b1f4b75c5b65b9aad9b857d6424eea68a5e3cb999b9f9eeeb",
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": "82b5658a0c791f7e906df1fdd8d308a2f6f9fe0d5f030f24cba642cb5b6c9f23",
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": "28b52cfedb0c3ad8858a34c5a2d1f985ddecc733beaa518907ab63a62f00ae6e",
+    "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs": "c4ab1b5b8453ee62bc9c3c2d7b7eb3b564664dd99c590300f1791a10979aed73",
+    "SAB/UI/Notifications/NotificationStack.cs": "aa4ff7a27d6f75cf3c0fa95321a3a788ab1a55515540684de5179ab82d18abe1",
+    "SAB/Properties/AssemblyInfo.cs": "c1d8d31f4702c273affaf38a736e7f12066532f9fad020861f5db38c6014c3ce",
+    "SAB/SAB.csproj": "32bdbadee89b77f241024e5196bc46d0a108f3e767e63417cdccf8eb22d311fc",
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.cs": "a66659ad4b586bdb236b17fc2571174d0d599c4cc080fc2ccda34b96483b8486"
+  },
+  "testSources": {
+    "Tools/UiShowcase/ElevationHotfixPreview.cs": "6d9b5490d9b3011e0768e70cabf2f7082ac99d82442fdfdf80a95f336a3c5135",
+    "Tools/UiShowcase/SourcePreview.cs": "c4d5ef82192ae7bfc6c5bdf46b4b12fd8730609ec3bd8c844d1f0575974b21ff",
+    "Tools/UiShowcase/NotificationPreview.cs": "6fb99348e0269ca2b0d41e8edab57b5ba1869bb4a1836baa2340735d8824a66a",
+    "Tools/UiShowcase/GenerateElevationPreview.py": "1c3066f59d0a40abadea6a280a6e265791d9580a059a0c33c48a8b7bae85aca7",
+    "Tools/UiShowcase/Sab.UiShowcase.csproj": "5fdbb6e7056a3e4890148f821057dcbe664e83ecd15269787c6ad05dac16e4a9"
+  },
+  "binarySha256": "767f881edb282711072ca2c77a3057250e77c4e2d3e4bfbf3bd205afa7ac1dec",
+  "hostSha256": "6f31f53fee29428b0dfc9a4a097686c2eee5d561d2044a2c33adf257a7e0aefd",
+  "unverified": [
+    "Actual Revit creation/transactions/rollback/native selection/ExternalEvent",
+    "Physical keyboard/accessibility",
+    "OS DPI/monitor transitions",
+    "Native API22 runtime"
+  ]
+}

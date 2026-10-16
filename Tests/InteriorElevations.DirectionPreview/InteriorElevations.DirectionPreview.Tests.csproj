@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Geometry/ContourDirectionGeometry.cs" Link="ContourDirectionGeometry.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Elevations/ElevationMarkerService.cs" Link="ElevationMarkerService.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Elevations/ElevationCropService.cs" Link="ElevationCropService.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewService.cs" Link="ElevationDirectionPreviewService.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewController.cs" Link="ElevationDirectionPreviewController.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Sheets/ElevationDetailNumberService.cs" Link="ElevationDetailNumberService.cs" />
+    <Compile Include="../../SAB/Cls_InteriorElevations/Models/ElevationLineData.cs" Link="ElevationLineData.cs" />
+  </ItemGroup>
+</Project>

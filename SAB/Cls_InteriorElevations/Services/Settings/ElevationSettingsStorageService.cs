@@ -9,7 +9,7 @@ namespace SAB.InteriorElevations.Services.Settings
 {
     public class ElevationSettingsStorageService
     {
-        private const int CurrentSchemaVersion = 14;
+        private const int CurrentSchemaVersion = 15;
         private readonly string _settingsFilePath;
         private readonly string _markPreferencesFilePath;
 
@@ -124,6 +124,9 @@ namespace SAB.InteriorElevations.Services.Settings
             settings.RightOffsetMm = persistedSettings.RightOffsetMm;
             settings.ViewDepthMm = persistedSettings.ViewDepthMm;
             settings.MarkerOffsetMm = persistedSettings.MarkerOffsetMm;
+            settings.DetailNumberPrefix = persistedSettings.DetailNumberPrefix ?? string.Empty;
+            settings.DetailNumberSuffix = persistedSettings.SchemaVersion >= 15
+                ? persistedSettings.DetailNumberSuffix ?? string.Empty : "-Р";
             settings.GridTopExtensionPaperMm = persistedSettings.SchemaVersion >= 12
                 ? persistedSettings.GridTopExtensionPaperMm
                 : 5.0;
@@ -237,6 +240,8 @@ namespace SAB.InteriorElevations.Services.Settings
             persistedSettings.RightOffsetMm = settings.RightOffsetMm;
             persistedSettings.ViewDepthMm = settings.ViewDepthMm;
             persistedSettings.MarkerOffsetMm = settings.MarkerOffsetMm;
+            persistedSettings.DetailNumberPrefix = settings.DetailNumberPrefix ?? string.Empty;
+            persistedSettings.DetailNumberSuffix = settings.DetailNumberSuffix ?? string.Empty;
             persistedSettings.GridTopExtensionPaperMm = settings.GridTopExtensionPaperMm;
             persistedSettings.GridBottomExtensionPaperMm = settings.GridBottomExtensionPaperMm;
             persistedSettings.ElevationNamePart1 = settings.ElevationNamePart1 ?? string.Empty;
@@ -293,6 +298,10 @@ namespace SAB.InteriorElevations.Services.Settings
 
         private class PersistedElevationSettings
         {
+            public string DetailNumberPrefix { get; set; }
+
+            public string DetailNumberSuffix { get; set; }
+
             public int SchemaVersion { get; set; }
 
             public long ViewTemplateIdValue { get; set; }

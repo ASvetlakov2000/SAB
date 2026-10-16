@@ -1,0 +1,301 @@
+PASS Application starts with zero host/legacy resource dictionaries
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.PanelBackground
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.Border
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.BorderWeak
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.Text
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.TextSecondary
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.Accent
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.Success
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.Warning
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.Error
+PASS Notification resource resolves in scoped dictionary alone: SabBrush.DisabledBackground
+PASS Notification resource resolves in scoped dictionary alone: SabNotificationProgressStyle
+PASS Notification resource resolves in scoped dictionary alone: SabNotificationTextStyle
+PASS Notification resource resolves in scoped dictionary alone: SabNotificationCodeStyle
+PASS Actual card uses its own scoped dictionary: Success
+CAPTURE notification-clean-success | 416x176,52 DIP | nativeDpi=96 | actualType=System.Windows.Window | actualAssembly=PresentationFramework
+PASS Actual card uses its own scoped dictionary: Warning
+PASS Clean-scope warning copy retains complete original warning: Warning
+CAPTURE notification-clean-warning | 416x523,92 DIP | nativeDpi=96 | actualType=System.Windows.Window | actualAssembly=PresentationFramework
+PASS Actual card uses its own scoped dictionary: Error
+PASS Clean-scope warning copy retains complete original warning: Error
+CAPTURE notification-clean-error | 416x523,92 DIP | nativeDpi=96 | actualType=System.Windows.Window | actualAssembly=PresentationFramework
+PASS Failed new stack construction closes and removes incomplete window
+PASS Successful notification recovers after failed construction without stale stack entry
+PASS Actual delivery uses primary on success
+PASS Fallback receives original presentation failure
+PASS Primary UI failure is contained after completed operation
+PASS Secondary fallback/log failure does not escape to command failure path
+PASS Actual selection snapshot retains original room/line values after live row changes
+PASS Actual source selections map all rows and true line counts
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+CAPTURE main-normal | 1024x1066 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Main width remains800DIP with100long room naming contexts
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+CAPTURE main-minimum-many-selections | 784x611 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+CAPTURE main-minimum-tab-0 | 784x611 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+CAPTURE main-minimum-tab-1 | 784x611 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+CAPTURE main-minimum-tab-2 | 784x611 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+CAPTURE main-minimum-tab-3 | 784x611 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Footer order and common top axis: Инструкция
+PASS Footer button fits actual viewport: Инструкция
+PASS Footer common34DIP height: Инструкция
+PASS Footer order and common top axis: Отмена
+PASS Footer button fits actual viewport: Отмена
+PASS Footer common34DIP height: Отмена
+PASS Footer order and common top axis: Список помещений
+PASS Footer button fits actual viewport: Список помещений
+PASS Footer common34DIP height: Список помещений
+PASS Footer order and common top axis: Выбрать линии
+PASS Footer button fits actual viewport: Выбрать линии
+PASS Footer common34DIP height: Выбрать линии
+PASS Footer order and common top axis: Создать развёртки
+PASS Footer button fits actual viewport: Создать развёртки
+PASS Footer common34DIP height: Создать развёртки
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Footer neighboring action gap8DIP
+PASS Nonempty footer status occupies separate row above actions
+PASS Footer status explicit row0
+PASS Long room/line selection summary is absent from main layout
+PASS Exactly five requested main footer buttons
+PASS Long validation text scrolls within bounded footer row
+CAPTURE main-minimum-validation | 784x611 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSettingsWindow | actualAssembly=SAB
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 100
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+PASS Footer list button opens read-only child owned by current settings
+CAPTURE list-from-footer | 844x481 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS Closing list returns same settings window/VM without selection or creation action
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 0
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+CAPTURE list-0-normal | 844x481 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 0
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+CAPTURE list-0-minimum | 724x381 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 3
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+CAPTURE list-3-normal | 724x381 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 3
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+PASS Last selected room fully fits below header at minimum: 3
+PASS Truncated long room name exposes full actual text via tooltip
+CAPTURE list-3-minimum | 724x381 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 100
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+CAPTURE list-100-normal | 724x381 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS Read-only list is actual production SAB.dll class
+PASS Room list disables editing/add/delete
+PASS Room list has six data columns and no action column
+PASS Room list retains every detached selected row: 100
+PASS Full room-list header fits measured content width: №
+PASS Full room-list header fits measured content width: Номер помещения
+PASS Full room-list header fits measured content width: Имя помещения
+PASS Full room-list header fits measured content width: Контуры
+PASS Full room-list header fits measured content width: Линии
+PASS Full room-list header fits measured content width: Статус
+PASS Read-only table owns its outline
+PASS Read-only list has only instruction and close buttons
+PASS Snapshot property values are detached strings/counts, no Revit elements
+PASS Snapshot cannot be edited through public setters
+PASS Last selected room fully fits below header at minimum: 100
+PASS Truncated long room name exposes full actual text via tooltip
+CAPTURE list-100-minimum | 724x381 DIP | nativeDpi=96 | actualType=SAB.InteriorElevations.Views.ElevationSelectionListWindow | actualAssembly=SAB
+PASS All actual surfaces completed without application legacy dictionaries
+NOT RUN actual Revit creation/transactions/rollback/native picking; physical keyboard/accessibility; OS DPI/monitor transitions.
+COMPLETED

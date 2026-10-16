@@ -60,97 +60,107 @@ namespace SAB.InteriorElevations.Services.Elevations
                 viewData.Index = lineData.Index;
                 viewData.WallSequenceIndex = lineData.WallSequenceIndex;
                 viewData.IsSplitWallContinuation = lineData.IsSplitWallContinuation;
+                viewData.PlannedDetailNumber = lineData.PlannedDetailNumber;
 
                 try
                 {
-                    ElementId markerElementId;
-                    ViewSection createdView = _markerService.CreateElevationForLine(
-                        document,
-                        activePlanView,
-                        lineData,
-                        settings.ElevationViewFamilyTypeId,
-                        settings.ViewScale,
-                        out markerElementId,
-                        warnings);
-
-                    if (createdView == null)
+                    using (var lineAttempt = new SubTransaction(document))
                     {
-                        viewData.IsCreated = false;
-                        viewData.FailureReason = "Вид развертки не был создан маркером.";
-                        result.FailedViews.Add(viewData);
-                        continue;
-                    }
+                        lineAttempt.Start();
+                        ElementId markerElementId;
+                        ViewSection createdView = _markerService.CreateElevationForLine(
+                            document,
+                            activePlanView,
+                            lineData,
+                            settings.ElevationViewFamilyTypeId,
+                            settings.ViewScale,
+                            out markerElementId,
+                            warnings);
 
-                    // Блок именования: последовательность 1-2, 2-3, 3-4 и т.д.
-                    int startPointNumber = lineData.Index;
-                    int endPointNumber = lineData.EndIndex > 0
-                        ? lineData.EndIndex
-                        : lineData.Index + 1;
-
-                    string uniqueViewName = _namingService.GenerateUniqueElevationViewName(
-                        lineData.RoomData,
-                        startPointNumber,
-                        endPointNumber,
-                        settings);
-                    createdView.Name = uniqueViewName;
-
-                    bool templateApplied = false;
-                    if (settings.ViewTemplateId != null && settings.ViewTemplateId != ElementId.InvalidElementId)
-                    {
-                        try
+                        if (createdView == null)
                         {
-                            createdView.ViewTemplateId = settings.ViewTemplateId;
-                            templateApplied = true;
+                            viewData.IsCreated = false;
+                            viewData.FailureReason = "Вид развертки не был создан маркером.";
+                            result.FailedViews.Add(viewData);
+                            continue;
                         }
-                        catch (Exception templateException)
+
+                        // Блок именования: последовательность 1-2, 2-3, 3-4 и т.д.
+                        int startPointNumber = lineData.Index;
+                        int endPointNumber = lineData.EndIndex > 0
+                            ? lineData.EndIndex
+                            : lineData.Index + 1;
+
+                        string uniqueViewName = _namingService.GenerateUniqueElevationViewName(
+                            lineData.RoomData,
+                            startPointNumber,
+                            endPointNumber,
+                            settings);
+                        createdView.Name = uniqueViewName;
+
+                        bool templateApplied = false;
+                        if (settings.ViewTemplateId != null && settings.ViewTemplateId != ElementId.InvalidElementId)
                         {
-                            if (warnings != null)
+                            try
                             {
-                                warnings.Add(
-                                    "Не удалось применить шаблон к виду " + uniqueViewName +
-                                    ": " + templateException.Message);
+                                createdView.ViewTemplateId = settings.ViewTemplateId;
+                                templateApplied = true;
+                            }
+                            catch (Exception templateException)
+                            {
+                                if (warnings != null)
+                                {
+                                    warnings.Add(
+                                        "Не удалось применить шаблон к виду " + uniqueViewName +
+                                        ": " + templateException.Message);
+                                }
                             }
                         }
+
+                        string titleOnSheet = _namingService.GenerateElevationTitleOnSheet(
+                            lineData.RoomData,
+                            startPointNumber,
+                            endPointNumber,
+                            settings);
+                        TryApplyTitleOnSheet(createdView, titleOnSheet, warnings);
+
+                        // Блок применения масштаба:
+                        // если масштаб контролируется текущим шаблоном вида, значение из окна не применяем.
+                        TryApplyScaleRespectTemplate(document, createdView, settings.ViewScale, warnings);
+
+                        bool cropApplied = _cropService.TryApplyCrop(createdView, lineData, settings, warnings);
+
+                        document.Regenerate();
+                        _gridExtentService.ApplyToView(document, createdView, settings, warnings);
+
+                        // После применения шаблона повторно включаем отображение границы обрезки.
+                        try
+                        {
+                            createdView.CropBoxVisible = true;
+                        }
+                        catch
+                        {
+                            // Если шаблон заблокировал параметр, оставляем как есть без остановки команды.
+                        }
+
+                        document.Regenerate();
+                        if (!_markerService.IsDirectionAligned(createdView, lineData.InsideNormal))
+                            throw new InvalidOperationException("Направление фасада изменилось после настройки вида. Создание этой развёртки отменено.");
+                        if (lineAttempt.Commit() != TransactionStatus.Committed)
+                            throw new InvalidOperationException("Revit не подтвердил создание развёртки.");
+                        viewData.ViewId = createdView.Id;
+                        viewData.ViewSection = createdView;
+                        viewData.ViewName = uniqueViewName;
+                        viewData.IsCreated = true;
+                        viewData.CropApplied = cropApplied;
+                        viewData.TemplateApplied = templateApplied;
+                        viewData.StartCornerNumber = startPointNumber;
+                        viewData.EndCornerNumber = endPointNumber;
+                        viewData.MarkerElementId = markerElementId;
+                        viewData.AlignmentModelPoint = lineData.MidPoint;
+
+                        result.CreatedViews.Add(viewData);
                     }
-
-                    string titleOnSheet = _namingService.GenerateElevationTitleOnSheet(
-                        lineData.RoomData,
-                        startPointNumber,
-                        endPointNumber,
-                        settings);
-                    TryApplyTitleOnSheet(createdView, titleOnSheet, warnings);
-
-                    // Блок применения масштаба:
-                    // если масштаб контролируется текущим шаблоном вида, значение из окна не применяем.
-                    TryApplyScaleRespectTemplate(document, createdView, settings.ViewScale, warnings);
-
-                    bool cropApplied = _cropService.TryApplyCrop(createdView, lineData, settings, warnings);
-
-                    document.Regenerate();
-                    _gridExtentService.ApplyToView(document, createdView, settings, warnings);
-
-                    // После применения шаблона повторно включаем отображение границы обрезки.
-                    try
-                    {
-                        createdView.CropBoxVisible = true;
-                    }
-                    catch
-                    {
-                        // Если шаблон заблокировал параметр, оставляем как есть без остановки команды.
-                    }
-
-                    viewData.ViewId = createdView.Id;
-                    viewData.ViewSection = createdView;
-                    viewData.ViewName = uniqueViewName;
-                    viewData.IsCreated = true;
-                    viewData.CropApplied = cropApplied;
-                    viewData.TemplateApplied = templateApplied;
-                    viewData.StartCornerNumber = startPointNumber;
-                    viewData.EndCornerNumber = endPointNumber;
-                    viewData.MarkerElementId = markerElementId;
-                    viewData.AlignmentModelPoint = lineData.MidPoint;
-
-                    result.CreatedViews.Add(viewData);
                 }
                 catch (Exception exception)
                 {

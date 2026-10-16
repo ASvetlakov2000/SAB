@@ -15,19 +15,16 @@ namespace SAB.Services.PluginResources
         private const string FamiliesManifestFileName = "families.manifest.tsv";
         private const string FamilyCacheRootFolderName = "SAB";
         private const string FamilyCacheFolderName = "FamilyCache";
-        private static readonly HashSet<string> ManagedFamiliesToReload =
-            new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "SAB_Марка угла_План",
-                "SAB_Марка угла_Развертки"
-            };
+        public const string PlanCornerMarkFamilyName = "SAB_Марка угла_План";
+        public const string SheetCornerMarkFamilyName = "SAB_Марка угла_Развертки";
 
         public IList<string> GetCommandFamilyFilePaths(Type commandType)
         {
             return GetCommandFamilyFilePaths(commandType, null);
         }
 
-        private IList<string> GetCommandFamilyFilePaths(Type commandType, IList<string> warnings)
+        private IList<string> GetCommandFamilyFilePaths(Type commandType, IList<string> warnings,
+            ISet<string> skippedFamilies = null)
         {
             List<string> familyFilePaths = new List<string>();
 
@@ -50,7 +47,8 @@ namespace SAB.Services.PluginResources
                     manifestPath,
                     commandType,
                     familyFilePaths,
-                    warnings);
+                    warnings,
+                    skippedFamilies);
 
                 familyFilePaths.Sort(StringComparer.OrdinalIgnoreCase);
                 return familyFilePaths;
@@ -65,6 +63,7 @@ namespace SAB.Services.PluginResources
             string[] files = Directory.GetFiles(commandFolderPath, "*.rfa", SearchOption.AllDirectories);
             for (int index = 0; index < files.Length; index++)
             {
+                if (skippedFamilies != null && skippedFamilies.Contains(Path.GetFileNameWithoutExtension(files[index]))) continue;
                 familyFilePaths.Add(files[index]);
             }
 
@@ -90,6 +89,35 @@ namespace SAB.Services.PluginResources
 
         public void EnsureCommandFamiliesLoaded(Document document, Type commandType, IList<string> warnings)
         {
+            EnsureCommandFamiliesLoaded(document, commandType, warnings, null);
+        }
+
+        public void EnsureCornerMarkFamiliesLoaded(Document document, Type commandType,
+            ElementId preferredPlanTypeId, ElementId savedPlanTypeId,
+            ElementId preferredSheetTypeId, ElementId savedSheetTypeId, IList<string> warnings)
+        {
+            var skipped = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (HasAnnotationType(document, preferredPlanTypeId) || HasAnnotationType(document, savedPlanTypeId) ||
+                FamilyExists(document, PlanCornerMarkFamilyName)) skipped.Add(PlanCornerMarkFamilyName);
+            if (HasAnnotationType(document, preferredSheetTypeId) || HasAnnotationType(document, savedSheetTypeId) ||
+                FamilyExists(document, SheetCornerMarkFamilyName)) skipped.Add(SheetCornerMarkFamilyName);
+            if (skipped.Count == 2) return;
+            // The direction annotation is loaded by its own preview session only.
+            skipped.Add("SAB_Развертки_Направление");
+            EnsureCommandFamiliesLoaded(document, commandType, warnings, skipped);
+        }
+
+        private bool HasAnnotationType(Document document, ElementId typeId)
+        {
+            FamilySymbol symbol = document != null && typeId != null && typeId != ElementId.InvalidElementId
+                ? document.GetElement(typeId) as FamilySymbol : null;
+            return symbol != null && symbol.IsValidObject && symbol.Category != null &&
+                symbol.Category.Id.IntegerValue == (int)BuiltInCategory.OST_GenericAnnotation;
+        }
+
+        private void EnsureCommandFamiliesLoaded(Document document, Type commandType, IList<string> warnings,
+            ISet<string> skippedFamilies)
+        {
             List<string> debugMessages = new List<string>();
             int warningsCountBefore = warnings != null ? warnings.Count : 0;
 
@@ -113,7 +141,7 @@ namespace SAB.Services.PluginResources
             AddDebug(debugMessages, "Папка семейств: " + GetCommandFamiliesFolderPath(commandType));
             AddDebug(debugMessages, "Манифест: " + Path.Combine(GetFamiliesRootFolderPath(), FamiliesManifestFileName));
 
-            IList<string> familyFilePaths = GetCommandFamilyFilePaths(commandType, warnings);
+            IList<string> familyFilePaths = GetCommandFamilyFilePaths(commandType, warnings, skippedFamilies);
             AddDebug(debugMessages, "Файлов к загрузке: " + familyFilePaths.Count);
 
             if (familyFilePaths.Count == 0)
@@ -157,7 +185,8 @@ namespace SAB.Services.PluginResources
             string manifestPath,
             Type commandType,
             IList<string> familyFilePaths,
-            IList<string> warnings)
+            IList<string> warnings,
+            ISet<string> skippedFamilies)
         {
             try
             {
@@ -189,6 +218,7 @@ namespace SAB.Services.PluginResources
                         familiesRootFolderPath,
                         packageRelativePath.Replace('\\', Path.DirectorySeparatorChar));
                     string originalFileName = Path.GetFileName(originalRelativePath);
+                    if (skippedFamilies != null && skippedFamilies.Contains(Path.GetFileNameWithoutExtension(originalFileName))) continue;
 
                     string preparedFamilyFilePath = PrepareFamilyFileForLoading(
                         installedFamilyFilePath,
@@ -304,7 +334,7 @@ namespace SAB.Services.PluginResources
         {
             AddDebug(debugMessages, "Проверка файла: " + familyFilePath);
 
-            if (document == null || string.IsNullOrWhiteSpace(familyFilePath) || !File.Exists(familyFilePath))
+            if (document == null || string.IsNullOrWhiteSpace(familyFilePath))
             {
                 AddWarning(warnings, "Файл семейства не найден: " + familyFilePath);
                 AddDebug(debugMessages, "Файл не найден.");
@@ -315,19 +345,20 @@ namespace SAB.Services.PluginResources
             AddDebug(debugMessages, "Ожидаемое имя семейства: " + familyName);
 
             bool familyAlreadyExists = FamilyExists(document, familyName);
-            bool isRevit2022 = document.Application != null &&
-                string.Equals(document.Application.VersionNumber, "2022", StringComparison.OrdinalIgnoreCase);
-            bool reloadManagedFamily = isRevit2022 && ManagedFamiliesToReload.Contains(familyName);
-            if (familyAlreadyExists && !reloadManagedFamily)
+            if (familyAlreadyExists)
             {
                 AddDebug(debugMessages, "Семейство уже есть в документе.");
                 return;
             }
 
+            if (!File.Exists(familyFilePath))
+            {
+                AddWarning(warnings, "Файл семейства не найден: " + familyFilePath);
+                return;
+            }
+
             Family loadedFamily;
-            bool loaded = familyAlreadyExists
-                ? document.LoadFamily(familyFilePath, new ManagedFamilyLoadOptions(), out loadedFamily)
-                : document.LoadFamily(familyFilePath, out loadedFamily);
+            bool loaded = document.LoadFamily(familyFilePath, out loadedFamily);
             AddDebug(debugMessages, "LoadFamily: " + loaded);
             AddDebug(debugMessages, "Загруженное семейство: " + (loadedFamily != null ? loadedFamily.Name : "<null>"));
 
@@ -368,26 +399,6 @@ namespace SAB.Services.PluginResources
             }
 
             return false;
-        }
-
-        private class ManagedFamilyLoadOptions : IFamilyLoadOptions
-        {
-            public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
-            {
-                overwriteParameterValues = true;
-                return true;
-            }
-
-            public bool OnSharedFamilyFound(
-                Family sharedFamily,
-                bool familyInUse,
-                out FamilySource source,
-                out bool overwriteParameterValues)
-            {
-                source = FamilySource.Family;
-                overwriteParameterValues = true;
-                return true;
-            }
         }
 
         private string GetFamiliesRootFolderPath()

@@ -39,7 +39,7 @@ namespace SAB.UiShowcase
             using(var stream=File.Create(Path.Combine(output,name+".png")))png.Save(stream);
             Log.Add("CAPTURE "+name+" | "+body.ActualWidth+"x"+body.ActualHeight+" DIP | actualType="+w.GetType().FullName+" | actualAssembly="+w.GetType().Assembly.GetName().Name);
         }
-        static VM.ElevationSettingsViewModel Settings()
+        internal static VM.ElevationSettingsViewModel Settings()
         {
             var vm=new VM.ElevationSettingsViewModel(null);
             foreach(var name in new[]{"ElevationViewFamilyTypes","ViewTemplates","TitleBlockTypes","ViewportTypes","PlanCornerMarkTypes","SheetCornerMarkTypes","RoomPlanViewTemplates","RoomPlanRoomTagTypes","ExistingSheets"})

@@ -42,3 +42,17 @@ Build-Msi.bat Release завершён для2022/2023/2024; автоматич�
 
 
 Актуальные последние правки:635PASS/44PNG,70ID;3selection cards, spatial dashed crop, positive-only creation notification with separate warnings. Independent category creation/storage and selected-role replacement are in production;8Elevation deltas+2optional shared warning files packaged for2022–24.85baseline unchanged. UI suite/416-16proposal migration pending. Previous565/41 and526/47 references describe history. See Elevations-Verification/Report and current Installer-Payload.
+
+
+Текущий bounded hotfix1.1.1: [компоновка/порядокfooter](../../Docs/Ui/DesignSystem/ElevationHotfix-Layout.md), [actual captures](../../Docs/Ui/DesignSystem/ElevationHotfix.html), [verification](../../Docs/Ui/DesignSystem/ElevationHotfix-Verification.md). `Build.ps1 -ElevationHotfix` запускает actual классы с чистыми Application resources;17actualPNG,9shared notificationPNG и44source-derived sessionPNG сохраняются отдельно от1.1.0. Production включает новый read-only ElevationSelectionListWindow и immutable snapshot;2mode capsules/mainMin800, listMin740×420; footer status row0, actions row1. Установка и Revitexecution NOT RUN.
+
+
+Текущие исправления параметризации1.1.2: [layout](../../Docs/Ui/DesignSystem/ParameterCheck-Layout.md), [verification](../../Docs/Ui/DesignSystem/ParameterCheck-Verification.md), [actualcaptures](../../Docs/Ui/DesignSystem/ParameterCheck.html). `Build.ps1 -ParameterChecks` — actual90/14, separateactualregression81/27 сcleanresources; source71boundedchecks. ParameterPicker gates actualedit events, CheckCategoriesWindow Fluentfooter/noaccentstub/min680×760, fullcatalog with independentCheckCategoryIds. ExistingCheckcommand/ribbonID retained; newToolkitCheckSettingsCommand; highlightingreports removed, onlyactivationnotice. NativeRevit/physical/OS/installation NOTRUN.
+
+Нумерация развёрток15.10: actual ElevationSettingsWindow содержит буквальные поля префикса/суффикса в карточке наименований. Общий суффикс группы устраняет коллизии без изменения source index; настройки сохраняютсяschema15. [Scope/evidence](../../Docs/Ui/DesignSystem/ElevationNumbering-Report.json).
+
+
+Direction preview15.10: actual settings entry and compact modeless controller surface; the drawing remains in Revit. [Bounded scope and lifecycle](../../Docs/Ui/DesignSystem/ElevationDirectionPreview-Layout.md); live Revit/RFA NOT RUN.
+
+
+Preview runtime1.1.3: [source identity, fixed footer and virtual closure](../../Docs/Ui/DesignSystem/ElevationPreviewRuntime-Layout.md). Live Revit, physical focus/picking and installation NOT RUN.

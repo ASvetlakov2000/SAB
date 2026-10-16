@@ -1,0 +1,51 @@
+{
+  "authorization": "Direct runtime feedback and latest user footer/list order13October2026",
+  "baseCommit": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "version": "1.1.1",
+  "files": {
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
+      "before": "3e247ec18b436ed567d1ba1007d2f2993537b015e40854a6a786e021b91f269f",
+      "after": "f31117af289cfc47cf3c4ca262088dee24a790092644186c451609e204c87e32"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.xaml": {
+      "before": null,
+      "after": "bad4f6ed1e4293f2656e26c75cc6cda28cc56ad2050313b91a64888e0b3c82ed"
+    },
+    "SAB/UI/Styles/SABFluentLight.xaml": {
+      "before": "1c4fd0c2feaf9554b2b44d1163dbc8c0c0aec95a325b515bed7e69998f25e9c3",
+      "after": "eec112739368840b1f4b75c5b65b9aad9b857d6424eea68a5e3cb999b9f9eeeb"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": {
+      "before": "8bb72ae536ae4b1196c30b4fad8a40a59aa652e4c584561a6c082531baf19ddf",
+      "after": "82b5658a0c791f7e906df1fdd8d308a2f6f9fe0d5f030f24cba642cb5b6c9f23"
+    },
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "cf6f73108ef5252b10179ae4d0956b3abbfc947ebb545ebe5b334ccb7ee5d5ee",
+      "after": "28b52cfedb0c3ad8858a34c5a2d1f985ddecc733beaa518907ab63a62f00ae6e"
+    },
+    "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs": {
+      "before": "599aa1ff37680e85c3b4b9b7c526bb5cda326ef37438461abfceeb4e030f49c3",
+      "after": "c4ab1b5b8453ee62bc9c3c2d7b7eb3b564664dd99c590300f1791a10979aed73"
+    },
+    "SAB/UI/Notifications/NotificationStack.cs": {
+      "before": "3e1e9e0cfa504034830510f61aa889bf3afbbe738ffa4b2021e8d9d5d18b08cf",
+      "after": "aa4ff7a27d6f75cf3c0fa95321a3a788ab1a55515540684de5179ab82d18abe1"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "9cef747f5ee937af4b69d9127922cbfe7136189daef8e40ccb683bb3de0b1e7e",
+      "after": "c1d8d31f4702c273affaf38a736e7f12066532f9fad020861f5db38c6014c3ce"
+    },
+    "SAB/SAB.csproj": {
+      "before": "248214a35b7689e1212f7983384f870b18a41e3818a2f8db130663cd7e3731b5",
+      "after": "32bdbadee89b77f241024e5196bc46d0a108f3e767e63417cdccf8eb22d311fc"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.cs": {
+      "before": null,
+      "after": "a66659ad4b586bdb236b17fc2571174d0d599c4cc080fc2ccda34b96483b8486"
+    }
+  },
+  "projectEntries": [
+    "    <Compile Include=\"Cls_InteriorElevations\\Views\\ElevationSelectionListWindow.cs\" />\n",
+    "    <Content Include=\"Cls_InteriorElevations\\Views\\ElevationSelectionListWindow.xaml\">\n      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>\n    </Content>\n"
+  ]
+}

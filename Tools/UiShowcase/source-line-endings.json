@@ -34,8 +34,8 @@
       "lfSha256": "856924cbdb9801d099d74d543136622595bbe350d801dc243ec390e9ee2aba70"
     },
     "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
-      "rawSha256": "cf6f73108ef5252b10179ae4d0956b3abbfc947ebb545ebe5b334ccb7ee5d5ee",
-      "lfSha256": "6a304f3726d0e1f4b7eabe37ee8b01fd17f5d345a6dee8348cefdaaf8491fda0"
+      "rawSha256": "28b52cfedb0c3ad8858a34c5a2d1f985ddecc733beaa518907ab63a62f00ae6e",
+      "lfSha256": "ae74839c0de0fb464c5a79987b7dba5cdeeac1b3d1f4adb101f5656b5faf891b"
     },
     "SAB/Cls_InteriorElevations/Commands/DecorateInteriorElevationsCommand.cs": {
       "rawSha256": "266c7b18a157b6c5a6196c8e8a92e8316115480f01f2ea9f361e5cdcfcf82f58",
@@ -206,8 +206,8 @@
       "lfSha256": "2e69eed7d9fbad09dd674e8ee3581931104f32dc9a024b657bd2082112c7a98b"
     },
     "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs": {
-      "rawSha256": "599aa1ff37680e85c3b4b9b7c526bb5cda326ef37438461abfceeb4e030f49c3",
-      "lfSha256": "23df8766960264266613e18419fb26d0cb2a60e16fa8aea948e351b0cc5582f2"
+      "rawSha256": "c4ab1b5b8453ee62bc9c3c2d7b7eb3b564664dd99c590300f1791a10979aed73",
+      "lfSha256": "ab075574c699667056ac66fe443a86acf4497da7f3b47e55132a00774e236fc8"
     },
     "SAB/Cls_InteriorElevations/Services/Rooms/RoomDetectionService.cs": {
       "rawSha256": "289f58e23e3ee5b2ee593f4f3fba482aa666870500094b366816253fe282ac5e",
@@ -346,12 +346,12 @@
       "lfSha256": "a2810c8e49f08620bbe0b354ab99c95e7edc327382c11d5fde4be07808ef949a"
     },
     "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
-      "rawSha256": "3e247ec18b436ed567d1ba1007d2f2993537b015e40854a6a786e021b91f269f",
-      "lfSha256": "6b467767eafa25486f96f2b92baa37082046022324ec992c98773c62126fa91f"
+      "rawSha256": "f31117af289cfc47cf3c4ca262088dee24a790092644186c451609e204c87e32",
+      "lfSha256": "d0df755c98ad1abefdd83253b09d63b648c92ece69b07e568dda1989c9efd4b7"
     },
     "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": {
-      "rawSha256": "8bb72ae536ae4b1196c30b4fad8a40a59aa652e4c584561a6c082531baf19ddf",
-      "lfSha256": "48df396b42edcb6287effc4434fb4c03276ef7069f946177683de41167ff8a09"
+      "rawSha256": "82b5658a0c791f7e906df1fdd8d308a2f6f9fe0d5f030f24cba642cb5b6c9f23",
+      "lfSha256": "90c3701928a62cf3110bb03985daabe8db4b5b0a70b40db35c6be6918d356787"
     },
     "SAB/Cls_InteriorElevations/Views/LineGroupNextActionWindow.xaml": {
       "rawSha256": "e27a239ffb2b439c9adf63e1790e60d83f396d5989108ce92e24656c47313a0b",
@@ -386,12 +386,12 @@
       "lfSha256": "7882e3e10f84d91ea5375e46357ee6898b645f56ab65403017e42bc5651b15e5"
     },
     "SAB/Cls_ParameterTools/Commands.cs": {
-      "rawSha256": "eb0e0442ffe47bf07aa3011f226373e77ebd1cf3438fa9e177b2182fa7a38120",
-      "lfSha256": "4245dae28ceb6ab500f0a166de87c717233e7421fffcce93e92ebcbf7e0ea5c5"
+      "rawSha256": "32386e4c2efab0b0a7460dca0eba774a233463cd475ebfe525a5464856d7c294",
+      "lfSha256": "0c8c9b2a332d36af798629280ea13bdf37d4e462d5d4e049f16cb56439f0cbb2"
     },
     "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs": {
-      "rawSha256": "6ca2c0660770aa57c3f0505cbbf99d65620d5efb6bef7c31cd10ec0048704cf7",
-      "lfSha256": "9ffc5f9eacf9dfce008bc48b69dc54a6e2120bdd8129a9b889a60a58b16437f5"
+      "rawSha256": "60f766e65a69db4b98061d2d0d52cb432825a80266ee365f674be871f7161375",
+      "lfSha256": "c22a9d58d67b3f02fed3fec1f8c51beacca5561c649973f3ef2e026853d85758"
     },
     "SAB/Cls_ParameterTools/UI/FluentTheme.cs": {
       "rawSha256": "b28114e85406b687a5e133baec16db2dd7a5c41a95a6aebc87d53a3845660150",
@@ -402,8 +402,8 @@
       "lfSha256": "fb876f3ec22b01f3266ca8b1e98a72af6d1776b778fe2edae18a603a7d1fe2ed"
     },
     "SAB/Cls_ParameterTools/UI/ParameterPicker.cs": {
-      "rawSha256": "13bbee84870109211b9ae96836c86d0577769669354c8b4303d71dd31b6653cf",
-      "lfSha256": "2941055209eddf6fc34e29c2e5e5f147690334c23fd9cafdcc967949b6e8aa75"
+      "rawSha256": "1a79a0a533de47734a13c481e7a39043c60127f2604aed645701fc058e3fc395",
+      "lfSha256": "2934f54be773f216a44212e9eeedf36ce5d0ee8963103b239ae7e19dc48b89d4"
     },
     "SAB/Cls_ParameterTools/UI/SettingsWindow.cs": {
       "rawSha256": "8e07aadf5b8a79dcff95176d19512c785538a0288c013b838203bb81063554b6",
@@ -414,16 +414,16 @@
       "lfSha256": "dc38d8b361b55bc6c46e49e811320252d50a759e2b8af1c6797d6ed79e2820e2"
     },
     "SAB/Cls_ParameterTools/Workflow.cs": {
-      "rawSha256": "574782e188ad21aa5ca6a56cf25c4f9314ebe0491a844ead23aab56ccf39bf16",
-      "lfSha256": "8d4afffcfd1cebca37e7b2b0014e5d550b89730440cc0a206b4f5b80ed6f2784"
+      "rawSha256": "4c8c3fdb281612c4376d06c70c3893d3e065f11f46a12ea163fe292551d04115",
+      "lfSha256": "ac05b9004cfe48d933ce36be61ff249809ed01cd1cb6bf9bfda49e5cfa4b43fa"
     },
     "SAB/Properties/AssemblyInfo.cs": {
-      "rawSha256": "9cef747f5ee937af4b69d9127922cbfe7136189daef8e40ccb683bb3de0b1e7e",
-      "lfSha256": "9a98e1e908eccb574b71adaefa5e0f24d96223b18f298a488a4eceee53ab5449"
+      "rawSha256": "fcdf6081de51da60e97c8525c19cf017c002c4090b183b19059c906220bb32d1",
+      "lfSha256": "f9aff0cf84f6ac3474093664a9975a3dd7b30f2c1b8d7783665d33aafb9c8ca8"
     },
     "SAB/SAB.csproj": {
-      "rawSha256": "248214a35b7689e1212f7983384f870b18a41e3818a2f8db130663cd7e3731b5",
-      "lfSha256": "1861d7a45254b3731ccb56d147fb4524bed18832239d02f8c283afe53583f9d9"
+      "rawSha256": "32bdbadee89b77f241024e5196bc46d0a108f3e767e63417cdccf8eb22d311fc",
+      "lfSha256": "815724b9715bfa56022826ac1344835f0be115b592dbe0c3723b1b2316733c45"
     },
     "SAB/UI/FluentLight/FluentResources.cs": {
       "rawSha256": "2ce5f025c4d12d405ac9c4c5024894fcbdd9e2b9c1336962d827ef8e7ecf17e6",
@@ -442,20 +442,36 @@
       "lfSha256": "2e76a600f83c619b8554aba2c0dbe12361ab14ad4611df54375551b95ef57cf7"
     },
     "SAB/UI/Notifications/NotificationStack.cs": {
-      "rawSha256": "3e1e9e0cfa504034830510f61aa889bf3afbbe738ffa4b2021e8d9d5d18b08cf",
-      "lfSha256": "55b1038e81ac5f98eebbdb236db6018c937da7682cc0c36891f0d996e46e05ff"
+      "rawSha256": "aa4ff7a27d6f75cf3c0fa95321a3a788ab1a55515540684de5179ab82d18abe1",
+      "lfSha256": "ddd13c93b51783b12c0d81d2e86dd4a9f3523cae800fd2e22903a0df99afd5f7"
     },
     "SAB/UI/SabWindowBehaviorService.cs": {
       "rawSha256": "a01aed6269a3facccc5f67c88598eb377ef45eaf2f55e895a0a2be357316f142",
       "lfSha256": "394a5aac07742498beacac951af90c8717d85f63f0cb9f5de62e51c68d128d86"
     },
     "SAB/UI/Styles/SABFluentLight.xaml": {
-      "rawSha256": "1c4fd0c2feaf9554b2b44d1163dbc8c0c0aec95a325b515bed7e69998f25e9c3",
-      "lfSha256": "3bf5d4886bad209c4eed3d10640d6d8d82100cc9767db809703271ffef00cdaf"
+      "rawSha256": "eec112739368840b1f4b75c5b65b9aad9b857d6424eea68a5e3cb999b9f9eeeb",
+      "lfSha256": "439d08d9d8d43dbc51aac31dd95eacfe9802bef5ff20e1314e3abdc34a5041e6"
     },
     "SAB/UI/Styles/SABWindowStyles.xaml": {
       "rawSha256": "7d10f47996a69c8ce805884b1e4b9b17a602f4a14f275753d1d29c8d516887e0",
       "lfSha256": "15b8f80b7b7836fa34e73d66aab56828ac4a0d43a3fb61a1bf6c05ba91feb085"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.cs": {
+      "rawSha256": "a66659ad4b586bdb236b17fc2571174d0d599c4cc080fc2ccda34b96483b8486",
+      "lfSha256": "a66659ad4b586bdb236b17fc2571174d0d599c4cc080fc2ccda34b96483b8486"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.xaml": {
+      "rawSha256": "bad4f6ed1e4293f2656e26c75cc6cda28cc56ad2050313b91a64888e0b3c82ed",
+      "lfSha256": "62a81a343cb6ba4563f0ffb305b218e3109d2c6351b6e5809b724c521416121e"
+    },
+    "SAB/Cls_ParameterTools/Catalog.cs": {
+      "rawSha256": "f56d37c36c51c7e1041d993725eedf977c0f0183e391ce80357bc9f82de42b08",
+      "lfSha256": "cb195aca75c5f60a3b37cd4f7786ad63f9514bb2b0afd064aa9daf8b63422820"
+    },
+    "SAB/Cls_ParameterTools/ParameterToolsModule.cs": {
+      "rawSha256": "8185706120fce40d31a8f27101db0818ff3f410d52b18f8166230d03c59407fc",
+      "lfSha256": "80dff0e1c5aa8dcdac0d6809f1abc3374e41a688266ff2aabbef9dde0b84fb3e"
     }
   }
 }

@@ -38,6 +38,10 @@ namespace SAB.InteriorElevations.Models
 
         public string ElevationTitlePart3 { get; set; }
 
+        public string DetailNumberPrefix { get; set; } = string.Empty;
+
+        public string DetailNumberSuffix { get; set; } = "-Р";
+
         public bool CreateSheet { get; set; }
 
         public bool UseExistingSheet { get; set; }

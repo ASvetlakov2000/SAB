@@ -20,7 +20,7 @@ namespace SAB.ParameterTools.UI
         private readonly ComboBox _combo;
         private readonly ContentControl _details;
         private ListCollectionView _view;
-        private bool _updating, _cancelled;
+        private bool _updating, _cancelled, _userEditPending;
         public ParameterPicker()
         {
             MinHeight = 34; VerticalAlignment = VerticalAlignment.Center;
@@ -30,6 +30,13 @@ namespace SAB.ParameterTools.UI
             TextSearch.SetTextPath(_combo, "Name"); _combo.SetResourceReference(Control.ForegroundProperty, "SabBrush.Text");
             _details = new ContentControl { ContentTemplate = Template(false), Margin = new Thickness(8, 2, 4, 2), HorizontalContentAlignment = HorizontalAlignment.Stretch };
             Children.Add(_combo); Children.Add(_details); Loaded += (s,e) => { DependencyObject parent = this; while(parent != null) { if(parent is DataGrid) { _details.Visibility = Visibility.Collapsed; break; } parent = System.Windows.Media.VisualTreeHelper.GetParent(parent); } };
+            // Template/binding TextChanged is not user input, including on tab recreation.
+            _combo.PreviewTextInput += (s, e) => ArmSearch();
+            DataObject.AddPastingHandler(_combo, (s, e) => ArmSearch());
+            CommandManager.AddPreviewExecutedHandler(_combo, (s, e) => {
+                if (e.Command == ApplicationCommands.Cut || e.Command == ApplicationCommands.Paste ||
+                    e.Command == ApplicationCommands.Undo || e.Command == ApplicationCommands.Redo) ArmSearch();
+            });
             _combo.AddHandler(TextBox.TextChangedEvent, new TextChangedEventHandler(Search));
             _combo.SelectionChanged += (s, e) => {
                 if (_updating || e.AddedItems.Count == 0) return;
@@ -42,6 +49,7 @@ namespace SAB.ParameterTools.UI
             };
             _combo.LostKeyboardFocus += (s, e) => { if (!_combo.IsDropDownOpen) Restore(); };
             _combo.PreviewKeyDown += (s, e) => {
+                if (e.Key == Key.Back || e.Key == Key.Delete) ArmSearch();
                 if (e.Key == Key.Escape) { _cancelled = true; _combo.IsDropDownOpen = false; Restore(); e.Handled = true; }
                 if (e.Key == Key.Enter && _view != null && (_combo.SelectedItem is ParameterRef || _view.Count == 1)) {
                     SetCurrentValue(SelectedParameterProperty, _combo.SelectedItem ?? _view.GetItemAt(0)); _combo.IsDropDownOpen = false; e.Handled = true;
@@ -56,9 +64,15 @@ namespace SAB.ParameterTools.UI
         }
         private static void SelectedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         { ((ParameterPicker)d).Restore(); }
+        private void ArmSearch()
+        {
+            _userEditPending = true;
+            Dispatcher.BeginInvoke(new Action(() => _userEditPending = false), System.Windows.Threading.DispatcherPriority.ContextIdle);
+        }
         private void Search(object sender, TextChangedEventArgs e)
         {
-            if (_updating || _view == null || !(e.OriginalSource is TextBox text)) return;
+            if (_updating || _view == null || !_userEditPending || !(e.OriginalSource is TextBox text) || !text.IsKeyboardFocused) return;
+            _userEditPending = false;
             if (Keyboard.IsKeyDown(Key.Up) || Keyboard.IsKeyDown(Key.Down)) return;
             string query = text.Text;
             int caret = text.CaretIndex;

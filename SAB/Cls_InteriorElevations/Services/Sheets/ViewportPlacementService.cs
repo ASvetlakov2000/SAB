@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using Autodesk.Revit.DB;
 using SAB.InteriorElevations.Models;
 using SAB.InteriorElevations.Utils;
@@ -27,7 +28,9 @@ namespace SAB.InteriorElevations.Services.Sheets
             IList<ElevationViewData> createdViews,
             SheetLayoutSettings layoutSettings,
             ElementId viewportTypeId,
-            IList<string> warnings)
+            IList<string> warnings,
+            string detailNumberPrefix = "",
+            string detailNumberSuffix = "-Р")
         {
             return PlaceViewsOnSheet(
                 document,
@@ -36,7 +39,9 @@ namespace SAB.InteriorElevations.Services.Sheets
                 null,
                 layoutSettings,
                 viewportTypeId,
-                warnings);
+                warnings,
+                detailNumberPrefix,
+                detailNumberSuffix);
         }
 
         private ViewportPlacementResult PlaceViewsOnSheet(
@@ -46,7 +51,9 @@ namespace SAB.InteriorElevations.Services.Sheets
             View trailingView,
             SheetLayoutSettings layoutSettings,
             ElementId viewportTypeId,
-            IList<string> warnings)
+            IList<string> warnings,
+            string detailNumberPrefix,
+            string detailNumberSuffix)
         {
             ViewportPlacementResult result = new ViewportPlacementResult();
 
@@ -63,6 +70,12 @@ namespace SAB.InteriorElevations.Services.Sheets
             }
 
             int columnsCount = Math.Max(1, layoutSettings.ColumnsCount);
+            var numberedViews = createdViews != null ? createdViews.Where(view => view != null).ToList() : new List<ElevationViewData>();
+            IDictionary<int, string> detailNumbers = elevationViewCount == 0 ? null :
+                numberedViews.All(view => !string.IsNullOrWhiteSpace(view.PlannedDetailNumber))
+                    ? numberedViews.ToDictionary(view => view.Index, view => view.PlannedDetailNumber)
+                    : new ElevationDetailNumberService().ReserveGroupNumbers(document,
+                        numberedViews.Select(view => view.Index), detailNumberPrefix, detailNumberSuffix);
 
             // Стартовые координаты для верхней левой границы первого вида на листе.
             double startXFeet = UnitConversionUtils.MillimetersToFeet(layoutSettings.StartXmm);
@@ -138,6 +151,8 @@ namespace SAB.InteriorElevations.Services.Sheets
                         if (!isTrailingView)
                         {
                             TryApplyViewportType(viewport, viewportTypeId, warnings);
+                            ElevationDetailNumberService.Apply(viewport,
+                                detailNumbers[elevationViewData.Index]);
                         }
 
                         document.Regenerate();
@@ -294,7 +309,9 @@ namespace SAB.InteriorElevations.Services.Sheets
             SheetLayoutSettings layoutSettings,
             ElementId viewportTypeId,
             IList<string> warnings,
-            Action<int, int, ViewportPlacementResult> progress = null)
+            Action<int, int, ViewportPlacementResult> progress = null,
+            string detailNumberPrefix = "",
+            string detailNumberSuffix = "-Р")
         {
             ViewportPlacementResult aggregateResult = new ViewportPlacementResult();
             if (document == null || sheet == null || roomViewGroups == null || layoutSettings == null)
@@ -322,7 +339,9 @@ namespace SAB.InteriorElevations.Services.Sheets
                     roomPlanView,
                     groupLayout,
                     viewportTypeId,
-                    warnings);
+                    warnings,
+                    detailNumberPrefix,
+                    detailNumberSuffix);
 
                 double lowestViewportY;
                 if (TryGetLowestViewportY(document, groupResult, out lowestViewportY))

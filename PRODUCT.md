@@ -47,3 +47,9 @@ Fresh COMPLETED native logs: [actual elevations104/21](Docs/Ui/DesignSystem/scre
 Все поставляемые изменения входят в штатный Build-Msi.bat для2022/2023/2024; нужен свежий payload proof1.1.0, предыдущий Installer PASS не распространяется на новый выпуск. Commit+push/release сейчас разрешены; завершение и remote verification не заявлять до фактов. Установка отдельно не разрешена.
 
 Повторяемые прогоны используют existing outputs/ui-production-preview и Installer/output без timestamp Outputs на каждый запуск. Историю evidence сохранять. «Бэкап» отдельно означает старую версию commit+push+remote verify с rollback commit и единым локальным журналом; не автоматический backup каждой задачи.
+
+
+15.10: [Предпросмотр направлений развёрток](Docs/Ui/DesignSystem/ElevationDirectionPreview-Layout.md) на текущем плане Revit с временными аннотациями и подтверждением сторон. Поставка для2022/2023; [отчёт](Docs/Ui/DesignSystem/ElevationDirectionPreview-Report.json). Live Revit/RFA и установка NOT RUN.
+
+
+1.1.3: [Исправление preview runtime, новый footer и виртуальное замыкание](Docs/Ui/DesignSystem/ElevationPreviewRuntime-Layout.md). Целевые MSI2022/2023; live Revit и установка проверяются отдельно.

@@ -448,35 +448,31 @@ namespace SAB.ParameterTools
         }
         internal static void Check(UIApplication app)
         {
-            var ui = app.ActiveUIDocument; var profile = RequireProfile(ui.Document);
-            var targets = Targets(ui, profile, false);
-            var categories = targets.GroupBy(e => Ids.Category(e.Category.Id)).Select(g => new CategoryChoice {
-                Id = g.Key, Name = g.First().Category.Name,
-                Selected = profile.CheckCategoryIds.Count > 0 ? profile.CheckCategoryIds.Contains(g.Key) : g.Key == (int)BuiltInCategory.OST_Walls
-            }).OrderBy(c => c.Name).ToList();
-            var window = new UI.CheckCategoriesWindow(categories);
-            new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;
-            if (window.ShowDialog() != true) return;
-            targets = targets.Where(e => window.CategoryIds.Contains(Ids.Category(e.Category.Id))).ToList();
-            // Remember only the check scope; filling keeps its own category selection.
-            profile.CheckCategoryIds = window.CategoryIds;
-            using (var settings = new Transaction(ui.Document, "SAB: категории проверки"))
-            { settings.Start(); Storage.Save(ui.Document, profile); if (settings.Commit() != TransactionStatus.Committed) throw new InvalidOperationException("Не удалось сохранить категории проверки."); }
-            var issues = new List<Issue>();
-            var required = profile.Rules.Where(r => r.Enabled && r.Required).ToList();
-            foreach (var element in targets)
-                foreach (var rule in required.Where(r => r.CategoryIds.Count == 0 || r.CategoryIds.Contains(Ids.Category(element.Category.Id))))
-                {
-                    var parameter = Catalog.Parameter(element, rule.Target);
-                    if (parameter == null) issues.Add(Problem(element, Catalog.Describe(rule.Target), "Параметр с выбранным GUID/ID отсутствует у экземпляра. Проверьте привязку к категории."));
-                    else if (!parameter.HasValue || parameter.StorageType == StorageType.String && string.IsNullOrEmpty(parameter.AsString()))
-                        issues.Add(Problem(element, Catalog.Describe(rule.Target, parameter), "Обязательный параметр не заполнен."));
-                }
+            var ui = app.ActiveUIDocument;
+            var profile = RequireProfile(ui.Document);
+            var categoryIds = Catalog.CheckCategories(ui.Document, profile).Where(c => c.Selected).Select(c => c.Id).ToList();
+            if (categoryIds.Count == 0) throw new InvalidOperationException("Выберите категории в «Настройки проверок».");
             ParameterToolsModule.Host.Highlight.Restore(ui.Document, ui.ActiveView.Id);
             HighlightService.ClearLegacy(ui.Document, ui.ActiveView);
-            ViewFilterService.Apply(ui, profile, window.CategoryIds);
-            UI.ParameterNotifications.ShowResult(app.MainWindowHandle, "Проверено: " + targets.Count + ". Проблемных элементов: " + issues.Select(i => i.ElementId).Distinct().Count(), issues, true, "Проверка параметров");
-            if (issues.Count > 0) UI.ReportWindow.Show(ui, issues, "Проверка параметров");
+            ViewFilterService.Apply(ui, profile, categoryIds);
+            UI.Toast.Show(app.MainWindowHandle, "Подсветка элементов активирована");
+        }
+        internal static void CheckSettings(UIApplication app)
+        {
+            var ui = app.ActiveUIDocument;
+            var profile = RequireProfile(ui.Document);
+            var window = new UI.CheckCategoriesWindow(Catalog.CheckCategories(ui.Document, profile));
+            new System.Windows.Interop.WindowInteropHelper(window).Owner = app.MainWindowHandle;
+            if (window.ShowDialog() != true) return;
+            // The check scope is independent from filling and saved in the same model profile.
+            profile.CheckCategoryIds = window.CategoryIds;
+            using (var settings = new Transaction(ui.Document, "SAB: категории проверки"))
+            {
+                settings.Start(); Storage.Save(ui.Document, profile);
+                if (settings.Commit() != TransactionStatus.Committed)
+                    throw new InvalidOperationException("Не удалось сохранить категории проверки.");
+            }
+            Check(app);
         }
         internal static void AssignCorpus(UIApplication app)
         {

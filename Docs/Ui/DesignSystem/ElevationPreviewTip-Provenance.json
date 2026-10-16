@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-16",
+  "version": "1.1.4",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\preview-tip-baseline",
+  "historicalProof": "Docs/Ui/DesignSystem/screenshots-preview-runtime/provenance.json",
+  "historicalProofSha256": "4fb418095e4b969417e462cba11db8c93c35ac5b8b01b36a981bdb1032a9809c",
+  "uiSourceOverrides": false,
+  "source": {
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewService.cs": {
+      "before": "60d91f0d4d631187fbdefd2115e88777e8050590d5301be15bde79c94601401f",
+      "after": "d9b14344cc85ac502aeaa05f4621c5e5b77556d2c8ea4a747b4686d28cad265c"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "a7e810ff659dcf9592c911705ead67089230ee77dff2988676576964ecd88ebd",
+      "after": "72fb71f5b31ace642d5a57dbb34b24326422d7e5c6f10a1c3bed7d5877333161"
+    },
+    "Installer/Build-All-Msi.ps1": {
+      "before": "bb245a20343e60d411413cabed58cb18bb7984155cf14330a63807928ff7a197",
+      "after": "c7a83de5b14216716f66ef5dabe30f9d7899af848d74f58472f3fc692ba6bc4a"
+    },
+    "Tests/InteriorElevations.DirectionPreview/Program.cs": {
+      "before": "4b3469bec444c23b6b415592cdcf2842e8714eee955ae5b910954e73bd6299e6",
+      "after": "d22c4ba27452952619a33213fa2c2fc19268b465a4b9e4dd622ec196e3f74ff9"
+    },
+    "Tests/InteriorElevations.DirectionPreview/LifecycleTests.cs": {
+      "before": "4ab45db0c9e6589b86a82a996738e2155e124b8348b00b57b23a0bbfddee8f14",
+      "after": "0e87065f3eb5db226677e938a00d96d24e4afb51e93c114c54c06a6da5e0781a"
+    },
+    "Tests/InteriorElevations.DirectionPreview/RevitStubs.cs": {
+      "before": "5e94de80b36e0d2e587507e0a6433c815c00e957ee03e5dd0e3761c9ab44f8ff",
+      "after": "69c52978019930bf4014297e758ad2f9346f219211eb37588399b736a7a142ab"
+    }
+  },
+  "resources": {
+    "SAB/Families for Plugin/CreateInteriorElevationsCommand/2022/SAB_Развертки_Направление.rfa": {
+      "before": "25f8a49176f7111def0748e3ae00630560a75c11076903f9de730343042c316d",
+      "after": "25f8a49176f7111def0748e3ae00630560a75c11076903f9de730343042c316d"
+    },
+    "SAB/Families for Plugin/CreateInteriorElevationsCommand/2023-2024/SAB_Развертки_Направление.rfa": {
+      "before": "7d4b1c1e7bfe516bf68bae1b016f5ba770bd9cc5ffa0986faeeac897fdaca909",
+      "after": "25f8a49176f7111def0748e3ae00630560a75c11076903f9de730343042c316d"
+    }
+  },
+  "family": {
+    "source": "C:/Users/svetl/Downloads/SAB_Развертки_Направление.rfa",
+    "format": "2022",
+    "sha256": "25f8a49176f7111def0748e3ae00630560a75c11076903f9de730343042c316d",
+    "origin": "arrow tip, per user image and statement",
+    "initialDirection": "local -Y"
+  },
+  "serviceTests": {
+    "count": 66,
+    "log": "outputs/ui-production-preview/preview-tip-tests.txt",
+    "sha256": "f08ba2747518c1f2f6b59e927da9ec32d63d462ed45409014a838fe55e5b82d5",
+    "boundary": "linked actual source with API doubles"
+  },
+  "newWpfExecution": false,
+  "newCaptures": [],
+  "wpfHistoricalEvidence": "Docs/Ui/DesignSystem/screenshots-preview-runtime/verification.txt",
+  "unverified": [
+    "live Revit placement/rotation/transactions",
+    "actual RFA origin, rendering and label readability",
+    "physical input/printing/accessibility/OS DPI",
+    "installation"
+  ]
+}

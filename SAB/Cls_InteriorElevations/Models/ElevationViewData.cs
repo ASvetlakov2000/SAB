@@ -14,6 +14,8 @@ namespace SAB.InteriorElevations.Models
 
         public string ViewName { get; set; }
 
+        public string PlannedDetailNumber { get; set; }
+
         public bool IsCreated { get; set; }
 
         public bool CropApplied { get; set; }

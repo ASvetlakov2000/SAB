@@ -1,0 +1,1 @@
+PASS actual NotificationCard with warnings and zero host application dictionaries

@@ -42,7 +42,42 @@ namespace SAB.UiShowcase
         [MethodImpl(MethodImplOptions.NoInlining)] static int Run(string[] args)
         {
             var app=new Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};
-            app.Resources.MergedDictionaries.Add(new ResourceDictionary{Source=new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"UI","Styles","SABWindowStyles.xaml"))});
+            if(args.Contains("--capture-preview-runtime"))
+            {
+                SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;
+                return ElevationDirectionPreviewEvidence.Run(args[Array.IndexOf(args,"--out")+1]);
+            }
+            if(args.Contains("--capture-direction-preview"))
+            {
+                SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;
+                return ElevationDirectionPreviewEvidence.Run(args[Array.IndexOf(args,"--out")+1]);
+            }
+            if(args.Contains("--capture-elevation-numbering"))
+            {
+                SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;
+                return ElevationNumberingPreview.Run(args[Array.IndexOf(args,"--out")+1]);
+            }
+            if(args.Contains("--capture-parameter-checks"))
+            {
+                SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;
+                return ParameterCheckPreview.Run(args[Array.IndexOf(args,"--out")+1]);
+            }
+            if(args.Contains("--capture-elevation-hotfix"))
+            {
+                SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;
+                return ElevationHotfixPreview.Run(args[Array.IndexOf(args,"--out")+1]);
+            }
+            if(args.Contains("--probe-notification-resources"))
+            {
+                string path=args[Array.IndexOf(args,"--out")+1];Directory.CreateDirectory(path);
+                try
+                {
+                    var card=new SAB.UI.Notifications.NotificationCard(new SAB.UI.Notifications.NotificationMessage("SAB · Развёртки","Завершено с предупреждениями",SAB.UI.Notifications.NotificationTone.Warning,"Создано развёрток: 4.",warnings:"Не удалось разместить план-схему."));
+                    File.WriteAllText(Path.Combine(path,"resource-probe.txt"),"PASS actual NotificationCard with warnings and zero host application dictionaries");return 0;
+                }
+                catch(Exception error){File.WriteAllText(Path.Combine(path,"resource-probe.txt"),"EXPECTED BASELINE FAILURE: "+error);return 1;}
+            }
+            if(!args.Contains("--clean-resources")) app.Resources.MergedDictionaries.Add(new ResourceDictionary{Source=new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"UI","Styles","SABWindowStyles.xaml"))});
             SabWindowBehaviorService.Initialize();
             if(args.Contains("--notifications")) return NotificationPreview.Run(args[Array.IndexOf(args,"--out")+1]);
             SabWindowAnimationService.Enabled=false;

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../SAB/Cls_InteriorElevations/Services/Sheets/ElevationDetailNumberService.cs" Link="ElevationDetailNumberService.cs" />
+    <Compile Include="../../SAB/Services/PluginResources/PluginFamilyResourceService.cs" Link="PluginFamilyResourceService.cs" />
+  </ItemGroup>
+</Project>

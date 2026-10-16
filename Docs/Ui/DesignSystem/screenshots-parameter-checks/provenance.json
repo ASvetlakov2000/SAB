@@ -1,0 +1,298 @@
+{
+  "version": "1.1.2",
+  "baseCommit": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "precedingUncommittedDelta": "Tools/UiShowcase/elevations-hotfix-delta.json",
+  "sourceDelta": "Tools/UiShowcase/parameter-check-delta.json",
+  "parts": {
+    "actual": {
+      "scope": "Actual SAB.dll classes, clean Application; full-catalog fixtures and routed input; no Revit execution",
+      "checksPassed": 90,
+      "captures": [
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-activation-notification.png",
+          "sha256": "c12ef2cb2444c5019f74d8395c3889afce536b0c3afd538bcf8c42ef4626b8e1",
+          "width": 416,
+          "height": 177
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-empty-minimum.png",
+          "sha256": "a12faf06c8b2fa7ca12c9dd417a8b6ea22f190c0a765fe2408226bd0a97cb13c",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-empty-search.png",
+          "sha256": "c764ffe6a6cdebc5fabf3270794ba55017fffbe0137dae96fd0811d2cd6535e1",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-empty-validation.png",
+          "sha256": "060c43dabcdb5101c4b9b0ae0b43febbd4c38a1644073310c7a947aef97f9791",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-empty.png",
+          "sha256": "6ca1491c9588bb77e9b014a689cbb73efc960e95274d33ee5efdae63c277787a",
+          "width": 744,
+          "height": 781
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-minimum-last-row.png",
+          "sha256": "ba51bc3c72ca7f119ad035b300d09233987c1bc4e3a219834ba31504e065a2cc",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-minimum.png",
+          "sha256": "e048d52d37052c5275ebcf92c52ede38b0000225e852ef741b527e9485e63afa",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-normal.png",
+          "sha256": "6c8dcbf34fcf860e2c69026ddc4f0c36f29d6a222959fe37453ab0fa002f99a0",
+          "width": 744,
+          "height": 781
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-search-last.png",
+          "sha256": "e19674dcc2a2b1a9cd56c3eae871ef7f3d8559513ba71546998b1328fd4c4930",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/check-settings-validation.png",
+          "sha256": "6cf422a6bb05e073d3d4fae3b23b3a514971efda450548caa5e6390aaa918fae",
+          "width": 664,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/picker-after-selection.png",
+          "sha256": "222285a1cc06d5fffcd7756a37a654e2dfb3bfa0f4cb4938e1e95792517bacdd",
+          "width": 664,
+          "height": 391
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/picker-explicit-popup.png",
+          "sha256": "c2649bfc37755aac36efd2fd5e9c259c7d26ce05f9e5c9a516319c6526214794",
+          "width": 616,
+          "height": 230
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/sources-closed-after-load.png",
+          "sha256": "1e1e4248119cad968a919577fe346c706ea7d692f3694623c4d6c0a3610823b7",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/sources-minimum.png",
+          "sha256": "a282aa26b7d98484f1132cfad9bcc562f945610fdfa7f22465d90ef07dc038de",
+          "width": 964,
+          "height": 781
+        }
+      ],
+      "logSha256": "40ef876547561b99e956771444715ccdec854639dc5de555e9f15b748e1cb185"
+    },
+    "regressions": {
+      "scope": "Actual parameterization and views/sheets SAB.dll classes, clean Application, synthetic data outside Revit",
+      "checksPassed": 81,
+      "captures": [
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/00-parameters-rules.png",
+          "sha256": "04f20f560b1aa6f48b329be89a4b267a0d88c9f8935d7f6205766795b4509323",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/01-parameters-sources.png",
+          "sha256": "5ed538f0ef487ec754240b68f2103865f90f7b3e6a798e149b42f607b55e7a1f",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/02-parameters-values.png",
+          "sha256": "dcc17d24234d98f4095cd83438679c24d2cbc7c0949a9c144eb44e8906274c7a",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/03-parameters-categories.png",
+          "sha256": "5a6fffed78ef1f125c55594ddbd769232e520bf218f341ed21e691f03ac6b929",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/04-parameters-editing.png",
+          "sha256": "8713e93bdfc1cc68ec2b86c45575fb9db9bb6f24639c0062adc82b975f530f43",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/05-parameter-dropdown.png",
+          "sha256": "b58af361eb796cde88b0c45adfcc3e458e89f010c8ad9f6a6a2a5b4741e9eae3",
+          "width": 386,
+          "height": 420
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/06-parameters-validation.png",
+          "sha256": "9fc14fc2fedb05dabb024e8b5e532f1a1498c399d0f1477a85be0192668a253a",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/07-categories-empty.png",
+          "sha256": "16828fe40a5edd6cece2729a342fa4d5c8c596c24ab2b2b3cd261c9df20490e3",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/08-parameters-minimum.png",
+          "sha256": "5708183ae16a0ec28e6bfe4cf8618a1867a60e146367955bb0d8b057418e5a1b",
+          "width": 964,
+          "height": 781
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/09-parameters-144dpi.png",
+          "sha256": "5c27c0a51a9f5389c60723a047667c941b2cb833e6593183823fd7b21ba8bbbc",
+          "width": 2076,
+          "height": 1322
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/10-views-sheets.png",
+          "sha256": "0406d4eb97095bae7fb8fbe43c01aa3c302bc1e7de7a524cb45053915b4b875c",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/11-views-editing.png",
+          "sha256": "76399384c795d7f1fcde90308ecbdb588206fcb953350d0bb0174e64efafa67f",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/12-views-multi-story.png",
+          "sha256": "685e243a4ca3c776c27ced40ce33539b2b4855cf5d28a18b4f43ee55d2a2af60",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/13-views-multi-view.png",
+          "sha256": "c576e38ba1b87bf591589cec29a14f7aeb78ea562ad554f696355e9c2ce03ab0",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/14-views-validation.png",
+          "sha256": "859b7625f6d74917efe05732e04ab04f93335b2c464cd0b73aa290911a36cefc",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/15-views-minimum.png",
+          "sha256": "9586318534ba633b5d2b1c22e46f31b04a9c20b4f63bac8bc3f6864afa1a09ad",
+          "width": 1084,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/16-views-settings-bottom.png",
+          "sha256": "00b84d0d0232f686e978177325c342944b1526bd7bc989a9c9037be3dbb49fc9",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/17-views-144dpi.png",
+          "sha256": "60630e642030ebae9f65a4a14962f40d9c1232cb274bfcd38cf52c5f543a704f",
+          "width": 2196,
+          "height": 1352
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/18-views-empty.png",
+          "sha256": "7969081994967483d7240fba664cd7cb54fe742fe687f26dfe33a5ded637d224",
+          "width": 1464,
+          "height": 901
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/19-categories-selected.png",
+          "sha256": "6d12ee3a53a37260a5d8de25ad539820b7f54e6d4b778df63afea86215ec1be6",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/20-categories-loaded.png",
+          "sha256": "042abb2a277b5313d9286db77a3af31cb0b4d1e3b1bab686b0a23078aeb2f0de",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/21-views-secondary-settings.png",
+          "sha256": "ff652d1f489d878424ddd0451c0ef3829f6e06a8ea93fb139206686c636a9f6c",
+          "width": 1184,
+          "height": 861
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/22-views-secondary-minimum.png",
+          "sha256": "f2a0673a5d66b83625e4a9bbbd24e61b628cd93d60c62956a412e71d599227bd",
+          "width": 1024,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/23-categories-minimum.png",
+          "sha256": "5e0d33e0ac5188a3abbead0741fb48f3ff1abbd8638346aa3540c21aa99d60ae",
+          "width": 964,
+          "height": 781
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/24-views-secondary-zones.png",
+          "sha256": "2615fc9b9b6111b77c89d9bc5256579eaaa5a636591a700e850b2081a0e410ff",
+          "width": 1024,
+          "height": 721
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/25-parameters-mapping-input.png",
+          "sha256": "b609076c9c5917e74188fc54fb08f03785bb56a80fae34b1fda8f4cc34dec0a2",
+          "width": 1384,
+          "height": 881
+        },
+        {
+          "path": "Docs/Ui/DesignSystem/screenshots-parameter-checks/regressions/26-parameters-values-bottom.png",
+          "sha256": "e1083ccb1cb0f40ae92209f14ac177dc6ddd505dd83ae1bf8fb8ca3407f173e1",
+          "width": 1384,
+          "height": 881
+        }
+      ],
+      "logSha256": "42c42825fbe96053b9e604abdbe4f29d482a46ca14608604dfdd94235766d9f5"
+    }
+  },
+  "applicationHostDictionaries": 0,
+  "nativeDpi": 96,
+  "renderDpi": 96,
+  "sources": {
+    "SAB/Cls_ParameterTools/UI/ParameterPicker.cs": "1a79a0a533de47734a13c481e7a39043c60127f2604aed645701fc058e3fc395",
+    "SAB/Cls_ParameterTools/UI/CategorySelectionControl.cs": "60f766e65a69db4b98061d2d0d52cb432825a80266ee365f674be871f7161375",
+    "SAB/Cls_ParameterTools/Catalog.cs": "f56d37c36c51c7e1041d993725eedf977c0f0183e391ce80357bc9f82de42b08",
+    "SAB/Cls_ParameterTools/Workflow.cs": "4c8c3fdb281612c4376d06c70c3893d3e065f11f46a12ea163fe292551d04115",
+    "SAB/Cls_ParameterTools/Commands.cs": "32386e4c2efab0b0a7460dca0eba774a233463cd475ebfe525a5464856d7c294",
+    "SAB/Cls_ParameterTools/ParameterToolsModule.cs": "8185706120fce40d31a8f27101db0818ff3f410d52b18f8166230d03c59407fc",
+    "SAB/Properties/AssemblyInfo.cs": "fcdf6081de51da60e97c8525c19cf017c002c4090b183b19059c906220bb32d1"
+  },
+  "testSources": {
+    "Tools/UiShowcase/ParameterCheckPreview.cs": "9bbf9bd8d483b82dbfbd22a5c243a0fec035528814e6f0c4877db38703b865a2",
+    "Tools/UiShowcase/SourcePreview.cs": "729e3d9b417a1aac304afab8f6816236a3561c24b5308befb96842e97df8d06f",
+    "Tools/UiShowcase/VerifyNotificationSource.py": "c178f53ce9f6353634f5d5951b62588645b05f4997189067d6a24dd8c6b402af",
+    "Tools/UiShowcase/ElevationSourceContract.py": "5c6848b749bccb2a52b96f4ea74108c8b0baf5db43232abfbdd7aca8eb65a23c",
+    "Tools/UiShowcase/Sab.UiShowcase.csproj": "eb63b8f2361ea311ead09d785a2c2fce2217084df338591a93ea90f9b9e753f3"
+  },
+  "assemblySha256": "a0f5c969b3d9bb6a03e97738f28bd4de64f6ae848c4bdbe1ee82ccae84c6b039",
+  "hostSha256": "9a2634581a452fef96d9a26148313a0b48c726eccaaa9f9c6fb36b9fa8bb6742",
+  "installationPerformed": false,
+  "unverified": [
+    "Actual Revit category enumeration and model profile transactions",
+    "Native check commands/hotkeys/ribbon appearance",
+    "Native graphics filters and automatic unhighlight model effects",
+    "Physical input/F4/paste/IME/accessibility",
+    "OS DPI/monitor transitions",
+    "Native runtime/API22"
+  ]
+}

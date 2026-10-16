@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-15",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\direction-preview-baseline",
+  "historicalProof": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json",
+  "uiSourceOverrides": false,
+  "actualAssembly": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\plugin\\SAB.dll",
+  "assemblySha256": "89919e0e69681551e6dde7dd034193143a3f9331b44a7532486cce36e1746e84",
+  "surface": "actual SAB.dll WPF; null Document settings fixture; no Revit execution",
+  "nativeAssertions": 19,
+  "runtimeDpi": 96,
+  "renderDpi": 96,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-direction-preview/preview-busy.png",
+      "sha256": "321c77f91ed45c3ead6a97768cf1a63a1bcf29354a2fa2f320079a2d7b2c5dc6"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-direction-preview/preview-minimum-error.png",
+      "sha256": "930bcc92b1be26caa81c7234ec4a2d1ab300d689e208613fd7478eedd685b64a"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-direction-preview/preview-normal.png",
+      "sha256": "db77a913b62869007189389d7201a792caf21264d0c525ac3d036a91358a43f4"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-direction-preview/settings-preview-entry.png",
+      "sha256": "25a391b8abe35bc516c3bc0ae7363e83af4b65ea04775a24060d422fb9ee1770"
+    }
+  ],
+  "source": {
+    "SAB/SAB.csproj": {
+      "before": "7b09ab5ec657db815cb8c116ba19f73f0c229eeb4e506a4de6d5711ee7f903de",
+      "after": "d466f6ab9057cf17a45b588f9f4941f965d2d9b1206cf22c8180a52d8fe23b67",
+      "beforeProofHash": "7b09ab5ec657db815cb8c116ba19f73f0c229eeb4e506a4de6d5711ee7f903de"
+    },
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "b32768faf68eecf0916278a344fdb1eca24fd40bd05a3319433ac358757e133b",
+      "after": "59fa2aaa8c9618b8646f9924d1a46801328293b4aaa1c099b716b1b3a19e88d1"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
+      "before": "711965b5a23172c8184569e476d17250bff26398e2f031796dfa8f9846072570",
+      "after": "ba830e8084b361e5970068e301eb71a8671af0a2bd9fd811a3c3e31da3e7ff0b"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": {
+      "before": "82b5658a0c791f7e906df1fdd8d308a2f6f9fe0d5f030f24cba642cb5b6c9f23",
+      "after": "99b003321fc176a4ae05ba22ce17067c57ed7be04f0d440406bd17ce2e78b585"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationDirectionPreviewWindow.cs": {
+      "before": null,
+      "after": "e3fb7d346fbd4cc5ab93ae9d88a82a2ca740455108cc58aeab6db873d030036a"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationLineData.cs": {
+      "before": "bb245dc15780b0a45c93fba70124559a3c2b672a594e034519875a3d306937bc",
+      "after": "c38422367ddef8459fbfa4aaf4be5aa5fccfa625ccad7b84cd5077d2ad78b459"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationViewData.cs": {
+      "before": "e72fe77703fb07ff15669a80dde97751df58e3b1bc79dbe4fa8b512ebedc1503",
+      "after": "1d7d61f55f609c7039fabd6e004a4332f3efcacfbd58756594aaea5ae4209145"
+    },
+    "SAB/Cls_InteriorElevations/Services/Geometry/ContourDirectionGeometry.cs": {
+      "before": null,
+      "after": "bb48e7fdf053df08ec0470d7059066f6cd6525ba09f2e4c245284eb8f3bfe7b0"
+    },
+    "SAB/Cls_InteriorElevations/Services/Geometry/ContourLineOrientationService.cs": {
+      "before": null,
+      "after": "beaa3026dcffe500d9c129fc7b6108998091b085b97f8c90bba784b4e0226329"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/ViewportPlacementService.cs": {
+      "before": "24b54bf09c0344d3fadac290558d719960028dab8fe78746a367133743729f38",
+      "after": "d53aaf48d7dceb37ff1f971708942dec5dab469996600a63a549ff77e019a925"
+    },
+    "SAB/Services/PluginResources/PluginFamilyResourceService.cs": {
+      "before": "11bd2bd59a6625b80ab03b55c81557b66d2194164c8fd442740662b0a00c01c5",
+      "after": "d849e5cea7796f09717dba8fd8a3b6cf8ef6253a509e9ce76ec70e26a307d952"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewController.cs": {
+      "before": null,
+      "after": "f314c14eaf1d6eaa858283a8dbc2bd66f79eaecf663d4fbdbf79f28ebaef9481"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewService.cs": {
+      "before": null,
+      "after": "7ecdc5cf2564c49de86a2896026338d31da773a4bb67b1144df3065f70f806a1"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationMarkerService.cs": {
+      "before": "29a75f3d4bab716d63961debecfc20bf089df73d3b502259ff6d37a8a98bd044",
+      "after": "3ebe961c05ae7152a8463fc24b55ed80859f97b69a6be275a10ae8597cce1e28"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationViewCreationService.cs": {
+      "before": "9c41da715fe222852b1198a1e2816707cd90ed4a99674062beec9eb577fad664",
+      "after": "bd2df8cac3b0033bad2efd4fda1b85ecb25ebe376633aed04715f1ec205fa7da"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationCropService.cs": {
+      "before": "01aaa88aa253e6303f2dba8140a0c975638d2b0884e0d2afca21e059bcce129c",
+      "after": "17a1d69e72a5a3cefbad1b5dfb817bc562a0ddbb650811c151671c6ff3b72586"
+    }
+  },
+  "missingOriginalBindings": [],
+  "serviceTests": {
+    "count": 46,
+    "log": "outputs/ui-production-preview/direction-preview-tests.txt",
+    "boundary": "actual linked production code with API/event/UI doubles"
+  },
+  "regressionTests": {
+    "count": 20,
+    "log": "outputs/ui-production-preview/direction-preview-numbering-regression.txt"
+  },
+  "family": {
+    "name": "SAB_Развертки_Направление.rfa",
+    "format": "2022",
+    "sha256": "7d4b1c1e7bfe516bf68bae1b016f5ba770bd9cc5ffa0986faeeac897fdaca909",
+    "livePlacement": "NOT RUN"
+  },
+  "unverified": [
+    "live Revit 2022/2023 geometry, transactions and supplied RFA placement",
+    "physical input/accessibility and OS DPI transitions",
+    "installation",
+    "abnormal process termination or failed cleanup in a noncancellable shutdown callback"
+  ]
+}

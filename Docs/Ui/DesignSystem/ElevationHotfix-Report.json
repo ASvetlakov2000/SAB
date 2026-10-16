@@ -1,0 +1,1397 @@
+{
+  "schemaVersion": 1,
+  "task": "SAB1.1.1: scoped notification resource regression, footer and on-demand read-only room list",
+  "date": "2026-10-13",
+  "scope": "Bounded production source/native WPF outside Revit and standard Release MSI2022–24. Source-derived sessions separately labelled. Installation not performed.",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2 + elevations-hotfix-delta.json",
+  "dirtyBaseline": "Clean source baseline at c5ce558; original1.1.0 migration/release evidence retained unchanged.",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/LayoutPatterns.md",
+    "Docs/Ui/DesignSystem/ElevationHotfix-Layout.md",
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml",
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.xaml",
+    "SAB/UI/Styles/SABFluentLight.xaml",
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs",
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs",
+    "SAB/Cls_InteriorElevations/Services/Reports/ElevationCreationReportService.cs",
+    "SAB/UI/Notifications/NotificationStack.cs",
+    "SAB/Properties/AssemblyInfo.cs",
+    "SAB/SAB.csproj",
+    "SAB/Cls_InteriorElevations/Views/ElevationSelectionListWindow.cs"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/ElevationHotfix-Layout.md",
+  "build": [
+    {
+      "command": "Tools/UiShowcase/Build.ps1 -ElevationHotfix",
+      "exitCode": 0,
+      "target": "Actual Debug/net48/API2023 classes with clean Application and separately source-derived sessions"
+    },
+    {
+      "command": "Build-Msi.bat (no arguments/version override)",
+      "exitCode": 0,
+      "target": "Release/Revit2022/2023/2024; MSI1.1.1 from AssemblyFileVersion"
+    }
+  ],
+  "captures": {
+    "provenance": "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json",
+    "actualAssertions": 282,
+    "actualPng": 17,
+    "sharedNotificationAssertions": 35,
+    "sharedNotificationPng": 9,
+    "isolatedSessionAssertions": 635,
+    "isolatedSessionPng": 44
+  },
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96,
+    144
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "SingleP2 minimum header clipping resolved in boundedVerdictPass; final independent ship for UI/code and all three extracted MSI1.1.1 payloads.",
+    "scope": "Actual WPF/code and extracted MSI payload; not real Revit/installation/physical/OS",
+    "report": "Docs/Ui/DesignSystem/ElevationHotfix-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Latest user text overrides old top status screenshot; real selectionPackages preserved; exact footer/list scope recorded.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Existing accepted Fluent Light scoped resources reused; legacy templates not introduced.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Missing DisabledBackground fixed in shared dictionary, not per-window fallback; shared collection and footer styles reused.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Source delta preserves existing named handlers, bindings and VM. Actual list button returns same VM; only command addition is snapshot argument.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Detached snapshot has only immutable string/count values; modeless result delivery contains UI failures. Actual Revit/rollback remains NOT RUN.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Latest direct user request authorizes bounded fix; published1.1.0 approval/history preserved, no installation or automatic release implied.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh captures are actual SAB.dll classes, not generated replacements; sessions separated.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Selected on-demand collection pattern versus discarded inline status recorded before implementation.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Actual types/assemblies, fixtures, source/capture hashes and clean Application resource scope recorded.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Runtime96DPI, notification144DPI is render only; no Revit/OS/physical acceptance claimed.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Listed programmatic states captured; full physical keyboard/accessibility matrix not executed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Approved shared native Fluent Light controls/styles retained.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "New read-only list uses shared DataGrid and own collection outline.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No row actions in the new read-only list; unchanged other tables are outside this hotfix.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Read-only text cells retain shared row separators without individual field frames.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Room-number/name cell/header text begins at common shared padding; numeric headers/values centered in current captures.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New list has no editable numeric ComboBox or editable Label.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "All six headers measured with actual font/padding at normal/minimum; complete last selected row fits below header. Fixed minimum740 after independent finding.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Normal/minimum list captured; comprehensive horizontal-scroll measurement across all host/DPI conditions not executed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Two existing mode capsules remain above tabs with originalVM semantics.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Both capsule labels fit at main minimum800; source-derived session checks measured track/selection separately.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "No hidden capsule options changed; exhaustive hidden-mode visibility transitions not rerun.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Four current shared tab headers retained; actual minimum tab0–3 captures show selected body.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual tab/body gap retained, including all four minimum states.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual captures pump settled layout; animations disabled explicitly in hotfix bootstrap, not claimed physical animation acceptance.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "No section title icons added; actual title/section hierarchy retained.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Two mode selectors stay in common input card; read-only collection moved to separate on-demand window.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "List collection owns common rounded outline; minimum last rows/frame captured.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Settings retain bounded scrolling region above footer; long validation bounded separately.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Main long selection summary collapsed without empty status frame; validation empty state hides frame.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "New DataGrid has its own CollectionFrame border at normal/minimum/empty.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New list has no nested floors or row frames.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Existing editor alignment not changed; full dynamic picker/parameter forms outside current runtime checks.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New list has no nested floor action icons.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Five footer buttons measured at34DIP common axis, action gaps8DIP at normal/minimum/long validation.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No search UI in this changed list/footer/resource scope.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Requested footer order is exact and all actions remain visible; list dialog has only Help/Close.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No configuration import/export controls changed or added.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New read-only list has no add or duplicate-add buttons.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No category-selection surface in this hotfix.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No category import/persistence behavior changed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "No new instructional prose in plugin; only labels, data and validation.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "One instruction button per surface refers to installed module HTML; updated guide and MSI include it.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Room names/counts preserved in detached list and totals; validation retained in own scrollable row.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "List header and lastrow visible, but complete native scrollbar-part boundary measurement not rerun in actual new list.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Header/frame visually inspected; full native gutter/group geometry matrix not executed for new list.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No picker capture in this bounded hotfix.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "New actual host/class and separate evidence scope added to coverage; historical captures retained.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No dockable pane in this hotfix.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "On-demand readonly collection pattern demonstrated by actual footer button/owned dialog and empty/3/100 rows.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "New list has no row icon action buttons.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No clear-rows command in the read-only list.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Original picking/creation handlers preserved. Read-only child cannot edit/add/delete; closing returns same settingsVM.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Creation result retains structured positive summary/warnings; no decorative replacement.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Nonempty validation ends above all five footer buttons with8DIP gap; empty state removes row.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "New regressions recorded as071–073 in canonical rules/template and task report.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No disclosure control added or changed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "New list full headers fit actual measured widths; long names remain accessible by full-value tooltip.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual success/warning/error cards create with zero host dictionaries; text selectable and independent close tested.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual warning copy, exact ID/support clipboard and failure feedback tests pass with clean resources.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual lifetime/pause/resume/no-reset tests pass with clean resources.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual newest-bottom/grows-up stack and independent close/lifetime regressions pass.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual bounded long body, overflow and work-area geometry regressions pass with clean resources.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "UI guard catches primary and secondary result-delivery exceptions; detached notification retains no API references. Real Revit result effect not executed.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Launcher not changed in this hotfix; prior fix retained.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Tag/leader rows not changed by this hotfix.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "New list has elastic text and fixed counts/status by source; wide/resize edge-alignment matrix not measured in actual new class.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Compact choice helpers not changed; new list is a resizable data viewer.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Unchanged category services retained; source-derived storage/role regressions pass; actual Revit geometry/transactions not executed.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Unchanged result adapter retained; actual shared cards/clean-resource warnings tested; fresh complete creation-outcome matrix not rerun in actual adapter.",
+      "evidence": [],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Before missing-resource error reproduced, after probe PASS; actual scoped resources and safe delivery primary/fallback failures checked.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual status Grid.Row0/actions row1; 18-line validation scrolls without overlap, all five actions measured normal/minimum.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual source rows map to immutable DTO; actual footer opens readonly list0/3/100, exact labels/order and main800 independent of100long naming contexts.",
+      "evidence": [
+        "Tools/UiShowcase/elevations-hotfix-delta.json",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/notifications/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-elevation-hotfix/provenance.json"
+      ],
+      "unverified": [
+        "Actual Revit execution/transactions/rollback/native picking",
+        "Physical keyboard/accessibility",
+        "OS DPI/monitor transitions",
+        "Native API22 runtime"
+      ]
+    }
+  ],
+  "installationPerformed": false,
+  "installerEvidence": "Docs/Ui/DesignSystem/ElevationHotfix-Installer.json"
+}

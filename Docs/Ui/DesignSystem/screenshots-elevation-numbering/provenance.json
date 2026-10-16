@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-15",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\elevation-research-baseline",
+  "historicalProof": "Tools/UiShowcase/notification-source-contract.json",
+  "uiSourceOverrides": false,
+  "actualAssembly": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\plugin\\SAB.dll",
+  "assemblySha256": "96ab5805b18312c85ce2fe2cea9777292da6a0807afb9e5b741bdf11d32e803d",
+  "surface": "actual SAB.dll WPF classes, null Document fixtures outside Revit",
+  "runtimeDpi": 96,
+  "renderDpi": 96,
+  "nativeAssertions": 20,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/numbering-empty.png",
+      "sha256": "571d65bddfc4c35cf71fc93a33939401cb90aecf99b8f7852d9c3380016e2c9c"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/numbering-minimum-long.png",
+      "sha256": "2e50850d82940a3765a214549a9b49840cd2e6edb034e00a54b72d17baf3020f"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-elevation-numbering/numbering-normal.png",
+      "sha256": "fc97412cdfd5d51434fb0dc9a4edd9807c97a9c33eea0ee602d66b3f65a2751b"
+    }
+  ],
+  "source": {
+    "SAB/SAB.csproj": {
+      "before": "32bdbadee89b77f241024e5196bc46d0a108f3e767e63417cdccf8eb22d311fc",
+      "after": "7b09ab5ec657db815cb8c116ba19f73f0c229eeb4e506a4de6d5711ee7f903de"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationSettings.cs": {
+      "before": "baa4d430f08c5493f7a072377accb5af4207503f9cbb9740be9f01bc117ee085",
+      "after": "a71060db6928d76c639a9749e99a5f31e315aa875f1794b646fc1074139309ce"
+    },
+    "SAB/Cls_InteriorElevations/ViewModels/ElevationSettingsViewModel.cs": {
+      "before": "ade643f68f5ccbcd217a06009d1d09ad7d7f1aa42eae97b69ea2045399e0efa8",
+      "after": "0795a1439dd7aa5c6283e099596a9ce5c0007444539e2fa1091bff3bfa5faa02"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
+      "before": "f31117af289cfc47cf3c4ca262088dee24a790092644186c451609e204c87e32",
+      "after": "711965b5a23172c8184569e476d17250bff26398e2f031796dfa8f9846072570"
+    },
+    "SAB/Cls_InteriorElevations/Services/Settings/ElevationSettingsStorageService.cs": {
+      "before": "716b0177371eb7c1b53bf0e304ccf6e750b44896c728b02b9320baf7e3f1731b",
+      "after": "593c0fd06ae01974ad9abc70950a74e25b16845d2a423b56d7c38c050f69ef70"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/ElevationDetailNumberService.cs": {
+      "before": null,
+      "after": "c71e144bcf502de754160dd33cc5e03b4e74c0337797a4b891c01b0c63fc366d"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/ViewportPlacementService.cs": {
+      "before": "892cda7ec53c7ef28e17a6e81076cbd77ae0542b5ff98dcc6647ff03b06b8e51",
+      "after": "24b54bf09c0344d3fadac290558d719960028dab8fe78746a367133743729f38"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/AutomaticElevationSheetPlacementService.cs": {
+      "before": "6de4f96ced4fb8aa6b5470916ef5b7c3ab01a102b2c3049c29008c03ea7cc984",
+      "after": "53abdfacb437193b8c0b4a0790ab3d6220a340b63098ae9ee45c5ce600ce135f"
+    },
+    "SAB/Cls_InteriorElevations/Services/Sheets/ViewportTransferService.cs": {
+      "before": "1f5c8c78f939b957a500231ae2c6140562ea4fa124c815a165f7ba74a9cb0730",
+      "after": "de5b3011122f6e961038bf0a89d43246e7b3e35b12b503a5ef31bd1c50e4f0a4"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationFlipService.cs": {
+      "before": "147e937c7c770dd1885950b7b0d4c74709539fbd3e104e583cf0436fa2f83d4d",
+      "after": "17a267b12219232bab729beca5110dcdbac2b8acad0d6fd3bb119a422707f474"
+    },
+    "SAB/Services/PluginResources/PluginFamilyResourceService.cs": {
+      "before": "b04c15830ebe3e45b6e3c798629caeaf20c5eee979a74d279ba0629fbc7dd0de",
+      "after": "11bd2bd59a6625b80ab03b55c81557b66d2194164c8fd442740662b0a00c01c5"
+    },
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "28b52cfedb0c3ad8858a34c5a2d1f985ddecc733beaa518907ab63a62f00ae6e",
+      "after": "b32768faf68eecf0916278a344fdb1eca24fd40bd05a3319433ac358757e133b"
+    }
+  },
+  "missingOriginalBindings": [],
+  "serviceTests": "20 actual-service checks with Revit API stubs",
+  "geometryEvidence": "12 arithmetic counterexamples; geometry production source unchanged",
+  "unverified": [
+    "actual Revit model/transactions/rotation",
+    "physical keyboard/accessibility",
+    "OS DPI transitions",
+    "installation"
+  ]
+}

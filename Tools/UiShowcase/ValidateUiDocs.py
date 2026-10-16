@@ -7,7 +7,7 @@ import hashlib
 import json
 import re
 import sys
-from SourceHash import matches
+from SourceHash import matches, matches_bytes
 
 ROOT = Path(__file__).resolve().parents[2]
 D = ROOT / 'Docs/Ui/DesignSystem'
@@ -91,8 +91,65 @@ if production.exists():
     if successor.exists():
         active = read_json(successor)
         require(active['uiSourceOverrides'] is False and active['historicalProof'] == production.name, 'Notification successor must retain original production proof')
+    # A bounded successor records before/after hashes without rewriting historical proof.
+    numbering_path = D/'screenshots-elevation-numbering/provenance.json'
+    numbering = read_json(numbering_path) if numbering_path.exists() else None
+    direction_path = D/'screenshots-direction-preview/provenance.json'
+    direction = read_json(direction_path) if direction_path.exists() else None
+    runtime_path = D/'screenshots-preview-runtime/provenance.json'
+    runtime = read_json(runtime_path) if runtime_path.exists() else None
+    tip_path = D/'ElevationPreviewTip-Provenance.json'
+    tip = read_json(tip_path) if tip_path.exists() else None
     for name, sha in active['files'].items():
-        require(matches(ROOT/name, sha), 'Stale production source proof: '+name)
+        valid = matches(ROOT/name, sha)
+        if not valid and numbering is not None:
+            delta = numbering.get('source', {}).get(name, {})
+            valid = (numbering.get('uiSourceOverrides') is False and
+                     numbering.get('historicalProof') == 'Tools/UiShowcase/notification-source-contract.json' and
+                     delta.get('before') == sha and
+                     hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == delta.get('after'))
+        if not valid and direction is not None:
+            delta = direction.get('source', {}).get(name, {})
+            previous = numbering.get('source', {}).get(name, {}) if numbering else {}
+            before_proof = previous.get('after') if previous.get('before') == sha else sha
+            baseline = ROOT/'outputs/ui-production-preview/direction-preview-baseline/files'/name
+            valid = (direction.get('uiSourceOverrides') is False and
+                     direction.get('historicalProof') == 'Docs/Ui/DesignSystem/screenshots-elevation-numbering/provenance.json' and
+                     delta.get('beforeProofHash') == before_proof and baseline.exists() and
+                     hashlib.sha256(baseline.read_bytes()).hexdigest() == delta.get('before') and
+                     matches_bytes(ROOT/name, baseline.read_bytes(), before_proof) and
+                     hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == delta.get('after'))
+        if not valid and runtime is not None and direction is not None:
+            current_delta = runtime.get('source', {}).get(name, {})
+            parent_delta = direction.get('source', {}).get(name, {})
+            previous = numbering.get('source', {}).get(name, {}) if numbering else {}
+            before_proof = previous.get('after') if previous.get('before') == sha else sha
+            original = ROOT/'outputs/ui-production-preview/direction-preview-baseline/files'/name
+            baseline = ROOT/'outputs/ui-production-preview/direction-preview-runtime-baseline/files'/name
+            parent_valid = (parent_delta.get('beforeProofHash') == before_proof and original.exists() and
+                            hashlib.sha256(original.read_bytes()).hexdigest() == parent_delta.get('before') and
+                            matches_bytes(ROOT/name, original.read_bytes(), before_proof))
+            parent_hash = parent_delta.get('after')
+            if not parent_delta:
+                # A first change to a previously untouched owner (for example the product version).
+                parent_hash = current_delta.get('before')
+                parent_valid = baseline.exists() and matches_bytes(ROOT/name, baseline.read_bytes(), before_proof)
+            runtime_authorized = (runtime.get('uiSourceOverrides') is False and parent_valid and
+                     runtime.get('historicalProof') == 'Docs/Ui/DesignSystem/screenshots-direction-preview/provenance.json' and
+                     runtime.get('historicalProofSha256') == hashlib.sha256(direction_path.read_bytes()).hexdigest() and
+                     current_delta.get('before') == parent_hash and baseline.exists() and
+                     hashlib.sha256(baseline.read_bytes()).hexdigest() == current_delta.get('before'))
+            valid = runtime_authorized and hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == current_delta.get('after')
+            if not valid and runtime_authorized and tip is not None:
+                tip_delta = tip.get('source', {}).get(name, {})
+                tip_baseline = ROOT/'outputs/ui-production-preview/preview-tip-baseline/files'/name
+                valid = (tip.get('uiSourceOverrides') is False and
+                         tip.get('historicalProof') == 'Docs/Ui/DesignSystem/screenshots-preview-runtime/provenance.json' and
+                         tip.get('historicalProofSha256') == hashlib.sha256(runtime_path.read_bytes()).hexdigest() and
+                         tip_delta.get('before') == current_delta.get('after') and tip_baseline.exists() and
+                         hashlib.sha256(tip_baseline.read_bytes()).hexdigest() == tip_delta.get('before') and
+                         hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == tip_delta.get('after'))
+        require(valid, 'Stale production source proof: '+name)
     fresh = D/'screenshots-production-0.5'
     if (fresh/'provenance.json').exists():
         provenance = read_json(fresh/'provenance.json')

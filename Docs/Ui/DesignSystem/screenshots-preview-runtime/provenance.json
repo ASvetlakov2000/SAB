@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-15",
+  "version": "1.1.3",
+  "sourceRevision": "c5ce558fdae37e90259328ac11005af8982a5ef2",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\direction-preview-runtime-baseline",
+  "historicalProof": "Docs/Ui/DesignSystem/screenshots-direction-preview/provenance.json",
+  "historicalProofSha256": "91c3a9b97f4f535a9f14c6c3cfa1635309536f1c98ec467cd99b28ccd186f7f7",
+  "uiSourceOverrides": false,
+  "actualAssembly": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\plugin\\SAB.dll",
+  "assemblySha256": "18ead519a754b5e66fa0404e4fcf2f48d2e5c075b2ff7a6fe70ef69b39726612",
+  "surface": "actual SAB.dll WPF, fixtures outside Revit; linked API/event doubles separately",
+  "nativeAssertions": 41,
+  "runtimeDpi": 96,
+  "renderDpi": 96,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-preview-runtime/preview-busy.png",
+      "sha256": "732fa9891ce5e6edc0ddd551284613e8f27519cc63ce4c4244b7722eb34aaeab"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-preview-runtime/preview-minimum-error.png",
+      "sha256": "69986e8fee7fabd777384ef06db7c8e23c1ebe05ade99b809f5e9a31c56a0f58"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-preview-runtime/preview-normal.png",
+      "sha256": "5adcf3f04a3aac58b1eb070be96e29087d1c66d5b78b06d4cd223fe6172714f3"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-preview-runtime/settings-minimum-footer.png",
+      "sha256": "37f768d10b3b4ab27982c7d1f4dd5585394951130fc19902a7910d9a27ea98f2"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-preview-runtime/settings-minimum-validation.png",
+      "sha256": "80c010454f7de17a8b78c3b0ae6d240ff7df7d906a8ace3c1dbcdfd0cef10ef3"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-preview-runtime/settings-preview-entry.png",
+      "sha256": "63fb9c108e41e09041d0065062c2e6c8ab53a4d58c5b75e88da05d76d6f064af"
+    }
+  ],
+  "source": {
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "59fa2aaa8c9618b8646f9924d1a46801328293b4aaa1c099b716b1b3a19e88d1",
+      "after": "b74543b079990e93537219143e0515099079cbacc45bf3db86fdd14c750eb65e"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml": {
+      "before": "ba830e8084b361e5970068e301eb71a8671af0a2bd9fd811a3c3e31da3e7ff0b",
+      "after": "9875826dbc2c47583a2f4807cae8ffef90a9c5b4207bc77a021dfa2962f87ea7"
+    },
+    "SAB/Cls_InteriorElevations/Views/ElevationSettingsWindow.xaml.cs": {
+      "before": "99b003321fc176a4ae05ba22ce17067c57ed7be04f0d440406bd17ce2e78b585",
+      "after": "646b3d1d9436636197e5d5d651cfb37dd86f801cd55324af0431c1fde2637345"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewController.cs": {
+      "before": "f314c14eaf1d6eaa858283a8dbc2bd66f79eaecf663d4fbdbf79f28ebaef9481",
+      "after": "9ea406929b2080f2ed6a9f5e4324c7c6bc14d9e792c959887d82bdff9140ffa1"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewService.cs": {
+      "before": "7ecdc5cf2564c49de86a2896026338d31da773a4bb67b1144df3065f70f806a1",
+      "after": "60d91f0d4d631187fbdefd2115e88777e8050590d5301be15bde79c94601401f"
+    },
+    "SAB/Cls_InteriorElevations/Services/Geometry/ContourDirectionGeometry.cs": {
+      "before": "bb48e7fdf053df08ec0470d7059066f6cd6525ba09f2e4c245284eb8f3bfe7b0",
+      "after": "3ca362f3b1f43f7e0ad48a8a1114ca17f706d30eb242144d05075fa05e73df68"
+    },
+    "SAB/Cls_InteriorElevations/Services/Geometry/ContourLineOrientationService.cs": {
+      "before": "beaa3026dcffe500d9c129fc7b6108998091b085b97f8c90bba784b4e0226329",
+      "after": "913d9a96a92b6a40aabe1edd9e157bf60197aa8e7d029853ffacdf9c43a76fa9"
+    },
+    "SAB/Cls_InteriorElevations/Models/ElevationLineData.cs": {
+      "before": "c38422367ddef8459fbfa4aaf4be5aa5fccfa625ccad7b84cd5077d2ad78b459",
+      "after": "b9d7afb4104abd36390e08bed3e2b8e2b0ed4c8acd5eddbe024561d22bceced8"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "fcdf6081de51da60e97c8525c19cf017c002c4090b183b19059c906220bb32d1",
+      "after": "a7e810ff659dcf9592c911705ead67089230ee77dff2988676576964ecd88ebd"
+    },
+    "SAB/SAB.csproj": {
+      "before": "d466f6ab9057cf17a45b588f9f4941f965d2d9b1206cf22c8180a52d8fe23b67",
+      "after": "d466f6ab9057cf17a45b588f9f4941f965d2d9b1206cf22c8180a52d8fe23b67"
+    }
+  },
+  "missingOriginalBindings": [],
+  "serviceTests": {
+    "count": 62,
+    "log": "outputs/ui-production-preview/direction-preview-runtime-tests.txt",
+    "sha256": "13b059a2ace609223238c37b743c6fbf68cee60eb41b5bb860ed1a33040f8412",
+    "boundary": "actual linked source, API/event/UI doubles"
+  },
+  "beforeFix": {
+    "log": "outputs/ui-production-preview/direction-preview-runtime-before.txt",
+    "sha256": "0f88a311bae9e9c00ba9b913b1491bded037f1c278053db3940359b3aa8dcb00",
+    "status": "expected FAIL on distinct wrappers of same native document"
+  },
+  "numberingRegression": {
+    "count": 20,
+    "log": "outputs/ui-production-preview/preview-runtime-numbering-regression.txt",
+    "sha256": "aa83afbb04b94a0a074cd3a080e14d412295e716cc3815557694ef4f1a55c3e5"
+  },
+  "unverified": [
+    "live Revit 2022/2023 native selection, focus and transactions",
+    "supplied RFA placement",
+    "physical input/accessibility/OS DPI transitions",
+    "installation",
+    "abnormal process termination and failed cleanup during noncancellable shutdown"
+  ]
+}

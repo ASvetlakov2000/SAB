@@ -20,6 +20,13 @@ namespace SAB.InteriorElevations.Models
 
         public XYZ MarkerPoint { get; set; }
 
+        public double MarkerDistance { get; set; }
+
+        public bool IsOpenContour { get; set; }
+        public bool UsesVirtualClosure { get; set; }
+
+        public string PlannedDetailNumber { get; set; }
+
         public double LineLength { get; set; }
 
         public int Index { get; set; }
