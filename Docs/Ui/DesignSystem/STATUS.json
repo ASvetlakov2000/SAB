@@ -235,7 +235,7 @@
   },
   "materialSelection": {
     "version": "1.1.3",
-    "stage": "production_implemented",
+    "stage": "production_published",
     "approvedAt": "2026-10-16",
     "authority": "Direct user approval in current chat: implement four-column picker, then commit+push, update distributions and publish new release.",
     "productionMigrationAuthorized": true,
@@ -248,13 +248,16 @@
     "report": "Docs/Ui/DesignSystem/MaterialSelection-Report.json",
     "installerEvidence": "Docs/Ui/DesignSystem/MaterialSelection-Installer.json",
     "independentReview": "Docs/Ui/DesignSystem/MaterialSelection-Review.md",
-    "releaseStatus": "prepared_pending_publication",
+    "releaseStatus": "published",
     "unverified": [
       "live Revit material collectors/transactions/model writes",
       "physical Shift/Ctrl/keyboard/mouse input",
       "full accessibility traversal",
       "OS DPI transitions",
       "installation"
-    ]
+    ],
+    "release": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.3",
+    "releaseEvidence": "Docs/Ui/DesignSystem/Release-1.1.3.json",
+    "sourceCommit": "f74191cef0a7fef5a651b385b6a0c41fa1727ccd"
   }
 }

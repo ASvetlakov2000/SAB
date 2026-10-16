@@ -1339,5 +1339,12 @@
     "full accessibility traversal",
     "OS DPI transitions",
     "installation"
-  ]
+  ],
+  "publication": {
+    "status": "PASS",
+    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.3",
+    "sourceCommit": "f74191cef0a7fef5a651b385b6a0c41fa1727ccd",
+    "evidence": "Docs/Ui/DesignSystem/Release-1.1.3.json",
+    "remoteAssetsVerified": 4
+  }
 }

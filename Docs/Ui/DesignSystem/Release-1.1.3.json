@@ -1,0 +1,44 @@
+{
+  "version": "1.1.3",
+  "name": "SAB 1.1.3 — Выбор материалов для областей заливки",
+  "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.3",
+  "tag": "v1.1.3",
+  "sourceCommit": "f74191cef0a7fef5a651b385b6a0c41fa1727ccd",
+  "tagCommit": "f74191cef0a7fef5a651b385b6a0c41fa1727ccd",
+  "status": "published",
+  "latestAtVerification": true,
+  "publishedAt": "2026-10-16T15:43:07Z",
+  "verifiedAt": "2026-10-16T15:44:25.7658219Z",
+  "assets": [
+    {
+      "name": "SAB_Revit_2022.msi",
+      "size": 16455030,
+      "digest": "sha256:6d7500163f8ba87f2f52e1851ff48ff542283393d8e6a23249fbec41e77d1d88",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.3/SAB_Revit_2022.msi"
+    },
+    {
+      "name": "SAB_Revit_2023.msi",
+      "size": 16828032,
+      "digest": "sha256:c72a8645f3453d76a87dfbe4cc2ea89c564cab62880fde84a4d318e53a4fcca7",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.3/SAB_Revit_2023.msi"
+    },
+    {
+      "name": "SAB_Revit_2024.msi",
+      "size": 16823936,
+      "digest": "sha256:ea93bcf4efe51e0d52e1c5f74ee3874d68686725dea32f41aa9fd70258bb6d78",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.3/SAB_Revit_2024.msi"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 258,
+      "digest": "sha256:5fa7adc611965aecbd17631d57e8233bba9818d705c2ddcb442c3e4ff0657e03",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.3/SHA256SUMS.txt"
+    }
+  ],
+  "assetsSha256Verified": true,
+  "checksumContentVerifiedByDigest": true,
+  "installerEvidence": "Docs/Ui/DesignSystem/MaterialSelection-Installer.json",
+  "independentReview": "Docs/Ui/DesignSystem/MaterialSelection-Review.md",
+  "installationPerformed": false,
+  "liveRevitValidation": "NOT RUN"
+}
