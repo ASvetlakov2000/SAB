@@ -1,0 +1,1343 @@
+{
+  "schemaVersion": 1,
+  "task": "Material selection production window",
+  "date": "2026-10-16",
+  "scope": "production",
+  "sourceRevision": "00cf992afd07dad1ed69994e565b4239cf3e7d1c",
+  "dirtyBaseline": "git status --short empty before changes",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "SAB/Cls_FilledRegionFromMaterial/CreateFilledRegionTypesCommand.cs",
+    "SAB/Cls_FilledRegionFromMaterial/MaterialSelectionItem.cs",
+    "SAB/Cls_FilledRegionFromMaterial/MaterialSelectionWindow.xaml",
+    "SAB/Cls_FilledRegionFromMaterial/MaterialSelectionWindow.xaml.cs",
+    "SAB/Cls_FilledRegionFromMaterial/SettingsCommand.cs",
+    "SAB/Cls_FilledRegionFromMaterial/SettingsWindow.xaml",
+    "SAB/Cls_MainPanel/MainPanel.cs",
+    "SAB/UI/FluentLight/FluentResources.cs",
+    "SAB/Properties/AssemblyInfo.cs",
+    "SAB/SAB.csproj"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/MaterialSelection-Layout.md",
+  "build": [
+    {
+      "command": "Tools/UiShowcase/Build.ps1 -MaterialSelection",
+      "exitCode": 0,
+      "assertions": 42,
+      "captures": 9
+    },
+    {
+      "command": "Installer/Build-All-Msi.ps1 -Configuration Release",
+      "exitCode": 0,
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "evidence": "Docs/Ui/DesignSystem/MaterialSelection-Installer.json"
+    },
+    {
+      "command": "Installer/Publish-GitHubRelease.ps1 -Version 1.1.3 -PrepareOnly",
+      "exitCode": 0
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/empty-document.png",
+      "sha256": "887bf7b0af14c15f7bd0abde62d66c7568c2c10d3ef2c37e5b146d255e8f021e"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/empty-search.png",
+      "sha256": "42c2ffe2b950dc4c756b3a30734bc5775e6aeeacf390410fc86e383d7faffdd7"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/included-only.png",
+      "sha256": "47a6a13e6cf22146fa5f57fd5d7ad2d0b3e2cc7dd2b572a2e864182b7f78201b"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/minimum-last-row.png",
+      "sha256": "78e58c7655663fc5ac19fd191bb2e9e8f259a52a2328b87938deaef824775230"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/minimum.png",
+      "sha256": "3a37ba0d6a63ef44956be2d9f78cf29432049ec36cf3cfd250acda922fcb9835"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/no-cut-pattern.png",
+      "sha256": "77f3ee59aa6dab6c27fe5e3902a9f7fb5ccb038080a7962a24bcf2f8345a2083"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/normal.png",
+      "sha256": "0131798ce065ce07d66245b6d128d93eeffdc715139eca6f412b4ef51ea68bbb"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/search-hidden-selection.png",
+      "sha256": "fa2697e14c6a862001e216af284f09fb961c723b6670d0bc5763e42a727af007"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-material-selection/selected-colours.png",
+      "sha256": "e2130e665840f539b37757b53ee032b60f52a68e06d09f8b1249f312e8706432"
+    }
+  ],
+  "runtimeDpi": null,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "disposition": "ship",
+    "scope": "bounded actual WPF/source plus local release packet",
+    "report": "Docs/Ui/DesignSystem/MaterialSelection-Review.md",
+    "reason": "Independent agent reviewed actual source/captures and MSI payload/hash packet; remote publication still requires root verification."
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Builds and bounded WPF assertions passed; live Revit context, full physical keyboard/accessibility/state matrix and animation-clock/OS checks not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Builds and bounded WPF assertions passed; live Revit context, full physical keyboard/accessibility/state matrix and animation-clock/OS checks not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Builds and bounded WPF assertions passed; live Revit context, full physical keyboard/accessibility/state matrix and animation-clock/OS checks not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "All/Included/Excluded and hidden inclusion tested; named selection profiles are not part of approved material function scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific component absent from this task: no CRUD/editors/profiles/tabs/notification stack/elevation/parameter-check/standalone launcher.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-084",
+      "criterion": "ErrorRegistry.md#sab-ui-084",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded actual WPF/source and independent review; only applicable material-picker subcriteria assessed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+        "Docs/Ui/DesignSystem/MaterialSelection-Review.md"
+      ],
+      "unverified": [
+        "live Revit material collectors/transactions/model writes",
+        "physical Shift/Ctrl/keyboard/mouse input",
+        "full accessibility traversal",
+        "OS DPI transitions",
+        "installation"
+      ]
+    }
+  ],
+  "unverified": [
+    "live Revit material collectors/transactions/model writes",
+    "physical Shift/Ctrl/keyboard/mouse input",
+    "full accessibility traversal",
+    "OS DPI transitions",
+    "installation"
+  ]
+}

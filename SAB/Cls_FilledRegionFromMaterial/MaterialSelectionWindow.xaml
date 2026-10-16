@@ -1,0 +1,108 @@
+<Window x:Class="SAB.FilledRegionFromMaterial.MaterialSelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:design="clr-namespace:SAB.UI.FluentLight"
+        Title="SAB · Области заливки из материалов" Width="900" Height="780" MinWidth="760" MinHeight="620"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize" FontFamily="Segoe UI" FontSize="13"
+        Foreground="Black" Background="{DynamicResource SabBrush.WindowBackground}" UseLayoutRounding="True"
+        PreviewKeyDown="WindowKeyDown">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <design:FluentResourceDictionary />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="MaterialTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SabDataGridTextBlockStyle}">
+                <Setter Property="Foreground" Value="Black" />
+                <Setter Property="ToolTip" Value="{Binding Text, RelativeSource={RelativeSource Self}}" />
+            </Style>
+            <Style x:Key="MaterialActionStyle" TargetType="TextBlock" BasedOn="{StaticResource MaterialTextStyle}">
+                <Setter Property="Foreground" Value="{DynamicResource SabBrush.Accent}" />
+                <Setter Property="ToolTip" Value="{Binding ActionDescription}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ActionKind}" Value="Update"><Setter Property="Foreground" Value="{DynamicResource SabBrush.Success}" /></DataTrigger>
+                    <DataTrigger Binding="{Binding ActionKind}" Value="NoPattern"><Setter Property="Foreground" Value="{DynamicResource SabBrush.Error}" /></DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Background="{DynamicResource SabBrush.WindowBackground}">
+        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+        <Border Background="White" BorderBrush="{DynamicResource SabBrush.Border}" BorderThickness="0,0,0,1" Padding="24,14">
+            <StackPanel Orientation="Horizontal">
+                <Border Background="{DynamicResource SabBrush.Accent}" Width="28" Height="28" CornerRadius="5"><TextBlock Text="S" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+                <TextBlock Text="SAB" FontWeight="SemiBold" Margin="10,0,24,0" VerticalAlignment="Center" />
+                <TextBlock Text="Области заливки из материалов" VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+        <TextBlock Grid.Row="1" Text="Выбор материалов" Style="{StaticResource SabWindowTitleTextStyle}" Margin="24,18,24,12" />
+        <GroupBox Grid.Row="2" Header="Материалы документа" Style="{StaticResource SabLayeredSettingsGroupStyle}" Margin="24,0,24,18">
+            <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                <WrapPanel Margin="0,0,0,12">
+                    <StackPanel Margin="0,0,24,8">
+                        <TextBlock Text="Показать" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <Grid MinHeight="34" HorizontalAlignment="Left" design:Capsule.IsGroup="True">
+                            <Border Background="{DynamicResource SabBrush.TableHeaderBackground}" BorderBrush="{DynamicResource SabBrush.Border}" BorderThickness="1" CornerRadius="18" />
+                            <Border Tag="CapsuleIndicator" Background="{DynamicResource SabBrush.Accent}" CornerRadius="16" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False" />
+                            <StackPanel Orientation="Horizontal" Margin="2">
+                                <RadioButton x:Name="AllFilter" Content="Все" GroupName="MaterialFilter" Tag="All" IsChecked="True" Checked="FilterChanged" Padding="12,6" />
+                                <RadioButton x:Name="IncludedFilter" Content="Выбранные" GroupName="MaterialFilter" Tag="Included" Checked="FilterChanged" Padding="12,6" />
+                                <RadioButton x:Name="ExcludedFilter" Content="Невыбранные" GroupName="MaterialFilter" Tag="Excluded" Checked="FilterChanged" Padding="12,6" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,8">
+                        <TextBlock Text="Выделение" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="SelectAllButton" Content="Выделить все" Click="SelectAllClick" ToolTip="Выделить все видимые строки текущего списка" Margin="0,0,8,0" />
+                            <Button x:Name="EnableButton" Content="Включить" Click="EnableClick" IsEnabled="False" Margin="0,0,8,0" />
+                            <Button x:Name="DisableButton" Content="Выключить" Click="DisableClick" IsEnabled="False" />
+                        </StackPanel>
+                    </StackPanel>
+                </WrapPanel>
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="Поиск материала" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6" />
+                    <TextBox x:Name="SearchBox" TextChanged="SearchChanged" Margin="0,0,0,8" ToolTip="Поиск по названию материала" AutomationProperties.Name="Поиск материала" />
+                </StackPanel>
+                <Border Grid.Row="2" Style="{StaticResource SabCollectionBorderStyle}" Tag="CollectionFrame">
+                    <Grid>
+                        <DataGrid x:Name="MaterialsGrid" Style="{StaticResource SabDataGridStyle}" IsReadOnly="True"
+                                  SelectionMode="Extended" SelectionUnit="FullRow" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  CanUserReorderColumns="False" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                  SelectionChanged="GridSelectionChanged" PreviewKeyDown="GridKeyDown" Foreground="Black">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="В работу" Width="82" CanUserSort="False" HeaderStyle="{StaticResource SabCenteredHeaderStyle}">
+                                    <DataGridTemplateColumn.CellTemplate><DataTemplate>
+                                        <ToggleButton Template="{StaticResource SabSwitchTemplate}" Width="38" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                      IsChecked="{Binding Included, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      PreviewMouseLeftButtonDown="ToggleMouseDown" Click="ToggleClick" ToolTip="{Binding Name}"
+                                                      AutomationProperties.Name="{Binding Name}" />
+                                    </DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Материал" Binding="{Binding Name}" Width="*" MinWidth="190" ElementStyle="{StaticResource MaterialTextStyle}" />
+                                <DataGridTextColumn Header="Штриховка сечения" Binding="{Binding CutPatternText}" Width="230" MinWidth="180" ElementStyle="{StaticResource MaterialTextStyle}" />
+                                <DataGridTextColumn Header="Действие" Binding="{Binding ActionText}" Width="142" ElementStyle="{StaticResource MaterialActionStyle}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock x:Name="EmptyText" Text="Материалы не найдены" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed" />
+                    </Grid>
+                </Border>
+                <TextBlock x:Name="CountsText" Grid.Row="3" FontSize="12" Margin="0,8,0,0" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+            </Grid>
+        </GroupBox>
+        <Border Grid.Row="3" Background="White" BorderBrush="{DynamicResource SabBrush.BorderWeak}" BorderThickness="0,1,0,0" Padding="24,12">
+            <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                <Border Style="{StaticResource SabInformationBorderStyle}" Margin="0,0,0,8"><TextBlock x:Name="StatusText" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" /></Border>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <Button Content="Инструкция" design:Instructions.File="SAB_HTML_Oblasti_zalivki.html" />
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="CancelButton" Content="Отмена" Click="CancelClick" Margin="0,0,8,0" />
+                        <Button x:Name="RunButton" Content="Создать и обновить" Style="{StaticResource SabPrimaryButtonStyle}" Click="RunClick" IsEnabled="False" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

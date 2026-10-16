@@ -118,6 +118,13 @@ try {
     $api = @($assembly.GetReferencedAssemblies() | Where-Object { $_.Name -in @('RevitAPI','RevitAPIUI') })
     if ($api.Count -ne 2 -or @($api | Where-Object { $_.Version.Major -ne ([int]$Year-2000) }).Count -gt 0) { throw "$Year payload has incorrect Revit API references" }
     $metadata = [Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes($assemblyPath))
+    foreach ($type in @('MaterialSelectionWindow','MaterialSelectionItem','FluentResourceDictionary','get_SelectedMaterialUniqueIds','BuildSelectionRows')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing material selection component: $type" } }
+    $resources = $assembly.GetManifestResourceStream('SAB.g.resources')
+    $resourceReader = New-Object System.Resources.ResourceReader($resources)
+    try {
+        $keys = @($resourceReader.GetEnumerator() | ForEach-Object { $_.Key })
+        if ($keys -notcontains 'cls_filledregionfrommaterial/materialselectionwindow.baml') { throw "$Year MSI missing compiled material selection window" }
+    } finally { $resourceReader.Close(); $resources.Close() }
     foreach ($type in @('ElevationDirectionPreviewWindow','ElevationDirectionPreviewController','ElevationDirectionPreviewService','ElevationSelectionGuidance','ContourDirectionGeometry','ContourLineOrientationService','get_PlannedDetailNumber')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing direction preview component: $type" } }
     foreach ($type in @('NotificationCard','NotificationStack','ParameterNotifications','CategorySelectionControl','CreateViewsAndSheetsWindow','ElevationCreationNotificationData','BuildNotification','get_PlaceFloorSpots','get_PlaceCeilingSpots','get_PlaceSlabSpots','ElevationAnnotationOwnershipService','ElevationSelectionListWindow','ElevationSelectionListItem','DeliverNotificationSafely','CheckSettingsCommand','CheckSettings','CheckCategories','ArmSearch')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing compiled UI component: $type" } }
     [ordered]@{ year=$Year; status='PASS'; productVersion=$properties.ProductVersion; productCode=$properties.ProductCode; upgradeCode=$properties.UpgradeCode; msi=[IO.Path]::GetFullPath($MsiPath); msiSha256=(Get-PayloadHash $MsiPath); sourceBin=[IO.Path]::GetFullPath($BinFolder); assemblyVersion=$assembly.GetName().Version.ToString(); apiReferences=@($api | ForEach-Object { $_.FullName }); verifiedPayload=$verified; installationPerformed=$false } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $work 'verification.json') -Encoding UTF8

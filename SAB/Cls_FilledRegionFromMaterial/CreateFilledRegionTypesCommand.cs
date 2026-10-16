@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Interop;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -27,7 +28,7 @@ namespace SAB.FilledRegionFromMaterial
             try
             {
                 PluginSettings settings = PluginSettingsStorage.Load(document);
-                return Run(document, settings);
+                return Run(document, settings, commandData.Application.MainWindowHandle);
             }
             catch (Exception exception)
             {
@@ -36,12 +37,10 @@ namespace SAB.FilledRegionFromMaterial
             }
         }
 
-        internal static Result Run(Document document, PluginSettings settings)
+        internal static Result Run(Document document, PluginSettings settings, IntPtr ownerHandle)
         {
-            MaterialScanResult scan = MaterialScanner.Scan(
-                document,
-                settings.IncludeUnusedMaterials,
-                settings.IncludePaintedMaterials);
+            // Manual selection always starts from the entire document, including unused materials.
+            MaterialScanResult scan = MaterialScanner.Scan(document, true, true);
             IList<FilledRegionType> existingTypes = new FilteredElementCollector(document)
                 .OfClass(typeof(FilledRegionType))
                 .Cast<FilledRegionType>()
@@ -56,9 +55,40 @@ namespace SAB.FilledRegionFromMaterial
                 return Result.Cancelled;
             }
 
-            SyncReport report = Synchronize(document, scan, existingTypes, settings);
-            TaskDialog.Show("Область заливки из материала", BuildReportText(scan, report, settings));
+            var selection = new MaterialSelectionWindow(BuildSelectionRows(document, scan.Materials, existingTypes, settings));
+            if (ownerHandle != IntPtr.Zero) new WindowInteropHelper(selection).Owner = ownerHandle;
+            if (selection.ShowDialog() != true) return Result.Cancelled;
+
+            var selectedIds = new HashSet<string>(selection.SelectedMaterialUniqueIds, StringComparer.Ordinal);
+            var selectedScan = new MaterialScanResult(scan.Materials.Where(material => selectedIds.Contains(material.UniqueId)).ToList(), 0, 0);
+            if (selectedScan.Materials.Count == 0) return Result.Cancelled;
+            SyncReport report = Synchronize(document, selectedScan, existingTypes, settings);
+            TaskDialog.Show("Область заливки из материала", BuildReportText(selectedScan, report, settings));
             return Result.Succeeded;
+        }
+
+        private static IEnumerable<MaterialSelectionItem> BuildSelectionRows(Document document,
+            IEnumerable<Material> materials, IEnumerable<FilledRegionType> existingTypes, PluginSettings settings)
+        {
+            var names = new HashSet<string>(existingTypes.Select(type => type.Name), StringComparer.OrdinalIgnoreCase);
+            var linkedIds = new HashSet<string>(existingTypes.Select(MaterialTypeMetadata.Read).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.Ordinal);
+            return materials.Select(material =>
+            {
+                string targetName = settings.TypeNamePrefix + material.Name;
+                string foreground = CutPatternName(document, material.CutForegroundPatternId);
+                string background = CutPatternName(document, material.CutBackgroundPatternId);
+                string patterns = string.IsNullOrEmpty(foreground) ? background
+                    : string.IsNullOrEmpty(background) ? foreground : foreground + " / " + background;
+                return new MaterialSelectionItem(material.UniqueId, material.Name, string.IsNullOrEmpty(patterns) ? "—" : patterns,
+                    HasCutPattern(material), linkedIds.Contains(material.UniqueId) || names.Contains(targetName),
+                    settings.SkipMaterialsWithoutCutPattern, targetName);
+            }).ToList();
+        }
+
+        private static string CutPatternName(Document document, ElementId patternId)
+        {
+            var element = patternId == ElementId.InvalidElementId ? null : document.GetElement(patternId) as FillPatternElement;
+            return element == null ? string.Empty : element.Name;
         }
 
         private static SyncReport Synchronize(

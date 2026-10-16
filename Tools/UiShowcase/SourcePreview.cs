@@ -42,6 +42,11 @@ namespace SAB.UiShowcase
         [MethodImpl(MethodImplOptions.NoInlining)] static int Run(string[] args)
         {
             var app=new Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};
+            if(args.Contains("--capture-material-selection"))
+            {
+                SabWindowAnimationService.Enabled=false;
+                return MaterialSelectionEvidence.Run(args[Array.IndexOf(args,"--out")+1]);
+            }
             if(args.Contains("--capture-selection-guidance"))
             {
                 SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;

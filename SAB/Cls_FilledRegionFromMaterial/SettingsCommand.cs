@@ -42,7 +42,7 @@ namespace SAB.FilledRegionFromMaterial
                 }
 
                 if (window.RunRequested)
-                    return CreateFilledRegionTypesCommand.Run(document, window.Settings);
+                    return CreateFilledRegionTypesCommand.Run(document, window.Settings, commandData.Application.MainWindowHandle);
 
                 TaskDialog.Show(
                     "Область заливки из материала",

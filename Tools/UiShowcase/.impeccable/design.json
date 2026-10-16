@@ -1183,6 +1183,35 @@
       "evidence": "Docs/Ui/DesignSystem/screenshots-preview-runtime/provenance.json",
       "sharedTokensChanged": false,
       "liveRevit": "NOT RUN"
+    },
+    "materialSelection": {
+      "canonicalLayout": "Docs/Ui/DesignSystem/MaterialSelection-Layout.md",
+      "moduleVersion": "1.1.3",
+      "pattern": "Data Manager",
+      "sharedTokensUnchanged": true,
+      "normalRowForeground": "#000000",
+      "actionBrushKeys": [
+        "SabBrush.Accent",
+        "SabBrush.Success",
+        "SabBrush.Error"
+      ],
+      "columns": [
+        "В работу",
+        "Материал",
+        "Штриховка сечения",
+        "Действие"
+      ],
+      "windowDip": [
+        900,
+        780
+      ],
+      "minimumDip": [
+        760,
+        620
+      ],
+      "sharedResourceOwner": "SAB/UI/FluentLight/FluentResources.cs",
+      "evidence": "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+      "installationAuthorized": false
     }
   },
   "components": [

@@ -137,9 +137,11 @@
                                 <TextBlock Text="Префикс типов" Style="{StaticResource SabFieldLabelTextStyle}" />
                                 <TextBox x:Name="PrefixTextBox" Style="{StaticResource SabTextBoxStyle}" />
                                 <CheckBox x:Name="IncludeUnusedMaterialsCheckBox"
+                                          Visibility="Collapsed"
                                           Content="Обрабатывать все материалы документа"
                                           Style="{StaticResource SabCheckBoxStyle}" Margin="0,14,0,0" />
                                 <CheckBox x:Name="IncludePaintedMaterialsCheckBox"
+                                          Visibility="Collapsed"
                                           Content="Учитывать материалы покраски"
                                           Style="{StaticResource SabCheckBoxStyle}" Margin="0,9,0,0" />
                                 <CheckBox x:Name="SkipWithoutPatternCheckBox"
@@ -314,7 +316,7 @@
                         <Button Content="Сохранить" Width="110"
                                 Style="{StaticResource SabNeutralButtonStyle}"
                                 Margin="0,0,10,0" Click="SaveClick" />
-                        <Button Content="Создать / обновить" Width="180" IsDefault="True"
+                        <Button Content="Выбрать материалы" Width="180" IsDefault="True"
                                 Style="{StaticResource SabPrimaryButtonStyle}"
                                 ToolTip="Сохранить настройки и создать или обновить области заливки из материалов."
                                 Click="RunClick" />

@@ -113,14 +113,21 @@ namespace SAB
                 Image = Ribbon.GetMaterialQuantityImage(16)
             });
 
-            // Области заливки: настройки и выполнение в одном окне.
+            // Existing main-button identity is retained; creation starts with manual material selection.
             Ribbon.AddPushButtonSingle(
                 albumPanel,
                 "SAB_FilledRegionFromMaterial_Settings",
                 "Области заливки\nиз материала",
-                "SAB.FilledRegionFromMaterial.SettingsCommand",
+                "SAB.FilledRegionFromMaterial.CreateFilledRegionTypesCommand",
                 "SAB.Resources.FilledRegionCreate_32.png",
                 "SAB.Resources.FilledRegionCreate_16.png");
+            Ribbon.AddPushButtonSingle(
+                albumPanel,
+                "SAB_FilledRegionFromMaterial_Configure",
+                "Настройки\nобластей заливки",
+                "SAB.FilledRegionFromMaterial.SettingsCommand",
+                "SAB.Resources.FilledRegionSettings_32.png",
+                "SAB.Resources.FilledRegionSettings_16.png");
 
             // Развертки: основная команда, три инструмента и две команды оформления.
             Ribbon.AddPushButtonSingle(

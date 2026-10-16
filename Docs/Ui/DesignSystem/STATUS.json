@@ -50,17 +50,17 @@
   "installer": {
     "entryPoint": "Build-Msi.bat",
     "configuration": "Release",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "years": [
       2022,
       2023,
       2024
     ],
     "payloadVerified": true,
-    "evidence": "Docs/Ui/DesignSystem/SelectionGuidance-Installer.json",
-    "independentReview": "Docs/Ui/DesignSystem/SelectionGuidance-Review.md",
+    "evidence": "Docs/Ui/DesignSystem/MaterialSelection-Installer.json",
+    "independentReview": "Docs/Ui/DesignSystem/MaterialSelection-Review.md",
     "installationPerformed": false,
-    "scope": "Published selection-stage guide plus prior compact Directions window; fresh extracted DLL/resources/families/instructions and API references verified"
+    "scope": "Current material selection compiled BAML/DTO plus retained existing modules; fresh extracted MSI2022/2023/2024 verified."
   },
   "elevations": {
     "stage": "production_migrated",
@@ -232,5 +232,29 @@
     "tag": "v1.1.0",
     "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.0.json",
     "assetsSha256Verified": true
+  },
+  "materialSelection": {
+    "version": "1.1.3",
+    "stage": "production_implemented",
+    "approvedAt": "2026-10-16",
+    "authority": "Direct user approval in current chat: implement four-column picker, then commit+push, update distributions and publish new release.",
+    "productionMigrationAuthorized": true,
+    "publicationAuthorized": true,
+    "installationAuthorized": false,
+    "nativeAssertions": 42,
+    "captures": 9,
+    "layout": "Docs/Ui/DesignSystem/MaterialSelection-Layout.md",
+    "evidence": "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+    "report": "Docs/Ui/DesignSystem/MaterialSelection-Report.json",
+    "installerEvidence": "Docs/Ui/DesignSystem/MaterialSelection-Installer.json",
+    "independentReview": "Docs/Ui/DesignSystem/MaterialSelection-Review.md",
+    "releaseStatus": "prepared_pending_publication",
+    "unverified": [
+      "live Revit material collectors/transactions/model writes",
+      "physical Shift/Ctrl/keyboard/mouse input",
+      "full accessibility traversal",
+      "OS DPI transitions",
+      "installation"
+    ]
   }
 }

@@ -530,6 +530,10 @@
     <Compile Include="Cls_MaterialQuantity\UpdateMaterialQuantityCommand.cs" />
     <Compile Include="Cls_FilledRegionFromMaterial\CreateFilledRegionTypesCommand.cs" />
     <Compile Include="Cls_FilledRegionFromMaterial\MaterialScanner.cs" />
+    <Compile Include="Cls_FilledRegionFromMaterial\MaterialSelectionItem.cs" />
+    <Compile Include="Cls_FilledRegionFromMaterial\MaterialSelectionWindow.xaml.cs">
+      <DependentUpon>MaterialSelectionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Cls_FilledRegionFromMaterial\MaterialTypeMetadata.cs" />
     <Compile Include="Cls_FilledRegionFromMaterial\ParameterCatalog.cs" />
     <Compile Include="Cls_FilledRegionFromMaterial\PluginSettings.cs" />
@@ -556,6 +560,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Cls_FilledRegionFromMaterial\SettingsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Cls_FilledRegionFromMaterial\MaterialSelectionWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

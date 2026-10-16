@@ -7,6 +7,7 @@ import hashlib
 import json
 import re
 import sys
+import subprocess
 from SourceHash import matches, matches_bytes
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -104,8 +105,23 @@ if production.exists():
     directions = read_json(directions_path) if directions_path.exists() else None
     guidance_path = D/'SelectionGuidance-Provenance.json'
     guidance = read_json(guidance_path) if guidance_path.exists() else None
+    material_path = D/'MaterialSelection-Provenance.json'
+    material = read_json(material_path) if material_path.exists() else None
     for name, sha in active['files'].items():
         source_bytes = (ROOT/name).read_bytes()
+        if material is not None and name in material.get('sourceBeforeGitBlobSha256', {}):
+            git = Path(r'C:\Users\svetl\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe')
+            original = subprocess.run([str(git), 'show', material['sourceRevision']+':'+name], cwd=ROOT, capture_output=True)
+            authorized = (material.get('uiSourceOverrides') is False and original.returncode == 0 and
+                material.get('historicalProof') == 'Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json' and
+                material.get('historicalProofSha256') == hashlib.sha256(guidance_path.read_bytes()).hexdigest() and
+                hashlib.sha256(source_bytes).hexdigest() == material['source'].get(name) and
+                hashlib.sha256(original.stdout).hexdigest() == material['sourceBeforeGitBlobSha256'][name])
+            require(authorized, 'Invalid material selection source successor: '+name)
+            if authorized:
+                prior_expected = guidance.get('source', {}).get(name, {}).get('after', sha) if guidance else sha
+                candidates = [original.stdout, original.stdout.replace(b'\r\n', b'\n'), original.stdout.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')]
+                source_bytes = next((data for data in candidates if hashlib.sha256(data).hexdigest() == prior_expected), original.stdout)
         if guidance is not None and name in guidance.get('source', {}):
             delta = guidance['source'][name]
             before = ROOT/'outputs/ui-production-preview/selection-guidance-baseline/files'/name

@@ -1,0 +1,45 @@
+Actual SAB.dll MaterialSelectionWindow; detached synthetic rows; clean Application resources; native WPF outside Revit.
+Revit operations, physical input, OS DPI and model transactions: NOT RUN.
+PASS exact four columns and no class
+PASS all document fixture rows present
+PASS initially no material included and execution disabled
+PASS native Extended FullRow selection
+PASS shared row44 header38
+PASS normal material text black 0
+PASS normal action colour 0
+PASS normal material text black 1
+PASS normal action colour 1
+PASS normal material text black 2
+PASS normal action colour 2
+PASS enable highlighted package
+PASS selected material text black 0
+PASS selected action colour 0
+PASS selected material text black 1
+PASS selected action colour 1
+PASS selected material text black 2
+PASS selected action colour 2
+PASS automation toggle applies entire highlighted package
+PASS routed mouse toggle preserves package
+PASS included filter has three rows
+PASS snapshot disable removes all filtered included rows
+PASS excluded filter contains entire catalogue
+PASS Select All only visible search rows
+PASS enable snapshot removes row from excluded filter
+PASS case-insensitive search by material name
+PASS hidden inclusion retained in counts
+PASS empty search keeps hidden included material executable
+PASS empty state rendered
+PASS only missing hatch disables run
+PASS missing hatch red wording
+PASS routed Space includes highlighted package
+PASS minimum footer within client
+PASS normal columns fit minimum width
+PASS scrollbar below header
+PASS last long material row reachable
+PASS close returns no selection result
+PASS modal confirmation succeeds
+PASS confirmation contains only included stable IDs including explicit skip
+PASS modal cancellation has no IDs
+PASS skip-disabled legacy behaviour preserved
+PASS empty catalogue disables all selection/execution
+COMPLETED; assertions=42; captures=9

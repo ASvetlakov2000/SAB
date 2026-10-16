@@ -4,6 +4,12 @@ using System.Windows;
 
 namespace SAB.UI.FluentLight
 {
+    /// <summary>Loads the shared on-disk dictionary from compiled as well as loose XAML.</summary>
+    public sealed class FluentResourceDictionary : ResourceDictionary
+    {
+        public FluentResourceDictionary() { MergedDictionaries.Add(FluentResources.CreateDictionary()); }
+    }
+
     /// <summary>Scoped resources for migrated SAB windows. Never changes Revit application resources.</summary>
     public static class FluentResources
     {
