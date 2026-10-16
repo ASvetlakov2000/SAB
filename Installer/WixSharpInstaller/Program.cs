@@ -221,6 +221,13 @@ namespace WixSharpInstaller
                 AllowSameVersionUpgrades = true,
                 DowngradeErrorMessage = "A newer version of SAB is already installed."
             };
+            // Публичная1.1.4 была ошибочно пронумерована; разрешаем заменить только её.
+            // Остальные более новые версии по-прежнему защищены от downgrade.
+            if (version >= new Version(1, 1, 1) && version < new Version(1, 1, 4))
+            {
+                project.MajorUpgrade = null;
+                project.WixSourceGenerated += document => AddCorrectedReleaseUpgrade(document, version, upgradeCode);
+            }
             project.WixSourceGenerated += AddLegacyManifestMigration;
 
             // Block to keep installer build deterministic for same source structure.
@@ -234,6 +241,35 @@ namespace WixSharpInstaller
             {
                 throw new InvalidOperationException("MSI was not generated: " + expectedMsiPath);
             }
+        }
+
+        private static void AddCorrectedReleaseUpgrade(XDocument document, Version version, Guid upgradeCode)
+        {
+            XElement package = document.Descendants().Single(element => element.Name.LocalName == "Package");
+            XNamespace ns = package.Name.Namespace;
+            string current = version.ToString(3);
+            var upgrade = new XElement(ns + "Upgrade", new XAttribute("Id", upgradeCode.ToString("B")));
+            upgrade.Add(new XElement(ns + "UpgradeVersion",
+                new XAttribute("Maximum", current), new XAttribute("IncludeMaximum", "yes"),
+                new XAttribute("MigrateFeatures", "yes"), new XAttribute("Property", "SAB_PREVIOUS_RELEASE")));
+            upgrade.Add(new XElement(ns + "UpgradeVersion",
+                new XAttribute("Minimum", "1.1.4"), new XAttribute("Maximum", "1.1.4"),
+                new XAttribute("IncludeMinimum", "yes"), new XAttribute("IncludeMaximum", "yes"),
+                new XAttribute("MigrateFeatures", "yes"), new XAttribute("Property", "SAB_MISNUMBERED_RELEASE")));
+            upgrade.Add(new XElement(ns + "UpgradeVersion",
+                new XAttribute("Minimum", current), new XAttribute("IncludeMinimum", "no"),
+                new XAttribute("Maximum", "1.1.4"), new XAttribute("IncludeMaximum", "no"),
+                new XAttribute("OnlyDetect", "yes"), new XAttribute("Property", "SAB_NEWER_RELEASE")));
+            upgrade.Add(new XElement(ns + "UpgradeVersion",
+                new XAttribute("Minimum", "1.1.4"), new XAttribute("IncludeMinimum", "no"),
+                new XAttribute("OnlyDetect", "yes"), new XAttribute("Property", "SAB_FUTURE_RELEASE")));
+            package.Add(upgrade);
+            package.Add(new XElement(ns + "Launch",
+                new XAttribute("Condition", "Installed OR (NOT SAB_NEWER_RELEASE AND NOT SAB_FUTURE_RELEASE)"),
+                new XAttribute("Message", "A newer version of SAB is already installed.")));
+            XElement sequence = package.Element(ns + "InstallExecuteSequence");
+            if (sequence == null) { sequence = new XElement(ns + "InstallExecuteSequence"); package.Add(sequence); }
+            sequence.Add(new XElement(ns + "RemoveExistingProducts", new XAttribute("After", "InstallInitialize")));
         }
 
         private static void AddLegacyManifestMigration(XDocument document)

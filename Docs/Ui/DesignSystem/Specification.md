@@ -153,3 +153,7 @@ Document identity во всех preview lifecycle callbacks и continuation оп
 ## Привязка preview16.10
 
 По прямому запросу annotation origin находится на кончике стрелки и вставляется в середину source line. Flip вращает annotation на месте, real elevation MarkerPoint отдельно меняет сторону с прежним MarkerDistance. Новый RFA2022 применяется в пакетах22/23; существующее в модели семейство автоматически не перезагружается. Читаемость подписей — native Keep Readable каждой метки, без обещания постоянно горизонтального текста. WPF/footer не менялись; предыдущие captures относятся к1.1.3. [Контракт и evidence](ElevationPreviewTip-Implementation.md).
+
+## Окно «Направления»: уточнение16.10
+
+Прямое пользовательское указание заменяет широкую компоновку и видимую Cancel предыдущих preview-протоколов. Заголовок «Направления», без статистики марок/контуров. Три равные по ширине кнопки строго вертикально: синяя «Сменить сторону», белая «Инструкция», синяя «Создать развёртки»; общие scoped styles, min34, gap12, padding24. Width240/NoResize/SizeToContent.Height. Пустой статус полностью Collapsed; operational error/busy остаются в bounded180 scroll. Крестик/Escape сохраняют CancelRequested/ExternalEvent/cleanup. HTML не содержит выделенных на пользовательском скриншоте абзацев Keep Readable, коротких участков и технических требований семейства; предупреждение о запрете штатного перемещения/поворота временных марок сохранено с точным названием «Сменить сторону». SAB-UI-082; [компоновка](DirectionsWindow-Layout.md).

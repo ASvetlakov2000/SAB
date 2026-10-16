@@ -4,6 +4,8 @@ param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
     [string]$Version,
     [string]$ReleaseName = '',
+    [ValidatePattern('^v\d+\.\d+\.\d+$')]
+    [string]$ReplaceTag = '',
     [switch]$PrepareOnly
 )
 
@@ -95,6 +97,18 @@ if ([string]::IsNullOrWhiteSpace($token)) {
 if ([string]::IsNullOrWhiteSpace($token)) { throw 'Нет доступа к GitHub: настройте Git Credential Manager или GH_TOKEN.' }
 $headers = @{ Authorization = "Bearer $token"; Accept = 'application/vnd.github+json'; 'User-Agent' = 'SAB-Release-Builder'; 'X-GitHub-Api-Version' = '2022-11-28' }
 try {
+    $previousReleases = @(Invoke-RestMethod -Uri "$api/releases?per_page=100" -Headers $headers | ForEach-Object { $_ })
+    $previousRelease = $previousReleases | Where-Object { -not $_.draft -and -not $_.prerelease -and $_.tag_name -ne $ReplaceTag } |
+        Sort-Object published_at -Descending | Select-Object -First 1
+    if ($previousRelease -and $previousRelease.tag_name -match '^v(\d+)\.(\d+)\.(\d+)$') {
+        $expectedVersion = '{0}.{1}.{2}' -f $Matches[1], $Matches[2], (1 + [int]$Matches[3])
+        if ($Version -ne $expectedVersion) { throw "После $($previousRelease.tag_name) следующий выпуск должен иметь номер $expectedVersion." }
+    }
+    $existingTag = & $gitPath -C $repositoryRoot ls-remote origin "refs/tags/$tag"
+    if ($LASTEXITCODE -ne 0 -or ($existingTag -and ($existingTag -split '\s+')[0] -ne $commit)) {
+        throw "Тег $tag уже указывает на другой коммит или не удалось проверить теги."
+    }
+    $title = if ([string]::IsNullOrWhiteSpace($ReleaseName)) { "SAB $Version — установщики для Revit 2022–2024" } else { "SAB $Version — $ReleaseName" }
     $release = $null
     try { $release = Invoke-RestMethod -Uri "$api/releases/tags/$tag" -Headers $headers }
     catch { if ([int]$_.Exception.Response.StatusCode -ne 404) { throw } }
@@ -103,8 +117,32 @@ try {
             throw "Выпуск $tag уже опубликован или относится к другому коммиту. Используйте новую версию."
         }
     }
+    elseif (-not [string]::IsNullOrWhiteSpace($ReplaceTag)) {
+        if ($ReplaceTag -eq $tag) { throw 'Для исправления номера нужен другой исходный тег.' }
+        $replaced = Invoke-RestMethod -Uri "$api/releases/tags/$ReplaceTag" -Headers $headers
+        $latest = Invoke-RestMethod -Uri "$api/releases/latest" -Headers $headers
+        if ($replaced.draft -or $replaced.id -ne $latest.id -or $replaced.immutable) {
+            throw 'Заменить можно только текущий опубликованный изменяемый выпуск.'
+        }
+        # До замены сохранить исходные метаданные и все файлы; старый Git-тег остаётся.
+        $backup = Join-Path $repositoryRoot "outputs\ui-production-preview\release-replacement\$ReplaceTag"
+        New-Item -ItemType Directory -Path $backup -Force | Out-Null
+        $backupMetadata = Join-Path $backup 'release.json'
+        if (-not (Test-Path -LiteralPath $backupMetadata)) {
+            [IO.File]::WriteAllText($backupMetadata, ($replaced | ConvertTo-Json -Depth 20), [Text.UTF8Encoding]::new($false))
+        }
+        foreach ($name in $assetNames) {
+            $originalAsset = $replaced.assets | Where-Object { $_.name -eq $name } | Select-Object -First 1
+            if (-not $originalAsset) { throw "В исходном выпуске отсутствует $name." }
+            $backupFile = Join-Path $backup $name
+            if (-not (Test-Path -LiteralPath $backupFile)) { Invoke-WebRequest -Uri $originalAsset.browser_download_url -OutFile $backupFile }
+            $backupDigest = 'sha256:' + (Get-FileHash -LiteralPath $backupFile -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($backupDigest -ne $originalAsset.digest) { throw "Не удалось сохранить исходный файл $name перед заменой." }
+        }
+        $body = @{ tag_name = $tag; target_commitish = $commit; name = $title; body = $notes; draft = $true; prerelease = $false } | ConvertTo-Json
+        $release = Invoke-RestMethod -Uri "$api/releases/$($replaced.id)" -Headers $headers -Method Patch -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
+    }
     else {
-        $title = if ([string]::IsNullOrWhiteSpace($ReleaseName)) { "SAB $Version — установщики для Revit 2022–2024" } else { "SAB $Version — $ReleaseName" }
         $body = @{ tag_name = $tag; target_commitish = $commit; name = $title; body = $notes; draft = $true; prerelease = $false } | ConvertTo-Json
         $release = Invoke-RestMethod -Uri "$api/releases" -Headers $headers -Method Post -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
     }
@@ -114,6 +152,11 @@ try {
         $digest = 'sha256:' + (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
         $assets = @(Invoke-RestMethod -Uri "$api/releases/$($release.id)/assets" -Headers $headers | ForEach-Object { $_ })
         $asset = $assets | Where-Object { $_.name -eq $name } | Select-Object -First 1
+        if ($asset -and $asset.digest -ne $digest -and -not [string]::IsNullOrWhiteSpace($ReplaceTag)) {
+            if (-not $release.draft) { throw 'Замена файлов допускается только в подготовленном черновике.' }
+            Invoke-RestMethod -Uri "$api/releases/assets/$($asset.id)" -Headers $headers -Method Delete | Out-Null
+            $asset = $null
+        }
         if (-not $asset) {
             $uploadUri = "https://uploads.github.com/repos/$repository/releases/$($release.id)/assets?name=$name"
             $asset = Invoke-RestMethod -Uri $uploadUri -Headers $headers -Method Post -ContentType 'application/octet-stream' -InFile $path

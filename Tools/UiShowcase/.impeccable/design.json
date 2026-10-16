@@ -1563,5 +1563,21 @@
       "Don't turn DIP, WPF Thickness or native triggers into pretend CSS components or web breakpoints.",
       "Don't place module descriptions or instructional prose, even short instructions, inside windows or replace removed prose with empty frames."
     ]
+  },
+  "directionsWindow": {
+    "date": "2026-10-16",
+    "pattern": "Compact Dialog, explicit vertical user layout",
+    "productionOwner": "SAB/Cls_InteriorElevations/Views/ElevationDirectionPreviewWindow.cs",
+    "widthDip": 240,
+    "actions": [
+      "Сменить сторону:shared primary",
+      "Инструкция:shared outline",
+      "Создать развёртки:shared primary"
+    ],
+    "gapDip": 12,
+    "summaryVisible": false,
+    "cancelButtonVisible": false,
+    "cleanup": "existing X/Escape via ExternalEvent",
+    "evidence": "Docs/Ui/DesignSystem/DirectionsWindow-Provenance.json"
   }
 }

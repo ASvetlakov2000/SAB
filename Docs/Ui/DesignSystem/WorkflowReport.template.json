@@ -828,6 +828,16 @@
       "reason": "Форма ещё не заполнена",
       "evidence": [],
       "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
     }
   ]
 }

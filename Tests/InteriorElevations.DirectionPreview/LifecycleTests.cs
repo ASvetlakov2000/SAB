@@ -98,7 +98,7 @@ namespace SAB.InteriorElevations.Views
     {
         public static ElevationDirectionPreviewWindow Last;
         public bool IsBusy,Closed,Visible;public string Status;
-        public ElevationDirectionPreviewWindow(string text){Last=this;}
+        public ElevationDirectionPreviewWindow(){Last=this;}
         public event Action FlipRequested,CreateRequested,CancelRequested;
         public void Cancel()=>CancelRequested?.Invoke();public void Create()=>CreateRequested?.Invoke();public void Flip()=>FlipRequested?.Invoke();
         public void SetStatus(string text,bool busy=false){Status=text;IsBusy=busy;}

@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-16",
+  "version": "1.1.1",
+  "sourceRevision": "96118f4078a1516fe86067779282f84863667d2e",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\directions-window-baseline",
+  "historicalProof": "Docs/Ui/DesignSystem/ElevationPreviewTip-Provenance.json",
+  "historicalProofSha256": "5d4cf5f97686e06e174cff9df0d066cc5d5717bb30261313251d3654951d6022",
+  "uiSourceOverrides": false,
+  "source": {
+    "SAB/Cls_InteriorElevations/Views/ElevationDirectionPreviewWindow.cs": {
+      "before": "e3fb7d346fbd4cc5ab93ae9d88a82a2ca740455108cc58aeab6db873d030036a",
+      "beforeCommitBlobSha256": "e3fb7d346fbd4cc5ab93ae9d88a82a2ca740455108cc58aeab6db873d030036a",
+      "after": "980775981f41c1e5e04f20778f41dee64e270dfa040ec8a3ab266425a5acfd9a"
+    },
+    "SAB/Cls_InteriorElevations/Services/Elevations/ElevationDirectionPreviewController.cs": {
+      "before": "9ea406929b2080f2ed6a9f5e4324c7c6bc14d9e792c959887d82bdff9140ffa1",
+      "beforeCommitBlobSha256": "3af60f12ec21086278e13aba8925b1039474d0bc4d2f7fe1f98d87aa04def328",
+      "after": "318e406c29e511b1d30b71707ad70a719751bb8f4ab252b10a163cc93af8ac0c"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "72fb71f5b31ace642d5a57dbb34b24326422d7e5c6f10a1c3bed7d5877333161",
+      "beforeCommitBlobSha256": "72fb71f5b31ace642d5a57dbb34b24326422d7e5c6f10a1c3bed7d5877333161",
+      "after": "cd1a3b581094447a02e9a4f2272426ba8b2c3fd9acf1e1dd2f42c2613b0b1bdc"
+    },
+    "Docs/PluginInstructions/SAB_HTML_Sozdanie_i_korrektirovka_razvertok.html": {
+      "before": "274a325c76463e215391261cdfe6246c29d024e04fb8d58487a8aa3d06f2142c",
+      "beforeCommitBlobSha256": "d0efdab56933e87a40085a2cacb0ba8d7861680cbb762b30fd8f6992aba9d82b",
+      "after": "190400a99e5fae60bbc930b35f237b1d7262694d12cd41932c949fe399b0c848"
+    },
+    "Tools/UiShowcase/ElevationDirectionPreviewEvidence.cs": {
+      "before": "a6149526fa7a110b6ccd2930be85cfa0056d772f70569a1cb5e67ec08828a6b2",
+      "beforeCommitBlobSha256": "a6149526fa7a110b6ccd2930be85cfa0056d772f70569a1cb5e67ec08828a6b2",
+      "after": "c7ce8bc4773291a16321a9ed1726cd1d63804e6a2b15fc6b3d215d447ae5b03e"
+    },
+    "Tools/UiShowcase/SourcePreview.cs": {
+      "before": "bc32559b80e8994152a07102fdb01bfb52a990f8074e2880f99477ad7a8b50c0",
+      "beforeCommitBlobSha256": "bc32559b80e8994152a07102fdb01bfb52a990f8074e2880f99477ad7a8b50c0",
+      "after": "7887a43dc1333ba3653dc347bfd54c0d387d2ddb9ed47f2436b5001dce2a8092"
+    },
+    "Tools/UiShowcase/Build.ps1": {
+      "before": "288dc9fd922b68d973d9282ed7dfc05bcf8bc1365a2ac68e96d0f3970ca013cf",
+      "beforeCommitBlobSha256": "288dc9fd922b68d973d9282ed7dfc05bcf8bc1365a2ac68e96d0f3970ca013cf",
+      "after": "e4ecf1d66644d0c9c5bbc9cb14f6dcb7b8c882b4dff5e31907aede7cbbd7e768"
+    },
+    "Installer/WixSharpInstaller/Program.cs": {
+      "before": "874fe1323562078e42f71ab5ccd4bcbdebc3a51addfa89d7f4eee0d377b05a2b",
+      "beforeCommitBlobSha256": "5624c177c155b24117df101f101586f7e3120d90b1cc141c3adff39625b22670",
+      "after": "0beeb5cacb6136bc74c3285ca85c7ce828568c20fffa8a9d7bf68b3197e74319"
+    },
+    "Installer/Publish-GitHubRelease.ps1": {
+      "before": "112f254fb8fc335cfafd16322380ffe9b7a016ecac8fc4d10fb1e3f85957a20a",
+      "beforeCommitBlobSha256": "112f254fb8fc335cfafd16322380ffe9b7a016ecac8fc4d10fb1e3f85957a20a",
+      "after": "b9d459d481bac1d3f152702daeeba4ad319695900c1ee90b6e4c10ac48037336"
+    },
+    "Tests/InteriorElevations.DirectionPreview/LifecycleTests.cs": {
+      "before": "aacc74c986e17ed046120d8816714dff1e7f54ea80fb132a16eaf564dce4b39f",
+      "beforeCommitBlobSha256": "aacc74c986e17ed046120d8816714dff1e7f54ea80fb132a16eaf564dce4b39f",
+      "after": "b62ad053f9f5c09ab7c7b733cf4b4bca8809261ce808be303900bf3e0eafe4a2"
+    }
+  },
+  "actualAssembly": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\plugin\\SAB.dll",
+  "assemblySha256": "4c1c73dff35409791b8d724742634b201ffbe537b13f7503bea0ccd60bd45423",
+  "surface": "actual production SAB.dll WPF with fixtures outside Revit",
+  "runtimeDpi": 96,
+  "renderDpi": 96,
+  "nativeAssertions": 50,
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/preview-busy.png",
+      "sha256": "bbe35c076fc52f5364e5cfa330873ef45c6406a627612abf1533a523b24c1433"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/preview-minimum-error.png",
+      "sha256": "c33bbd427ebea3138d6065fc9feb5590937c487b473511e98008c028e6e8ac9c"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/preview-normal.png",
+      "sha256": "423af1eeafc0cd7420bfafbe62fe47a32bd3af43616853cddb4cfee16e787b94"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/preview-restored.png",
+      "sha256": "423af1eeafc0cd7420bfafbe62fe47a32bd3af43616853cddb4cfee16e787b94"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/settings-minimum-footer.png",
+      "sha256": "37f768d10b3b4ab27982c7d1f4dd5585394951130fc19902a7910d9a27ea98f2"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/settings-minimum-validation.png",
+      "sha256": "80c010454f7de17a8b78c3b0ae6d240ff7df7d906a8ace3c1dbcdfd0cef10ef3"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-directions-window/settings-preview-entry.png",
+      "sha256": "63fb9c108e41e09041d0065062c2e6c8ab53a4d58c5b75e88da05d76d6f064af"
+    }
+  ],
+  "logSha256": "e6ef51a577377b1b67e8b0e1433d69e27aaf3ffdcd2e750560fd93b9406755bb",
+  "serviceChecks": 66,
+  "htmlContentChecks": "PASS",
+  "installer": "Docs/Ui/DesignSystem/DirectionsWindow-Installer.json",
+  "unverified": [
+    "live Revit picking/transactions/RFA placement",
+    "actual installation including1.1.4→1.1.1",
+    "physical keyboard/mouse and accessibility automation",
+    "OS DPI transitions"
+  ]
+}

@@ -378,3 +378,7 @@ Direction preview15.10: Settings Form entry stays in Parameters card, existing f
 
 
 15.10 runtime successor: fixed five-button footer Instruction/room list/Preview/Pick lines/Create, last3sharedprimaryblue; mainCancel removed, modeless cleanupCancel retained. [Layout](../../Docs/Ui/DesignSystem/ElevationPreviewRuntime-Layout.md). Supersedes earlier Parameters-card preview placement; shared tokens unchanged.
+
+## Направления16.10
+
+Actual production Compact Dialog: width240DIP, SizeToContent.Height/NoResize, padding24; заголовок «Направления»20Semibold. Три full-width кнопки min34/gap12: Flip sharedPrimary, Instruction sharedOutline, Create sharedPrimary. Summary/Cancel UI удалены; пустой status Collapsed, nonempty bounded180. X/Escape сохраняют CancelRequested. Evidence: screenshots-directions-window, DirectionsWindow-Report/Review. Native WPF внеRevit, безOS/physical/installation claims.

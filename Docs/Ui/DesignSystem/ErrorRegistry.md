@@ -189,3 +189,9 @@ Notification059–064 применимы к текущей задаче. Для 
 
 
 Уточнение SAB-UI-079 от16.10: anchor preview — кончик стрелки в midpoint source line, при Flip точка preview неподвижна. Реальный elevation MarkerPoint сохраняет независимый отступ. Новый suppliedRFA2022 и прежнее правило no-reload; [реализация и пределы проверки](ElevationPreviewTip-Implementation.md). Native label readability и actual Revit placement требуют отдельной проверки; WPF не изменён.
+
+## Вертикальное окно направлений16.10
+
+| ID / источник | Ошибка | Общий владелец | Критерий | Проверка |
+|---|---|---|---|---|
+| <a id="sab-ui-082"></a>SAB-UI-082 · user [окно](reference/directions-window-user.png) / [инструкция](reference/directions-instruction-user.png) | Широкое окно и статистика мешают простому согласованию; инструкция содержит ненужные технические абзацы. | ElevationDirectionPreviewWindow / scoped action styles / module HTML. | Заголовок «Направления», portrait240DIP/NoResize/SizeToContent, без summary и видимой Отмены; вертикально Flip blue / Instruction white / Create blue, равные края, gap12, min34. Empty status Collapsed, long error bounded; X/Escape запрашивают прежний cleanup. Выделенные три абзаца HTML удалены, предупреждение о штатных move/rotate сохранено с реальным названием кнопки. | [Layout](DirectionsWindow-Layout.md); actual native WPF captures и события,66linked lifecycle regressions, fresh MSI22/23/24 и отдельный bounded review. Live Revit/physical input/OS DPI NOT RUN. |

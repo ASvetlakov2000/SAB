@@ -168,5 +168,24 @@
     "installationPerformed": false,
     "completedAt": "2026-10-14",
     "independentDisposition": "ship_ui_code_payload"
+  },
+  "directionsWindow": {
+    "version": "1.1.1",
+    "status": "local_msi_verified_with_independent_review",
+    "authorizationEvidence": "Direct user screenshots and sequential release correction16.10.2026",
+    "layout": "Docs/Ui/DesignSystem/DirectionsWindow-Layout.md",
+    "report": "Docs/Ui/DesignSystem/DirectionsWindow-Report.json",
+    "independentReview": "Docs/Ui/DesignSystem/DirectionsWindow-Review.md",
+    "actualAssertions": 50,
+    "actualPng": 7,
+    "serviceChecks": 66,
+    "installerYears": [
+      2022,
+      2023,
+      2024
+    ],
+    "installationPerformed": false,
+    "publicationAuthorized": true,
+    "publicationVerified": false
   }
 }

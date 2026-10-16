@@ -42,7 +42,7 @@ namespace SAB.UiShowcase
         [MethodImpl(MethodImplOptions.NoInlining)] static int Run(string[] args)
         {
             var app=new Application{ShutdownMode=ShutdownMode.OnExplicitShutdown};
-            if(args.Contains("--capture-preview-runtime"))
+            if(args.Contains("--capture-preview-runtime")||args.Contains("--capture-directions-window"))
             {
                 SabWindowBehaviorService.Initialize();SabWindowAnimationService.Enabled=false;
                 return ElevationDirectionPreviewEvidence.Run(args[Array.IndexOf(args,"--out")+1]);

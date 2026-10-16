@@ -49,12 +49,7 @@ namespace SAB.InteriorElevations.Services.Elevations
             try
             {
                 controller._service.Create(plan.Document, plan, lines);
-                int virtualCount = lines.Count(line => line.UsesVirtualClosure);
-                int unclosedCount = lines.Count(line => line.IsOpenContour && !line.UsesVirtualClosure);
-                controller._window = new ElevationDirectionPreviewWindow("Временных марок: " + lines.Count +
-                    (virtualCount > 0 ? ". Марок по виртуальному замыканию: " + virtualCount : string.Empty) +
-                    (unclosedCount > 0 ? ". Без определённой внутренней стороны: " + unclosedCount : string.Empty) +
-                    (virtualCount == 0 && unclosedCount == 0 ? ". Замкнутые контуры: исходная сторона внутрь." : "."));
+                controller._window = new ElevationDirectionPreviewWindow();
                 if (application.MainWindowHandle != IntPtr.Zero) new WindowInteropHelper(controller._window).Owner = application.MainWindowHandle;
                 controller._window.FlipRequested += () => controller.Request(DirectionPreviewOperation.Flip);
                 controller._window.CreateRequested += () => controller.Request(DirectionPreviewOperation.Create);
@@ -150,7 +145,7 @@ namespace SAB.InteriorElevations.Services.Elevations
                 {
                     var request = _event.Raise(DirectionPreviewOperation.Cancel);
                     if (request != ExternalEventRequest.Accepted && request != ExternalEventRequest.Pending)
-                        _window.SetStatus("Не удалось запустить очистку. Закройте предпросмотр кнопкой «Отмена» и повторите закрытие документа.");
+                        _window.SetStatus("Не удалось запустить очистку. Закройте окно «Направления» крестиком и повторите закрытие документа.");
                 }
                 catch (Exception exception) { _window.SetStatus(exception.Message); }
             }

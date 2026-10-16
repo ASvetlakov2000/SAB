@@ -1,4 +1,4 @@
-﻿param([switch]$Capture, [switch]$Open, [switch]$Notifications, [switch]$Elevations, [switch]$Redesign, [switch]$ElevationHotfix, [switch]$ParameterChecks, [switch]$DirectionPreview, [switch]$PreviewRuntime)
+﻿param([switch]$Capture, [switch]$Open, [switch]$Notifications, [switch]$Elevations, [switch]$Redesign, [switch]$ElevationHotfix, [switch]$ParameterChecks, [switch]$DirectionPreview, [switch]$PreviewRuntime, [switch]$DirectionsWindow)
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot | Split-Path -Parent
 if ($Open -and -not $Capture -and -not $Notifications) {
@@ -7,7 +7,7 @@ if ($Open -and -not $Capture -and -not $Notifications) {
 }
 $msbuild='C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe'
 $python='C:\Users\svetl\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
-if (-not ($DirectionPreview -or $PreviewRuntime)) {
+if (-not ($DirectionPreview -or $PreviewRuntime -or $DirectionsWindow)) {
 & $python (Join-Path $PSScriptRoot 'GenerateSourceViews.py')
 if ($LASTEXITCODE -ne 0) { throw 'Production UI source contract failed.' }
 & $python (Join-Path $PSScriptRoot 'GenerateElevationPreview.py')
@@ -20,6 +20,12 @@ $plugin=Join-Path $projectRoot 'outputs\ui-production-preview\plugin'
 & $msbuild (Join-Path $PSScriptRoot 'Sab.UiShowcase.csproj') /t:Build /p:Configuration=Debug /v:quiet /nologo
 if ($LASTEXITCODE -ne 0) { throw 'WPF host build failed.' }
 $previewExe=Join-Path $plugin 'SAB.UI.Preview.exe'
+if ($DirectionsWindow) {
+    $capturePath=Join-Path $projectRoot 'Docs\Ui\DesignSystem\screenshots-directions-window'
+    $run=Start-Process -FilePath $previewExe -ArgumentList @('--capture-directions-window','--out',('"'+$capturePath+'"')) -Wait -PassThru -WindowStyle Hidden
+    if ($run.ExitCode -ne 0) { throw 'Directions window actual WPF capture failed.' }
+    return
+}
 if ($DirectionPreview -or $PreviewRuntime) {
     $capturePath=Join-Path $projectRoot 'Docs\Ui\DesignSystem\screenshots-preview-runtime'
     $run=Start-Process -FilePath $previewExe -ArgumentList @('--capture-preview-runtime','--out',('"'+$capturePath+'"')) -Wait -PassThru -WindowStyle Hidden

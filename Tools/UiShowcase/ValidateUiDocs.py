@@ -100,6 +100,8 @@ if production.exists():
     runtime = read_json(runtime_path) if runtime_path.exists() else None
     tip_path = D/'ElevationPreviewTip-Provenance.json'
     tip = read_json(tip_path) if tip_path.exists() else None
+    directions_path = D/'DirectionsWindow-Provenance.json'
+    directions = read_json(directions_path) if directions_path.exists() else None
     for name, sha in active['files'].items():
         valid = matches(ROOT/name, sha)
         if not valid and numbering is not None:
@@ -143,12 +145,21 @@ if production.exists():
             if not valid and runtime_authorized and tip is not None:
                 tip_delta = tip.get('source', {}).get(name, {})
                 tip_baseline = ROOT/'outputs/ui-production-preview/preview-tip-baseline/files'/name
-                valid = (tip.get('uiSourceOverrides') is False and
+                tip_authorized = (tip.get('uiSourceOverrides') is False and
                          tip.get('historicalProof') == 'Docs/Ui/DesignSystem/screenshots-preview-runtime/provenance.json' and
                          tip.get('historicalProofSha256') == hashlib.sha256(runtime_path.read_bytes()).hexdigest() and
                          tip_delta.get('before') == current_delta.get('after') and tip_baseline.exists() and
-                         hashlib.sha256(tip_baseline.read_bytes()).hexdigest() == tip_delta.get('before') and
-                         hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == tip_delta.get('after'))
+                         hashlib.sha256(tip_baseline.read_bytes()).hexdigest() == tip_delta.get('before'))
+                valid = tip_authorized and hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == tip_delta.get('after')
+                if not valid and tip_authorized and directions is not None:
+                    delta = directions.get('source', {}).get(name, {})
+                    before = ROOT/'outputs/ui-production-preview/directions-window-baseline/files'/name
+                    valid = (directions.get('uiSourceOverrides') is False and
+                             directions.get('historicalProof') == 'Docs/Ui/DesignSystem/ElevationPreviewTip-Provenance.json' and
+                             directions.get('historicalProofSha256') == hashlib.sha256(tip_path.read_bytes()).hexdigest() and
+                             delta.get('before') == tip_delta.get('after') and before.exists() and
+                             hashlib.sha256(before.read_bytes()).hexdigest() == delta.get('before') and
+                             hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == delta.get('after'))
         require(valid, 'Stale production source proof: '+name)
     fresh = D/'screenshots-production-0.5'
     if (fresh/'provenance.json').exists():
