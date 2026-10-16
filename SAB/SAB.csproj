@@ -351,6 +351,7 @@
     <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomPlanSelectionService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Rooms\RoomVisibilityService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Selection\DetailLineSelectionService.cs" />
+    <Compile Include="Cls_InteriorElevations\Services\Selection\ElevationSelectionGuidance.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Selection\ElevationDecorationCatalogWorkflowService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Plans\RoomPlanSchemeCreationService.cs" />
     <Compile Include="Cls_InteriorElevations\Services\Settings\ElevationSettingsStorageService.cs" />

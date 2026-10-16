@@ -75,6 +75,11 @@ namespace SAB.UI.Notifications
         private void Spacing()
         { for (int i = 0; i < items.Children.Count; i++) ((NotificationCard)items.Children[i]).Margin = new Thickness(0, 0, 0, i == items.Children.Count - 1 ? 0 : 12); }
         private void RemoveRequested(object sender, EventArgs e) => Remove((NotificationCard)sender);
+        public void Dismiss(NotificationMessage message)
+        {
+            var card = Cards.FirstOrDefault(item => ReferenceEquals(item.Message, message));
+            if (card != null) Remove(card);
+        }
         private void Remove(NotificationCard card)
         {
             card.CloseRequested -= RemoveRequested; card.InteractionChanged -= Interaction;

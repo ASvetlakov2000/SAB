@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-16",
+  "version": "1.1.2",
+  "sourceRevision": "c26458fa8687725934dbb0a2c2637af4e02f6b68",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\selection-guidance-baseline",
+  "uiSourceOverrides": false,
+  "historicalProof": "Docs/Ui/DesignSystem/DirectionsWindow-Provenance.json",
+  "historicalProofSha256": "9af7f533cc98f69f9dd0f7882e95048819780744d599ecd00293ae01b3e177d3",
+  "source": {
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs": {
+      "before": "b74543b079990e93537219143e0515099079cbacc45bf3db86fdd14c750eb65e",
+      "after": "5a0e625da780b62a29652f945f6acc2338ea0471ced29e58f016246404af3807"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "before": "cd1a3b581094447a02e9a4f2272426ba8b2c3fd9acf1e1dd2f42c2613b0b1bdc",
+      "after": "955f937c4e44fdd9b8002f1573fd8d9ed51d07cff04486615b59216ccd1fbef8"
+    },
+    "SAB/SAB.csproj": {
+      "before": "d466f6ab9057cf17a45b588f9f4941f965d2d9b1206cf22c8180a52d8fe23b67",
+      "after": "fa5eda5f63e86cbc19ad1bba53539c3e2730905e2e98fddabfab4d8401235a8c"
+    },
+    "SAB/UI/Notifications/NotificationStack.cs": {
+      "before": "ddd13c93b51783b12c0d81d2e86dd4a9f3523cae800fd2e22903a0df99afd5f7",
+      "after": "0d707034feaf9c420904dfacd7836de2537f674c7d7ba7549fd5ce3fade88ec7"
+    },
+    "SAB/Cls_InteriorElevations/Services/Selection/ElevationSelectionGuidance.cs": {
+      "before": null,
+      "after": "715aa3eb106cb72975c3accc6be827d5750cae27d03998605e3028de74f8d1f5"
+    }
+  },
+  "actualAssembly": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\plugin\\SAB.dll",
+  "assemblySha256": "b1ed0c1e049b09c24882ad581ca648c9e8434f14451bd0236e7a8fd26e2904b5",
+  "surface": "actual shared WPF and adapter DTO fixtures; source call-order review separate from live Revit",
+  "logs": {
+    "Docs/Ui/DesignSystem/screenshots-selection-guidance/verification.txt": {
+      "sha256": "4e17b36c717d4b2cad56efacfba42ac3e9a3b6682526461edaa8f8fa5049d5d3",
+      "passCount": 33
+    },
+    "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/verification.txt": {
+      "sha256": "db8d976d95d3d298c12139daee454f5054a05195f655c02deba6174c8ce68fc1",
+      "passCount": 35
+    }
+  },
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/group-1-completed.png",
+      "sha256": "6ce85b8a2722261b87f0d3a59c180f4c1dc9a5fe1bf4429753e3ce287eb654d6"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/group-1.png",
+      "sha256": "578b67416ab40fbbcf1de43d4ceac2421514203d306409def0c47d11b41483d2"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/group-2.png",
+      "sha256": "d5096cf4fb47ef939e540f4067734fef68c36524b7ce0986bae213d12e5f5ac2"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/overview.png",
+      "sha256": "c4d0f81a57fbc9e0ba9900f8c144e3bcfc9443e434f559c1e5760709436957d6"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/room.png",
+      "sha256": "3a674c7e22dbfa8b2b74b05a22ed95de364636fa7ed896ebb5c5e79836e30fd7"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/stack.png",
+      "sha256": "f5281b7f2d429cb31afe51684d3ae4872911d6ab157b80d5de041808adb3ff2d"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/01-success.png",
+      "sha256": "23f1342fb33917eb2c0dd7fb6d15afad6e17d3c894c3cbe9efff4a254d82354a"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/02-warning.png",
+      "sha256": "4f2a33b6a93ff467d773ac4025503899b1789812dcaa35c885ae33826e91bdb0"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/03-selected-copied.png",
+      "sha256": "a95c4f5a7b0215f593ce2a0f0372039debf6e5406ec76cc6f82f4940769b56ee"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/04-error.png",
+      "sha256": "1d24c59904230501cc181536c04d848dea6830a9c2f04b60ef6cddc71ce543e4"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/05-clipboard-failure.png",
+      "sha256": "71c92f7f994294ff8411a26c032ff0e688fa12f76390ea7142af19c92568a065"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/06-long-minimum.png",
+      "sha256": "436b455a09036eb1580b21475105cbf30a56af8ba8ad9bc4e94ce9f434710d4f"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/07-long-144dpi-render.png",
+      "sha256": "728a45c1f528be15a45fbf838584fae48599a0ab40d28c0cccef43d183044e33"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/08-stack.png",
+      "sha256": "baddd7eea2e1d36d9a20c658f3ebd69b90ed4ad28f6777e3f6065845c26ed0ec"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/09-overflow.png",
+      "sha256": "d8f520d3db61b97d6eff60f14d48302296e29e54539d26738ce27529e10a9185"
+    }
+  ],
+  "runtimeDpi": 96,
+  "renderDpi": 96,
+  "serviceChecks": 66,
+  "unverified": [
+    "actual Revit picking/Escape/group dialogs and linked room selection",
+    "physical keyboard/mouse and OS DPI transitions",
+    "installation",
+    "actual model transactions/RFA placement"
+  ],
+  "recapture": "Five initially offset/clipped individual captures corrected with actual VisualBrush rendering and summary bounds checks; reviewer resolved blocker."
+}

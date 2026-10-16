@@ -186,6 +186,21 @@
     ],
     "installationPerformed": false,
     "publicationAuthorized": true,
-    "publicationVerified": false
+    "publicationVerified": true,
+    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.1"
+  },
+  "selectionGuidance": {
+    "version": "1.1.2",
+    "status": "local_msi_verified_with_independent_review",
+    "layout": "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md",
+    "report": "Docs/Ui/DesignSystem/SelectionGuidance-Report.json",
+    "guideAssertions": 33,
+    "sharedAssertions": 35,
+    "actualPng": 15,
+    "serviceChecks": 66,
+    "installationPerformed": false,
+    "publicationAuthorized": true,
+    "publicationVerified": false,
+    "independentReview": "Docs/Ui/DesignSystem/SelectionGuidance-Review.md"
   }
 }

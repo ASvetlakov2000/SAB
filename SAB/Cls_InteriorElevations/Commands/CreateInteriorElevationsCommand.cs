@@ -1484,9 +1484,12 @@ namespace SAB.InteriorElevations.Commands
         {
             selectionPackage = null;
 
+            ElevationSelectionGuidance.Show(uiDocument.Application.MainWindowHandle, ElevationSelectionGuidance.Overview());
+
             LineGroupSelectionMode lineGroupSelectionMode;
             if (!TrySelectLineGroupSelectionMode(out lineGroupSelectionMode))
             {
+                ElevationSelectionGuidance.Dismiss();
                 return false;
             }
 
@@ -1502,6 +1505,7 @@ namespace SAB.InteriorElevations.Commands
 
             if (!linesPicked)
             {
+                ElevationSelectionGuidance.Dismiss();
                 return false;
             }
 
@@ -1511,16 +1515,18 @@ namespace SAB.InteriorElevations.Commands
                 ToastNotifier.ShowWarning(
                     "SAB Развертки",
                     "Не выбраны корректные линии детализации. Нажмите 'Выбрать линии' и повторите выбор.");
+                ElevationSelectionGuidance.Dismiss();
                 return false;
             }
 
-            ToastNotifier.ShowInfo("SAB Развертки", "Выберите помещение, для которого будут созданы развертки.");
+            ElevationSelectionGuidance.Show(uiDocument.Application.MainWindowHandle, ElevationSelectionGuidance.Room());
 
             RoomDetectionService roomDetectionService = new RoomDetectionService();
             RoomData roomData;
             string roomSelectionError;
             if (!roomDetectionService.TryPickRoomData(uiDocument, pickRoomFromLink, out roomData, out roomSelectionError))
             {
+                ElevationSelectionGuidance.Dismiss();
                 if (!string.IsNullOrWhiteSpace(roomSelectionError))
                 {
                     ToastNotifier.ShowWarning("SAB Развертки", roomSelectionError);
@@ -1531,6 +1537,7 @@ namespace SAB.InteriorElevations.Commands
 
             if (!roomData.IsOnHostLevel(uiDocument.Document, activePlanLevelId))
             {
+                ElevationSelectionGuidance.Dismiss();
                 ToastNotifier.ShowWarning(
                     "SAB Развертки",
                     "Выбранное помещение находится на другом уровне. Выберите помещение на уровне активного плана.");
@@ -1539,6 +1546,7 @@ namespace SAB.InteriorElevations.Commands
 
             selectionPackage = new MultiRoomSelectionItem();
             selectionPackage.ApplySelection(lineGroups, selectedLines, roomData);
+            ElevationSelectionGuidance.Dismiss();
             return true;
         }
 
@@ -1729,9 +1737,6 @@ namespace SAB.InteriorElevations.Commands
 
             if (mode == LineGroupSelectionMode.SingleGroup)
             {
-                ToastNotifier.ShowInfo(
-                    "SAB Развертки",
-                    "Выбирайте линии одной группы по очереди. Esc завершает выбор.");
                 DetailLineSelectionResult singleGroupResult = selectionService.PickDetailLines(
                     uiDocument,
                     activeView,
@@ -1755,11 +1760,7 @@ namespace SAB.InteriorElevations.Commands
             int groupNumber = 1;
             while (true)
             {
-                ToastNotifier.ShowInfo(
-                    "SAB Развертки",
-                    "Выберите линии группы №" + groupNumber +
-                    " по очереди. Esc завершает группу.",
-                    8);
+                ElevationSelectionGuidance.Show(uiDocument.Application.MainWindowHandle, ElevationSelectionGuidance.Group(groupNumber));
 
                 DetailLineSelectionResult groupResult = selectionService.PickDetailLines(
                     uiDocument,
@@ -1802,6 +1803,7 @@ namespace SAB.InteriorElevations.Commands
 
                 lineGroups.Add(uniqueGroupLines);
 
+                ElevationSelectionGuidance.Show(uiDocument.Application.MainWindowHandle, ElevationSelectionGuidance.GroupCompleted(groupNumber));
                 TaskDialogResult nextAction = AskGroupSelectionNextAction(groupNumber);
                 if (nextAction == TaskDialogResult.CommandLink1)
                 {

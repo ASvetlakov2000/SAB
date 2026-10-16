@@ -14,7 +14,8 @@ try {
                 $properties[$row.StringData(1)] = $row.StringData(2)
                 [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($row)
             }
-            if ($properties.ProductVersion -ne '1.1.1') { throw "${year}: expected corrected release1.1.1" }
+            $currentVersion = [version]$properties.ProductVersion
+            if ($currentVersion -lt [version]'1.1.1' -or $currentVersion -ge [version]'1.1.4') { throw "${year}: expected corrected sequential release1.1.1–1.1.3" }
             $view = $database.OpenView('SELECT `UpgradeCode`, `VersionMin`, `VersionMax`, `Attributes`, `ActionProperty` FROM `Upgrade`'); $views += $view; $view.Execute()
             $ranges = @()
             while ($row = $view.Fetch()) {
@@ -42,7 +43,8 @@ try {
                     $minimumMatches -and $maximumMatches
                 })
                 $outcome = if (@($matched | Where-Object { $_.attributes -band 2 }).Count) { 'block' } elseif ($matched.Count) { 'replace' } else { 'none' }
-                if ($outcome -ne $case[1]) { throw "${year}: version $candidate incorrectly resolves to $outcome" }
+                $expected = if ($candidate -le $currentVersion -or $candidate -eq [version]'1.1.4') { 'replace' } else { 'block' }
+                if ($outcome -ne $expected) { throw "${year}: version $candidate incorrectly resolves to $outcome" }
                 $cases += [ordered]@{installedVersion=$case[0];outcome=$outcome;status='PASS'}
             }
             $results += [ordered]@{year=$year;status='PASS';msiSha256=(Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant();upgradeRanges=$ranges;removeExistingProductsSequence=$sequence.RemoveExistingProducts;cases=$cases}

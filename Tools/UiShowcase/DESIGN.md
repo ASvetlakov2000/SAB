@@ -382,3 +382,7 @@ Direction preview15.10: Settings Form entry stays in Parameters card, existing f
 ## Направления16.10
 
 Actual production Compact Dialog: width240DIP, SizeToContent.Height/NoResize, padding24; заголовок «Направления»20Semibold. Три full-width кнопки min34/gap12: Flip sharedPrimary, Instruction sharedOutline, Create sharedPrimary. Summary/Cancel UI удалены; пустой status Collapsed, nonempty bounded180. X/Escape сохраняют CancelRequested. Evidence: screenshots-directions-window, DirectionsWindow-Report/Review. Native WPF внеRevit, безOS/physical/installation claims.
+
+## Selection guidance1.1.2
+
+Existing NotificationStack/Card, width416 и10active seconds. Только предшествующая guide заменяется через новый shared Dismiss(NotificationMessage) по ReferenceEquals; unrelated cards иnativeactivation сохранены. Adapter хранитweak stack/string DTO, безRevitobjects/callbacks. Source call sites остаются вAPIcontext существующего выбора. Actual stages overview/group/completed/room и общий notification regression имеют отдельныеfresh captures.

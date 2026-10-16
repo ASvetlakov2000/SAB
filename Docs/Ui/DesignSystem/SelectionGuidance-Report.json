@@ -1,0 +1,1186 @@
+{
+  "schemaVersion": 1,
+  "task": "SAB: selection-stage notification guidance",
+  "date": "2026-10-16",
+  "scope": "production",
+  "sourceRevision": "c26458fa8687725934dbb0a2c2637af4e02f6b68",
+  "dirtyBaseline": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\selection-guidance-baseline",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "SAB/Cls_InteriorElevations/Commands/CreateInteriorElevationsCommand.cs",
+    "SAB/Properties/AssemblyInfo.cs",
+    "SAB/SAB.csproj",
+    "SAB/UI/Notifications/NotificationStack.cs",
+    "SAB/Cls_InteriorElevations/Services/Selection/ElevationSelectionGuidance.cs"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md",
+  "build": [
+    {
+      "command": "Tools/UiShowcase/Build.ps1 -SelectionGuidance",
+      "status": "PASS",
+      "guideChecks": 33,
+      "sharedChecks": 35,
+      "captures": 15
+    },
+    {
+      "command": "Build-All-Msi.ps1 Release + fresh MSI payload + upgrade tables",
+      "status": "PASS",
+      "proof": "Docs/Ui/DesignSystem/SelectionGuidance-Installer.json"
+    },
+    {
+      "command": "dotnet run Tests/InteriorElevations.DirectionPreview -c Release",
+      "status": "PASS",
+      "checks": 66
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/group-1-completed.png",
+      "sha256": "6ce85b8a2722261b87f0d3a59c180f4c1dc9a5fe1bf4429753e3ce287eb654d6"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/group-1.png",
+      "sha256": "578b67416ab40fbbcf1de43d4ceac2421514203d306409def0c47d11b41483d2"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/group-2.png",
+      "sha256": "d5096cf4fb47ef939e540f4067734fef68c36524b7ce0986bae213d12e5f5ac2"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/overview.png",
+      "sha256": "c4d0f81a57fbc9e0ba9900f8c144e3bcfc9443e434f559c1e5760709436957d6"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/room.png",
+      "sha256": "3a674c7e22dbfa8b2b74b05a22ed95de364636fa7ed896ebb5c5e79836e30fd7"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/stack.png",
+      "sha256": "f5281b7f2d429cb31afe51684d3ae4872911d6ab157b80d5de041808adb3ff2d"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/01-success.png",
+      "sha256": "23f1342fb33917eb2c0dd7fb6d15afad6e17d3c894c3cbe9efff4a254d82354a"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/02-warning.png",
+      "sha256": "4f2a33b6a93ff467d773ac4025503899b1789812dcaa35c885ae33826e91bdb0"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/03-selected-copied.png",
+      "sha256": "a95c4f5a7b0215f593ce2a0f0372039debf6e5406ec76cc6f82f4940769b56ee"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/04-error.png",
+      "sha256": "1d24c59904230501cc181536c04d848dea6830a9c2f04b60ef6cddc71ce543e4"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/05-clipboard-failure.png",
+      "sha256": "71c92f7f994294ff8411a26c032ff0e688fa12f76390ea7142af19c92568a065"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/06-long-minimum.png",
+      "sha256": "436b455a09036eb1580b21475105cbf30a56af8ba8ad9bc4e94ce9f434710d4f"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/07-long-144dpi-render.png",
+      "sha256": "728a45c1f528be15a45fbf838584fae48599a0ab40d28c0cccef43d183044e33"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/08-stack.png",
+      "sha256": "baddd7eea2e1d36d9a20c658f3ebd69b90ed4ad28f6777e3f6065845c26ed0ec"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-selection-guidance/notifications-regression/09-overflow.png",
+      "sha256": "d8f520d3db61b97d6eff60f14d48302296e29e54539d26738ce27529e10a9185"
+    }
+  ],
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Bounded reviewer source/captures/MSI verdict; real Revit excluded.",
+    "scope": "adapter/shared Dismiss/call sites/native WPF/payload",
+    "report": "Docs/Ui/DesignSystem/SelectionGuidance-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Fresh shared WPF and linked lifecycle tests passed; full physical interaction/real Revit criteria remain unexecuted.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Fresh shared WPF and linked lifecycle tests passed; full physical interaction/real Revit criteria remain unexecuted.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Fresh shared WPF and linked lifecycle tests passed; full physical interaction/real Revit criteria remain unexecuted.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Fresh shared WPF and linked lifecycle tests passed; full physical interaction/real Revit criteria remain unexecuted.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient guide has no tables/editors/tabs/picker/category/import/HTML-footer; unrelated workflows are unchanged.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Bounded notification UI/source call-order and existing shared-stack regression checks only; no live Revit claim.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/SelectionGuidance-Provenance.json",
+        "Docs/Ui/DesignSystem/SelectionGuidance-Layout.md"
+      ],
+      "unverified": [
+        "actual Revit picking/Escape/group dialogs and linked room selection",
+        "physical keyboard/mouse and OS DPI transitions",
+        "installation",
+        "actual model transactions/RFA placement"
+      ]
+    }
+  ]
+}

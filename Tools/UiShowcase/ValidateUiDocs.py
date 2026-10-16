@@ -102,14 +102,28 @@ if production.exists():
     tip = read_json(tip_path) if tip_path.exists() else None
     directions_path = D/'DirectionsWindow-Provenance.json'
     directions = read_json(directions_path) if directions_path.exists() else None
+    guidance_path = D/'SelectionGuidance-Provenance.json'
+    guidance = read_json(guidance_path) if guidance_path.exists() else None
     for name, sha in active['files'].items():
-        valid = matches(ROOT/name, sha)
+        source_bytes = (ROOT/name).read_bytes()
+        if guidance is not None and name in guidance.get('source', {}):
+            delta = guidance['source'][name]
+            before = ROOT/'outputs/ui-production-preview/selection-guidance-baseline/files'/name
+            authorized = (guidance.get('uiSourceOverrides') is False and
+                guidance.get('historicalProof') == 'Docs/Ui/DesignSystem/DirectionsWindow-Provenance.json' and
+                guidance.get('historicalProofSha256') == hashlib.sha256(directions_path.read_bytes()).hexdigest() and
+                hashlib.sha256(source_bytes).hexdigest() == delta['after'] and before.exists() and
+                hashlib.sha256(before.read_bytes()).hexdigest() == delta['before'])
+            require(authorized, 'Invalid selection guidance source successor: '+name)
+            if authorized: source_bytes = before.read_bytes()
+        source_sha = hashlib.sha256(source_bytes).hexdigest()
+        valid = matches_bytes(ROOT/name, source_bytes, sha)
         if not valid and numbering is not None:
             delta = numbering.get('source', {}).get(name, {})
             valid = (numbering.get('uiSourceOverrides') is False and
                      numbering.get('historicalProof') == 'Tools/UiShowcase/notification-source-contract.json' and
                      delta.get('before') == sha and
-                     hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == delta.get('after'))
+                     source_sha == delta.get('after'))
         if not valid and direction is not None:
             delta = direction.get('source', {}).get(name, {})
             previous = numbering.get('source', {}).get(name, {}) if numbering else {}
@@ -120,7 +134,7 @@ if production.exists():
                      delta.get('beforeProofHash') == before_proof and baseline.exists() and
                      hashlib.sha256(baseline.read_bytes()).hexdigest() == delta.get('before') and
                      matches_bytes(ROOT/name, baseline.read_bytes(), before_proof) and
-                     hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == delta.get('after'))
+                     source_sha == delta.get('after'))
         if not valid and runtime is not None and direction is not None:
             current_delta = runtime.get('source', {}).get(name, {})
             parent_delta = direction.get('source', {}).get(name, {})
@@ -141,7 +155,7 @@ if production.exists():
                      runtime.get('historicalProofSha256') == hashlib.sha256(direction_path.read_bytes()).hexdigest() and
                      current_delta.get('before') == parent_hash and baseline.exists() and
                      hashlib.sha256(baseline.read_bytes()).hexdigest() == current_delta.get('before'))
-            valid = runtime_authorized and hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == current_delta.get('after')
+            valid = runtime_authorized and source_sha == current_delta.get('after')
             if not valid and runtime_authorized and tip is not None:
                 tip_delta = tip.get('source', {}).get(name, {})
                 tip_baseline = ROOT/'outputs/ui-production-preview/preview-tip-baseline/files'/name
@@ -150,7 +164,7 @@ if production.exists():
                          tip.get('historicalProofSha256') == hashlib.sha256(runtime_path.read_bytes()).hexdigest() and
                          tip_delta.get('before') == current_delta.get('after') and tip_baseline.exists() and
                          hashlib.sha256(tip_baseline.read_bytes()).hexdigest() == tip_delta.get('before'))
-                valid = tip_authorized and hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == tip_delta.get('after')
+                valid = tip_authorized and source_sha == tip_delta.get('after')
                 if not valid and tip_authorized and directions is not None:
                     delta = directions.get('source', {}).get(name, {})
                     before = ROOT/'outputs/ui-production-preview/directions-window-baseline/files'/name
@@ -159,7 +173,7 @@ if production.exists():
                              directions.get('historicalProofSha256') == hashlib.sha256(tip_path.read_bytes()).hexdigest() and
                              delta.get('before') == tip_delta.get('after') and before.exists() and
                              hashlib.sha256(before.read_bytes()).hexdigest() == delta.get('before') and
-                             hashlib.sha256((ROOT/name).read_bytes()).hexdigest() == delta.get('after'))
+                             source_sha == delta.get('after'))
         require(valid, 'Stale production source proof: '+name)
     fresh = D/'screenshots-production-0.5'
     if (fresh/'provenance.json').exists():

@@ -30,6 +30,7 @@
     <Compile Include="ElevationHotfixPreview.cs"/>
     <Compile Include="ElevationNumberingPreview.cs"/>
     <Compile Include="ElevationDirectionPreviewEvidence.cs"/>
+    <Compile Include="SelectionGuidanceEvidence.cs"/>
     <Compile Include="ParameterCheckPreview.cs"/>
     <Compile Include="..\..\outputs\ui-production-preview\elevations-source\*.cs" />
   </ItemGroup>

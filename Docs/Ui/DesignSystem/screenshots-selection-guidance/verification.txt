@@ -1,0 +1,40 @@
+PASS Actual notification styles are fully scoped
+PASS Overview explains lines then Escape then room
+PASS Room reminder matches exact user text
+PASS Guide does not steal native activation: overview
+PASS Only previous guide replaced; unrelated notice retained: overview
+PASS Guide text rendered within shared width: overview
+PASS Actual summary visible and fully inside captured card: overview
+PASS Guide has information tone without result diagnostics: overview
+CAPTURE overview; actualType=SAB.UI.Notifications.NotificationCard; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=416x256,52; nativeDPI=96; renderDPI=96
+PASS Guide does not steal native activation: group-1
+PASS Only previous guide replaced; unrelated notice retained: group-1
+PASS Guide text rendered within shared width: group-1
+PASS Actual summary visible and fully inside captured card: group-1
+PASS Guide has information tone without result diagnostics: group-1
+CAPTURE group-1; actualType=SAB.UI.Notifications.NotificationCard; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=416x216,52; nativeDPI=96; renderDPI=96
+PASS Guide does not steal native activation: group-1-completed
+PASS Only previous guide replaced; unrelated notice retained: group-1-completed
+PASS Guide text rendered within shared width: group-1-completed
+PASS Actual summary visible and fully inside captured card: group-1-completed
+PASS Guide has information tone without result diagnostics: group-1-completed
+CAPTURE group-1-completed; actualType=SAB.UI.Notifications.NotificationCard; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=416x196,52; nativeDPI=96; renderDPI=96
+PASS Guide does not steal native activation: group-2
+PASS Only previous guide replaced; unrelated notice retained: group-2
+PASS Guide text rendered within shared width: group-2
+PASS Actual summary visible and fully inside captured card: group-2
+PASS Guide has information tone without result diagnostics: group-2
+CAPTURE group-2; actualType=SAB.UI.Notifications.NotificationCard; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=416x216,52; nativeDPI=96; renderDPI=96
+PASS Guide does not steal native activation: room
+PASS Only previous guide replaced; unrelated notice retained: room
+PASS Guide text rendered within shared width: room
+PASS Actual summary visible and fully inside captured card: room
+PASS Guide has information tone without result diagnostics: room
+CAPTURE room; actualType=SAB.UI.Notifications.NotificationCard; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=416x176,52; nativeDPI=96; renderDPI=96
+PASS Repeated groups receive their current number
+PASS Group completion offers next group before room transition
+CAPTURE stack; actualType=System.Windows.Controls.ScrollViewer; assembly=C:\Users\svetl\Desktop\Codex\Projects\SAB\outputs\ui-production-preview\plugin\SAB.dll; sizeDIP=416x365,04; nativeDPI=96; renderDPI=96
+PASS Completion/cancel dismisses only own guide
+PASS Repeated guide cleanup is harmless
+PASS Dismissing last specific notice releases stack
+COMPLETED; actual shared WPF with selection-stage DTO fixtures; actual Revit picking, physical input and OS DPI transitions NOT RUN.

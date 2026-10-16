@@ -49,3 +49,9 @@ Runtime fix1.1.3: [layout](ElevationPreviewRuntime-Layout.md), [протокол
 ## Окно «Направления»16.10
 
 Три вертикальных действия blue/white/blue, без summary и видимой Cancel; X/Escape сохраняют cleanup. [Layout](DirectionsWindow-Layout.md), [50actual WPF checks/7PNG](screenshots-directions-window/verification.txt), [Provenance](DirectionsWindow-Provenance.json), [82-ID Report](DirectionsWindow-Report.json), [Review](DirectionsWindow-Review.md), [MSI1.1.1](DirectionsWindow-Installer.json). Новый публичный1.1.1 следует заRedesign1.1.0; старые1.1.4 proofs являются историей.
+
+## Подсказки выбора1.1.2
+
+[Layout](SelectionGuidance-Layout.md), [33guide+35shared WPF checks/15PNG](SelectionGuidance-Provenance.json), [83-ID Report](SelectionGuidance-Report.json), [MSI](SelectionGuidance-Installer.json). Руководство выбора использует существующие shared notifications; inline инструкции в окна не добавлены.
+
+[Независимый review подсказок](SelectionGuidance-Review.md): scoped ship source/UI/payload, physical/Revit/installation NOT RUN.

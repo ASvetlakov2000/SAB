@@ -1,0 +1,48 @@
+Synthetic result fixtures; actual SAB.dll WPF classes. Revit operations: NOT RUN.
+PASS timer consumes active seconds
+PASS paused duration does not consume remaining time
+PASS resume remainder without reset
+PASS expires after ten active seconds
+PASS independent new notification lifetime
+PASS module adapter preserves all structured IDs and deduplicates
+PASS module adapter maps rolled back transaction to cancellation
+PASS module adapter retains parameter reason and complete technical context
+CAPTURE 01-success; runtimeDpi=96; renderDpi=96
+CAPTURE 02-warning; runtimeDpi=96; renderDpi=96
+PASS all notification text is selectable read-only text
+PASS copy ID copies only exact IDs to real Windows clipboard
+PASS success feedback follows successful clipboard write
+PASS copy support includes complete exact diagnostic
+PASS keyboard focus and native text selection
+PASS actual focused card pauses lifetime
+CAPTURE 03-selected-copied; runtimeDpi=96; renderDpi=96
+CAPTURE 04-error; runtimeDpi=96; renderDpi=96
+PASS clipboard failure never reports copied
+CAPTURE 05-clipboard-failure; runtimeDpi=96; renderDpi=96
+Long card measured height: 550
+CAPTURE 06-long-minimum; runtimeDpi=96; renderDpi=96
+PASS long Russian text bounded with header and timer visible
+PASS long diagnostic scrolls within card
+CAPTURE 06-long-minimum; runtimeDpi=96; renderDpi=96
+CAPTURE 07-long-144dpi-render; runtimeDpi=96; renderDpi=144
+PASS native notification/work-area bounds available
+PASS notification stack anchored sixteen DIP from bottom-right work area
+PASS show notification does not steal initial native activation
+PASS disabled Revit owner pauses actual stack timer during modal report
+PASS native notification/work-area bounds available
+PASS notification stack anchored sixteen DIP from bottom-right work area
+PASS adding notices grows stack upward from fixed bottom
+PASS newest at bottom in one owner stack
+PASS twelve DIP spacing between cards
+CAPTURE 08-stack; runtimeDpi=96; renderDpi=96
+PASS overflow queues all notices in bounded scrolling stack
+PASS overflow opens at newest bottom notices
+PASS offscreen queued notification does not expire
+CAPTURE 09-overflow; runtimeDpi=96; renderDpi=96
+PASS close removes only selected notice
+PASS native notification/work-area bounds available
+PASS notification stack anchored sixteen DIP from bottom-right work area
+PASS adding bottom notice preserves focused reader and current scroll position
+PASS close all releases stack window
+PASS actual DispatcherTimer closes unread card after ten active seconds
+COMPLETED
