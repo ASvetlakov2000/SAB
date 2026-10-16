@@ -1,0 +1,680 @@
+{
+  "name": "SAB 1.1.4 — Обновление развёрток",
+  "version": "1.1.4",
+  "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.4",
+  "tag": "v1.1.4",
+  "sourceCommit": "8b6979551c123892b3a790030139edb15495f966",
+  "tagCommit": "8b6979551c123892b3a790030139edb15495f966",
+  "status": "published",
+  "latest": true,
+  "publishedAt": "2026-10-16T11:27:39Z",
+  "verifiedAt": "2026-10-16T11:28:53.7631972Z",
+  "installationPerformed": false,
+  "liveRevitValidation": "NOT RUN",
+  "assets": [
+    {
+      "name": "SAB_Revit_2022.msi",
+      "size": 16430355,
+      "digest": "sha256:a5cb217afac40d3c306174682c7312c212523038fc32e61e2dd89467a243a7b9",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4/SAB_Revit_2022.msi"
+    },
+    {
+      "name": "SAB_Revit_2023.msi",
+      "size": 16819741,
+      "digest": "sha256:99b60bb1d9bc512f190aedf039d1dff8c9dc3c70e95b0aa1fffda26df2c35865",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4/SAB_Revit_2023.msi"
+    },
+    {
+      "name": "SAB_Revit_2024.msi",
+      "size": 16807453,
+      "digest": "sha256:2f7288161b6e537152e0d16b33b5e7c4646aa2fb2fa098ee2ce5517dfe8d55fb",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4/SAB_Revit_2024.msi"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 258,
+      "digest": "sha256:146a1cea16d4a756117a695d8120220ada5b08202a6b6bb18e63c16d9c6f35f9",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4/SHA256SUMS.txt"
+    }
+  ],
+  "installerPayloads": [
+    {
+      "year": "2022",
+      "status": "PASS",
+      "productVersion": "1.1.4",
+      "productCode": "{11191B3F-81F0-417C-946E-086DCA62D43D}",
+      "upgradeCode": "{A87CFB65-1F2D-4E1D-A489-421B8E649063}",
+      "msi": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\Installer\\output\\SAB_Revit_2022.msi",
+      "msiSha256": "A5CB217AFAC40D3C306174682C7312C212523038FC32E61E2DD89467A243A7B9",
+      "sourceBin": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\SAB\\bin\\Revit2022",
+      "assemblyVersion": "1.1.4.0",
+      "apiReferences": [
+        "RevitAPI, Version=22.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "RevitAPIUI, Version=22.0.0.0, Culture=neutral, PublicKeyToken=null"
+      ],
+      "verifiedPayload": [
+        {
+          "name": "SAB_HTML_Granitcy_vidov.html",
+          "sha256": "21709B93667B7FA196FC9CA9CA4A09C4F593FB8DC0FE6B9EE3780CEE8BB9CE97"
+        },
+        {
+          "name": "SAB_HTML_Sistemnye_semeystva_i_PNG_pirogov.html",
+          "sha256": "22943763B74C1A4AE569587AB6733D1B3469870E12369C7087479A500761644B"
+        },
+        {
+          "name": "README.md",
+          "sha256": "2E1828E0F8BCDC5BD5ECEB3F0E2E4186D155B97FF12C2B057664DA968E960DF7"
+        },
+        {
+          "name": "RoomPlanSchemeSettingsWindow.xaml",
+          "sha256": "17C71C86D33D4C78576572B9EFC009366BF5FE6BF10A376FB1C082F7B8AF59A6"
+        },
+        {
+          "name": "Nice3point.Revit.Toolkit.dll",
+          "sha256": "7A13959A552FC72ED06C388B238B4030C8EC285678CE8AD3D0178B1F2FD7E06B"
+        },
+        {
+          "name": "ElevationSelectionListWindow.xaml",
+          "sha256": "BAD4F6ED1E4293F2656E26C75CC6CDA28CC56AD2050313B91A64888E0B3C82ED"
+        },
+        {
+          "name": "SAB_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html",
+          "sha256": "FA6F3D09A4E0E7E52321F84C0AC21D93C29690D3E24EBEFDB910562D8DE3387D"
+        },
+        {
+          "name": "SAB_HTML_Razmeschenie_i_ochistka.html",
+          "sha256": "59F3667450C5C31A28BA69438F91AAE1272CBAE032A33F9C6661A8C529B3A586"
+        },
+        {
+          "name": "ElevationSettingsWindow.xaml",
+          "sha256": "9875826DBC2C47583A2F4807CAE8FFEF90A9C5B4207BC77A021DFA2962F87EA7"
+        },
+        {
+          "name": "SAB_HTML_Uvedomleniya.html",
+          "sha256": "565723903A15F6BF9C3235F28ACF71A24C6FDA5D9C2D3350A8BA0F605ACC8CA6"
+        },
+        {
+          "name": "SAB_HTML_Razvorot_razvertki_180.html",
+          "sha256": "5CBCFD7336B716DEB98FFBBF4EFA81F06E6DA24228363DF3A71061CEAAEA3BB4"
+        },
+        {
+          "name": "SAB_HTML_Sozdanie_i_korrektirovka_razvertok.html",
+          "sha256": "274A325C76463E215391261CDFE6246C29D024E04FB8D58487A8AA3D06F2142C"
+        },
+        {
+          "name": "SAB.dll",
+          "sha256": "817B7DBB5D836C78E084620EF194DD9F0EFAEFC12F2D8DDDCC9A0E8C8A9F0673"
+        },
+        {
+          "name": "LineGroupNextActionWindow.xaml",
+          "sha256": "E27A239FFB2B439C9ADF63E1790E60D83F396D5989108CE92E24656C47313A0B"
+        },
+        {
+          "name": "family_f240874db8d0ff86.rfa",
+          "sha256": "25F8A49176F7111DEF0748E3AE00630560A75C11076903F9DE730343042C316D"
+        },
+        {
+          "name": "SAB_HTML_Pereimenovanie_tipov.html",
+          "sha256": "3E2EEFDA13865E6061497F4D397CD3FE7EB7D6959A9D8977AA0B3444CE38795C"
+        },
+        {
+          "name": "SAB_HTML_Udalit_vidy_i_listy.html",
+          "sha256": "09D05B0D9AB22DA44F81724052D4CA87A55D8C156BAE58BD610E0929CD803E1D"
+        },
+        {
+          "name": "SAB_HTML_Eksplikatsii_dverey_i_okon.html",
+          "sha256": "59D5F0EE8B584CE37EA219E98DAA494D9671D7701A5A481097149141F64B0D41"
+        },
+        {
+          "name": "SAB_HTML_Instruktsii.html",
+          "sha256": "69250078E5C7ED23A73498DA7BCC20AD4BAF0932CAFF84965AEB4E3109909EEB"
+        },
+        {
+          "name": "SABFluentLight.xaml",
+          "sha256": "EEC112739368840B1F4B75C5B65B9AAD9B857D6424EEA68A5E3CB999B9F9EEEB"
+        },
+        {
+          "name": "ElevationDecorationWindow.xaml",
+          "sha256": "E6CB22A83E3BF6F71D80D5194190BE077F187C68FB812005523A6B3474DF964F"
+        },
+        {
+          "name": "CreateViewsAndSheetsSettingsWindow.xaml",
+          "sha256": "FBCCE40BAE8419FB78FE840AB8B7182E9BEA99EDDC3DF7B4D1ABA516DE6ACEA7"
+        },
+        {
+          "name": "SAB_HTML_Sozdat_vidy_i_listy.html",
+          "sha256": "BC35B9A6F761E2D83301AD3AC86272DF3119AC02210AC15E6ACAA65002EA8638"
+        },
+        {
+          "name": "ElevationDecorationCatalogWindow.xaml",
+          "sha256": "8B8DCFBD61CCA690661952158A583FFDD42F8500EB543112BCF213FFB641F71F"
+        },
+        {
+          "name": "CropByExampleActionWindow.xaml",
+          "sha256": "F2A00749DBFAD403A419D7CAFA09861F44633E5B172BBCAB8524E1B3276B1435"
+        },
+        {
+          "name": "SAB_HTML_HTML_prosmotr_CSV.html",
+          "sha256": "47C32B613E937C864EC7A07A6FFCBFB1C21FFC833E6201CB72B408F6CE0B7CF7"
+        },
+        {
+          "name": "SAB_HTML_Perenos_vidov_na_sleduyuschiy_list.html",
+          "sha256": "0C53D48B31F1D329E1CF561EFCFA7C64A30BF62784263FA1D7C4F5E002935941"
+        },
+        {
+          "name": "DeleteViewsAndSheetsWindow.xaml",
+          "sha256": "610E33DE5DBAF7AF96972A5C47447035EFEC5A8E36DFBADA1FDB38C922D4EDF4"
+        },
+        {
+          "name": "ParameterTools.md",
+          "sha256": "A7B5EB41C38B9EEA52AB07D1107FD7CFAB0F764D4C77644110DF699564BE416A"
+        },
+        {
+          "name": "SAB_HTML_Taymer_sinhronizatsii.html",
+          "sha256": "23A10A401406BB44A05030891685E03DD79248C155AF0810806868E021874D8E"
+        },
+        {
+          "name": "CreateViewsAndSheetsWindow.xaml",
+          "sha256": "7C14A8536451234DA75F3B88AC74E7254F2F44F8627483E3C7445A9A0CE2AFBC"
+        },
+        {
+          "name": "LineGroupSelectionWindow.xaml",
+          "sha256": "515C1403645B34D5EE01264CACF3A712A82FF05F35E0B1E5AAFAAA89B40867FF"
+        },
+        {
+          "name": "SABWindowStyles.xaml",
+          "sha256": "7D10F47996A69C8CE805884B1E4B9B17A602F4A14F275753D1D29C8D516887E0"
+        },
+        {
+          "name": "SAB_HTML_Linii_shtrihovki_i_razmeschenie.html",
+          "sha256": "33FBD5D8CDB3B7835FB9580DBFDED110B4B777852599695941FD8386D156ABA5"
+        },
+        {
+          "name": "SAB_HTML_Pereschet_materialov.html",
+          "sha256": "72256BBB930E95C602891D4C9FA6D3E7C8ABA27BB676AF978BCBD372E2E40294"
+        },
+        {
+          "name": "CreateViewsAndSheetsProgressWindow.xaml",
+          "sha256": "D7FA7B4D099FEAA258F74E2DBB7B97DB0205F02C9EEDB85528FCAD9AB042D3DF"
+        },
+        {
+          "name": "SAB_HTML_Oblasti_zalivki.html",
+          "sha256": "12B5AD33AC2045487DC776635628D20A122A6EF7355D38CDE2279BD176F1645B"
+        },
+        {
+          "name": "SAB_HTML_Oformlenie_razvertok.html",
+          "sha256": "56BF76406B5DCD5ADCE18549F1F81906DD734298EE01B8541B4DB14B7ABA374B"
+        },
+        {
+          "name": "CropByExampleLineCreationWindow.xaml",
+          "sha256": "773194F5224AF9B4116543BD2C33D9C8DD84D8FD470D387A6D73706E553BCA24"
+        },
+        {
+          "name": "SAB_HTML_Zapolnenie_parametrov.html",
+          "sha256": "765B755B9D292F68A59AD4649846136D438BDC9D02AF535583274058915D290F"
+        },
+        {
+          "name": "MultiRoomSelectionWindow.xaml",
+          "sha256": "84FA1C27CE9766FC5A9F4B0FF155956178060B6A3FA016AD98BB70265AE175B5"
+        },
+        {
+          "name": "SAB_HTML_Pereimenovanie_materialov.html",
+          "sha256": "F31AA60388CC6E26790BD8A1CCB5006E18F5E3B540F3840BF9E5F2205BF5B193"
+        },
+        {
+          "name": "SAB_HTML_Redaktor_shablonov.html",
+          "sha256": "78444DA51D025794CC65EA2FFB23CF62B1749A508DB4E965B12CE9E3C47CE1F7"
+        },
+        {
+          "name": "ElevationCropAdjustmentWindow.xaml",
+          "sha256": "C763291C0BCAC28C0B9DC16AF00D9A971068B4CD7EF68793A29D101ED6328EDF"
+        },
+        {
+          "name": "SAB_HTML_Karkas.html",
+          "sha256": "D416423E3376B072EFE8218F4C43639BCB88E1D446B9A720FB033E5ED106F684"
+        }
+      ],
+      "installationPerformed": false
+    },
+    {
+      "year": "2023",
+      "status": "PASS",
+      "productVersion": "1.1.4",
+      "productCode": "{051CE7FC-1D26-40F6-A48F-07105F0525A6}",
+      "upgradeCode": "{F9D69961-6B30-4C1E-A469-0CC9C31EFD8E}",
+      "msi": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\Installer\\output\\SAB_Revit_2023.msi",
+      "msiSha256": "99B60BB1D9BC512F190AEDF039D1DFF8C9DC3C70E95B0AA1FFFDA26DF2C35865",
+      "sourceBin": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\SAB\\bin\\Revit2023",
+      "assemblyVersion": "1.1.4.0",
+      "apiReferences": [
+        "RevitAPI, Version=23.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "RevitAPIUI, Version=23.0.0.0, Culture=neutral, PublicKeyToken=null"
+      ],
+      "verifiedPayload": [
+        {
+          "name": "SAB_HTML_Granitcy_vidov.html",
+          "sha256": "21709B93667B7FA196FC9CA9CA4A09C4F593FB8DC0FE6B9EE3780CEE8BB9CE97"
+        },
+        {
+          "name": "SAB_HTML_Sistemnye_semeystva_i_PNG_pirogov.html",
+          "sha256": "22943763B74C1A4AE569587AB6733D1B3469870E12369C7087479A500761644B"
+        },
+        {
+          "name": "README.md",
+          "sha256": "2E1828E0F8BCDC5BD5ECEB3F0E2E4186D155B97FF12C2B057664DA968E960DF7"
+        },
+        {
+          "name": "RoomPlanSchemeSettingsWindow.xaml",
+          "sha256": "17C71C86D33D4C78576572B9EFC009366BF5FE6BF10A376FB1C082F7B8AF59A6"
+        },
+        {
+          "name": "Nice3point.Revit.Toolkit.dll",
+          "sha256": "70BB440715F63574DF067A1F447F1CE36774468626EDD1792EA804997F7BDE7D"
+        },
+        {
+          "name": "ElevationSelectionListWindow.xaml",
+          "sha256": "BAD4F6ED1E4293F2656E26C75CC6CDA28CC56AD2050313B91A64888E0B3C82ED"
+        },
+        {
+          "name": "SAB_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html",
+          "sha256": "FA6F3D09A4E0E7E52321F84C0AC21D93C29690D3E24EBEFDB910562D8DE3387D"
+        },
+        {
+          "name": "SAB_HTML_Razmeschenie_i_ochistka.html",
+          "sha256": "59F3667450C5C31A28BA69438F91AAE1272CBAE032A33F9C6661A8C529B3A586"
+        },
+        {
+          "name": "ElevationSettingsWindow.xaml",
+          "sha256": "9875826DBC2C47583A2F4807CAE8FFEF90A9C5B4207BC77A021DFA2962F87EA7"
+        },
+        {
+          "name": "SAB_HTML_Uvedomleniya.html",
+          "sha256": "565723903A15F6BF9C3235F28ACF71A24C6FDA5D9C2D3350A8BA0F605ACC8CA6"
+        },
+        {
+          "name": "SAB_HTML_Razvorot_razvertki_180.html",
+          "sha256": "5CBCFD7336B716DEB98FFBBF4EFA81F06E6DA24228363DF3A71061CEAAEA3BB4"
+        },
+        {
+          "name": "SAB_HTML_Sozdanie_i_korrektirovka_razvertok.html",
+          "sha256": "274A325C76463E215391261CDFE6246C29D024E04FB8D58487A8AA3D06F2142C"
+        },
+        {
+          "name": "SAB.dll",
+          "sha256": "95DA4FA7DB7D81A9872244B7587ABC3545FB27D169F9FB8A4DCFFCD03C64E634"
+        },
+        {
+          "name": "LineGroupNextActionWindow.xaml",
+          "sha256": "E27A239FFB2B439C9ADF63E1790E60D83F396D5989108CE92E24656C47313A0B"
+        },
+        {
+          "name": "SAB_HTML_Pereimenovanie_tipov.html",
+          "sha256": "3E2EEFDA13865E6061497F4D397CD3FE7EB7D6959A9D8977AA0B3444CE38795C"
+        },
+        {
+          "name": "SAB_HTML_Udalit_vidy_i_listy.html",
+          "sha256": "09D05B0D9AB22DA44F81724052D4CA87A55D8C156BAE58BD610E0929CD803E1D"
+        },
+        {
+          "name": "SAB_HTML_Eksplikatsii_dverey_i_okon.html",
+          "sha256": "59D5F0EE8B584CE37EA219E98DAA494D9671D7701A5A481097149141F64B0D41"
+        },
+        {
+          "name": "SAB_HTML_Instruktsii.html",
+          "sha256": "69250078E5C7ED23A73498DA7BCC20AD4BAF0932CAFF84965AEB4E3109909EEB"
+        },
+        {
+          "name": "SABFluentLight.xaml",
+          "sha256": "EEC112739368840B1F4B75C5B65B9AAD9B857D6424EEA68A5E3CB999B9F9EEEB"
+        },
+        {
+          "name": "ElevationDecorationWindow.xaml",
+          "sha256": "E6CB22A83E3BF6F71D80D5194190BE077F187C68FB812005523A6B3474DF964F"
+        },
+        {
+          "name": "CreateViewsAndSheetsSettingsWindow.xaml",
+          "sha256": "FBCCE40BAE8419FB78FE840AB8B7182E9BEA99EDDC3DF7B4D1ABA516DE6ACEA7"
+        },
+        {
+          "name": "SAB_HTML_Sozdat_vidy_i_listy.html",
+          "sha256": "BC35B9A6F761E2D83301AD3AC86272DF3119AC02210AC15E6ACAA65002EA8638"
+        },
+        {
+          "name": "family_70dd4779ed108579.rfa",
+          "sha256": "25F8A49176F7111DEF0748E3AE00630560A75C11076903F9DE730343042C316D"
+        },
+        {
+          "name": "ElevationDecorationCatalogWindow.xaml",
+          "sha256": "8B8DCFBD61CCA690661952158A583FFDD42F8500EB543112BCF213FFB641F71F"
+        },
+        {
+          "name": "CropByExampleActionWindow.xaml",
+          "sha256": "F2A00749DBFAD403A419D7CAFA09861F44633E5B172BBCAB8524E1B3276B1435"
+        },
+        {
+          "name": "SAB_HTML_HTML_prosmotr_CSV.html",
+          "sha256": "47C32B613E937C864EC7A07A6FFCBFB1C21FFC833E6201CB72B408F6CE0B7CF7"
+        },
+        {
+          "name": "SAB_HTML_Perenos_vidov_na_sleduyuschiy_list.html",
+          "sha256": "0C53D48B31F1D329E1CF561EFCFA7C64A30BF62784263FA1D7C4F5E002935941"
+        },
+        {
+          "name": "DeleteViewsAndSheetsWindow.xaml",
+          "sha256": "610E33DE5DBAF7AF96972A5C47447035EFEC5A8E36DFBADA1FDB38C922D4EDF4"
+        },
+        {
+          "name": "ParameterTools.md",
+          "sha256": "A7B5EB41C38B9EEA52AB07D1107FD7CFAB0F764D4C77644110DF699564BE416A"
+        },
+        {
+          "name": "SAB_HTML_Taymer_sinhronizatsii.html",
+          "sha256": "23A10A401406BB44A05030891685E03DD79248C155AF0810806868E021874D8E"
+        },
+        {
+          "name": "CreateViewsAndSheetsWindow.xaml",
+          "sha256": "7C14A8536451234DA75F3B88AC74E7254F2F44F8627483E3C7445A9A0CE2AFBC"
+        },
+        {
+          "name": "LineGroupSelectionWindow.xaml",
+          "sha256": "515C1403645B34D5EE01264CACF3A712A82FF05F35E0B1E5AAFAAA89B40867FF"
+        },
+        {
+          "name": "SABWindowStyles.xaml",
+          "sha256": "7D10F47996A69C8CE805884B1E4B9B17A602F4A14F275753D1D29C8D516887E0"
+        },
+        {
+          "name": "SAB_HTML_Linii_shtrihovki_i_razmeschenie.html",
+          "sha256": "33FBD5D8CDB3B7835FB9580DBFDED110B4B777852599695941FD8386D156ABA5"
+        },
+        {
+          "name": "SAB_HTML_Pereschet_materialov.html",
+          "sha256": "72256BBB930E95C602891D4C9FA6D3E7C8ABA27BB676AF978BCBD372E2E40294"
+        },
+        {
+          "name": "CreateViewsAndSheetsProgressWindow.xaml",
+          "sha256": "D7FA7B4D099FEAA258F74E2DBB7B97DB0205F02C9EEDB85528FCAD9AB042D3DF"
+        },
+        {
+          "name": "SAB_HTML_Oblasti_zalivki.html",
+          "sha256": "12B5AD33AC2045487DC776635628D20A122A6EF7355D38CDE2279BD176F1645B"
+        },
+        {
+          "name": "SAB_HTML_Oformlenie_razvertok.html",
+          "sha256": "56BF76406B5DCD5ADCE18549F1F81906DD734298EE01B8541B4DB14B7ABA374B"
+        },
+        {
+          "name": "CropByExampleLineCreationWindow.xaml",
+          "sha256": "773194F5224AF9B4116543BD2C33D9C8DD84D8FD470D387A6D73706E553BCA24"
+        },
+        {
+          "name": "SAB_HTML_Zapolnenie_parametrov.html",
+          "sha256": "765B755B9D292F68A59AD4649846136D438BDC9D02AF535583274058915D290F"
+        },
+        {
+          "name": "MultiRoomSelectionWindow.xaml",
+          "sha256": "84FA1C27CE9766FC5A9F4B0FF155956178060B6A3FA016AD98BB70265AE175B5"
+        },
+        {
+          "name": "SAB_HTML_Pereimenovanie_materialov.html",
+          "sha256": "F31AA60388CC6E26790BD8A1CCB5006E18F5E3B540F3840BF9E5F2205BF5B193"
+        },
+        {
+          "name": "SAB_HTML_Redaktor_shablonov.html",
+          "sha256": "78444DA51D025794CC65EA2FFB23CF62B1749A508DB4E965B12CE9E3C47CE1F7"
+        },
+        {
+          "name": "ElevationCropAdjustmentWindow.xaml",
+          "sha256": "C763291C0BCAC28C0B9DC16AF00D9A971068B4CD7EF68793A29D101ED6328EDF"
+        },
+        {
+          "name": "SAB_HTML_Karkas.html",
+          "sha256": "D416423E3376B072EFE8218F4C43639BCB88E1D446B9A720FB033E5ED106F684"
+        }
+      ],
+      "installationPerformed": false
+    },
+    {
+      "year": "2024",
+      "status": "PASS",
+      "productVersion": "1.1.4",
+      "productCode": "{FED12552-A4C8-428C-A14E-A8AD16B8FE51}",
+      "upgradeCode": "{D7A573D9-4A9A-42A1-8D0D-F552AEEA6B87}",
+      "msi": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\Installer\\output\\SAB_Revit_2024.msi",
+      "msiSha256": "2F7288161B6E537152E0D16B33B5E7C4646AA2FB2FA098EE2CE5517DFE8D55FB",
+      "sourceBin": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\SAB\\bin\\Revit2024",
+      "assemblyVersion": "1.1.4.0",
+      "apiReferences": [
+        "RevitAPI, Version=24.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "RevitAPIUI, Version=24.0.0.0, Culture=neutral, PublicKeyToken=null"
+      ],
+      "verifiedPayload": [
+        {
+          "name": "SAB_HTML_Granitcy_vidov.html",
+          "sha256": "21709B93667B7FA196FC9CA9CA4A09C4F593FB8DC0FE6B9EE3780CEE8BB9CE97"
+        },
+        {
+          "name": "SAB_HTML_Sistemnye_semeystva_i_PNG_pirogov.html",
+          "sha256": "22943763B74C1A4AE569587AB6733D1B3469870E12369C7087479A500761644B"
+        },
+        {
+          "name": "README.md",
+          "sha256": "2E1828E0F8BCDC5BD5ECEB3F0E2E4186D155B97FF12C2B057664DA968E960DF7"
+        },
+        {
+          "name": "RoomPlanSchemeSettingsWindow.xaml",
+          "sha256": "17C71C86D33D4C78576572B9EFC009366BF5FE6BF10A376FB1C082F7B8AF59A6"
+        },
+        {
+          "name": "Nice3point.Revit.Toolkit.dll",
+          "sha256": "01F12D05267917E0A80C7272AAA734B0F31ABBC092B16D5F12F13B5C424464C0"
+        },
+        {
+          "name": "ElevationSelectionListWindow.xaml",
+          "sha256": "BAD4F6ED1E4293F2656E26C75CC6CDA28CC56AD2050313B91A64888E0B3C82ED"
+        },
+        {
+          "name": "SAB_HTML_Zagruzhaemye_semeystva_i_PNG_miniatyur.html",
+          "sha256": "FA6F3D09A4E0E7E52321F84C0AC21D93C29690D3E24EBEFDB910562D8DE3387D"
+        },
+        {
+          "name": "SAB_HTML_Razmeschenie_i_ochistka.html",
+          "sha256": "59F3667450C5C31A28BA69438F91AAE1272CBAE032A33F9C6661A8C529B3A586"
+        },
+        {
+          "name": "ElevationSettingsWindow.xaml",
+          "sha256": "9875826DBC2C47583A2F4807CAE8FFEF90A9C5B4207BC77A021DFA2962F87EA7"
+        },
+        {
+          "name": "SAB_HTML_Uvedomleniya.html",
+          "sha256": "565723903A15F6BF9C3235F28ACF71A24C6FDA5D9C2D3350A8BA0F605ACC8CA6"
+        },
+        {
+          "name": "SAB_HTML_Razvorot_razvertki_180.html",
+          "sha256": "5CBCFD7336B716DEB98FFBBF4EFA81F06E6DA24228363DF3A71061CEAAEA3BB4"
+        },
+        {
+          "name": "SAB_HTML_Sozdanie_i_korrektirovka_razvertok.html",
+          "sha256": "274A325C76463E215391261CDFE6246C29D024E04FB8D58487A8AA3D06F2142C"
+        },
+        {
+          "name": "SAB.dll",
+          "sha256": "5132DBCAC04D361115B1840DE8F153673D3B3B75AD59F8EC88A326F3C430BD89"
+        },
+        {
+          "name": "LineGroupNextActionWindow.xaml",
+          "sha256": "E27A239FFB2B439C9ADF63E1790E60D83F396D5989108CE92E24656C47313A0B"
+        },
+        {
+          "name": "SAB_HTML_Pereimenovanie_tipov.html",
+          "sha256": "3E2EEFDA13865E6061497F4D397CD3FE7EB7D6959A9D8977AA0B3444CE38795C"
+        },
+        {
+          "name": "SAB_HTML_Udalit_vidy_i_listy.html",
+          "sha256": "09D05B0D9AB22DA44F81724052D4CA87A55D8C156BAE58BD610E0929CD803E1D"
+        },
+        {
+          "name": "SAB_HTML_Eksplikatsii_dverey_i_okon.html",
+          "sha256": "59D5F0EE8B584CE37EA219E98DAA494D9671D7701A5A481097149141F64B0D41"
+        },
+        {
+          "name": "SAB_HTML_Instruktsii.html",
+          "sha256": "69250078E5C7ED23A73498DA7BCC20AD4BAF0932CAFF84965AEB4E3109909EEB"
+        },
+        {
+          "name": "SABFluentLight.xaml",
+          "sha256": "EEC112739368840B1F4B75C5B65B9AAD9B857D6424EEA68A5E3CB999B9F9EEEB"
+        },
+        {
+          "name": "ElevationDecorationWindow.xaml",
+          "sha256": "E6CB22A83E3BF6F71D80D5194190BE077F187C68FB812005523A6B3474DF964F"
+        },
+        {
+          "name": "CreateViewsAndSheetsSettingsWindow.xaml",
+          "sha256": "FBCCE40BAE8419FB78FE840AB8B7182E9BEA99EDDC3DF7B4D1ABA516DE6ACEA7"
+        },
+        {
+          "name": "SAB_HTML_Sozdat_vidy_i_listy.html",
+          "sha256": "BC35B9A6F761E2D83301AD3AC86272DF3119AC02210AC15E6ACAA65002EA8638"
+        },
+        {
+          "name": "family_70dd4779ed108579.rfa",
+          "sha256": "25F8A49176F7111DEF0748E3AE00630560A75C11076903F9DE730343042C316D"
+        },
+        {
+          "name": "ElevationDecorationCatalogWindow.xaml",
+          "sha256": "8B8DCFBD61CCA690661952158A583FFDD42F8500EB543112BCF213FFB641F71F"
+        },
+        {
+          "name": "CropByExampleActionWindow.xaml",
+          "sha256": "F2A00749DBFAD403A419D7CAFA09861F44633E5B172BBCAB8524E1B3276B1435"
+        },
+        {
+          "name": "SAB_HTML_HTML_prosmotr_CSV.html",
+          "sha256": "47C32B613E937C864EC7A07A6FFCBFB1C21FFC833E6201CB72B408F6CE0B7CF7"
+        },
+        {
+          "name": "SAB_HTML_Perenos_vidov_na_sleduyuschiy_list.html",
+          "sha256": "0C53D48B31F1D329E1CF561EFCFA7C64A30BF62784263FA1D7C4F5E002935941"
+        },
+        {
+          "name": "DeleteViewsAndSheetsWindow.xaml",
+          "sha256": "610E33DE5DBAF7AF96972A5C47447035EFEC5A8E36DFBADA1FDB38C922D4EDF4"
+        },
+        {
+          "name": "ParameterTools.md",
+          "sha256": "A7B5EB41C38B9EEA52AB07D1107FD7CFAB0F764D4C77644110DF699564BE416A"
+        },
+        {
+          "name": "SAB_HTML_Taymer_sinhronizatsii.html",
+          "sha256": "23A10A401406BB44A05030891685E03DD79248C155AF0810806868E021874D8E"
+        },
+        {
+          "name": "CreateViewsAndSheetsWindow.xaml",
+          "sha256": "7C14A8536451234DA75F3B88AC74E7254F2F44F8627483E3C7445A9A0CE2AFBC"
+        },
+        {
+          "name": "LineGroupSelectionWindow.xaml",
+          "sha256": "515C1403645B34D5EE01264CACF3A712A82FF05F35E0B1E5AAFAAA89B40867FF"
+        },
+        {
+          "name": "SABWindowStyles.xaml",
+          "sha256": "7D10F47996A69C8CE805884B1E4B9B17A602F4A14F275753D1D29C8D516887E0"
+        },
+        {
+          "name": "SAB_HTML_Linii_shtrihovki_i_razmeschenie.html",
+          "sha256": "33FBD5D8CDB3B7835FB9580DBFDED110B4B777852599695941FD8386D156ABA5"
+        },
+        {
+          "name": "SAB_HTML_Pereschet_materialov.html",
+          "sha256": "72256BBB930E95C602891D4C9FA6D3E7C8ABA27BB676AF978BCBD372E2E40294"
+        },
+        {
+          "name": "CreateViewsAndSheetsProgressWindow.xaml",
+          "sha256": "D7FA7B4D099FEAA258F74E2DBB7B97DB0205F02C9EEDB85528FCAD9AB042D3DF"
+        },
+        {
+          "name": "SAB_HTML_Oblasti_zalivki.html",
+          "sha256": "12B5AD33AC2045487DC776635628D20A122A6EF7355D38CDE2279BD176F1645B"
+        },
+        {
+          "name": "SAB_HTML_Oformlenie_razvertok.html",
+          "sha256": "56BF76406B5DCD5ADCE18549F1F81906DD734298EE01B8541B4DB14B7ABA374B"
+        },
+        {
+          "name": "CropByExampleLineCreationWindow.xaml",
+          "sha256": "773194F5224AF9B4116543BD2C33D9C8DD84D8FD470D387A6D73706E553BCA24"
+        },
+        {
+          "name": "SAB_HTML_Zapolnenie_parametrov.html",
+          "sha256": "765B755B9D292F68A59AD4649846136D438BDC9D02AF535583274058915D290F"
+        },
+        {
+          "name": "MultiRoomSelectionWindow.xaml",
+          "sha256": "84FA1C27CE9766FC5A9F4B0FF155956178060B6A3FA016AD98BB70265AE175B5"
+        },
+        {
+          "name": "SAB_HTML_Pereimenovanie_materialov.html",
+          "sha256": "F31AA60388CC6E26790BD8A1CCB5006E18F5E3B540F3840BF9E5F2205BF5B193"
+        },
+        {
+          "name": "SAB_HTML_Redaktor_shablonov.html",
+          "sha256": "78444DA51D025794CC65EA2FFB23CF62B1749A508DB4E965B12CE9E3C47CE1F7"
+        },
+        {
+          "name": "ElevationCropAdjustmentWindow.xaml",
+          "sha256": "C763291C0BCAC28C0B9DC16AF00D9A971068B4CD7EF68793A29D101ED6328EDF"
+        },
+        {
+          "name": "SAB_HTML_Karkas.html",
+          "sha256": "D416423E3376B072EFE8218F4C43639BCB88E1D446B9A720FB033E5ED106F684"
+        }
+      ],
+      "installationPerformed": false
+    }
+  ],
+  "tests": [
+    {
+      "checks": 66,
+      "status": "PASS",
+      "boundary": "linked actual services with API doubles",
+      "command": "dotnet run --project Tests/InteriorElevations.DirectionPreview --configuration Release"
+    },
+    {
+      "checks": 20,
+      "status": "PASS",
+      "boundary": "API doubles",
+      "command": "dotnet run --project Tests/InteriorElevations.Numbering --configuration Release"
+    },
+    {
+      "checks": 6,
+      "status": "PASS",
+      "command": "dotnet run --project Tests/Instructions --configuration Release"
+    }
+  ],
+  "previewFamily": {
+    "format": "2022",
+    "sha256": "25f8a49176f7111def0748e3ae00630560a75c11076903f9de730343042c316d",
+    "downloadVerified": true,
+    "url": "https://raw.githubusercontent.com/ASvetlakov2000/SAB/v1.1.4/SAB/Families%20for%20Plugin/CreateInteriorElevationsCommand/2022/SAB_%D0%A0%D0%B0%D0%B7%D0%B2%D0%B5%D1%80%D1%82%D0%BA%D0%B8_%D0%9D%D0%B0%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5.rfa"
+  },
+  "independentReview": {
+    "reviewer": "/root/finish_reviewer",
+    "status": "PASS",
+    "scope": "fresh MSI2022/2023/2024 packaging only",
+    "verified": [
+      "MSI Property table: correct ProductName and ProductVersion1.1.4",
+      "MSI SHA256 matches recorded fresh verification",
+      "extracted SAB.dll matches current Release DLL and AssemblyVersion1.1.4.0",
+      "exactly one preview RFA with expected25f8a491 SHA256 in each package",
+      "reflection-only RevitAPI/RevitAPIUI references strictly22/23/24"
+    ],
+    "blockers": [],
+    "unverified": [
+      "live Revit",
+      "installation",
+      "UI audit not repeated",
+      "publication verified separately by primary agent"
+    ]
+  }
+}
