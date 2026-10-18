@@ -8,8 +8,8 @@ namespace SAB.ParameterTools
         internal static ImageSource Create(string name, int size)
         {
             var group = new DrawingGroup();
-            var ink = new SolidColorBrush(Color.FromRgb(40, 49, 61));
-            var accent = new SolidColorBrush(Color.FromRgb(15, 108, 189));
+            var ink = new SolidColorBrush(Helpers.Ribbon.ParameterIconColor);
+            var accent = ink;
             using (var dc = group.Open())
             {
                 dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, 32, 32));

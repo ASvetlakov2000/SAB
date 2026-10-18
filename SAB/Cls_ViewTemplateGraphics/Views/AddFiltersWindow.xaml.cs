@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,7 +11,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using SAB.UI;
 using SAB.ViewTemplateGraphics.Models;
-using RevitTaskDialog = Autodesk.Revit.UI.TaskDialog;
+using RevitTaskDialog = SAB.ViewTemplateGraphics.Views.TemplateEditorPresentation;
 
 namespace SAB.ViewTemplateGraphics.Views
 {
@@ -54,6 +54,7 @@ namespace SAB.ViewTemplateGraphics.Views
 
             InitializeWindowFromXamlFile();
             DataContext = this;
+            TemplateEditorPresentation.Attach(this);
 
             AddHandler(Button.ClickEvent, new RoutedEventHandler(Button_Click));
             Loaded += AddFiltersWindow_Loaded;
@@ -115,7 +116,7 @@ namespace SAB.ViewTemplateGraphics.Views
         {
             _searchTextBox = FindVisualChildByName<TextBox>(this, "FilterSearchTextBox");
             _filtersDataGrid = FindVisualChildByName<DataGrid>(this, "FiltersDataGrid");
-            WindowSizeSettingsService.Apply(this, "ViewTemplateGraphics.AddFiltersWindow");
+            if (TemplateEditorPresentation.PersistenceEnabled) WindowSizeSettingsService.Apply(this, "ViewTemplateGraphics.AddFiltersWindow");
         }
 
         private void AddFiltersWindow_Closed(object sender, EventArgs e)

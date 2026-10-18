@@ -1,0 +1,18 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <PropertyGroup>
+    <Configuration>Debug</Configuration><Platform>AnyCPU</Platform><OutputType>WinExe</OutputType>
+    <AssemblyName>SAB.NotificationSettings.Preview.Revision2</AssemblyName><TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <PlatformTarget>x64</PlatformTarget><LangVersion>latest</LangVersion><StartupObject>SAB.NotificationSettingsPreview.Program</StartupObject>
+    <OutputPath>..\..\..\outputs\ui-production-preview\notification-settings\revision-2\</OutputPath>
+    <IntermediateOutputPath>..\..\..\outputs\ui-production-preview\notification-settings\revision-2\obj\</IntermediateOutputPath>
+    <ApplicationManifest>..\app.manifest</ApplicationManifest><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Xaml"/><Reference Include="System.Web.Extensions"/>
+    <Reference Include="System.Windows.Forms"/><Reference Include="WindowsBase"/><Reference Include="PresentationCore"/><Reference Include="PresentationFramework"/><Reference Include="UIAutomationProvider"/><Reference Include="UIAutomationTypes"/>
+    <Reference Include="SAB"><HintPath>..\..\..\outputs\ui-production-preview\plugin\SAB.dll</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+  <ItemGroup><Compile Include="Models.cs"/><Compile Include="Window.xaml.cs"><DependentUpon>Window.xaml</DependentUpon></Compile><Compile Include="Program.cs"/><Compile Include="Evidence.cs"/><Page Include="Window.xaml"/></ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

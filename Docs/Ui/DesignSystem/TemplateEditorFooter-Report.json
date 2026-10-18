@@ -1,0 +1,1156 @@
+{
+  "schemaVersion": 1,
+  "task": "Редактор шаблонов — внутренние отступы нижнего статуса",
+  "date": "2026-10-18",
+  "scope": "production footer-only source and actual WPF outside Revit",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "dirtyBaseline": "Pre-existing cumulative approved UI changes retained; current footer before-files saved separately under outputs/ui-production-preview/template-editor/footer-baseline.",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/TemplateEditorFooter-Layout.md",
+  "build": [
+    {
+      "command": "BuildFooterCheck.ps1 -Capture",
+      "status": "PASS",
+      "exitCode": 0,
+      "assertions": 103,
+      "pngCount": 6,
+      "evidence": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt"
+    },
+    {
+      "command": "Build-Msi.bat Release 1.1.4",
+      "status": "PASS",
+      "exitCode": 0,
+      "evidence": "Docs/Ui/DesignSystem/NotificationSettings-Installer.json"
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/footer-detail.png",
+      "sha256": "65a17aa870bbb1eb6a0078825789efd0570339af71635b5da5ee3c1a27e93a2b",
+      "bytes": 6232,
+      "widthPx": 1764,
+      "heightPx": 114,
+      "renderDpi": 96,
+      "surface": "actual attached footer VisualBrush at local origin",
+      "data": "detached fixture DTO; outside Revit; no OS-DPI/physical verification"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/long-status.png",
+      "sha256": "35ba06db6ed9c2ae93bc554be8bcab532fa63e54eddfae6626727dc28b3692a6",
+      "bytes": 108123,
+      "widthPx": 1224,
+      "heightPx": 721,
+      "renderDpi": 96,
+      "surface": "actual SAB.dll Window.Content",
+      "data": "detached fixture DTO; outside Revit; no OS-DPI/physical verification"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/minimum.png",
+      "sha256": "69a75ea213b41042eeb0e2336f08ddc291a508546448eaa19c6ea4175f1c1156",
+      "bytes": 83561,
+      "widthPx": 1224,
+      "heightPx": 721,
+      "renderDpi": 96,
+      "surface": "actual SAB.dll Window.Content",
+      "data": "detached fixture DTO; outside Revit; no OS-DPI/physical verification"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/normal.png",
+      "sha256": "323e671951e844e69af1b2c666eb6b82e8b4c38434509c449aec58e484195f9d",
+      "bytes": 132116,
+      "widthPx": 1764,
+      "heightPx": 901,
+      "renderDpi": 96,
+      "surface": "actual SAB.dll Window.Content",
+      "data": "detached fixture DTO; outside Revit; no OS-DPI/physical verification"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/tall.png",
+      "sha256": "b67c78b7ecef67590014817265e41a862ff8264a9e1a7707c1d330a78c4a5e33",
+      "bytes": 154029,
+      "widthPx": 1884,
+      "heightPx": 1081,
+      "renderDpi": 96,
+      "surface": "actual SAB.dll Window.Content",
+      "data": "detached fixture DTO; outside Revit; no OS-DPI/physical verification"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-footer/validation.png",
+      "sha256": "9685c6cc953c68e9198323d4408515fe33169ddf9affa33cedb671dae1cadb82",
+      "bytes": 94956,
+      "widthPx": 1224,
+      "heightPx": 721,
+      "renderDpi": 96,
+      "surface": "actual SAB.dll Window.Content",
+      "data": "detached fixture DTO; outside Revit; no OS-DPI/physical verification"
+    }
+  ],
+  "runtimeDpi": null,
+  "renderDpi": [
+    96
+  ],
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current API22/23/24 Release builds and extracted MSI verified; API execution in Revit NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Six current actual WPF captures; initial blank detail replaced using actual VisualBrush, fresh host run PASS.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Static layout/error/long states tested; full physical input/focus/accessibility matrix not run.",
+      "evidence": [],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Instruction button and binding retained; browser launch not tested.",
+      "evidence": [],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Current actual footer source/captures/103 bounds assertions within the declared footer-only scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-084",
+      "criterion": "ErrorRegistry.md#sab-ui-084",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-085",
+      "criterion": "ErrorRegistry.md#sab-ui-085",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-086",
+      "criterion": "ErrorRegistry.md#sab-ui-086",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-087",
+      "criterion": "ErrorRegistry.md#sab-ui-087",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-088",
+      "criterion": "ErrorRegistry.md#sab-ui-088",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-089",
+      "criterion": "ErrorRegistry.md#sab-ui-089",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-090",
+      "criterion": "ErrorRegistry.md#sab-ui-090",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Both card bottoms align; measured card-to-status gap16 at all viewports, long/error states and7tabs.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-091",
+      "criterion": "ErrorRegistry.md#sab-ui-091",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Footer-only refinement; this owner/scenario is unchanged or absent in the modified footer.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-092",
+      "criterion": "ErrorRegistry.md#sab-ui-092",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual text layout and glyph ink clear all frame edges; min44/padding12,10/wrap/autogrow and12DIP footer gap verified.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-footer/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditorFooter-SourceContract.json"
+      ],
+      "unverified": [
+        "Live Revit, physical input, OS DPI/monitor transitions and installation NOT RUN"
+      ]
+    }
+  ],
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "independentReview": {
+    "status": "PASS",
+    "scope": "footer source/current native captures and latest extracted MSI only",
+    "report": "Docs/Ui/DesignSystem/TemplateEditorFooter-Review.md",
+    "reason": "One rejected detail capture corrected and verified"
+  },
+  "installationPerformed": false,
+  "publicationPerformed": false,
+  "unverified": [
+    "Live Revit operations",
+    "Physical input/accessibility traversal",
+    "OS DPI/monitor transitions",
+    "MSI installation"
+  ]
+}

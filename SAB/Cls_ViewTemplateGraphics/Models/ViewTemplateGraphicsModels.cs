@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1210,6 +1210,8 @@ namespace SAB.ViewTemplateGraphics.Models
         public bool HasChildren { get; set; }
 
         public bool AllowsVisibilityControl { get; set; }
+        public bool SupportsProjectionLines { get; set; }
+        public bool SupportsHalftone { get; set; }
 
         public bool SupportsCut { get; set; }
 
@@ -1228,7 +1230,7 @@ namespace SAB.ViewTemplateGraphics.Models
 
         public double NameIndent
         {
-            get { return Math.Max(0, IndentLevel) * 18.0; }
+            get { return Math.Max(0, IndentLevel) * 24.0; }
         }
 
         public string HierarchyGuide

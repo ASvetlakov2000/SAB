@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:design="clr-namespace:SAB.UI.FluentLight;assembly=SAB" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <SolidColorBrush x:Key="SabBrush.WindowBackground" Color="#F6F7FA" />
   <SolidColorBrush x:Key="SabBrush.PanelBackground" Color="White" />
@@ -604,6 +604,33 @@
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
+  <ControlTemplate x:Key="SabLargeSwitchTemplate" TargetType="ToggleButton">
+    <Grid Background="Transparent">
+      <Border x:Name="FocusRing" Width="64" Height="40" CornerRadius="20" BorderThickness="2" BorderBrush="Transparent" />
+      <Border x:Name="Track" Width="56" Height="32" CornerRadius="16" Background="{DynamicResource SabBrush.Border}">
+        <Ellipse x:Name="Knob" Width="24" Height="24" Margin="4" Fill="White" HorizontalAlignment="Left" />
+      </Border>
+    </Grid>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsChecked" Value="True">
+        <Setter TargetName="Track" Property="Background" Value="{DynamicResource SabBrush.Accent}" />
+        <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right" />
+      </Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True">
+        <Setter TargetName="FocusRing" Property="BorderBrush" Value="{DynamicResource SabBrush.Accent}" />
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.5" /></Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+  <Style x:Key="SabNotificationTypeBadgeStyle" TargetType="Border">
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="Background" Value="{Binding KindBackground}" />
+  </Style>
+  <Style x:Key="SabDataGridReadableTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SabDataGridTextBlockStyle}">
+    <Setter Property="ToolTip" Value="{Binding Text,RelativeSource={RelativeSource Self}}" />
+  </Style>
   <ControlTemplate x:Key="SabSectionCardTemplate" TargetType="Expander">
     <Border Background="White" BorderBrush="{DynamicResource SabBrush.Border}" BorderThickness="1" CornerRadius="6" Padding="16">
       <StackPanel>
@@ -735,6 +762,20 @@
   <Style x:Key="SabDataGridDisplayFieldBorderStyle" TargetType="Border" />
   <Style x:Key="SabDataGridDragHandleTextStyle" TargetType="TextBlock" />
   <Style x:Key="SabStatusTextStyle" TargetType="TextBlock" />
+  <Style x:Key="SabFooterStatusPanelStyle" TargetType="Border" BasedOn="{StaticResource SabValidationPanelStyle}">
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="MinHeight" Value="44" />
+    <Setter Property="Height" Value="Auto" />
+  </Style>
+  <Style x:Key="SabFooterStatusTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SabStatusTextStyle}">
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="LineHeight" Value="20" />
+    <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
   <Style x:Key="SabScrollBarRepeatButtonStyle" TargetType="RepeatButton" />
   <Style x:Key="SabVerticalScrollBarThumbStyle" TargetType="Thumb" />
   <Style x:Key="SabHorizontalScrollBarThumbStyle" TargetType="Thumb" />
@@ -802,4 +843,25 @@
         <Setter Property="FontSize" Value="13" />
       </Style>
       
+<Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:ns2="clr-namespace:SAB.UI.FluentLight;assembly=SAB" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" TargetType="TabControl" x:Key="SabWrappingTabControlStyle" BasedOn="{StaticResource {x:Type TabControl}}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="TabControl">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid HorizontalAlignment="Left" Height="Auto" ns2:Capsule.IsGroup="True" MinHeight="34">
+              <Border CornerRadius="17" Background="{DynamicResource SabBrush.TableHeaderBackground}" BorderBrush="{DynamicResource SabBrush.Border}" BorderThickness="1" />
+              <Border Tag="CapsuleIndicator" CornerRadius="15" Background="{DynamicResource SabBrush.Accent}" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False" />
+              <WrapPanel IsItemsHost="True" Margin="2" />
+            </Grid>
+            <ContentPresenter Grid.Row="1" ContentSource="SelectedContent" x:Name="SelectedBody" Margin="0,12,0,0" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  
 </ResourceDictionary>

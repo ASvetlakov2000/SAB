@@ -1,0 +1,1472 @@
+{
+  "schemaVersion": 1,
+  "task": "SAB — первый этап настоящего окна Уведомления",
+  "date": "2026-10-18",
+  "scope": "production sources + actual SAB.dll WPF with isolated fixtures; automatic confirmations not implemented",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "dirtyBaseline": "Pre-existing unrelated dirty changes retained. Touched original source snapshots in outputs/ui-production-preview/notification-settings/pre-production-source.",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "SAB/Notifications/NotificationController.cs",
+    "SAB/Notifications/NotificationSettingsStore.cs",
+    "SAB/Notifications/NotificationSettingsModel.cs",
+    "SAB/Notifications/SettingsWindow.xaml",
+    "SAB/Notifications/SettingsWindow.xaml.cs",
+    "SAB/UI/Styles/SABFluentLight.xaml",
+    "SAB/SAB.csproj",
+    "Docs/PluginInstructions/SAB_HTML_Uvedomleniya.html",
+    "Tools/UiShowcase/NotificationSettings/ProductionHarness.cs",
+    "Tools/UiShowcase/NotificationSettings/ProductionHarness.csproj",
+    "Tools/UiShowcase/NotificationSettings/Build-Production.ps1",
+    "Tools/UiShowcase/NotificationSettings/Open-Production.cmd",
+    "Tools/UiShowcase/NotificationSettings/Open.cmd"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/NotificationSettings-Production-Layout.md",
+  "build": [
+    {
+      "version": 2022,
+      "status": "PASS",
+      "exitCode": 0,
+      "assembly": "outputs/ui-production-preview/notification-settings/production/api2022/plugin/SAB.dll",
+      "sha256": "f00907cae794d0337d1af7f78c710a7b71626a5afa3ca98e346fc58e0fd2573d",
+      "log": "outputs/ui-production-preview/notification-settings/production/build2022.log",
+      "command": "Build-Production.ps1 -Capture -AllVersions (Revit2022 phase)",
+      "scope": "API compilation only; not execution in Revit"
+    },
+    {
+      "version": 2023,
+      "status": "PASS",
+      "exitCode": 0,
+      "assembly": "outputs/ui-production-preview/notification-settings/production/plugin/SAB.dll",
+      "sha256": "3b4e5009d79ab32b7ea624ffe4f9dda1a2b5043f69eb07302f2c1b5b01f07276",
+      "log": "outputs/ui-production-preview/notification-settings/production/build2023.log",
+      "command": "Build-Production.ps1 -Capture -AllVersions (Revit2023 phase)",
+      "scope": "API compilation only; not execution in Revit"
+    },
+    {
+      "version": 2024,
+      "status": "PASS",
+      "exitCode": 0,
+      "assembly": "outputs/ui-production-preview/notification-settings/production/api2024/plugin/SAB.dll",
+      "sha256": "ed6c6c9b046e91f78b4a35dbc576bbb84fbf14be4cdde1f19cbfc575abd2c3ef",
+      "log": "outputs/ui-production-preview/notification-settings/production/build2024.log",
+      "command": "Build-Production.ps1 -Capture -AllVersions (Revit2024 phase)",
+      "scope": "API compilation only; not execution in Revit"
+    },
+    {
+      "command": "Build-Production.ps1 -Capture -AllVersions",
+      "status": "PASS",
+      "exitCode": 0,
+      "assertions": 56,
+      "pngCount": 21,
+      "evidence": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+      "log": "outputs/ui-production-preview/notification-settings/production-final-build.log"
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/00-corrupt-settings.png",
+      "sha256": "f24adc33813d756b4cd25a710495da00c9fa8dd2d25bd7e57f8a0448573825f0",
+      "bytes": 88350,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/00-legacy-settings.png",
+      "sha256": "b3984afe26a8b19973733541377f078acebb6229f8fa925d2c51c61ae99bcce4",
+      "bytes": 88023,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png",
+      "sha256": "182dc0f0a7c7f4c21f9936ffec7335b951123711a887540b8bf04293c4787ab6",
+      "bytes": 90907,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/02-switch-disabled.png",
+      "sha256": "efb1bab45d881d6533bcdb7fd59d395fd951e0a44d1b43b7bf5f4bb7b9433059",
+      "bytes": 86996,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/02-switch-focus.png",
+      "sha256": "6154008161990e19e7cf5e100025e7faf56069092a150dc693940bd398c3111d",
+      "bytes": 92442,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/03-pending-rule.png",
+      "sha256": "33efcdf51ab3ca7c9f364284198935b3c5fb3282aff9a98d4c58a87f4f3a73d5",
+      "bytes": 90747,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/04-actions-popup.png",
+      "sha256": "fbfed1fa31cfca5d01dc49376355686b6cb812bb97c2a2502a79af1fdaf315c7",
+      "bytes": 4268,
+      "widthPx": 290,
+      "heightPx": 95,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-nonmodal.png",
+      "sha256": "da7a0790d3bd614f9ca94fc44907e34e4e03e1eedf25e130520a143a03ca0476",
+      "bytes": 88620,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-ownership.png",
+      "sha256": "7ec31e93fee39436850e852eaa65fc8fad0495566f99f7b928c04ce6451f308d",
+      "bytes": 89642,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-sketch.png",
+      "sha256": "5d454d6393c20aa2c64b54eefd16554c28c03575b57de2fb2f76081440b054c9",
+      "bytes": 89369,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-unknown.png",
+      "sha256": "a1a3b38f7ac1f9d56f9d21458aa215d68bba8aa1bc412ff66a33d83393992035",
+      "bytes": 86752,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/06-delete-validation.png",
+      "sha256": "d892f24df9cf7b8bf115c745a67798f3a3b896db88c8a4eb1231b52a2b6e249f",
+      "bytes": 91025,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/07-delete-consent.png",
+      "sha256": "1191434c62daa6fff55d1ac7ffb5105fc9d03cf912fb07a329112060577c5db2",
+      "bytes": 90629,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/08-empty.png",
+      "sha256": "7dfe2268f4d956c8b6c7090078a29f263b0fed1922435055e8d71dfc2c6f9b8a",
+      "bytes": 41023,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/09-context-options.png",
+      "sha256": "e46cc9938d742f297f0625153d0427f224601cb34f6e1e77b6424fb697272b1e",
+      "bytes": 91250,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/10-journal-empty.png",
+      "sha256": "329bd2cb7c3498c646f4f7077ee9b155d34443bf58ffcc21f6f65a560c1c7231",
+      "bytes": 40833,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/11-validation.png",
+      "sha256": "b66dfe1ad6997e5fa2e838bb4173362f2036592c566d10921fff6cc202fbbd67",
+      "bytes": 41786,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/12-minimum.png",
+      "sha256": "69e688aabf267be7191206dd9c8cd335f04d6c52dcd1ac0a71e3f7c53d3d1c1a",
+      "bytes": 71126,
+      "widthPx": 1024,
+      "heightPx": 661,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/13-long-text.png",
+      "sha256": "c390d0fc7ba2e72ad918a8d9b08886e9fc2e09c08f09a8fec45c00d1bf03cdd5",
+      "bytes": 76753,
+      "widthPx": 1024,
+      "heightPx": 661,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/14-saved.png",
+      "sha256": "e7c08ca7d20365e4fb675207d7e932868b2241f3f5b05589c1e48ca72a486e0f",
+      "bytes": 90696,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/15-journal-records.png",
+      "sha256": "33f892435bdc4c14e4feb43b55af2ea24ea4d4aa20d7209dc6e7372e836546c5",
+      "bytes": 48377,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    }
+  ],
+  "runtimeDpi": null,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Fresh bounded review; one recovery status finding fixed and verified",
+    "scope": "first-stage source/settings/actual WPF only; not live Revit/automatic OK/installation",
+    "report": "Docs/Ui/DesignSystem/NotificationSettings-Production-Review.md"
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Direct user requirements: large toggle, actual window, first launch OFF; earlier labels/two tabs/context options retained.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Named large switch, semantic badge and readable DataGrid text styles are shared SABFluentLight resources; scoped dictionaries only.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual search, selected rule, draft, stable rule persistence, journal, consent, Save/Cancel/Escape verified. Deliberate blanket backend removal follows user requirement.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Builds against Revit22/23/24; VM/window contain no Revit objects. Existing command identities preserved. Actual API execution NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Direct request authorizes first-stage production window. Installation/release not performed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual SAB.dll compiled window with scoped shared resources and existing Options entry point; no global Revit resources mutated.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Master/detail chosen over in-row editing, recorded before production implementation in Production-Layout.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "21 fresh actual SAB.dll WPF captures including native Popup.Child; coherent current assembly/source hashes.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Есть default/selected/disabled/empty/validation/save и routed Enter/automation Invoke/Toggle, но полная матрица hover/pressed/focus/keyboard/accessibility не проверена.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Полный focus traversal, physical Enter/Escape, hover/pressed и accessibility."
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh runtime header38/row44 measurements normal/minimum and captures.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "В строках нет icon action buttons/add/delete.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Оси заголовков и видимых cell text не измерялись с допуском1DIP; source margin10 и снимок дают лишь частичное evidence.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Actual header/cell axis geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет numeric DataGrid editor/№/масштаба; Duration — отдельное поле формы.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Minimum capture/footer/no-overlap verified; complete all-tab/last-row metadata navigation not tested.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Journal minimum, last row, physical navigation."
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет mode capsule, wrapped mode segments; короткие native tabs оцениваются023–025.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет условно скрываемых mode segments.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Two capsule tabs Правила/Журнал shown; exact indicator/track geometry not measured.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Actual indicator bounds/track width."
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Gap от вкладок до поверхности не измерен; общий template/source margin сам по себе runtime PASS не даёт.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Actual12DIP±1 на всех tabs."
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Evidence.Pump ждёт250ms перед кадрами, что покрывает static settle; animation clock/ClientAreaAnimation/physical motion отдельно не проверялись.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Animation clock/easing/runtime preference."
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Shared collection style подключён, но actual RectangleGeometry всех4 углов в данном окне не измерялась.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Native clip geometry at all corners."
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Normal/minimum footer and separation bounds; long text bounded with scrollable detail.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет bound ItemsControl wrapper с условно пустым содержимым; пустая DataGrid сохраняет frame/empty state.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Source подключает shared outlines для RulesGrid/JournalGrid, normal/journal/empty кадры имеются; actual1DIP/radius6/inset измерения отсутствуют.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Actual border/radius/inset geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет вложенных строк этажей/двойных floor frames.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Labels/поля собраны vertical StackPanel, но actual left/right axes с допуском1DIP не измерены.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Field/container axes."
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет nested form с action28 рядом с field34.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Shared fields/buttons и spacing используются по source; actual высоты/центры/все gaps не измерялись.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Height/vertical-center/spacing measurements."
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет selection batch/action groups Выборки/Выделение; фильтр Показать одиночный.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Импорт/экспорт конфигурации отсутствуют в согласуемом функциональном scope.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "No user add-row action; observed unknown messages are appended automatically from journal.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Single rule selection, нет категорий/multiple Selected/highlight inclusion.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет импорта выборок SAB.CategorySelection и unknown selection IDs.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Labels, source text, pending capability metadata, validation/status only. Tutorial is local module HTML.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Ровно одна footer Инструкция и наличие local Help.html runtime PASS; actual shell/browser launch не запускался.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Actual browser invocation."
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Meaning and confirmation separate; pending action explicitly shown; corrupt recovery red, legacy migration neutral, successful Save green.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Normal/minimum выглядят без gutter в header, но actual header span geometry не проверялась.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Header span measurement; group caps N/A."
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Actual compiled Page/source owner, new dedicated coverage fields, 91 registry IDs and honest runtime boundaries.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "DockablePane отсутствует; fixed footer/bounded window покрываются029.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет source icon add/delete actions; текстовые кнопки имеют content, поля automation names.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Нет ClearRowsCommand; пустой фильтр не изменяет каталог.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Routed Enter search, case-insensitive matching, selected rule/filter и independent exception toggles проверены; physical keyboard/Escape/focus traversal не исполнены.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Physical/full keyboard traversal and popup Escape."
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Status row0/actions row1 есть source; footer visible measured and validation captures exist, но actual equal heights/gap8/status non-overlap полного набора не измерены.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Status/button bounds incl long status at minimum."
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "New complaint registered091 and fixed in named shared large switch; source/bounds/focus/disabled/routed Space captured.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Реальный ComboBox popup снят; Expander Код сообщения closed/open направление и filter chevron не проверены runtime.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Expander open/closed and ComboBox disclosure geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Длинное русское имя/текст показаны на minimum и доступны detail scroll; полный header clipping/tooltip/last-column matrix не проверен.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Arbitrary long headers, full accessibility/physical tooltip."
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Transient NotificationCard отсутствует; это settings window.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Notification clipboard/ID/support blocks отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Notification lifetime timer не реализуется; Duration — draft setting.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "NotificationStack отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "NotificationStack monitor/work-area placement не меняется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Production notification adapters/ReportWindow/transactions не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "production",
+      "reason": "Fresh actual WPF/source evidence for this criterion within first-stage settings scope.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit execution, physical input and OS DPI NOT RUN"
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation decoration ComboBox/выноска отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Star name column + fixed action column есть source; normal/minimum no horizontal scroll измерены, но wide last-column edge<=2DIP не проверен.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Wide viewport/last-column edge geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Это resizable settings window, не compact choice helper.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation spot category selection отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation final result adapter отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Shared NotificationCard resource/fallback regression вне изменяемой поверхности.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "production",
+      "reason": "Generic status/actions separate rows есть source; footer visibility normal/minimum verified, но long nonempty status all bounds не измерены.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt"
+      ],
+      "unverified": [
+        "Long status at minimum exact geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation footer/room list отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "ParameterPicker отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Parameter check category catalog отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "WhatCheck/CheckCategoriesWindow отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Parameter hotkey/ribbon/check workflow не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation numbering prefix/suffix отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation preview geometry/family/lifecycle не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Document identity/picking preview callbacks отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Open-contour virtual closure geometry не меняется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "DirectionsWindow/guide revision не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Elevation selection guidance не меняется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-084",
+      "criterion": "ErrorRegistry.md#sab-ui-084",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Material selection picker отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-085",
+      "criterion": "ErrorRegistry.md#sab-ui-085",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Ribbon colors/split-button не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-086",
+      "criterion": "ErrorRegistry.md#sab-ui-086",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "ViewTemplate category capabilities отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-087",
+      "criterion": "ErrorRegistry.md#sab-ui-087",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Category tree guides/chevrons отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-088",
+      "criterion": "ErrorRegistry.md#sab-ui-088",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Сценарий отсутствует в первом этапе окна.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-089",
+      "criterion": "ErrorRegistry.md#sab-ui-089",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Two short tabs fit minimum; no wrapping/multiple-tab-row adapter changes.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-090",
+      "criterion": "ErrorRegistry.md#sab-ui-090",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "production",
+      "reason": "Specific ViewTemplateGraphicsWindow bottom-gap regression вне окна уведомлений; general footer spacing остаётся035/055.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-091",
+      "criterion": "ErrorRegistry.md#sab-ui-091",
+      "status": "PASS",
+      "applicable": true,
+      "scope": "production",
+      "reason": "Track56x32, knob24, hit64x40 runtime measured; on/off/focus/disabled/routed Space verified, previous small template preserved. Physical Space NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png"
+      ],
+      "unverified": [
+        "Live Revit, full physical input/accessibility and OS DPI NOT RUN"
+      ]
+    }
+  ],
+  "unverified": [
+    "Revit live errors/sketch/worksharing/modes and OK capabilities",
+    "Physical keyboard/pointer/accessibility traversal",
+    "Runtime/OS DPI and monitor transitions",
+    "MSI payload and installation"
+  ],
+  "productionMigrationAuthorized": true,
+  "installationPerformed": false,
+  "msiBuilt": false,
+  "automaticConfirmationsImplemented": false,
+  "firstLaunchEnabled": false,
+  "registryStatusCounts": {
+    "PASS": 29,
+    "NOT RUN": 18,
+    "N/A": 44
+  },
+  "history": {
+    "revision2": "Docs/Ui/DesignSystem/NotificationSettings-Revision2-Report.json",
+    "note": "Earlier preview evidence unchanged; no expansion of old verdicts"
+  },
+  "documentationValidation": {
+    "status": "PASS",
+    "exitCode": 0,
+    "command": "Bundled Python Tools/UiShowcase/ValidateUiDocs.py --report Docs/Ui/DesignSystem/NotificationSettings-Production-Report.json",
+    "evidence": "outputs/ui-production-preview/notification-settings/production/docs-validation.txt",
+    "reason": "Metadata/links/hash-chain validation only; not UI runtime"
+  }
+}

@@ -1,5 +1,7 @@
 # SAB
 
+17.10.2026: по прямому утверждению пользователя [дизайн редактора шаблонов перенесён в рабочие3окна](Docs/Ui/DesignSystem/TemplateEditor-Production-Layout.md). Две колонки345.6/20/*,7вкладок с общим переносом в2ряда, capability-aware дерево и batch guards; нижний зазор16DIP. [Actual SAB.dll WPF report](Docs/Ui/DesignSystem/TemplateEditor-Production-Report.json), [MSI22/23/24 payload](Docs/Ui/DesignSystem/TemplateEditor-Production-Installer.json). Preview558/52 — история; текущая проверка624/54 относится к production UI с detached DTO, не к операциям Revit. Установка/публикация/commit не выполнялись; physical/OS DPI/browser/live Revit отдельно NOT RUN. Без Computer Use.
+
 <!-- impeccable:product-schema 1 -->
 
 ## Platform
@@ -53,3 +55,15 @@ Fresh COMPLETED native logs: [actual elevations104/21](Docs/Ui/DesignSystem/scre
 
 
 1.1.3: [Исправление preview runtime, новый footer и виртуальное замыкание](Docs/Ui/DesignSystem/ElevationPreviewRuntime-Layout.md). Целевые MSI2022/2023; live Revit и установка проверяются отдельно.
+
+## Настройки уведомлений — первый этап18.10.2026
+
+По разрешению пользователя завершён первый этап в границе исходников и проверенного WPF: рабочее окно и увеличенный главный переключатель. Actual owners: SAB/Notifications/{NotificationController,NotificationSettingsStore,NotificationSettingsModel,SettingsWindow.xaml,SettingsWindow.xaml.cs}; общие SabLargeSwitchTemplate56×32/hit64×40 и SabNotificationTypeBadgeStyle — SABFluentLight. [Layout](Docs/Ui/DesignSystem/NotificationSettings-Production-Layout.md), [инструкция](Docs/PluginInstructions/SAB_HTML_Uvedomleniya.html), SAB-UI-091. Предыдущий isolated preview остаётся историей.
+
+Первый запуск без действующих настроек — OFF; legacy/invalid settings также OFF. Пользователь включает модуль только в окне и сохраняет; сознательно сохранённое Enabled=true schema2 восстанавливается между запусками/обновлениями. Реализованы draft/save/cancel, атомарная schema2, чтение и HTML-экспорт настоящего журнала. Все выбранные способы подавления пока pending; доступно0, включение запускает только наблюдение. Старый blanket backend удалён: ни auto-OK, ни DeleteWarning/ResolveFailure/rollback в активных обработчиках нет. Native Revit/OK/physical/OS DPI не проверены; scope исходников/сборок без MSI/установки/релиза.
+
+[Отчёт91ID](Docs/Ui/DesignSystem/NotificationSettings-Production-Report.json) и [независимый review](Docs/Ui/DesignSystem/NotificationSettings-Production-Review.md): ship_ui_source_scope;56PASS/21PNG actual SAB.dll с isolated fixtures. Это завершение первого этапа окна; движок подавления pending, Revit/OK/physical/OS DPI не подтверждены.
+
+## Подготовленный установочник1.1.4 —18.10.2026
+
+Текущий cumulative candidate после исправления footer: [NotificationSettings-Installer.json](Docs/Ui/DesignSystem/NotificationSettings-Installer.json). Штатный Build-Msi.bat Release1.1.4 и PrepareOnly завершились exit0; все3MSI для2022/2023/2024 проверены по извлечённым DLL, actual XAML/BAML, styles, guides и API references. Первый запуск без действующих настроек уведомлений OFF; автоматическое подтверждение по-прежнему не реализовано. Состояние на этом этапе — prepared current candidate; Git/публикация ожидают отдельного подтверждения builder, планируемый tag v1.1.4-notifications сохраняет исторический v1.1.4. Установка не выполнялась. [Независимый footer/payload review](Docs/Ui/DesignSystem/TemplateEditorFooter-Review.md): ship_ui_code_payload;103PASS/6PNG,7source checks и3freshMSI. Исходный запрос GitHub/обновления установочника возобновлён после footer fix; старые native counts/proofs не переписываются.

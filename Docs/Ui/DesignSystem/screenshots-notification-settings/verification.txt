@@ -1,0 +1,55 @@
+Standalone native WPF preview, synthetic capabilities and data; shared SAB Fluent Light resources.
+No Revit callbacks, model transactions or production settings writes. Client-area RenderTargetBitmap captures of shown WPF, excluding OS titlebar.
+Physical input, complete accessibility traversal, OS DPI transitions and actual OK capability: NOT RUN.
+PASS: all 14 fixture types visible
+PASS: defaults: all show and global automatic OK off
+PASS: shared row44 and header38
+PASS: exactly two rule columns
+PASS: one help action and local file exists
+PASS: rules fit width without horizontal scroll
+PASS: table scrollbar below header
+PASS: footer remains visible
+PASS: detail and table do not overlap
+CAPTURE: 01-default 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: selected rule gets toast method only
+PASS: changes stay in draft
+CAPTURE: 02-configured 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: actual method popup open and contains three actions
+CAPTURE: 03-method-dropdown 274x95 (96dpi WPF render, not OS-DPI proof)
+PASS: global pause preserves per-rule choices
+PASS: deletion without consent prevents save
+CAPTURE: 04-deletion-validation 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: explicit deletion consent enables save
+CAPTURE: 05-deletion-consent 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: return to manual revokes deletion permission
+PASS: sketch cannot auto confirm
+PASS: protected model rejects injected automatic action
+CAPTURE: 06-protected-sketch 1144x781 (96dpi WPF render, not OS-DPI proof)
+CAPTURE: 07-protected-ownership 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: without OK always show
+CAPTURE: 08-without-ok 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: unknown window always show
+CAPTURE: 09-unknown 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: empty search has honest empty state and no stale details
+CAPTURE: 10-empty 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: routed Enter searches case-insensitively
+PASS: automatic filter follows rule choices
+PASS: exception toggles retain values
+CAPTURE: 11-exceptions 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: whole-workshared exception configurable but ownership remains protected
+PASS: journal records draft choices without claiming Revit clicks
+CAPTURE: 12-journal 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: invalid duration prevents save
+CAPTURE: 13-duration-validation 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: empty log folder prevents save
+PASS: rules fit width without horizontal scroll
+PASS: table scrollbar below header
+PASS: footer remains visible
+PASS: detail and table do not overlap
+CAPTURE: 14-minimum 1024x661 (96dpi WPF render, not OS-DPI proof)
+PASS: long message bounded and scrollable
+CAPTURE: 15-long-text 1024x661 (96dpi WPF render, not OS-DPI proof)
+PASS: save writes isolated demo file only
+CAPTURE: 16-saved 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: cancel closes without saving draft
+COMPLETED: 35 PASS; 16 PNG. Scope: standalone WPF preview only.

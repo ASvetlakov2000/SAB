@@ -1,0 +1,385 @@
+{
+  "date": "2026-10-17",
+  "scope": "actual SAB.dll WPF classes with detached fixtures",
+  "assembly": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\template-editor\\production\\SAB.dll",
+  "sha256": "298c47ea7d6eb8e8654bf12560f3eac5101a4515937f6ee746e7414d9834b838",
+  "hostSha256": "326205b82cb3b6929ac1b67a28b9709341e8bee03736d60c88f14a32a7a1604e",
+  "currentOwners": {
+    "SAB/Cls_ViewTemplateGraphics/Commands/EditViewTemplateGraphicsCommand.cs": "1b9d205810b262ee18c9f5c2c9fef5b3f0d4b9b622124551504962b9ed84f401",
+    "SAB/Cls_ViewTemplateGraphics/Models/ViewTemplateGraphicsModels.cs": "c6ff6906a63f192d36495ef8331401faff36d144df820d737129690716c80a6d",
+    "SAB/Cls_ViewTemplateGraphics/Services/CategoryCapabilities.cs": "056b61969f8db92f9deb047b0cf1d408cf18da7c771b9c2f9343c2b04fe1e8e1",
+    "SAB/Cls_ViewTemplateGraphics/Services/RevitLinkGraphicsReflectionService.cs": "ffb1632aa39f83648dd60bf10e25c594216c40ae157af5e09ee82b39785caee9",
+    "SAB/Cls_ViewTemplateGraphics/Services/ViewTemplateGraphicsApplyService.cs": "1b49fb9146f06e15d13e77a2bc16aa7e6714983ea3c52d41250746a141272e0e",
+    "SAB/Cls_ViewTemplateGraphics/Services/ViewTemplateGraphicsDataService.cs": "2eaf8cb86064819da26da2bb18d760cd275788a1763504c3d314f162d42f3251",
+    "SAB/Cls_ViewTemplateGraphics/ViewModels/GraphicOverrideEditorViewModel.cs": "1c08969c8236ab21885f3a51517ecbbcb17aead4ac9c9de926acd4dbf65ced76",
+    "SAB/Cls_ViewTemplateGraphics/ViewModels/ViewTemplateGraphicsViewModel.cs": "71f938f05203b75e7e60a49151ff9cc94e496450790b429595b8542927f79c6d",
+    "SAB/Cls_ViewTemplateGraphics/Views/AddFiltersWindow.xaml": "581a665dbaff143501645c3ac1f1a5103ea542ac5889f27107f964d930da96b8",
+    "SAB/Cls_ViewTemplateGraphics/Views/AddFiltersWindow.xaml.cs": "118d16becf389c5caf1c4550d2a1006d4b55d7fed6c21e5ada4457b0c3f2ceb2",
+    "SAB/Cls_ViewTemplateGraphics/Views/CategoryPresentation.cs": "ee34d6602a82edd9b4ce24f882fcec66f82b4808929119f231e260b031564664",
+    "SAB/Cls_ViewTemplateGraphics/Views/GraphicOverrideEditorWindow.xaml": "4cd84eff391d65dee143e0bd23425047ba8743d370821bbad34d678957481a99",
+    "SAB/Cls_ViewTemplateGraphics/Views/GraphicOverrideEditorWindow.xaml.cs": "57efa457ab96bbe3978bdac07b37a6df35527b8ed94b3ba7dcdcdb48e4a801f1",
+    "SAB/Cls_ViewTemplateGraphics/Views/TemplateEditorPresentation.cs": "5f097a5188f435c578117b9142eb51c5156d43adbf64a950b8fa10aeb7d6b5bf",
+    "SAB/Cls_ViewTemplateGraphics/Views/ViewTemplateGraphicsWindow.xaml": "79604db07e5f2a5e85513b8a82fb5ab33ed8ca02a1250297dce530ef2784aa75",
+    "SAB/Cls_ViewTemplateGraphics/Views/ViewTemplateGraphicsWindow.xaml.cs": "194d00919e7501adc28abd750468d014405fb5462ef86f56a74faf132a86fd69",
+    "SAB/UI/FluentLight/Presentation.cs": "bf3e7159d83a7aec38196987fd0bdbbc0b16f12888115a8d2bbae83168b0ad5b",
+    "SAB/UI/Styles/SABFluentLight.xaml": "a587065f9d926cba3b5b261939621070da905b0351c187250bcbc0a6c3b22510",
+    "SAB/SAB.csproj": "dfd9f535d8f8c42768c7b0fbd0f54425029fb70e3e372cad7b35455b3eb81c16",
+    "Installer/Verify-MsiPayload.ps1": "91aa1bc801566e0781e3cb3339e68ce98e17434e7591dff46a23a8077a53e45a"
+  },
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/add-filters-validation.png",
+      "sha256": "79e311b5c1678d60d7dd55f30d5fb3de7ab05da58af6990d53fa0bc5eceacd8e",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/add-filters.png",
+      "sha256": "7e7e885e51f9cdaa42d7d51e348c80f4192ed46a75868955f30026a9b065c556",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/analytical-capabilities.png",
+      "sha256": "be469725d7c74154d9fbb3df201c4bbbd50034fec284a5f6d162230f28b43e60",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/annotation-capabilities.png",
+      "sha256": "c0b94b9ed65587dc20e21c8869429331be7d82509cdee178f3fdca4114fe0f2a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/category-expanded.png",
+      "sha256": "4e06b405a24111f69206f70d42c352be86912aa9c71ac96f7aa568074b605072",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/dirty-validation.png",
+      "sha256": "198b24c7d7923abbe2e9be4b792d498801e6417d617b78f80f242395bc4bd3d4",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-All.png",
+      "sha256": "fbc4e1e1a404898fbcee2cda4f11d5a28e18d84617ed2d2ad75b85415b94c6a1",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-CutLines.png",
+      "sha256": "be394bd0062a2ecce386a8eb4e817c004b6dc3e721fc438b149216b01d0a36cb",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-CutPatterns.png",
+      "sha256": "c8abb4df3031223fd1de0a17db647bf768b093d6ae5858464ccbc3e3672aa444",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-popup.png",
+      "sha256": "82d4df717879cbf86d73e65c525a085fb9d4da4398987f203900a969f49f5674",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-projection.png",
+      "sha256": "76010a7c8f04fc92bbbfdc28781e0e7449d5f7adc4daab955aa83dcff682752e",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-ProjectionLines.png",
+      "sha256": "83ff9daf260dfbd9f472150c1642b4c693c95b9db38d8259ae3314e523d59b60",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-SurfacePatterns.png",
+      "sha256": "8efc53539594778683454f35a79dc3bfba84ed22d78bd5631a67c358f5e98831",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-Transparency.png",
+      "sha256": "3abcc6ad5bb4aa72766d4178f996bd6da87e398c5694e5e609865c144d1afc34",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/empty-template-search.png",
+      "sha256": "5e7bd41eeb6ccdf502c68707bb99cd5cff1bf3102930e438dcfdd8ddf6d272ef",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/empty-worksets.png",
+      "sha256": "ad80065d64382e145ebdb4044b2099b65629a8252321f2292af07af0f5694113",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/filter-reordered.png",
+      "sha256": "1226920460c97e50578fe2e1c8b8bd0a52e5b1cb7dd3079c6c21b03e13f62754",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/global-link-category.png",
+      "sha256": "b9fd080e6864808572f187aa15ceb6633805590c15bf6fe7f0528be1f794789f",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/long-template-name.png",
+      "sha256": "e93f2f794659155e5afd8a24994849c7ad5f2e920bc70465d9dd7f39d41e1571",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-add-filters.png",
+      "sha256": "24f5b40be22a2e86b61cdd91daf5d9729b75df9610d770a81478dfdab57a8500",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-All.png",
+      "sha256": "b37001568fc65fde42b619fb2ecfa75afcfc4d952b2caee16ed6175309ec9797",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-CutLines.png",
+      "sha256": "5f88817027fb053d385a9fabec5f350b858d77f9dddb61f6d5c58e5dd1bad215",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-CutPatterns.png",
+      "sha256": "42f39be4ae38f33f7efef9f441de76b1abd8c1169efe241965fdcfd202ee1bc2",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-ProjectionLines.png",
+      "sha256": "9327fca0590e0532fcca38d410cbdb64d3ecc3524db5eb43c1cb6504865fb5ea",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-SurfacePatterns.png",
+      "sha256": "bbe369fedaf5fd1f8fe9fb479d583142e302738ef16b80678f29a70a2ba44d9a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-Transparency.png",
+      "sha256": "d8aa9ac81aa549aecc3b0f1930e88d6841350136fd70d16e1aa8974550eb29d0",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-0.png",
+      "sha256": "dc660bb9043c7ae29b8978fcd909cdbf755c5c56ca9d1e797ecc1c8e3ad62df8",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-1-right.png",
+      "sha256": "d3d033b6ba917518dd21a906507d99c19bd4999701427d661e58382081573aac",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-1.png",
+      "sha256": "18fd815cda77a686ac71f4da2370dede7c85608ddf2411fa31f670dfda32e9a8",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-2.png",
+      "sha256": "bb13a20be7203754ac381fc3d47dea70e0ddd6a3627b24ef6c526b4cf3da44c7",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-3-right.png",
+      "sha256": "ea1180717c9d16d6fde74432e531edd04077dc3b7d5cccc75280143b59cb6210",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-3.png",
+      "sha256": "8c6fad2acc77d25d8d65840d09c5004e706834ede2a1b299730dba98458649a1",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-4.png",
+      "sha256": "f29c05c7646df77ea065707bef7444f95a6578f9764a7447536548388ad35981",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-5-right.png",
+      "sha256": "a6810c23744c4bbd592224f461d31b49bce6b64fa32c3e21a7c3e1c67f7b99d5",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-5.png",
+      "sha256": "59db5167c02d130a9c8a031f74f6181f70bf22495770dbad41f1e0975b425587",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-6.png",
+      "sha256": "aee39a5b7076aa1e8c953718b9c4b8165488da7acacd3d2e38195c318bbcfa28",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/mixed-selection.png",
+      "sha256": "4e06b405a24111f69206f70d42c352be86912aa9c71ac96f7aa568074b605072",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/property-editor-focus.png",
+      "sha256": "78ce8c726cef230eec0be83ea08cdca08dcdbf0b55d3d17a09daf9ca4b778aae",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/search-enter-focus.png",
+      "sha256": "48e95ad3aa2826679a2594030abb0c85a9b537a0d41fd399ffadb629efcfd583",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/shared-capsule-regression.png",
+      "sha256": "49193babc8142e4a98c1de4eb4f199805ecf5677859472f9fced94860cf88d61",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/stretch.png",
+      "sha256": "f43c25845d33bc91426957afa079216e957ca756ab3c1b761440a9c5cd885e7e",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-0.png",
+      "sha256": "e93f2f794659155e5afd8a24994849c7ad5f2e920bc70465d9dd7f39d41e1571",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-1.png",
+      "sha256": "12b70b9ba6b6285be58d0d1757b0e9800fe5869f519392d16f2ce46859fba27a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-2.png",
+      "sha256": "c0b94b9ed65587dc20e21c8869429331be7d82509cdee178f3fdca4114fe0f2a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-3.png",
+      "sha256": "be469725d7c74154d9fbb3df201c4bbbd50034fec284a5f6d162230f28b43e60",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-4.png",
+      "sha256": "ff3446d5ae886de65e0b39d0be0c6511c2d7df5d9a219f38fb7366ad1b9e03e5",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-5.png",
+      "sha256": "dd4b15b6e5d0eb87226f5e3dd75ea74467c5309957ffdbfdaeab64fbfc54205c",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-6.png",
+      "sha256": "45422c2772aeff54c2139c416662531836c513fc9423be12ea887e13938db0d8",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tall-bottom-spacing.png",
+      "sha256": "ad16dd56f0a3cc9fbb5e773e7cac6afe99d400a304bb726aa5ed1c54bfbbb227",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/template-search.png",
+      "sha256": "da5656aa883de014d0cc5906dd58e8788302cb2cf23a39c490c53d482e3757fe",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tree-depth-stress.png",
+      "sha256": "b191270d6206cfb6c591eb5fee103f352a3261754351f15fe950161e53b0264c",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tree-search-path.png",
+      "sha256": "e731c0ad91dc7a603514dd1d9964df1eb304dab65545214fcc6611bc6921ceeb",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/workset-edited.png",
+      "sha256": "3b90f0ca65e97c8bfb05eb09cfb10909c30da27502d9edfa6420d96d61c42020",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/zero-targets.png",
+      "sha256": "a44ea1c276fb1b7e4fffff8817a55dbdb5a4c121c6e96f5609a949c5d49245ab",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    }
+  ],
+  "summary": "COMPLETED 624 PASS / 54 visible WPF captures; Revit/OS-DPI/install NOT RUN",
+  "runtimeDpi": 96,
+  "renderDpi": 96,
+  "persistence": "Production default true; internal process-only flag false in capture host; user window geometry not read/written.",
+  "builds": [
+    {
+      "revitVersion": 2022,
+      "configuration": "Debug",
+      "status": "PASS",
+      "assembly": "outputs/ui-production-preview/template-editor/production-2022/SAB.dll",
+      "sha256": "4250b0c101afbd8063e4f2ab58ae27fb123b4ed19a508b4dff4114498e692826",
+      "scope": "compile; actual WPF capture only API2023 DLL"
+    },
+    {
+      "revitVersion": 2023,
+      "configuration": "Debug",
+      "status": "PASS",
+      "assembly": "outputs/ui-production-preview/template-editor/production/SAB.dll",
+      "sha256": "298c47ea7d6eb8e8654bf12560f3eac5101a4515937f6ee746e7414d9834b838",
+      "scope": "compile; actual WPF capture only API2023 DLL"
+    },
+    {
+      "revitVersion": 2024,
+      "configuration": "Debug",
+      "status": "PASS",
+      "assembly": "outputs/ui-production-preview/template-editor/production-2024/SAB.dll",
+      "sha256": "98debc72743e64db334cc523b6ab502aa42d787f2e6d5e72cd2e97e661630a82",
+      "scope": "compile; actual WPF capture only API2023 DLL"
+    }
+  ]
+}

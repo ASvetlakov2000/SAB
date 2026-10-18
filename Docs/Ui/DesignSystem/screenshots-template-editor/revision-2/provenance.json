@@ -1,0 +1,339 @@
+{
+  "date": "2026-10-17",
+  "scope": "isolated source-derived preview, not production/Revit",
+  "host": "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\outputs\\ui-production-preview\\template-editor\\SAB.TemplateEditor.Preview.exe",
+  "hostSha256": "08abf70f1049a8abbaadf374e2be4912ae11db8fc86935b4c161f912db8c808e",
+  "productionSources": {
+    "SAB/Cls_ViewTemplateGraphics/Models/ViewTemplateGraphicsModels.cs": "8ce93ceadc5efac0a179100c29fbb2c0d6748842f6da879dc40f117d635cdbac",
+    "SAB/Cls_ViewTemplateGraphics/ViewModels/GraphicOverrideEditorViewModel.cs": "1c08969c8236ab21885f3a51517ecbbcb17aead4ac9c9de926acd4dbf65ced76",
+    "SAB/Cls_ViewTemplateGraphics/ViewModels/ViewTemplateGraphicsViewModel.cs": "66d44514bfefacdf1c5b9725c0cb17b0df3a99e58e6f13549174a2cfacf5b927",
+    "SAB/Cls_ViewTemplateGraphics/Views/AddFiltersWindow.xaml.cs": "42c082765e8739f3561f0d17899ed8cc54359232d8f3137839d7758d53ee03d8",
+    "SAB/Cls_ViewTemplateGraphics/Views/GraphicOverrideEditorWindow.xaml.cs": "c240c994effb14e6b7a6c136a1f49712feb8b84085da5a8ec3b79aca4f590c40",
+    "SAB/Cls_ViewTemplateGraphics/Views/ViewTemplateGraphicsWindow.xaml.cs": "f8bc5cdf4e31da658930e76fda0ec08feb892bb3b2df04e1bc189d443e42e0bd"
+  },
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters-validation.png",
+      "sha256": "c6c8f06fb526856399cf255e42be9b8c9523c0971813edccd68289bb3fef6dec",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters.png",
+      "sha256": "74cfc1745913dd19d6681d0d19d12cff5273e9800f5d00a4760cfd1481a322e6",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/analytical-capabilities.png",
+      "sha256": "03f5b1e74682a3a280073fca0526d29ca7dbdd28a1544acaf332d9348caf2931",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/annotation-capabilities.png",
+      "sha256": "dc95935dbc378f2e25e0e86b24f84fbd66e8c29fdcbd7730ce8c193c9e21abf5",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/category-expanded.png",
+      "sha256": "a1eb5ca4a09109f2733d5f63c9258c08fb6c32a7d1f9edb1cb0386478389df54",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/dirty-validation.png",
+      "sha256": "08cdb95e30f374720ac124b330614c98e5cc89d2b807fca3b568f6c08ec5aee7",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-All.png",
+      "sha256": "cbd0ccf50228d12569e209cae002b6e5a3921e2b66a5f11eb519367eb474c275",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-CutLines.png",
+      "sha256": "a02bb777acce7032edcd858a4c57d997d86ebf9fda2638985a201b4ff18d344c",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-CutPatterns.png",
+      "sha256": "78b9250f14aee7c784485c97736036eaeac30124e5ced2a4488903e9bbbf562c",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-popup.png",
+      "sha256": "2e142aa0eb3cd657c0096843808c6e115a843ff4704e61aa97f8a695292e1ef5",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-projection.png",
+      "sha256": "938330bfa8f1a7ebced5ffe03066d1755bf1ead19fb4aa2c154caa5115a02ae9",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-ProjectionLines.png",
+      "sha256": "cf7513648165566bda8a6063799d070860aa505a787fa6b9531b35674c78781d",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-SurfacePatterns.png",
+      "sha256": "2d9b9390a887bc29a37cc27206d9f41f54ebe2ee789c6df654ed139b616179cf",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-Transparency.png",
+      "sha256": "c7e564b180e6db46c4d3098def4631ef97c704b8da4f0e15147c925088d0e03e",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/empty-template-search.png",
+      "sha256": "dc828fe0a2c6a6247118fb76ca5bad92ea46e0fef8793e3425d387e09ba5c3ec",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/empty-worksets.png",
+      "sha256": "ed587e4bb4704ebfa6020ab8f26be92ad369b4fb595ae2cb00f2c49767d94275",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/filter-reordered.png",
+      "sha256": "db29d3263c893fd290b2c4ebcdad86dd528705691d379e4c5069a284ee118ac0",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/global-link-category.png",
+      "sha256": "5270f4b73313fd3970d47bef5603319114cfa9232d4371be014ac280d06a7b30",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/long-template-name.png",
+      "sha256": "0b3926231a1b6c824ed8e1f4b4f74435ba8e0d4b0afb99ea6d0a9f1d954e2f8d",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-add-filters.png",
+      "sha256": "d71741342af85a8a96d7b7cb9dfe36c573158f4113423c58fc44cdcb10e88fdd",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-All.png",
+      "sha256": "a696a0f7332b6b37c669330968864618e670874e24f027becbbc75a01526ecf2",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-CutLines.png",
+      "sha256": "d94ceafa11cb773c77ae237e8be8ac92e679995fcf2e7206bd9cbc9de268c56b",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-CutPatterns.png",
+      "sha256": "25c7427abe4a6bfd98ae29b8c5ae9111f1b923762ba7cf71fc1ed017bab50911",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-ProjectionLines.png",
+      "sha256": "85e0b8d9ac1a4869e58f917c05cbd8dff0f98227f265de1ec3c9074b9e5756e9",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-SurfacePatterns.png",
+      "sha256": "cf04894bb4c3f9f31c1779ab0749b5c7e39af51141a515a590958d86ab532d64",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-Transparency.png",
+      "sha256": "37fbfe73b5dcc4b24fb274b45e02104161aaa7edd63fe483da6979e524a1e8ba",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-0.png",
+      "sha256": "86f532311427fd55c62df77d3310f024d7f17cc11c2d74766c145c07e1199562",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-1-right.png",
+      "sha256": "a7b725e452e797403939794f0328125b86ba9d1012ca952bcdbede0fa2c9e4e2",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-1.png",
+      "sha256": "f45d88faab22715dc133bdb907b2be94c629ff847cd9f730b4dc8c91a12c3073",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-2.png",
+      "sha256": "04924261bd1dc41996522ba20897bbb65b16269ea7ce8d23b1e9bcabb9833697",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-3-right.png",
+      "sha256": "2d5f4d3229cda4e4d39fa0c8857e2555c130b2fd1213c981cbd99615629395f2",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-3.png",
+      "sha256": "ccc89f14b219d5e6b5ab32e16ab27ba8ac7b2d00eceee78be5b8f7d18686dae0",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-4.png",
+      "sha256": "3dad452515f6b61d3f627f7a8beab1216069be484eb42a0ac81e605301212568",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5-right.png",
+      "sha256": "668b3ccc6d1544a7923d3614017bc138997a3615392ffec48edc97204583460d",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png",
+      "sha256": "1e0c8a7db492f7b0c3f71a558e44e93b770d35a86462790e39475c907962699e",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-6.png",
+      "sha256": "d479611ebb21591559db03a41c927dfb70ad850dc11bd689eb576b45e30ed375",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/mixed-selection.png",
+      "sha256": "a1eb5ca4a09109f2733d5f63c9258c08fb6c32a7d1f9edb1cb0386478389df54",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/property-editor-focus.png",
+      "sha256": "6251e22841fe11fedf73a6e94f3f45ac046dcb0c9112f93ac574c204b8633860",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/search-enter-focus.png",
+      "sha256": "f3f419bc4ec6519c407c6fd85048d3071d4c1768645a4ee714da45e90f908e40",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/stretch.png",
+      "sha256": "86edb3e375b452c9dad317969caef4c425f627eccc596c39fca43b33dc2b357f",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-0.png",
+      "sha256": "3de1b4e92da2f34a3e7d847af302b0620a04fd2b3daa3c6a4bbe6aacdeefd26f",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+      "sha256": "19e6bb51e390343100e673459b9b988f0e2eee562654013b4ed36e4afb8f7157",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-2.png",
+      "sha256": "dc95935dbc378f2e25e0e86b24f84fbd66e8c29fdcbd7730ce8c193c9e21abf5",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-3.png",
+      "sha256": "03f5b1e74682a3a280073fca0526d29ca7dbdd28a1544acaf332d9348caf2931",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-4.png",
+      "sha256": "2c3822a9b00996e7b4787e3532e93ceb5f8394e67e2c6986fad12478f33f5628",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-5.png",
+      "sha256": "fc534be8109a4a74e353cba013ad1237a5669afa8cafb283f14635cff48fc8dd",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-6.png",
+      "sha256": "c06d1065b379fd9bcde46dce46cf96c68bcb572f990eb915e6deaf19ca71c53a",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/template-search.png",
+      "sha256": "90453c027e1db13db7ecdb988a91dd5c286fa35f4673e29cfb74e32aa5a421a1",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tree-depth-stress.png",
+      "sha256": "6f0268057d030ed29fed374b71246a5306a6375729cc6e73cb8c77f429471d79",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tree-search-path.png",
+      "sha256": "cdca37f978e6ed16d66ec7a4bf7872399857327eb4fb092b96aee88a6a4f0765",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/workset-edited.png",
+      "sha256": "bd7c6fc8e650e5145045325747d9e45e9d68893c4b0829216f405307b8370c0b",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/zero-targets.png",
+      "sha256": "7aa1fef7ea0c67299f1e551681b1bc886a7ba8c24a3fbd71b0bdbd3ecd5c03d4",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    }
+  ],
+  "summary": "COMPLETED 558 PASS / 52 visible WPF captures; Revit/OS-DPI/install NOT RUN",
+  "runtimeDpi": 96.0,
+  "renderDpi": 96,
+  "applicationResources": "empty, checked at runtime",
+  "productionMigrationAuthorized": false,
+  "sharedAssemblySha256": "d399ecf4fde4b6cd70d86fae089c414b5ce977dc043b4b89fb0dac6f677f8cb1",
+  "canonicalDictionary": {
+    "path": "SAB/UI/Styles/SABFluentLight.xaml",
+    "sha256": "eec112739368840b1f4b75c5b65b9aad9b857d6424eea68a5e3cb999b9f9eeeb"
+  },
+  "independentReview": "Docs/Ui/DesignSystem/TemplateEditor-Review.md"
+}

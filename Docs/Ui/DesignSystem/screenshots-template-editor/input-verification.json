@@ -1,0 +1,19 @@
+{
+  "scope": "WPF routed input/Keyboard.Focus/AccessKeyManager, not physical OS keyboard",
+  "userDirection": "Continue without Computer Use; no further Computer Use after physical Escape",
+  "checks": [
+    "PASS real WPF property editor focus",
+    "CAPTURE property-editor-focus visible WPF 1120x760 DIP; RenderTargetBitmap96; not OS150/Revit",
+    "PASS real WPF search focus",
+    "PASS search Enter handled before default Apply",
+    "PASS routed Enter invokes original search",
+    "CAPTURE search-enter-focus visible WPF 1440x940 DIP; RenderTargetBitmap96; not OS150/Revit",
+    "PASS open popup contains real fill pattern names",
+    "POPUP editor-popup captured actual separate WPF popup at measured offset 243;209; no drawn substitute",
+    "PASS routed Escape closes real popup",
+    "PASS popup Escape keeps editor open",
+    "PASS WPF Escape access key cancels main dialog"
+  ],
+  "physicalInput": "NOT RUN",
+  "browserRendering": "NOT RUN"
+}

@@ -1,0 +1,146 @@
+﻿{
+    "AuditDate":  "2026-10-17",
+    "TimeZone":  "Europe/Moscow",
+    "Head":  "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+    "Scope":  "Source audit, local historical log review, read-only API metadata inventory, isolated helper checks. No product changes, installation or Revit command execution.",
+    "Versions":  [
+                     {
+                         "RevitVersion":  2022,
+                         "AssemblyVersion":  "22.0.0.0",
+                         "ApiSha256":  "A60011776A7B4994235150EA3FF14929626DB97C115FF59AC7524153BB98B48B",
+                         "Groups":  162,
+                         "Definitions":  2369,
+                         "DocumentSketchOrEditModeProperties":  [
+
+                                                                ]
+                     },
+                     {
+                         "RevitVersion":  2023,
+                         "AssemblyVersion":  "23.0.0.0",
+                         "ApiSha256":  "82423EB2660F72D3708D135953BA9EB7923856477673FF7EE729BBFDA6309FB1",
+                         "Groups":  165,
+                         "Definitions":  2409,
+                         "DocumentSketchOrEditModeProperties":  [
+
+                                                                ]
+                     },
+                     {
+                         "RevitVersion":  2024,
+                         "AssemblyVersion":  "24.0.0.0",
+                         "ApiSha256":  "A442E7B7A8A17D2E7E88AF1C395D0CE2B69F9AA3F9A0CB6CE823604D994B2C6F",
+                         "Groups":  170,
+                         "Definitions":  2433,
+                         "DocumentSketchOrEditModeProperties":  [
+
+                                                                ]
+                     }
+                 ],
+    "SourceFiles":  [
+                        {
+                            "Path":  "SAB/Notifications/NotificationController.cs",
+                            "Sha256":  "C96706A418A327FA4AAC5D735F091CCE9C78952663AD4EED8C665B55948C56C1"
+                        },
+                        {
+                            "Path":  "SAB/Notifications/DeleteWarningButton.cs",
+                            "Sha256":  "AC63C995A5D7C55FE58724FB40BCAA239A5CFBC150EF2F341A82E309E9E4EF9C"
+                        },
+                        {
+                            "Path":  "SAB/Notifications/DeleteWarningJournal.cs",
+                            "Sha256":  "5F63EDB04F58AE77A5CB00B686A900E0E006838ACF9100EF4CE11DDED3432579"
+                        },
+                        {
+                            "Path":  "SAB/Notifications/UndoEligibility.cs",
+                            "Sha256":  "2EC763D73B614B27846C00BC0B0A5D6CC6798BB625E8A1057470FFB55F9DB046"
+                        },
+                        {
+                            "Path":  "SAB/Notifications/ReadableJournal.cs",
+                            "Sha256":  "1B10404A4ADF475B4D2BA5F59520691958E866786BB43F02DBB318643670D995"
+                        },
+                        {
+                            "Path":  "SAB/Helpers/Notifications/ToastNotifications/SabStyledToastNotifier.cs",
+                            "Sha256":  "7B6E1BBAD28DDE4ED1C8813755E554EDA5990EFC39809B1ED0AEF938E710D93C"
+                        },
+                        {
+                            "Path":  "SAB/Cls_ParameterTools/Workflow.cs",
+                            "Sha256":  "4C8C3FDB281612C4376D06C70C3893D3E065F11F46A12EA163FE292551D04115"
+                        },
+                        {
+                            "Path":  "Docs/Notifications.md",
+                            "Sha256":  "0B935B91FE8EBBE3A65805107CD92C06ED5D083D88D0E5A9F6A10BDF172F9B2F"
+                        },
+                        {
+                            "Path":  "Docs/PluginInstructions/SAB_HTML_Uvedomleniya.html",
+                            "Sha256":  "565723903A15F6BF9C3235F28ACF71A24C6FDA5D9C2D3350A8BA0F605ACC8CA6"
+                        }
+                    ],
+    "HelperChecks":  [
+                         {
+                             "Name":  "Recognize repository deletion-warning fixture",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Reject completed dialog",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Reject later command",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Reject error instead of warning",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Reject multiple warnings",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Reject unrelated warning with same counter",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Reject empty journal",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Undo accepts containing transaction",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Undo rejects changed revision",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Undo rejects unrelated transaction",
+                             "Status":  "PASS"
+                         },
+                         {
+                             "Name":  "Deletion undo requires deleted elements",
+                             "Status":  "PASS"
+                         }
+                     ],
+    "WeakDeletionAssociationObserved":  true,
+    "LocalHistory":  {
+                         "Source":  "%LOCALAPPDATA%/RevitQuiet/spool.jsonl",
+                         "Sha256":  "E4AA774662A1982B6F0306BCB95DD4F4BD34940C2BAAD1117E9201FA9F21593B",
+                         "RawRecords":  774,
+                         "InvalidLines":  0,
+                         "EventKeys":  384,
+                         "FailureSeverityKinds":  51,
+                         "First":  "2026-09-09T00:13:15.6262984+03:00",
+                         "Last":  "2026-09-12T19:42:30.9689976+03:00",
+                         "OwnershipKeywordMatches":  0,
+                         "RollbackLimitRecords":  82,
+                         "Config":  {
+                                        "Enabled":  false,
+                                        "SkipOrdinary":  false,
+                                        "SkipImportant":  false,
+                                        "DialogRules":  0
+                                    },
+                         "Limitations":  "Historical logs do not record SAB build/Revit version or command completion. EventKeys are approximate; ownership keyword absence does not disprove the reported incident."
+                     },
+    "LiveRevitProcesses":  1,
+    "RevitRuntimeScenarios":  "NOT RUN",
+    "NativeButtonScenario":  "NOT RUN",
+    "ProductionBuild":  "N/A: production source unchanged"
+}

@@ -1,0 +1,10 @@
+PASS production capability model root starts editable
+PASS production aggregate intersection disables graphics but preserves independent visibility
+PASS production aggregate intersection never restores a disabled capability
+PASS production subcategory detail omitted independently of cuttable metadata
+PASS production analytical policy retains projection/surface and rejects noncuttable/detail
+PASS production annotation policy preserves halftone
+PASS shared default tab capsule single-row geometry retained
+PASS shared radio capsule XY/height retained after selection
+CAPTURE shared-capsule-regression visible WPF 500x280 DIP; RenderTargetBitmap96; not OS150/Revit
+COMPLETED bounded recapture:8 assertions/1 actual WPF capture; production DLL/MSI unchanged

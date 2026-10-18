@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.Windows.SDK.Contracts.10.0.19041.1\build\Microsoft.Windows.SDK.Contracts.props" Condition="Exists('..\packages\Microsoft.Windows.SDK.Contracts.10.0.19041.1\build\Microsoft.Windows.SDK.Contracts.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -164,6 +164,10 @@
       <DependentUpon>FrameModuleWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Notifications\NotificationController.cs" />
+    <Compile Include="Notifications\NotificationSettingsStore.cs" />
+    <Compile Include="Notifications\NotificationSettingsModel.cs" />
+    <Compile Include="Notifications\SettingsWindow.xaml.cs"><DependentUpon>SettingsWindow.xaml</DependentUpon></Compile>
+    <Page Include="Notifications\SettingsWindow.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
     <Compile Include="Notifications\UndoEligibility.cs" />
     <Compile Include="Notifications\DeleteWarningJournal.cs" />
     <Compile Include="Notifications\DeleteWarningButton.cs" />
@@ -262,6 +266,9 @@
     </Compile>
     <Compile Include="Cls_ViewTemplateGraphics\Commands\EditViewTemplateGraphicsCommand.cs" />
     <Compile Include="Cls_ViewTemplateGraphics\Models\ViewTemplateGraphicsModels.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Views\CategoryPresentation.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Views\TemplateEditorPresentation.cs" />
+    <Compile Include="Cls_ViewTemplateGraphics\Services\CategoryCapabilities.cs" />
     <Compile Include="Cls_ViewTemplateGraphics\Services\RevitLinkGraphicsReflectionService.cs" />
     <Compile Include="Cls_ViewTemplateGraphics\Services\ViewTemplateGraphicsApplyService.cs" />
     <Compile Include="Cls_ViewTemplateGraphics\Services\ViewTemplateGraphicsDataService.cs" />
@@ -748,6 +755,7 @@
     <EmbeddedResource Include="Resources\MaterialLayers_*.png" />
     <EmbeddedResource Include="Resources\FilledRegionSettings_*.png" />
     <EmbeddedResource Include="Resources\FilledRegionCreate_*.png" />
+    <EmbeddedResource Include="Resources\DecorateInteriorElevations.svg" />
     <Content Include="Resources\RibbonIcons-Credits.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-17",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "uiSourceOverrides": false,
+  "historicalProof": "Docs/Ui/DesignSystem/MaterialSelection-Provenance.json",
+  "historicalProofSha256": "df41485213e2502be2fcdb49bbca14e88b9847db04a871d77be045314f9800fd",
+  "source": {
+    "SAB/Cls_MainPanel/MainPanel.cs": "4654f18313b215df42a19b895fa77478e358e808a2cd175bfc9847749b439688",
+    "SAB/Helpers/Ribbon/Ribbon.cs": "ed006e8413956f9b5607582a7d142b893fede2a2dc6b73d5729dad3d5b689f04",
+    "SAB/Cls_ParameterTools/ParameterToolsIcons.cs": "057355ec8e0831d7cfc66d968dcf1c488385d27f365c31e5122686f9d4e63729",
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": "a4599af652369e84781ad8fa708074bd8451fd6cdc774b5e59a7a55a6df2c0a8",
+    "SAB/SAB.csproj": "2ceac4d8ce872f54ce38aee7cd399289d8470cdbcd5133394e656f70fbff1a0b"
+  },
+  "sourceBefore": {
+    "SAB/Cls_MainPanel/MainPanel.cs": "44c76da67da1cd8c4a212e4395d319c8749683698c6dd06f932c34fc14d1639a",
+    "SAB/Helpers/Ribbon/Ribbon.cs": "81d3a27f9b77a29e7d16fbe31cddfedd29dbfc5c9928d8a8370e82f27963f045",
+    "SAB/Cls_ParameterTools/ParameterToolsIcons.cs": "befde2198c60a7a5c6961b649f36d6e1b973fe4c021c7d9facde62ea5f9bf3bf",
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": "e6cb22a83e3bf6f71d80d5194190be077f187c68fb812005523a6b3474df964f",
+    "SAB/SAB.csproj": "bdf829e1211ba9f893ba599d8aa9232d27b18f1e2964317310db5e0677095642"
+  },
+  "sourceBeforeGitBlobSha256": {
+    "SAB/Cls_MainPanel/MainPanel.cs": "49d057655a49eee7b9537d64b3fb272189027c159b40184715bd8fb89ccfad56",
+    "SAB/Helpers/Ribbon/Ribbon.cs": "81d3a27f9b77a29e7d16fbe31cddfedd29dbfc5c9928d8a8370e82f27963f045",
+    "SAB/Cls_ParameterTools/ParameterToolsIcons.cs": "befde2198c60a7a5c6961b649f36d6e1b973fe4c021c7d9facde62ea5f9bf3bf",
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml": "a2810c8e49f08620bbe0b354ab99c95e7edc327382c11d5fde4be07808ef949a",
+    "SAB/SAB.csproj": "5cd60ebbef2abfe1936532b740f112e7d67a872031d5fd43cfb4a572c2796129"
+  },
+  "actualAssembly": "SAB/bin/Revit2023/SAB.dll",
+  "actualAssemblySha256": "31da71cfebb15f0c0a8c0f548d0142926ef31a8c5d3cb49fa1a6c6a5ba9e3476",
+  "nativeAssertions": 121,
+  "scope": "Actual production icon factories outside Revit; ribbon popup/input NOT RUN",
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-ribbon-modules/production-icons.png",
+      "sha256": "68f13b8d9df8bba06af30c63ac24d719de0e2848f4b1fc162fe2c8cb615368eb"
+    }
+  ],
+  "colorRevision": {
+    "source": "Direct user followup17.10: numbers5–8 RGB92,109,187",
+    "albumRgb": [
+      92,
+      109,
+      187
+    ],
+    "previousRgb": [
+      155,
+      171,
+      187
+    ],
+    "previousSourceAndEvidenceArchive": "outputs/ui-production-preview/ribbon-before-rgb92.zip",
+    "otherGroupsUnchanged": true
+  },
+  "decorationFollowup": {
+    "source": "Direct user request: new decoration icon; remove separate ribbon settings; rename Catalog elements",
+    "layout": "Docs/Ui/DesignSystem/DecorationRibbon-Layout.md",
+    "previousSourceArchive": "outputs/ui-production-preview/ribbon-before-decoration.zip",
+    "svgSha256": "5768abf6372740f2e7d9002d9aaa4312ad0e46df6370a9fc833ab40254e7e600",
+    "svgSource": "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/pencil-ruler.svg",
+    "creditsSha256": "b2f329818f5c0cfe9fc8a9a13b6b0864868668e4c490811db20fb780aa6f5f7d",
+    "guideSha256": "80d151df5a80255a7926017a6f703bab87b2c5c6e7902224e5ea7f9d107950aa"
+  }
+}

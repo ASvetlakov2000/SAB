@@ -114,22 +114,25 @@ namespace SAB
             });
 
             // Existing main-button identity is retained; creation starts with manual material selection.
-            Ribbon.AddPushButtonSingle(
-                albumPanel,
+            var filledRegionButton = (SplitButton)albumPanel.AddItem(
+                new SplitButtonData("SAB_FilledRegionFromMaterial", "Области заливки\nиз материала"));
+            filledRegionButton.IsSynchronizedWithCurrentItem = false;
+            Ribbon.AddPushButtonToSplit(
+                filledRegionButton,
                 "SAB_FilledRegionFromMaterial_Settings",
                 "Области заливки\nиз материала",
                 "SAB.FilledRegionFromMaterial.CreateFilledRegionTypesCommand",
                 "SAB.Resources.FilledRegionCreate_32.png",
                 "SAB.Resources.FilledRegionCreate_16.png");
-            Ribbon.AddPushButtonSingle(
-                albumPanel,
+            Ribbon.AddPushButtonToSplit(
+                filledRegionButton,
                 "SAB_FilledRegionFromMaterial_Configure",
                 "Настройки\nобластей заливки",
                 "SAB.FilledRegionFromMaterial.SettingsCommand",
                 "SAB.Resources.FilledRegionSettings_32.png",
                 "SAB.Resources.FilledRegionSettings_16.png");
 
-            // Развертки: основная команда, три инструмента и две команды оформления.
+            // Развертки: основная команда, три инструмента и оформление.
             Ribbon.AddPushButtonSingle(
                 interiorElevationsPanel,
                 "SAB_CreateInteriorElevations",
@@ -149,13 +152,14 @@ namespace SAB
                     "SAB.InteriorElevations.Commands.MoveElevationViewportsToNewSheetCommand",
                     "SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png", "SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png"));
 
-            interiorElevationsPanel.AddStackedItems(
-                Ribbon.CreatePushButtonData("SAB_DecorateInteriorElevations", "Оформить развертки",
-                    "SAB.InteriorElevations.Commands.DecorateInteriorElevationsCommand",
-                    "SAB.Resources.CreateInteriorElevationsCommand_32.png", "SAB.Resources.CreateInteriorElevationsCommand_16.png", 24),
-                Ribbon.CreatePushButtonData("SAB_ConfigureElevationDecorationCatalog", "Настройки оформления",
-                    "SAB.InteriorElevations.Commands.ConfigureElevationDecorationCatalogCommand",
-                    "SAB.Resources.CreateInteriorElevationsCommand_32.png", "SAB.Resources.CreateInteriorElevationsCommand_16.png", 24));
+            interiorElevationsPanel.AddItem(new PushButtonData(
+                "SAB_DecorateInteriorElevations", "Оформить\nразвертки",
+                typeof(MainPanel).Assembly.Location, "SAB.InteriorElevations.Commands.DecorateInteriorElevationsCommand")
+            {
+                ToolTip = "Оформить развертки",
+                LargeImage = Ribbon.GetElevationDecorationImage(32),
+                Image = Ribbon.GetElevationDecorationImage(16)
+            });
 
 
             // Блок создания ортогональных видов для экспликаций дверей и окон.
@@ -187,6 +191,9 @@ namespace SAB
                 "SAB.Resources.SyncReminderSettings_32.png",
                 "SAB.Resources.SyncReminderSettings_16.png",
                 useGrayIcons: true);
+
+            // Keep the module and its commands registered, but hide its ribbon panel.
+            framePanel.Visible = false;
 
             try
             {

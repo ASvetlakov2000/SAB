@@ -296,7 +296,7 @@
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
       <TextBlock Text="Оформление развёрток" Style="{StaticResource SabWindowTitleTextStyle}" Margin="0" />
-      <Button x:Name="ConfigureCatalogButton" Content="Каталог" Margin="16,0,0,0" HorizontalAlignment="Left" Style="{StaticResource SabPrimaryButtonStyle}" VerticalAlignment="Center" Grid.Column="1" />
+      <Button x:Name="ConfigureCatalogButton" Content="Каталог элементов" Margin="16,0,0,0" HorizontalAlignment="Left" Style="{StaticResource SabPrimaryButtonStyle}" VerticalAlignment="Center" Grid.Column="1" />
     </Grid>
     <Border Background="White" BorderBrush="{DynamicResource SabBrush.Border}" BorderThickness="0,1,0,0" Padding="24,12" Grid.Row="3">
       <Grid>

@@ -1,0 +1,432 @@
+{
+  "schemaVersion": 1,
+  "revision": 2,
+  "date": "2026-10-17",
+  "scope": "fresh coherent revision2 standalone WPF capture build; synthetic capabilities",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "captureMethod": "Window.Show; Pump250ms; UpdateLayout; RenderTargetBitmap96dpi of Window.Content. Capture03 is separately rendered real shown PART_Popup.Child. No OS screenshot/composition.",
+  "renderDpi": 96,
+  "runtimeDpi": null,
+  "osDpi": "NOT RUN",
+  "timezone": "Europe/Moscow; metadata UTC timestamps",
+  "approval": {
+    "status": "pending_user_approval",
+    "previewOnly": true,
+    "productionMigrationAuthorized": false,
+    "msiAuthorized": false,
+    "installationAuthorized": false,
+    "publicationAuthorized": false
+  },
+  "captureBuild": {
+    "project": "Tools/UiShowcase/NotificationSettings/NotificationSettings.csproj",
+    "exe": "outputs/ui-production-preview/notification-settings/revision-2/SAB.NotificationSettings.Preview.Revision2.exe",
+    "target": "net48 x64",
+    "files": [
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Build.ps1",
+        "bytes": 1114,
+        "lastWriteTimeUtc": "2026-10-17T18:27:46.3541682Z",
+        "sha256": "33F07505A82D79B4E194066ECB824AEDE181F08B159D80829A6B095ECC9B815D"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Evidence.cs",
+        "bytes": 14252,
+        "lastWriteTimeUtc": "2026-10-17T18:28:43.1699125Z",
+        "sha256": "0D5B6FC22816EA781010DECD1BA0673F87126C32C070E569D1CE867498EC5F5C"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Help.html",
+        "bytes": 2572,
+        "lastWriteTimeUtc": "2026-10-17T18:29:30.341625Z",
+        "sha256": "FC18D0E9AB6C5F5D618A186A6D1B2F8A0BBEF1DE32AD4B7FE30D135EB351435A"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Models.cs",
+        "bytes": 17961,
+        "lastWriteTimeUtc": "2026-10-17T18:27:46.3511118Z",
+        "sha256": "6768FB52563EE6E629002190FEF82F67D47A9806A867E226C96E9C3C3596C94B"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/NotificationSettings.csproj",
+        "bytes": 1828,
+        "lastWriteTimeUtc": "2026-10-17T18:27:46.3526286Z",
+        "sha256": "5597EDBA1A3DCBF78997C8543C0D74AE5815F6C7DD6A072F05AF98F223BC8A77"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Open.cmd",
+        "bytes": 318,
+        "lastWriteTimeUtc": "2026-10-17T18:27:46.3546795Z",
+        "sha256": "9433D1C73B1AD40BADEBB04DE8B0B3A45DE9B3A5A3A398B62B42D8A8142EAB18"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Program.cs",
+        "bytes": 2752,
+        "lastWriteTimeUtc": "2026-10-17T18:27:46.3526286Z",
+        "sha256": "049067E1F1DBE4AD15ED6FE772B71FF89AD87507DB8542563D29BEEEFCA4D1C5"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "bytes": 13415,
+        "lastWriteTimeUtc": "2026-10-17T18:28:43.1699125Z",
+        "sha256": "5807804ACF455F53830822BDC216F367A7A8F5C542AB7D433697A7AE235459BF"
+      },
+      {
+        "path": "Tools/UiShowcase/NotificationSettings/Window.xaml.cs",
+        "bytes": 1854,
+        "lastWriteTimeUtc": "2026-10-17T18:27:46.3526286Z",
+        "sha256": "D350B7B9486C098A217EB000D7525BAACC950719E6DCE60F3E99DAE117F7FD57"
+      },
+      {
+        "path": "SAB/UI/Styles/SABFluentLight.xaml",
+        "bytes": 49915,
+        "lastWriteTimeUtc": "2026-10-17T18:11:29.7259073Z",
+        "sha256": "A587065F9D926CBA3B5B261939621070DA905B0351C187250BCBC0A6C3B22510"
+      },
+      {
+        "path": "SAB/UI/FluentLight/Presentation.cs",
+        "bytes": 26649,
+        "lastWriteTimeUtc": "2026-10-17T18:11:29.7259073Z",
+        "sha256": "BF3E7159D83A7AEC38196987FD0BDBBC0B16F12888115A8D2BBAE83168B0AD5B"
+      },
+      {
+        "path": "outputs/ui-production-preview/plugin/SAB.dll",
+        "bytes": 2225664,
+        "lastWriteTimeUtc": "2026-10-16T13:57:35.5174476Z",
+        "sha256": "D399ECF4FDE4B6CD70D86FAE089C414B5CE977DC043B4B89FB0DAC6F677F8CB1"
+      },
+      {
+        "path": "outputs/ui-production-preview/notification-settings/revision-2/SAB.dll",
+        "bytes": 2225664,
+        "lastWriteTimeUtc": "2026-10-16T13:57:35.5174476Z",
+        "sha256": "D399ECF4FDE4B6CD70D86FAE089C414B5CE977DC043B4B89FB0DAC6F677F8CB1"
+      },
+      {
+        "path": "outputs/ui-production-preview/notification-settings/revision-2/SAB.NotificationSettings.Preview.Revision2.exe",
+        "bytes": 69120,
+        "lastWriteTimeUtc": "2026-10-17T18:28:44.1683917Z",
+        "sha256": "D0E3470C2FAF9D7BEAEE91D5AB40D8FBBC93F6F5927B4FE9B36732F16EF97597"
+      },
+      {
+        "path": "Tools/UiShowcase/app.manifest",
+        "bytes": 510,
+        "lastWriteTimeUtc": "2026-10-11T09:50:41.8143344Z",
+        "sha256": "28DF4CD327642FC23FA0160A8B55DA9D58852F69C7A19C4B5AB78B9D1083A18A"
+      }
+    ],
+    "captureFromUtc": "2026-10-17T18:28:45.1022315Z",
+    "captureToUtc": "2026-10-17T18:28:55.6003383Z",
+    "visualSourcesChangedAfterCapture": false,
+    "helpAssetNote": "Help.html updated after captures as instruction-only asset; current hash/metadata supplied. Visual sources and executable unchanged after captures.",
+    "assertions": 40,
+    "pngCount": 16,
+    "verification": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/verification.txt"
+  },
+  "sharedDependencies": {
+    "dictionary": "SAB/UI/Styles/SABFluentLight.xaml",
+    "helperBinary": "outputs/ui-production-preview/plugin/SAB.dll",
+    "note": "Existing16.10 binary supplies shared presentation helpers. Current external dictionary scoped. Current Presentation.cs metadata does not mean current source compiled into16.10 DLL; no new production handler proof."
+  },
+  "labels": {
+    "actions": [
+      "Не подавлять",
+      "Подавлять с уведомлением SAB",
+      "Подавлять с записью в журнал"
+    ],
+    "tabs": [
+      "Правила",
+      "Журнал"
+    ],
+    "contexts": "Three independent checkboxes on Rules above search",
+    "meaning": "Textual semantic badge uses existing Accent/Warning/Error/TextSecondary brushes",
+    "confirmation": "Separate Подтверждение field; OK capability fixtures are examples"
+  },
+  "ioBoundary": {
+    "output": "outputs/ui-production-preview/notification-settings/revision-2",
+    "save": "outputs/ui-production-preview/notification-settings/revision-2/demo-settings.json",
+    "journal": "outputs/ui-production-preview/notification-settings/revision-2/Журнал/SAB-demo-journal.html",
+    "typedFolder": "stored preference only; no external writes",
+    "productionSettings": "not read/written; Revit events not subscribed"
+  },
+  "launcher": {
+    "identity": "normalized root path+|revision-2 SHA256 -> named mutex/event",
+    "evidence": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/launcher-verification.txt",
+    "assertions": 3,
+    "pid": 8320,
+    "note": "Separate old revision1 not closed. OS foreground rules NOT RUN."
+  },
+  "protocols": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/boundary-verification.txt",
+      "bytes": 243,
+      "lastWriteTimeUtc": "2026-10-17T18:29:30.6061524Z",
+      "sha256": "A913BA1D74ACA6CA134C98E384EAE1F328637CDB8DD66EDB2AD24BD92849017A"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/launcher-verification.txt",
+      "bytes": 306,
+      "lastWriteTimeUtc": "2026-10-17T18:30:34.5533763Z",
+      "sha256": "0684C749D6A59915963E48E4A641D6D9FF3CF69EF0DC9A93E2033716AB64F66E"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/verification.txt",
+      "bytes": 3295,
+      "lastWriteTimeUtc": "2026-10-17T18:28:56.102284Z",
+      "sha256": "5F8BCE49C9839E3DB27252AF164262EC156A69F7E2942DDFEF93CE87FF1D1817"
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/01-default.png",
+      "bytes": 91796,
+      "lastWriteTimeUtc": "2026-10-17T18:28:45.1022315Z",
+      "sha256": "43544FF48FFFC5385F5B31F4B56452F37B2F735DB88AB594C33FBC8A2016C23C",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "default two tabs, Rules contexts, suppression off",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/02-configured.png",
+      "bytes": 93181,
+      "lastWriteTimeUtc": "2026-10-17T18:28:45.8673192Z",
+      "sha256": "890B30DDB120A5917EFB7EAA8CD3FE9F57F78CE8BF4D62DEB9DAEA0F3BCBFE29",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "configured C01 suppression with SAB notification",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/03-method-dropdown.png",
+      "bytes": 4268,
+      "lastWriteTimeUtc": "2026-10-17T18:28:46.1324672Z",
+      "sha256": "FBFED1FA31CFCA5D01DC49376355686B6CB812BB97C2A2502A79AF1FDAF315C7",
+      "widthPx": 290,
+      "heightPx": 95,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "shown actual PART_Popup.Child,three exact user action labels",
+      "surface": "shown WPF PART_Popup.Child",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/04-deletion-validation.png",
+      "bytes": 92946,
+      "lastWriteTimeUtc": "2026-10-17T18:28:47.9002962Z",
+      "sha256": "FB80D3DBABD4F95C9BCE24EAE78DD0F424C43DA3379ECA964CD71493E984352C",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "D01 missing destructive consent",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/05-deletion-consent.png",
+      "bytes": 92511,
+      "lastWriteTimeUtc": "2026-10-17T18:28:48.4255858Z",
+      "sha256": "1A4657D253E86B08F22F3B2F95696A6F622DDD67DD553DCF4EED865345BD91F9",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "D01 explicit deletion consent",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/06-protected-sketch.png",
+      "bytes": 91183,
+      "lastWriteTimeUtc": "2026-10-17T18:28:48.9529521Z",
+      "sha256": "3F5E3AB7D7715438A017854D4FB8F4D2EDECFB81A5EA41FEE5692A36ECC72E97",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "protected SKETCH",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/07-protected-ownership.png",
+      "bytes": 91520,
+      "lastWriteTimeUtc": "2026-10-17T18:28:49.2398477Z",
+      "sha256": "751BF6C5F98B12693F133298340A0666A0B37D02585EEE01E6D8A5902FF659DA",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "protected OWNERSHIP",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/08-without-ok.png",
+      "bytes": 90419,
+      "lastWriteTimeUtc": "2026-10-17T18:28:49.5182302Z",
+      "sha256": "EC181E2DCA84201435AE3B3E64E2B170DA81564707AACD55793067A2B45114C4",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "NONMODAL no mandatory OK",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/09-unknown.png",
+      "bytes": 88532,
+      "lastWriteTimeUtc": "2026-10-17T18:28:49.7914592Z",
+      "sha256": "E1A8AE2745EAACC2CEE2334A7B9032C48D5D95C033ED3B317914250180B129D8",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "UNKNOWN confirmation unverified",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/10-empty.png",
+      "bytes": 40804,
+      "lastWriteTimeUtc": "2026-10-17T18:28:50.3294599Z",
+      "sha256": "42F18EA7F0C2649575A605B2E5CBF56830971A107E4AB0EED4C6213169D3738B",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "empty search no stale detail",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/11-rule-contexts.png",
+      "bytes": 93403,
+      "lastWriteTimeUtc": "2026-10-17T18:28:51.6472364Z",
+      "sha256": "B6B19B748D3E8C6E21A453FE6686292147D085C6322E2F97CE2269392CD3121E",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "Rules context values retained",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/12-journal.png",
+      "bytes": 52253,
+      "lastWriteTimeUtc": "2026-10-17T18:28:52.9647118Z",
+      "sha256": "E4359867F29A3887D8B52545CEAA8E3CCE29301AF1CCE2687E645769EF2D9BEB",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "Journal full chosen action names",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/13-duration-validation.png",
+      "bytes": 53228,
+      "lastWriteTimeUtc": "2026-10-17T18:28:53.2234633Z",
+      "sha256": "94C375C703A3CFE84FBFF34F69F371E87E658BDA2826B437CE5FFED268ECCB66",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "invalid duration",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/14-minimum.png",
+      "bytes": 72148,
+      "lastWriteTimeUtc": "2026-10-17T18:28:54.5025657Z",
+      "sha256": "EEC793E1A07EAF610B6D41FC041D2153F484DF249815356E84D9FD08BCB67D8B",
+      "widthPx": 1024,
+      "heightPx": 661,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "minimum1040×700DIP outer",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/15-long-text.png",
+      "bytes": 77333,
+      "lastWriteTimeUtc": "2026-10-17T18:28:54.7849351Z",
+      "sha256": "4F68F3FBA5FA9F99BC9F02139807FD4D873E3345EE281EAEBFFAC2A22094AFA7",
+      "widthPx": 1024,
+      "heightPx": 661,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "minimum long Russian name/text",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/revision-2/16-saved.png",
+      "bytes": 93275,
+      "lastWriteTimeUtc": "2026-10-17T18:28:55.6003383Z",
+      "sha256": "841470A08FB337B08A0845E057608B77F1BEADAFB680459BA9EE55EFC986B787",
+      "widthPx": 1144,
+      "heightPx": 781,
+      "pngHorizontalResolution": 95.986595,
+      "pngVerticalResolution": 95.986595,
+      "state": "saved isolated draft",
+      "surface": "shown WPF Window.Content",
+      "renderDpi": 96,
+      "excludesOsTitlebar": true
+    }
+  ],
+  "history": {
+    "report": "Docs/Ui/DesignSystem/NotificationSettings-Report.json",
+    "provenance": "Docs/Ui/DesignSystem/screenshots-notification-settings/provenance.json",
+    "sourceSnapshot": "outputs/ui-production-preview/notification-settings/revision-1-source",
+    "note": "Revision1 artifacts unchanged;35PASS/16PNG not current evidence."
+  },
+  "independentReview": {
+    "status": "PASS",
+    "stage": "completed_fresh_full_review",
+    "disposition": "ship_preview_scope",
+    "reason": "Fresh independent full bounded review against four verbatim user messages: no material findings; all16 PNG and18 source/exe/dependency/protocol hashes independently match;90 registry IDs confirmed. Builder runtime protocols read, not rerun.",
+    "scope": "Revision2 standalone preview presentation only; no production readiness or user approval",
+    "report": "Docs/Ui/DesignSystem/NotificationSettings-Revision2-Review.md",
+    "unverified": [
+      "Actual Revit/mandatory OK capabilities and effects",
+      "Physical input and full accessibility traversal",
+      "OS/runtime DPI and monitor transitions",
+      "Help/journal browser invocation",
+      "Unmeasured geometry/focus/animation matrix"
+    ]
+  },
+  "unverified": [
+    "Actual mandatory OK availability/effects for C01–C08/D01",
+    "Live Revit/API/events/transactions",
+    "Physical input/full accessibility",
+    "OS/runtime DPI/monitor transitions",
+    "Help/journal browser launch",
+    "Unmeasured geometry/focus/animation; per-ID report"
+  ]
+}

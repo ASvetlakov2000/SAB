@@ -858,6 +858,86 @@
       "reason": "Форма ещё не заполнена",
       "evidence": [],
       "unverified": []
+    },
+    {
+      "id": "SAB-UI-085",
+      "criterion": "ErrorRegistry.md#sab-ui-085",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-086",
+      "criterion": "ErrorRegistry.md#sab-ui-086",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-087",
+      "criterion": "ErrorRegistry.md#sab-ui-087",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-088",
+      "criterion": "ErrorRegistry.md#sab-ui-088",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-089",
+      "criterion": "ErrorRegistry.md#sab-ui-089",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-090",
+      "criterion": "ErrorRegistry.md#sab-ui-090",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-091",
+      "criterion": "ErrorRegistry.md#sab-ui-091",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-092",
+      "criterion": "ErrorRegistry.md#sab-ui-092",
+      "applicable": null,
+      "status": "NOT RUN",
+      "scope": "",
+      "reason": "Форма ещё не заполнена",
+      "evidence": [],
+      "unverified": []
     }
   ]
 }

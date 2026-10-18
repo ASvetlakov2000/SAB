@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -159,16 +159,21 @@ namespace SAB.UI.FluentLight
             if (transform == null) { transform = new TranslateTransform(); indicator.RenderTransform = transform; }
             var width = Math.Max(0, active.ActualWidth);
             var target = pos.X;
-            indicator.Height = Math.Max(30, grid.ActualHeight - 4);
+            indicator.VerticalAlignment = VerticalAlignment.Top;
+            indicator.Height = Math.Max(30, active.ActualHeight);
             indicator.CornerRadius = new CornerRadius(indicator.Height / 2);
             var track = grid.Children.OfType<Border>().FirstOrDefault(b => !Equals(b.Tag,"CapsuleIndicator"));
-            if (track != null) track.CornerRadius = new CornerRadius(grid.ActualHeight / 2);
-            if (Math.Abs(indicator.Width - width) < .1 && Math.Abs((double)indicator.GetValue(TargetProperty) - target) < .1) return;
+            if (track != null) track.CornerRadius = new CornerRadius(grid.ActualHeight > active.ActualHeight + 5 ? 22 : grid.ActualHeight / 2);
+            if (Math.Abs(indicator.Width - width) < .1 && Math.Abs((double)indicator.GetValue(TargetProperty) - target) < .1 && Math.Abs((double)indicator.GetValue(TargetYProperty) - pos.Y) < .1) return;
             indicator.Width = width;
             indicator.SetValue(TargetProperty, target);
+            indicator.SetValue(TargetYProperty, pos.Y);
             if (animate && SystemParameters.ClientAreaAnimation) transform.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation(target, TimeSpan.FromMilliseconds(160)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
             else { transform.BeginAnimation(TranslateTransform.XProperty, null); transform.X = target; }
+            if (animate && SystemParameters.ClientAreaAnimation) transform.BeginAnimation(TranslateTransform.YProperty, new DoubleAnimation(pos.Y, TimeSpan.FromMilliseconds(160)) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+            else { transform.BeginAnimation(TranslateTransform.YProperty, null); transform.Y = pos.Y; }
         }
+        private static readonly DependencyProperty TargetYProperty = DependencyProperty.RegisterAttached("TargetY", typeof(double), typeof(Capsule), new PropertyMetadata(double.NaN));
         private static readonly DependencyProperty TargetProperty = DependencyProperty.RegisterAttached("Target", typeof(double), typeof(Capsule), new PropertyMetadata(double.NaN));
     }
 

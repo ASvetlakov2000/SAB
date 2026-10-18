@@ -1,0 +1,4 @@
+PASS: external folder preference receives no file or directory writes
+PASS: demo journal remains inside fixed preview output
+PASS: configured external folder is stored only as a preference
+COMPLETED: 3 boundary PASS; no captures replaced.

@@ -1,0 +1,1568 @@
+{
+  "schemaVersion": 1,
+  "task": "Рабочий редактор шаблонов — утверждённый перенос и нижний зазор16",
+  "date": "2026-10-17",
+  "scope": "production",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "dirtyBaseline": "Existing preview/ribbon/decoration changes saved before migration; source and installer baselines in existing canonical output, no commit/reset.",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/LayoutPatterns.md",
+    "Docs/Ui/DesignSystem/component-coverage.csv"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/TemplateEditor-Production-Layout.md",
+  "build": [
+    {
+      "revitVersion": 2022,
+      "configuration": "Debug",
+      "status": "PASS",
+      "assembly": "outputs/ui-production-preview/template-editor/production-2022/SAB.dll",
+      "sha256": "4250b0c101afbd8063e4f2ab58ae27fb123b4ed19a508b4dff4114498e692826",
+      "scope": "compile; actual WPF capture only API2023 DLL"
+    },
+    {
+      "revitVersion": 2023,
+      "configuration": "Debug",
+      "status": "PASS",
+      "assembly": "outputs/ui-production-preview/template-editor/production/SAB.dll",
+      "sha256": "298c47ea7d6eb8e8654bf12560f3eac5101a4515937f6ee746e7414d9834b838",
+      "scope": "compile; actual WPF capture only API2023 DLL"
+    },
+    {
+      "revitVersion": 2024,
+      "configuration": "Debug",
+      "status": "PASS",
+      "assembly": "outputs/ui-production-preview/template-editor/production-2024/SAB.dll",
+      "sha256": "98debc72743e64db334cc523b6ab502aa42d787f2e6d5e72cd2e97e661630a82",
+      "scope": "compile; actual WPF capture only API2023 DLL"
+    }
+  ],
+  "runtimeSummary": "COMPLETED 624 PASS / 54 visible WPF captures; Revit/OS-DPI/install NOT RUN",
+  "runtimeDpi": 96,
+  "renderDpi": [
+    96
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/add-filters-validation.png",
+      "sha256": "79e311b5c1678d60d7dd55f30d5fb3de7ab05da58af6990d53fa0bc5eceacd8e",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/add-filters.png",
+      "sha256": "7e7e885e51f9cdaa42d7d51e348c80f4192ed46a75868955f30026a9b065c556",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/analytical-capabilities.png",
+      "sha256": "be469725d7c74154d9fbb3df201c4bbbd50034fec284a5f6d162230f28b43e60",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/annotation-capabilities.png",
+      "sha256": "c0b94b9ed65587dc20e21c8869429331be7d82509cdee178f3fdca4114fe0f2a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/category-expanded.png",
+      "sha256": "4e06b405a24111f69206f70d42c352be86912aa9c71ac96f7aa568074b605072",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/dirty-validation.png",
+      "sha256": "198b24c7d7923abbe2e9be4b792d498801e6417d617b78f80f242395bc4bd3d4",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-All.png",
+      "sha256": "fbc4e1e1a404898fbcee2cda4f11d5a28e18d84617ed2d2ad75b85415b94c6a1",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-CutLines.png",
+      "sha256": "be394bd0062a2ecce386a8eb4e817c004b6dc3e721fc438b149216b01d0a36cb",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-CutPatterns.png",
+      "sha256": "c8abb4df3031223fd1de0a17db647bf768b093d6ae5858464ccbc3e3672aa444",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-popup.png",
+      "sha256": "82d4df717879cbf86d73e65c525a085fb9d4da4398987f203900a969f49f5674",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-projection.png",
+      "sha256": "76010a7c8f04fc92bbbfdc28781e0e7449d5f7adc4daab955aa83dcff682752e",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-ProjectionLines.png",
+      "sha256": "83ff9daf260dfbd9f472150c1642b4c693c95b9db38d8259ae3314e523d59b60",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-SurfacePatterns.png",
+      "sha256": "8efc53539594778683454f35a79dc3bfba84ed22d78bd5631a67c358f5e98831",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/editor-Transparency.png",
+      "sha256": "3abcc6ad5bb4aa72766d4178f996bd6da87e398c5694e5e609865c144d1afc34",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/empty-template-search.png",
+      "sha256": "5e7bd41eeb6ccdf502c68707bb99cd5cff1bf3102930e438dcfdd8ddf6d272ef",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/empty-worksets.png",
+      "sha256": "ad80065d64382e145ebdb4044b2099b65629a8252321f2292af07af0f5694113",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/filter-reordered.png",
+      "sha256": "1226920460c97e50578fe2e1c8b8bd0a52e5b1cb7dd3079c6c21b03e13f62754",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/global-link-category.png",
+      "sha256": "b9fd080e6864808572f187aa15ceb6633805590c15bf6fe7f0528be1f794789f",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/long-template-name.png",
+      "sha256": "e93f2f794659155e5afd8a24994849c7ad5f2e920bc70465d9dd7f39d41e1571",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-add-filters.png",
+      "sha256": "24f5b40be22a2e86b61cdd91daf5d9729b75df9610d770a81478dfdab57a8500",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-All.png",
+      "sha256": "b37001568fc65fde42b619fb2ecfa75afcfc4d952b2caee16ed6175309ec9797",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-CutLines.png",
+      "sha256": "5f88817027fb053d385a9fabec5f350b858d77f9dddb61f6d5c58e5dd1bad215",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-CutPatterns.png",
+      "sha256": "42f39be4ae38f33f7efef9f441de76b1abd8c1169efe241965fdcfd202ee1bc2",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-ProjectionLines.png",
+      "sha256": "9327fca0590e0532fcca38d410cbdb64d3ecc3524db5eb43c1cb6504865fb5ea",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-SurfacePatterns.png",
+      "sha256": "bbe369fedaf5fd1f8fe9fb479d583142e302738ef16b80678f29a70a2ba44d9a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-editor-Transparency.png",
+      "sha256": "d8aa9ac81aa549aecc3b0f1930e88d6841350136fd70d16e1aa8974550eb29d0",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-0.png",
+      "sha256": "dc660bb9043c7ae29b8978fcd909cdbf755c5c56ca9d1e797ecc1c8e3ad62df8",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-1-right.png",
+      "sha256": "d3d033b6ba917518dd21a906507d99c19bd4999701427d661e58382081573aac",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-1.png",
+      "sha256": "18fd815cda77a686ac71f4da2370dede7c85608ddf2411fa31f670dfda32e9a8",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-2.png",
+      "sha256": "bb13a20be7203754ac381fc3d47dea70e0ddd6a3627b24ef6c526b4cf3da44c7",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-3-right.png",
+      "sha256": "ea1180717c9d16d6fde74432e531edd04077dc3b7d5cccc75280143b59cb6210",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-3.png",
+      "sha256": "8c6fad2acc77d25d8d65840d09c5004e706834ede2a1b299730dba98458649a1",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-4.png",
+      "sha256": "f29c05c7646df77ea065707bef7444f95a6578f9764a7447536548388ad35981",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-5-right.png",
+      "sha256": "a6810c23744c4bbd592224f461d31b49bce6b64fa32c3e21a7c3e1c67f7b99d5",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-5.png",
+      "sha256": "59db5167c02d130a9c8a031f74f6181f70bf22495770dbad41f1e0975b425587",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-6.png",
+      "sha256": "aee39a5b7076aa1e8c953718b9c4b8165488da7acacd3d2e38195c318bbcfa28",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/mixed-selection.png",
+      "sha256": "4e06b405a24111f69206f70d42c352be86912aa9c71ac96f7aa568074b605072",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/property-editor-focus.png",
+      "sha256": "78ce8c726cef230eec0be83ea08cdca08dcdbf0b55d3d17a09daf9ca4b778aae",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/search-enter-focus.png",
+      "sha256": "48e95ad3aa2826679a2594030abb0c85a9b537a0d41fd399ffadb629efcfd583",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/shared-capsule-regression.png",
+      "sha256": "49193babc8142e4a98c1de4eb4f199805ecf5677859472f9fced94860cf88d61",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/stretch.png",
+      "sha256": "f43c25845d33bc91426957afa079216e957ca756ab3c1b761440a9c5cd885e7e",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-0.png",
+      "sha256": "e93f2f794659155e5afd8a24994849c7ad5f2e920bc70465d9dd7f39d41e1571",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-1.png",
+      "sha256": "12b70b9ba6b6285be58d0d1757b0e9800fe5869f519392d16f2ce46859fba27a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-2.png",
+      "sha256": "c0b94b9ed65587dc20e21c8869429331be7d82509cdee178f3fdca4114fe0f2a",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-3.png",
+      "sha256": "be469725d7c74154d9fbb3df201c4bbbd50034fec284a5f6d162230f28b43e60",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-4.png",
+      "sha256": "ff3446d5ae886de65e0b39d0be0c6511c2d7df5d9a219f38fb7366ad1b9e03e5",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-5.png",
+      "sha256": "dd4b15b6e5d0eb87226f5e3dd75ea74467c5309957ffdbfdaeab64fbfc54205c",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tab-6.png",
+      "sha256": "45422c2772aeff54c2139c416662531836c513fc9423be12ea887e13938db0d8",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tall-bottom-spacing.png",
+      "sha256": "ad16dd56f0a3cc9fbb5e773e7cac6afe99d400a304bb726aa5ed1c54bfbbb227",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/template-search.png",
+      "sha256": "da5656aa883de014d0cc5906dd58e8788302cb2cf23a39c490c53d482e3757fe",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tree-depth-stress.png",
+      "sha256": "b191270d6206cfb6c591eb5fee103f352a3261754351f15fe950161e53b0264c",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/tree-search-path.png",
+      "sha256": "e731c0ad91dc7a603514dd1d9964df1eb304dab65545214fcc6611bc6921ceeb",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/workset-edited.png",
+      "sha256": "3b90f0ca65e97c8bfb05eb09cfb10909c30da27502d9edfa6420d96d61c42020",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/zero-targets.png",
+      "sha256": "a44ea1c276fb1b7e4fffff8817a55dbdb5a4c121c6e96f5609a949c5d49245ab",
+      "method": "RenderTargetBitmap96 of live actual SAB.dll Window Content; live Popup.Child composited at measured offset",
+      "scope": "actual production WPF classes, detached synthetic DTO"
+    }
+  ],
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "Direct user approval and actual production SAB.dll classes; API22/23/24 builds and extracted MSI proof. Live Revit execution separately NOT RUN.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет строковых Add/Delete icon-actions: добавление/удаление фильтров — исходные текстовые toolbar actions; disclosure дерева отдельно057.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет отдельных numeric columns с numeric headers. Масштаб — свойство в общей текстовой колонке Значение.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет RadioButton mode-групп; вкладки проверяются023–025.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет скрываемых radio modes.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет bound ItemsControl с исчезающей оболочкой: пустые DataGrid/ListBox сохраняют контур.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет вложенных строк этажей/зон.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет вложенных форм этажей/зон с icon-actions.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет исходных Save/Load/Все–Выбранные групп категорий; добавлять функции запрещено.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет импорта/экспорта конфигурации этого модуля.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет row plus или duplicate add routes; исходное добавление фильтров только через toolbar modal picker.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет CategorySelectionControl/режима Все–Выбранные. Extended highlight и IsTarget проверены отдельно053.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет JSON Save/Load выборок в этом модуле.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "scope": "production",
+      "status": "NOT RUN",
+      "reason": "Exact footer target exists in all three MSI packages; actual default-browser opening/rendering not executed.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет DockablePane.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет исходных восьми иконок этажей/зон.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет ClearRowsCommand и blank creation row.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет transient notifications в оформляемых трёх окнах; исходный modal command result не мигрируется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет notification copy/ID/support blocks.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет notification lifetime.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет notification stack.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет notification work-area placement.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет изменений result adapter/transaction/notification callbacks.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Production entry is the existing Revit command; isolated preview launcher is historical.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет настройки выносок развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет compact choice helper окон развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет категорий отметок развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет результата создания развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет выбора помещений/направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет ParameterPicker/Sources tab.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет проверки параметров категорий.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет WhatCheck/CheckCategoriesWindow.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет ribbon/hotkey проверки параметров.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет выбора направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-084",
+      "criterion": "ErrorRegistry.md#sab-ui-084",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Нет выбора материалов/синхронизации штриховок.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-085",
+      "criterion": "ErrorRegistry.md#sab-ui-085",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Параллельное изменение группировки и палитры ribbon; в окнах редактора шаблонов ленты нет.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-086",
+      "criterion": "ErrorRegistry.md#sab-ui-086",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-087",
+      "criterion": "ErrorRegistry.md#sab-ui-087",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-088",
+      "criterion": "ErrorRegistry.md#sab-ui-088",
+      "applicable": false,
+      "scope": "production",
+      "status": "N/A",
+      "reason": "Параллельная задача оформления развёрток; этот модуль отсутствует в редакторе шаблонов.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-089",
+      "criterion": "ErrorRegistry.md#sab-ui-089",
+      "applicable": true,
+      "scope": "production",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Tools/UiShowcase/TemplateEditor/production-source-contract.json"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ]
+    },
+    {
+      "id": "SAB-UI-090",
+      "criterion": "ErrorRegistry.md#sab-ui-090",
+      "applicable": true,
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/tall-bottom-spacing.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor-production/minimum-tab-0.png",
+        "Docs/Ui/DesignSystem/TemplateEditor-Production-Layout.md"
+      ],
+      "unverified": [
+        "Live Revit document/category combinations, model writes and transactions, physical input, OS DPI transitions, default browser rendering NOT RUN. Surface/transparency use legacy SAB policy, not granular capability queries."
+      ],
+      "scope": "production"
+    }
+  ],
+  "sourceContract": "Tools/UiShowcase/TemplateEditor/production-source-contract.json",
+  "productionMigrationAuthorized": true,
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "installer": "Docs/Ui/DesignSystem/TemplateEditor-Production-Installer.json",
+  "installationPerformed": false,
+  "publicationPerformed": false,
+  "commitPushPerformed": false,
+  "independentReview": {
+    "status": "PASS",
+    "report": "Docs/Ui/DesignSystem/TemplateEditor-Production-Review.md",
+    "reviewer": "/root/template_editor_reviewer",
+    "disposition": "scoped_ship_production_ui_and_msi_payload",
+    "assemblySha256": "298c47ea7d6eb8e8654bf12560f3eac5101a4515937f6ee746e7414d9834b838",
+    "hostSha256": "326205b82cb3b6929ac1b67a28b9709341e8bee03736d60c88f14a32a7a1604e",
+    "reason": "Full production review complete; F-P009 resolved in isolated fixture recapture; no material open findings. Live Revit/browser/physical/OS DPI/install NOT RUN."
+  },
+  "limitations": [
+    "Actual UI classes use internal detached loader; public constructor requires Document and existing collectors remain. This does not execute Revit operations.",
+    "Common/cut/parent capabilities use API calls in production, compile/source verified. Actual runtime category/view probes NOT RUN.",
+    "Surface/transparency retain original SAB policy; annotation surface exclusion is legacy policy, not universal API proof. Analytical DetailLevel limited to documented model-root support.",
+    "Actual UI runtime uses API2023 DLL; API22/24 compile and MSI payload checked, live target Revit execution NOT RUN.",
+    "Physical input/OS DPI/default browser/installation/publication NOT RUN."
+  ],
+  "documentValidation": {
+    "status": "PASS",
+    "commands": [
+      "python Tools/UiShowcase/ValidateUiDocs.py --report Docs/Ui/DesignSystem/TemplateEditor-Production-Report.json",
+      "python Tools/UiShowcase/TemplateEditor/VerifyProduction.py"
+    ],
+    "scope": "90ID/form/evidence/source successor/coverage/hash/MSI/authority integrity; not visual or Revit execution"
+  },
+  "boundedRecapture": {
+    "path": "Docs/Ui/DesignSystem/screenshots-template-editor-production/shared-regression-recapture.txt",
+    "assertions": 8,
+    "captures": 1,
+    "reason": "Reviewer F-P009; only shared regression fixture background; main624/54 protocol preserved, DLL/MSI unchanged"
+  }
+}

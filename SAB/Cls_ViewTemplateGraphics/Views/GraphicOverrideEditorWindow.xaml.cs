@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +27,7 @@ namespace SAB.ViewTemplateGraphics.Views
 
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
+            TemplateEditorPresentation.Attach(this);
 
             AddHandler(Button.ClickEvent, new RoutedEventHandler(Button_Click));
             AddHandler(UIElement.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(Window_PreviewMouseLeftButtonDown));
@@ -112,7 +113,7 @@ namespace SAB.ViewTemplateGraphics.Views
             // Each graphics editor remembers its own dimensions because line and pattern panels
             // need substantially different working heights.
             Height = GetDefaultWindowHeight();
-            WindowSizeSettingsService.Apply(this, GetWindowSizeSettingsKey());
+            if (TemplateEditorPresentation.PersistenceEnabled) WindowSizeSettingsService.Apply(this, GetWindowSizeSettingsKey());
         }
 
         private string GetWindowSizeSettingsKey()
@@ -126,12 +127,12 @@ namespace SAB.ViewTemplateGraphics.Views
             {
                 case GraphicOverrideEditorSection.ProjectionLines:
                 case GraphicOverrideEditorSection.CutLines:
-                    return 460.0;
+                    return 420.0;
                 case GraphicOverrideEditorSection.Transparency:
                     return 380.0;
                 case GraphicOverrideEditorSection.SurfacePatterns:
                 case GraphicOverrideEditorSection.CutPatterns:
-                    return 700.0;
+                    return 560.0;
                 default:
                     return 720.0;
             }

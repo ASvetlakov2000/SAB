@@ -107,8 +107,64 @@ if production.exists():
     guidance = read_json(guidance_path) if guidance_path.exists() else None
     material_path = D/'MaterialSelection-Provenance.json'
     material = read_json(material_path) if material_path.exists() else None
+    ribbon_path = D/'RibbonModules-Provenance.json'
+    ribbon = read_json(ribbon_path) if ribbon_path.exists() else None
+    template_path = ROOT/'Tools/UiShowcase/TemplateEditor/production-source-contract.json'
+    template_migration = read_json(template_path).get('migrationSuccessor', {}) if template_path.exists() else {}
+    notification_settings_path = ROOT/'Tools/UiShowcase/NotificationSettings/production-source-contract.json'
+    notification_settings = read_json(notification_settings_path) if notification_settings_path.exists() else {}
+    footer_path = D/'TemplateEditorFooter-SourceContract.json'
+    footer = read_json(footer_path) if footer_path.exists() else {}
     for name, sha in active['files'].items():
         source_bytes = (ROOT/name).read_bytes()
+        if name in footer.get('source', {}):
+            delta = footer['source'][name]
+            before_path = ROOT/delta['beforePath']
+            parent_path = ROOT/footer['historicalProof']
+            authorized = (status.get('templateEditorFooter', {}).get('productionMigrationAuthorized') is True and
+                footer.get('uiSourceOverrides') is False and
+                footer.get('historicalProof') == 'Tools/UiShowcase/NotificationSettings/production-source-contract.json' and
+                parent_path.exists() and hashlib.sha256(parent_path.read_bytes()).hexdigest() == footer.get('historicalProofSha256') and
+                before_path.exists() and hashlib.sha256(before_path.read_bytes()).hexdigest() == delta.get('before') and
+                hashlib.sha256(source_bytes).hexdigest() == delta.get('after'))
+            require(authorized, 'Invalid template footer source successor: '+name)
+            if authorized: source_bytes = before_path.read_bytes()
+        if name in notification_settings.get('source', {}):
+            delta = notification_settings['source'][name]
+            before_path = ROOT/delta['beforePath']
+            parent_path = ROOT/notification_settings['historicalProof']
+            authorized = (status.get('notificationSettingsProduction', {}).get('productionMigrationAuthorized') is True and
+                notification_settings.get('uiSourceOverrides') is False and
+                notification_settings.get('historicalProof') == 'Tools/UiShowcase/TemplateEditor/production-source-contract.json' and
+                parent_path.exists() and hashlib.sha256(parent_path.read_bytes()).hexdigest() == notification_settings.get('historicalProofSha256') and
+                before_path.exists() and hashlib.sha256(before_path.read_bytes()).hexdigest() == delta.get('before') and
+                hashlib.sha256(source_bytes).hexdigest() == delta.get('after'))
+            require(authorized, 'Invalid notification settings source successor: '+name)
+            if authorized: source_bytes = before_path.read_bytes()
+        if name in template_migration.get('source', {}):
+            delta = template_migration['source'][name]
+            before_path = ROOT/template_migration['baseline']/name
+            parent_path = ROOT/template_migration['historicalProof']
+            authorized = (status.get('templateEditorProduction', {}).get('productionMigrationAuthorized') is True and
+                template_migration.get('uiSourceOverrides') is False and
+                template_migration.get('historicalProof') == 'Docs/Ui/DesignSystem/RibbonModules-Provenance.json' and
+                parent_path.exists() and hashlib.sha256(parent_path.read_bytes()).hexdigest() == template_migration.get('historicalProofSha256') and
+                before_path.exists() and hashlib.sha256(before_path.read_bytes()).hexdigest() == delta.get('before') and
+                hashlib.sha256(source_bytes).hexdigest() == delta.get('after'))
+            require(authorized, 'Invalid template editor source successor: '+name)
+            if authorized: source_bytes = before_path.read_bytes()
+        if ribbon is not None and name in ribbon.get('source', {}):
+            git = Path(r'C:\Users\svetl\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe')
+            original = subprocess.run([str(git), 'show', ribbon['sourceRevision']+':'+name], cwd=ROOT, capture_output=True)
+            candidates = [original.stdout, original.stdout.replace(b'\r\n', b'\n'), original.stdout.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')]
+            before = next((data for data in candidates if hashlib.sha256(data).hexdigest() == ribbon['sourceBefore'].get(name)), None)
+            authorized = (ribbon.get('uiSourceOverrides') is False and original.returncode == 0 and
+                ribbon.get('historicalProof') == 'Docs/Ui/DesignSystem/MaterialSelection-Provenance.json' and
+                ribbon.get('historicalProofSha256') == hashlib.sha256(material_path.read_bytes()).hexdigest() and
+                hashlib.sha256(original.stdout).hexdigest() == ribbon['sourceBeforeGitBlobSha256'].get(name) and
+                hashlib.sha256(source_bytes).hexdigest() == ribbon['source'].get(name) and before is not None)
+            require(authorized, 'Invalid ribbon source successor: '+name)
+            if authorized: source_bytes = before
         if material is not None and name in material.get('sourceBeforeGitBlobSha256', {}):
             git = Path(r'C:\Users\svetl\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe')
             original = subprocess.run([str(git), 'show', material['sourceRevision']+':'+name], cwd=ROOT, capture_output=True)

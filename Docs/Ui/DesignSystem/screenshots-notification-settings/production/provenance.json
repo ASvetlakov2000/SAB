@@ -1,0 +1,319 @@
+{
+  "date": "2026-10-18",
+  "scope": "production sources + actual SAB.dll WPF with isolated fixtures; automatic confirmations not implemented",
+  "actualWindow": "SAB.Notifications.SettingsWindow from SAB.dll",
+  "captureAssembly": "outputs/ui-production-preview/notification-settings/production/plugin/SAB.dll",
+  "source": {
+    "SAB/Notifications/NotificationController.cs": "669d303fa6ed31fdbd3396c40e947791da4e14aa2d2bef2fd7392217ff0ca86d",
+    "SAB/Notifications/NotificationSettingsStore.cs": "1ef7a3616270e6035b0b62209a54e540eff478c69d48a29afeb5c1e9e1a40268",
+    "SAB/Notifications/NotificationSettingsModel.cs": "f48754675ddfd5cd8f70ecbca4f12cec5b1ff5762ac991af9cb62bd73738e538",
+    "SAB/Notifications/SettingsWindow.xaml": "1d4ebef4270a19d0081e186925f6c275b0661c5baae84dab4fabc3c4da7d83e9",
+    "SAB/Notifications/SettingsWindow.xaml.cs": "8f736d920863e79880000d5becb0a8d4fe3aeb2ed4899f88bc624e2400a750fc",
+    "SAB/UI/Styles/SABFluentLight.xaml": "671639ca98f6e1de249de08c488127f5b5cd3093eb4ae96f432caa8f27fbafa9",
+    "SAB/SAB.csproj": "2f44683d251ef57231ce4f556c28e4a80b885b10e61de2db629ed4762b7fcf94",
+    "Docs/PluginInstructions/SAB_HTML_Uvedomleniya.html": "4d35544baafd0607bb950ed36743888280c8657f21e528a7c250e4d1eebad1ed",
+    "Tools/UiShowcase/NotificationSettings/ProductionHarness.cs": "4ddb7aff92db4e2f44e10a6889430ed0eacb9b2e5b35372e8c2a9cd783af5295",
+    "Tools/UiShowcase/NotificationSettings/ProductionHarness.csproj": "726fe5549eed28fb282024f06f755472470ee9c2c6ba9601c732bae0aceebca2",
+    "Tools/UiShowcase/NotificationSettings/Build-Production.ps1": "875bcc687aff0b89d19b51049f1831444392bef0a3169566b9f7a48a35289080",
+    "Tools/UiShowcase/NotificationSettings/Open-Production.cmd": "6b9b05139cff6438f9d56eb307d953b243f14329b4c82695c3e0c5afe19d23db",
+    "Tools/UiShowcase/NotificationSettings/Open.cmd": "d59a740f41a5f9c6af87e6d947061ce1388774b0aeb64e912ff416eb2cc71ab2",
+    "outputs/ui-production-preview/notification-settings/production/plugin/SAB.dll": "3b4e5009d79ab32b7ea624ffe4f9dda1a2b5043f69eb07302f2c1b5b01f07276",
+    "outputs/ui-production-preview/notification-settings/production/plugin/SAB.NotificationSettings.ProductionHost.exe": "f619a67abddbbe449a75b82d21153e5c9abbbb8047d62251e07a6fd56516bb4b",
+    "outputs/ui-production-preview/notification-settings/production/plugin/UI/Styles/SABFluentLight.xaml": "671639ca98f6e1de249de08c488127f5b5cd3093eb4ae96f432caa8f27fbafa9",
+    "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt": "7735c4a82545fd623c9aa47d3b6870447408ff1f7383ec61f2bf525a2eda7a27",
+    "Docs/Ui/DesignSystem/screenshots-notification-settings/production/launcher-verification.txt": "e8ca0612cc533dca321e34939a3e52087262c2873baad697a46159082c5c6128",
+    "Tools/UiShowcase/NotificationSettings/production-source-contract.json": "45a6a294666f77bdbd1634a66e41eebbd7d900ca255a609e84d7975e9bc28844"
+  },
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/00-corrupt-settings.png",
+      "sha256": "f24adc33813d756b4cd25a710495da00c9fa8dd2d25bd7e57f8a0448573825f0",
+      "bytes": 88350,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/00-legacy-settings.png",
+      "sha256": "b3984afe26a8b19973733541377f078acebb6229f8fa925d2c51c61ae99bcce4",
+      "bytes": 88023,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/01-default-off.png",
+      "sha256": "182dc0f0a7c7f4c21f9936ffec7335b951123711a887540b8bf04293c4787ab6",
+      "bytes": 90907,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/02-switch-disabled.png",
+      "sha256": "efb1bab45d881d6533bcdb7fd59d395fd951e0a44d1b43b7bf5f4bb7b9433059",
+      "bytes": 86996,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/02-switch-focus.png",
+      "sha256": "6154008161990e19e7cf5e100025e7faf56069092a150dc693940bd398c3111d",
+      "bytes": 92442,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/03-pending-rule.png",
+      "sha256": "33efcdf51ab3ca7c9f364284198935b3c5fb3282aff9a98d4c58a87f4f3a73d5",
+      "bytes": 90747,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/04-actions-popup.png",
+      "sha256": "fbfed1fa31cfca5d01dc49376355686b6cb812bb97c2a2502a79af1fdaf315c7",
+      "bytes": 4268,
+      "widthPx": 290,
+      "heightPx": 95,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-nonmodal.png",
+      "sha256": "da7a0790d3bd614f9ca94fc44907e34e4e03e1eedf25e130520a143a03ca0476",
+      "bytes": 88620,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-ownership.png",
+      "sha256": "7ec31e93fee39436850e852eaa65fc8fad0495566f99f7b928c04ce6451f308d",
+      "bytes": 89642,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-sketch.png",
+      "sha256": "5d454d6393c20aa2c64b54eefd16554c28c03575b57de2fb2f76081440b054c9",
+      "bytes": 89369,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/05-unknown.png",
+      "sha256": "a1a3b38f7ac1f9d56f9d21458aa215d68bba8aa1bc412ff66a33d83393992035",
+      "bytes": 86752,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/06-delete-validation.png",
+      "sha256": "d892f24df9cf7b8bf115c745a67798f3a3b896db88c8a4eb1231b52a2b6e249f",
+      "bytes": 91025,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/07-delete-consent.png",
+      "sha256": "1191434c62daa6fff55d1ac7ffb5105fc9d03cf912fb07a329112060577c5db2",
+      "bytes": 90629,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/08-empty.png",
+      "sha256": "7dfe2268f4d956c8b6c7090078a29f263b0fed1922435055e8d71dfc2c6f9b8a",
+      "bytes": 41023,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/09-context-options.png",
+      "sha256": "e46cc9938d742f297f0625153d0427f224601cb34f6e1e77b6424fb697272b1e",
+      "bytes": 91250,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/10-journal-empty.png",
+      "sha256": "329bd2cb7c3498c646f4f7077ee9b155d34443bf58ffcc21f6f65a560c1c7231",
+      "bytes": 40833,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/11-validation.png",
+      "sha256": "b66dfe1ad6997e5fa2e838bb4173362f2036592c566d10921fff6cc202fbbd67",
+      "bytes": 41786,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/12-minimum.png",
+      "sha256": "69e688aabf267be7191206dd9c8cd335f04d6c52dcd1ac0a71e3f7c53d3d1c1a",
+      "bytes": 71126,
+      "widthPx": 1024,
+      "heightPx": 661,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/13-long-text.png",
+      "sha256": "c390d0fc7ba2e72ad918a8d9b08886e9fc2e09c08f09a8fec45c00d1bf03cdd5",
+      "bytes": 76753,
+      "widthPx": 1024,
+      "heightPx": 661,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/14-saved.png",
+      "sha256": "e7c08ca7d20365e4fb675207d7e932868b2241f3f5b05589c1e48ca72a486e0f",
+      "bytes": 90696,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/15-journal-records.png",
+      "sha256": "33f892435bdc4c14e4feb43b55af2ea24ea4d4aa20d7209dc6e7372e836546c5",
+      "bytes": 48377,
+      "widthPx": 1144,
+      "heightPx": 781,
+      "renderDpi": 96,
+      "surface": "shown actual SAB.dll SettingsWindow.Content or Popup.Child",
+      "excludesOsTitlebar": true,
+      "data": "isolated fixtures; not live Revit"
+    }
+  ],
+  "build": [
+    {
+      "version": 2022,
+      "status": "PASS",
+      "exitCode": 0,
+      "assembly": "outputs/ui-production-preview/notification-settings/production/api2022/plugin/SAB.dll",
+      "sha256": "f00907cae794d0337d1af7f78c710a7b71626a5afa3ca98e346fc58e0fd2573d",
+      "log": "outputs/ui-production-preview/notification-settings/production/build2022.log",
+      "command": "Build-Production.ps1 -Capture -AllVersions (Revit2022 phase)",
+      "scope": "API compilation only; not execution in Revit"
+    },
+    {
+      "version": 2023,
+      "status": "PASS",
+      "exitCode": 0,
+      "assembly": "outputs/ui-production-preview/notification-settings/production/plugin/SAB.dll",
+      "sha256": "3b4e5009d79ab32b7ea624ffe4f9dda1a2b5043f69eb07302f2c1b5b01f07276",
+      "log": "outputs/ui-production-preview/notification-settings/production/build2023.log",
+      "command": "Build-Production.ps1 -Capture -AllVersions (Revit2023 phase)",
+      "scope": "API compilation only; not execution in Revit"
+    },
+    {
+      "version": 2024,
+      "status": "PASS",
+      "exitCode": 0,
+      "assembly": "outputs/ui-production-preview/notification-settings/production/api2024/plugin/SAB.dll",
+      "sha256": "ed6c6c9b046e91f78b4a35dbc576bbb84fbf14be4cdde1f19cbfc575abd2c3ef",
+      "log": "outputs/ui-production-preview/notification-settings/production/build2024.log",
+      "command": "Build-Production.ps1 -Capture -AllVersions (Revit2024 phase)",
+      "scope": "API compilation only; not execution in Revit"
+    },
+    {
+      "command": "Build-Production.ps1 -Capture -AllVersions",
+      "status": "PASS",
+      "exitCode": 0,
+      "assertions": 56,
+      "pngCount": 21,
+      "evidence": "Docs/Ui/DesignSystem/screenshots-notification-settings/production/verification.txt",
+      "log": "outputs/ui-production-preview/notification-settings/production-final-build.log"
+    }
+  ],
+  "passCount": 56,
+  "pngCount": 21,
+  "launcherPassCount": 3,
+  "sourceContractPassCount": 7,
+  "firstLaunchEnabled": false,
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Fresh bounded review; one recovery status finding fixed and verified",
+    "scope": "first-stage source/settings/actual WPF only; not live Revit/automatic OK/installation",
+    "report": "Docs/Ui/DesignSystem/NotificationSettings-Production-Review.md"
+  },
+  "installationPerformed": false,
+  "uiSourceOverrides": false,
+  "userReference": {
+    "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/reference-feedback/master-switch-size.png",
+    "sha256": "9824ff8127c5d57a611558f8ccc534d9f0ef154c61ad60915c0b200bb4fd3977",
+    "source": "user attached clipboard PNG, unchanged copy; not generated capture"
+  }
+}

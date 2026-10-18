@@ -1,17 +1,18 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Autodesk.Revit.DB;
 using SAB.ViewTemplateGraphics.Models;
 using SAB.ViewTemplateGraphics.Services;
-using RevitTaskDialog = Autodesk.Revit.UI.TaskDialog;
+using RevitTaskDialog = SAB.ViewTemplateGraphics.Views.TemplateEditorPresentation;
 
 namespace SAB.ViewTemplateGraphics.ViewModels
 {
     public class ViewTemplateGraphicsViewModel : NotifyPropertyChangedBase
     {
         private readonly Document _document;
+        private readonly Func<IList<TemplateSelectionItem>, ViewTemplateGraphicsData> _detachedLoader;
         private readonly ViewTemplateGraphicsDataService _dataService;
         private ViewTemplateGraphicsData _graphicsData;
         private TemplateSelectionItem _selectedSourceTemplate;
@@ -24,9 +25,21 @@ namespace SAB.ViewTemplateGraphics.ViewModels
             Document document,
             IList<TemplateSelectionItem> templates,
             ViewTemplateGraphicsDataService dataService)
+            : this(document ?? throw new ArgumentNullException("document"), templates,
+                   dataService ?? throw new ArgumentNullException("dataService"), null) { }
+
+        // Internal detached data boundary for native UI verification; the public Revit path
+        // still requires a real Document and uses the unchanged collectors below.
+        internal ViewTemplateGraphicsViewModel(IList<TemplateSelectionItem> templates,
+            Func<IList<TemplateSelectionItem>, ViewTemplateGraphicsData> loader)
+            : this(null, templates, null, loader ?? throw new ArgumentNullException("loader")) { }
+
+        private ViewTemplateGraphicsViewModel(Document document, IList<TemplateSelectionItem> templates,
+            ViewTemplateGraphicsDataService dataService, Func<IList<TemplateSelectionItem>, ViewTemplateGraphicsData> loader)
         {
-            _document = document ?? throw new ArgumentNullException("document");
-            _dataService = dataService ?? throw new ArgumentNullException("dataService");
+            _document = document;
+            _dataService = dataService;
+            _detachedLoader = loader;
             _lastTargetTemplateIds = new HashSet<int>();
             Templates = new ObservableCollection<TemplateSelectionItem>();
             TemplateTypeOptions = new ObservableCollection<NamedStringOption>();
@@ -377,6 +390,7 @@ namespace SAB.ViewTemplateGraphics.ViewModels
 
         private void LoadSourceTemplateData(TemplateSelectionItem sourceTemplate)
         {
+            if (_detachedLoader != null) { GraphicsData = _detachedLoader(new[] { sourceTemplate }); return; }
             View view = _document.GetElement(new ElementId(sourceTemplate.TemplateIdValue)) as View;
             if (view == null || !view.IsTemplate)
             {
@@ -389,6 +403,7 @@ namespace SAB.ViewTemplateGraphics.ViewModels
         private void RefreshSelectedTemplatesData()
         {
             List<View> selectedTemplates = new List<View>();
+            var selectedItems = new List<TemplateSelectionItem>();
             _lastTargetTemplateIds.Clear();
             _selectedSourceTemplate = null;
 
@@ -401,6 +416,9 @@ namespace SAB.ViewTemplateGraphics.ViewModels
                     continue;
                 }
 
+                if (_detachedLoader != null) {
+                    selectedItems.Add(item); _lastTargetTemplateIds.Add(item.TemplateIdValue); continue;
+                }
                 View view = _document.GetElement(new ElementId(item.TemplateIdValue)) as View;
                 if (view != null && view.IsTemplate)
                 {
@@ -409,9 +427,9 @@ namespace SAB.ViewTemplateGraphics.ViewModels
                 }
             }
 
-            GraphicsData = selectedTemplates.Count > 0
-                ? _dataService.Collect(_document, selectedTemplates)
-                : null;
+            GraphicsData = _detachedLoader != null
+                ? (selectedItems.Count > 0 ? _detachedLoader(selectedItems) : null)
+                : (selectedTemplates.Count > 0 ? _dataService.Collect(_document, selectedTemplates) : null);
 
             if (GraphicsData != null)
             {

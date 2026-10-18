@@ -1,0 +1,4 @@
+PASS: repeated actual host launch preserves one existing process and its draft
+PASS: repeat launch does not rebuild executable
+PASS: actual host opens from workspace cwd outside project
+PID: 36072

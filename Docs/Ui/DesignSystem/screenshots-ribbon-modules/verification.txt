@@ -1,0 +1,122 @@
+﻿PASS SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png exists
+PASS SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png dimensions and96DPI
+PASS SAB.Resources.OpenPluginInstructionsHtmlCommand_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png exists
+PASS SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png dimensions and96DPI
+PASS SAB.Resources.OpenPluginInstructionsHtmlCommand_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.SyncReminderSettings_16.png exists
+PASS SAB.Resources.SyncReminderSettings_16.png dimensions and96DPI
+PASS SAB.Resources.SyncReminderSettings_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.SyncReminderSettings_32.png exists
+PASS SAB.Resources.SyncReminderSettings_32.png dimensions and96DPI
+PASS SAB.Resources.SyncReminderSettings_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.Notifications_16.png exists
+PASS SAB.Resources.Notifications_16.png dimensions and96DPI
+PASS SAB.Resources.Notifications_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.Notifications_32.png exists
+PASS SAB.Resources.Notifications_32.png dimensions and96DPI
+PASS SAB.Resources.Notifications_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ExportTypesSingleFileCommand_16.png exists
+PASS SAB.Resources.ExportTypesSingleFileCommand_16.png dimensions and96DPI
+PASS SAB.Resources.ExportTypesSingleFileCommand_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ExportTypesSingleFileCommand_16.png visible interior cutouts and opaque body retained
+PASS SAB.Resources.ExportTypesSingleFileCommand_32.png exists
+PASS SAB.Resources.ExportTypesSingleFileCommand_32.png dimensions and96DPI
+PASS SAB.Resources.ExportTypesSingleFileCommand_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ExportTypesSingleFileCommand_32.png visible interior cutouts and opaque body retained
+PASS SAB.Resources.CreateViewsAndSheets_16.png exists
+PASS SAB.Resources.CreateViewsAndSheets_16.png dimensions and96DPI
+PASS SAB.Resources.CreateViewsAndSheets_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.CreateViewsAndSheets_32.png exists
+PASS SAB.Resources.CreateViewsAndSheets_32.png dimensions and96DPI
+PASS SAB.Resources.CreateViewsAndSheets_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.DeleteViewsAndSheets_16.png exists
+PASS SAB.Resources.DeleteViewsAndSheets_16.png dimensions and96DPI
+PASS SAB.Resources.DeleteViewsAndSheets_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.DeleteViewsAndSheets_32.png exists
+PASS SAB.Resources.DeleteViewsAndSheets_32.png dimensions and96DPI
+PASS SAB.Resources.DeleteViewsAndSheets_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.EditViewTemplateGraphics_16.png exists
+PASS SAB.Resources.EditViewTemplateGraphics_16.png dimensions and96DPI
+PASS SAB.Resources.EditViewTemplateGraphics_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.EditViewTemplateGraphics_32.png exists
+PASS SAB.Resources.EditViewTemplateGraphics_32.png dimensions and96DPI
+PASS SAB.Resources.EditViewTemplateGraphics_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.FilledRegionCreate_16.png exists
+PASS SAB.Resources.FilledRegionCreate_16.png dimensions and96DPI
+PASS SAB.Resources.FilledRegionCreate_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.FilledRegionCreate_32.png exists
+PASS SAB.Resources.FilledRegionCreate_32.png dimensions and96DPI
+PASS SAB.Resources.FilledRegionCreate_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.FilledRegionSettings_16.png exists
+PASS SAB.Resources.FilledRegionSettings_16.png dimensions and96DPI
+PASS SAB.Resources.FilledRegionSettings_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.FilledRegionSettings_32.png exists
+PASS SAB.Resources.FilledRegionSettings_32.png dimensions and96DPI
+PASS SAB.Resources.FilledRegionSettings_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.MaterialDataSheet_16.png exists
+PASS SAB.Resources.MaterialDataSheet_16.png dimensions and96DPI
+PASS SAB.Resources.MaterialDataSheet_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.MaterialDataSheet_32.png exists
+PASS SAB.Resources.MaterialDataSheet_32.png dimensions and96DPI
+PASS SAB.Resources.MaterialDataSheet_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.MaterialLayers_16.png exists
+PASS SAB.Resources.MaterialLayers_16.png dimensions and96DPI
+PASS SAB.Resources.MaterialLayers_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.MaterialLayers_32.png exists
+PASS SAB.Resources.MaterialLayers_32.png dimensions and96DPI
+PASS SAB.Resources.MaterialLayers_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ParameterIndex_16.png exists
+PASS SAB.Resources.ParameterIndex_16.png dimensions and96DPI
+PASS SAB.Resources.ParameterIndex_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ParameterIndex_32.png exists
+PASS SAB.Resources.ParameterIndex_32.png dimensions and96DPI
+PASS SAB.Resources.ParameterIndex_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ParameterSearch_16.png exists
+PASS SAB.Resources.ParameterSearch_16.png dimensions and96DPI
+PASS SAB.Resources.ParameterSearch_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ParameterSearch_32.png exists
+PASS SAB.Resources.ParameterSearch_32.png dimensions and96DPI
+PASS SAB.Resources.ParameterSearch_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ParameterSearchReset_16.png exists
+PASS SAB.Resources.ParameterSearchReset_16.png dimensions and96DPI
+PASS SAB.Resources.ParameterSearchReset_16.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.ParameterSearchReset_32.png exists
+PASS SAB.Resources.ParameterSearchReset_32.png dimensions and96DPI
+PASS SAB.Resources.ParameterSearchReset_32.png exact RGB and alpha contract (library light detail knockout)
+PASS SAB.Resources.CreateInteriorElevationsCommand_16.png unchanged pixels
+PASS SAB.Resources.CreateInteriorElevationsCommand_32.png unchanged pixels
+PASS SAB.Resources.FlipElevation180ByLineCommand_16.png unchanged pixels
+PASS SAB.Resources.FlipElevation180ByLineCommand_32.png unchanged pixels
+PASS SAB.Resources.MoveElevationViewportsToNewSheetCommand_16.png unchanged pixels
+PASS SAB.Resources.MoveElevationViewportsToNewSheetCommand_32.png unchanged pixels
+PASS SAB.Resources.CreateDoorWindowViews_16.png unchanged pixels
+PASS SAB.Resources.CreateDoorWindowViews_32.png unchanged pixels
+PASS SAB.Resources.GklFrameWall_16.png unchanged pixels
+PASS SAB.Resources.GklFrameWall_32.png unchanged pixels
+PASS Apply composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Settings composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Check composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Clear composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Preview composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Corpus composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Material composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Decoration composite at16DIP one module color (premultiply tolerance4), frozen
+PASS Apply composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Settings composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Check composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Clear composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Preview composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Corpus composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Material composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Decoration composite at32DIP one module color (premultiply tolerance4), frozen
+PASS Apply composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Settings composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Check composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Clear composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Preview composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Corpus composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Material composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Decoration composite at48DIP one module color (premultiply tolerance4), frozen
+PASS Hidden Frame gray override retained
+COMPLETED 121 checks; actual production assets, Revit ribbon NOT RUN

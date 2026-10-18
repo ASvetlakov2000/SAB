@@ -1,0 +1,11 @@
+{
+  "scope": "ready preview artifact launch, no Computer Use",
+  "firstProcessId": 9676,
+  "afterProcessIds": [
+    9676
+  ],
+  "singleInstance": true,
+  "noRebuild": true,
+  "foregroundVisual": "NOT RUN",
+  "result": "same process reused, artifact unchanged"
+}

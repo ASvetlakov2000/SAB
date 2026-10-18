@@ -1,0 +1,23 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <PropertyGroup>
+    <Configuration>Debug</Configuration><Platform>AnyCPU</Platform><OutputType>WinExe</OutputType>
+    <AssemblyName>SAB.TemplateEditor.FooterCheck</AssemblyName><TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <PlatformTarget>x64</PlatformTarget><LangVersion>latest</LangVersion><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <OutputPath>..\..\..\outputs\ui-production-preview\template-editor\footer\plugin\</OutputPath>
+    <IntermediateOutputPath>..\..\..\outputs\ui-production-preview\template-editor\footer\host-obj\</IntermediateOutputPath>
+    <ApplicationManifest>..\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Xaml"/>
+    <Reference Include="WindowsBase"/><Reference Include="PresentationCore"/><Reference Include="PresentationFramework"/>
+    <Reference Include="SAB"><HintPath>..\..\..\outputs\ui-production-preview\template-editor\footer\plugin\SAB.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="RevitAPI"><HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPI.dll</HintPath></Reference>
+    <Reference Include="RevitAPIUI"><HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FooterCheck.cs" />
+    <Compile Include="..\..\..\outputs\ui-production-preview\template-editor\footer\host-source\Fixtures.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

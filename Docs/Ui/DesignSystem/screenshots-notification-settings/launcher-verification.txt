@@ -1,0 +1,6 @@
+PASS: interactive preview opened with a native window
+PASS: repeated Open.cmd from arbitrary cwd returns same single process
+PASS: launcher did not rebuild executable
+INFO: active preview process 34056
+INFO: preview window SAB — Уведомления · макет
+NOT RUN: OS foreground restrictions, physical input, Revit interaction

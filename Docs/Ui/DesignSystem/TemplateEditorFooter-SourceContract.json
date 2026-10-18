@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-18",
+  "scope": "footer-only source successor",
+  "uiSourceOverrides": false,
+  "historicalProof": "Tools/UiShowcase/NotificationSettings/production-source-contract.json",
+  "historicalProofSha256": "45a6a294666f77bdbd1634a66e41eebbd7d900ca255a609e84d7975e9bc28844",
+  "source": {
+    "SAB/UI/Styles/SABFluentLight.xaml": {
+      "beforePath": "outputs/ui-production-preview/template-editor/footer-baseline/SAB__UI__Styles__SABFluentLight.xaml",
+      "before": "671639ca98f6e1de249de08c488127f5b5cd3093eb4ae96f432caa8f27fbafa9",
+      "after": "b7b8a514da4623b14d4d3c007d87a1599676ff7d12c8b31af18aec94705a36e3"
+    },
+    "SAB/Cls_ViewTemplateGraphics/Views/ViewTemplateGraphicsWindow.xaml": {
+      "beforePath": "outputs/ui-production-preview/template-editor/footer-baseline/SAB__Cls_ViewTemplateGraphics__Views__ViewTemplateGraphicsWindow.xaml",
+      "before": "79604db07e5f2a5e85513b8a82fb5ab33ed8ca02a1250297dce530ef2784aa75",
+      "after": "fa2cb1f73de89d6d569c3a7722707fd96101a40a287ad4a3a3a5a85ad451e1ab"
+    },
+    "SAB/Properties/AssemblyInfo.cs": {
+      "beforePath": "outputs/ui-production-preview/notification-settings/pre-release-source/SAB__Properties__AssemblyInfo.cs",
+      "before": "51800d7dc5eb50b42df121906ca45f7106aeb1fb556db15aed9f04711f2263c7",
+      "after": "5b9ccd8d3e7f47281a20f2691b99667983adec259c23bd0551851e8762a359c8"
+    }
+  },
+  "checks": {
+    "original_status_binding_preserved": true,
+    "original_names_preserved": true,
+    "button_tags_and_parameters_preserved": true,
+    "original_validation_style_unchanged": true,
+    "original_status_text_style_unchanged": true,
+    "large_notification_switch_unchanged": true,
+    "small_switch_unchanged": true
+  }
+}

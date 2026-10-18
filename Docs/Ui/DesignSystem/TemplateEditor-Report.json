@@ -1,0 +1,1530 @@
+{
+  "schemaVersion": 1,
+  "task": "Редактор шаблонов — этап1 WPF-макет, правки2",
+  "date": "2026-10-17",
+  "scope": "preview",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "dirtyBaseline": "Revision1 preview and unrelated concurrent module changes were dirty; scoped preview baseline saved to outputs/ui-production-preview/template-editor/revision-1. Unrelated owners untouched.",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/LayoutPatterns.md",
+    "Docs/Ui/DesignSystem/component-coverage.csv",
+    "Docs/Ui/DesignSystem/TemplateEditor-Revision2-Layout.md"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/TemplateEditor-Revision2-Layout.md",
+  "build": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiShowcase/TemplateEditor/Build.ps1 -Capture",
+      "exitCode": 0,
+      "target": "isolated net48 x64 preview, API2023 enum references; no production migration/MSI"
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters-validation.png",
+      "sha256": "c6c8f06fb526856399cf255e42be9b8c9523c0971813edccd68289bb3fef6dec",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters.png",
+      "sha256": "74cfc1745913dd19d6681d0d19d12cff5273e9800f5d00a4760cfd1481a322e6",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/analytical-capabilities.png",
+      "sha256": "03f5b1e74682a3a280073fca0526d29ca7dbdd28a1544acaf332d9348caf2931",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/annotation-capabilities.png",
+      "sha256": "dc95935dbc378f2e25e0e86b24f84fbd66e8c29fdcbd7730ce8c193c9e21abf5",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/category-expanded.png",
+      "sha256": "a1eb5ca4a09109f2733d5f63c9258c08fb6c32a7d1f9edb1cb0386478389df54",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/dirty-validation.png",
+      "sha256": "08cdb95e30f374720ac124b330614c98e5cc89d2b807fca3b568f6c08ec5aee7",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-All.png",
+      "sha256": "cbd0ccf50228d12569e209cae002b6e5a3921e2b66a5f11eb519367eb474c275",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-CutLines.png",
+      "sha256": "a02bb777acce7032edcd858a4c57d997d86ebf9fda2638985a201b4ff18d344c",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-CutPatterns.png",
+      "sha256": "78b9250f14aee7c784485c97736036eaeac30124e5ced2a4488903e9bbbf562c",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-popup.png",
+      "sha256": "2e142aa0eb3cd657c0096843808c6e115a843ff4704e61aa97f8a695292e1ef5",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-projection.png",
+      "sha256": "938330bfa8f1a7ebced5ffe03066d1755bf1ead19fb4aa2c154caa5115a02ae9",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-ProjectionLines.png",
+      "sha256": "cf7513648165566bda8a6063799d070860aa505a787fa6b9531b35674c78781d",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-SurfacePatterns.png",
+      "sha256": "2d9b9390a887bc29a37cc27206d9f41f54ebe2ee789c6df654ed139b616179cf",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-Transparency.png",
+      "sha256": "c7e564b180e6db46c4d3098def4631ef97c704b8da4f0e15147c925088d0e03e",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/empty-template-search.png",
+      "sha256": "dc828fe0a2c6a6247118fb76ca5bad92ea46e0fef8793e3425d387e09ba5c3ec",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/empty-worksets.png",
+      "sha256": "ed587e4bb4704ebfa6020ab8f26be92ad369b4fb595ae2cb00f2c49767d94275",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/filter-reordered.png",
+      "sha256": "db29d3263c893fd290b2c4ebcdad86dd528705691d379e4c5069a284ee118ac0",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/global-link-category.png",
+      "sha256": "5270f4b73313fd3970d47bef5603319114cfa9232d4371be014ac280d06a7b30",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/long-template-name.png",
+      "sha256": "0b3926231a1b6c824ed8e1f4b4f74435ba8e0d4b0afb99ea6d0a9f1d954e2f8d",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-add-filters.png",
+      "sha256": "d71741342af85a8a96d7b7cb9dfe36c573158f4113423c58fc44cdcb10e88fdd",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-All.png",
+      "sha256": "a696a0f7332b6b37c669330968864618e670874e24f027becbbc75a01526ecf2",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-CutLines.png",
+      "sha256": "d94ceafa11cb773c77ae237e8be8ac92e679995fcf2e7206bd9cbc9de268c56b",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-CutPatterns.png",
+      "sha256": "25c7427abe4a6bfd98ae29b8c5ae9111f1b923762ba7cf71fc1ed017bab50911",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-ProjectionLines.png",
+      "sha256": "85e0b8d9ac1a4869e58f917c05cbd8dff0f98227f265de1ec3c9074b9e5756e9",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-SurfacePatterns.png",
+      "sha256": "cf04894bb4c3f9f31c1779ab0749b5c7e39af51141a515a590958d86ab532d64",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-Transparency.png",
+      "sha256": "37fbfe73b5dcc4b24fb274b45e02104161aaa7edd63fe483da6979e524a1e8ba",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-0.png",
+      "sha256": "86f532311427fd55c62df77d3310f024d7f17cc11c2d74766c145c07e1199562",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-1-right.png",
+      "sha256": "a7b725e452e797403939794f0328125b86ba9d1012ca952bcdbede0fa2c9e4e2",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-1.png",
+      "sha256": "f45d88faab22715dc133bdb907b2be94c629ff847cd9f730b4dc8c91a12c3073",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-2.png",
+      "sha256": "04924261bd1dc41996522ba20897bbb65b16269ea7ce8d23b1e9bcabb9833697",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-3-right.png",
+      "sha256": "2d5f4d3229cda4e4d39fa0c8857e2555c130b2fd1213c981cbd99615629395f2",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-3.png",
+      "sha256": "ccc89f14b219d5e6b5ab32e16ab27ba8ac7b2d00eceee78be5b8f7d18686dae0",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-4.png",
+      "sha256": "3dad452515f6b61d3f627f7a8beab1216069be484eb42a0ac81e605301212568",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5-right.png",
+      "sha256": "668b3ccc6d1544a7923d3614017bc138997a3615392ffec48edc97204583460d",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png",
+      "sha256": "1e0c8a7db492f7b0c3f71a558e44e93b770d35a86462790e39475c907962699e",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-6.png",
+      "sha256": "d479611ebb21591559db03a41c927dfb70ad850dc11bd689eb576b45e30ed375",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/mixed-selection.png",
+      "sha256": "a1eb5ca4a09109f2733d5f63c9258c08fb6c32a7d1f9edb1cb0386478389df54",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/property-editor-focus.png",
+      "sha256": "6251e22841fe11fedf73a6e94f3f45ac046dcb0c9112f93ac574c204b8633860",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/search-enter-focus.png",
+      "sha256": "f3f419bc4ec6519c407c6fd85048d3071d4c1768645a4ee714da45e90f908e40",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/stretch.png",
+      "sha256": "86edb3e375b452c9dad317969caef4c425f627eccc596c39fca43b33dc2b357f",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-0.png",
+      "sha256": "3de1b4e92da2f34a3e7d847af302b0620a04fd2b3daa3c6a4bbe6aacdeefd26f",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+      "sha256": "19e6bb51e390343100e673459b9b988f0e2eee562654013b4ed36e4afb8f7157",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-2.png",
+      "sha256": "dc95935dbc378f2e25e0e86b24f84fbd66e8c29fdcbd7730ce8c193c9e21abf5",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-3.png",
+      "sha256": "03f5b1e74682a3a280073fca0526d29ca7dbdd28a1544acaf332d9348caf2931",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-4.png",
+      "sha256": "2c3822a9b00996e7b4787e3532e93ceb5f8394e67e2c6986fad12478f33f5628",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-5.png",
+      "sha256": "fc534be8109a4a74e353cba013ad1237a5669afa8cafb283f14635cff48fc8dd",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-6.png",
+      "sha256": "c06d1065b379fd9bcde46dce46cf96c68bcb572f990eb915e6deaf19ca71c53a",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/template-search.png",
+      "sha256": "90453c027e1db13db7ecdb988a91dd5c286fa35f4673e29cfb74e32aa5a421a1",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tree-depth-stress.png",
+      "sha256": "6f0268057d030ed29fed374b71246a5306a6375729cc6e73cb8c77f429471d79",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tree-search-path.png",
+      "sha256": "cdca37f978e6ed16d66ec7a4bf7872399857327eb4fb092b96aee88a6a4f0765",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/workset-edited.png",
+      "sha256": "bd7c6fc8e650e5145045325747d9e45e9d68893c4b0829216f405307b8370c0b",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/zero-targets.png",
+      "sha256": "7aa1fef7ea0c67299f1e551681b1bc886a7ba8c24a3fbd71b0bdbd3ecd5c03d4",
+      "scope": "source-derived preview",
+      "method": "RenderTargetBitmap96 of live shown WPF Content, not OS screenshot"
+    }
+  ],
+  "runtimeDpi": 96.0,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Independent read-only reviewer: revision2 F-R2-1/F-R2-2 resolved; sidebar20percent and responsive tabs reviewed; ship in preview scope only.",
+    "scope": "preview",
+    "report": "Docs/Ui/DesignSystem/TemplateEditor-Review.md",
+    "reviewer": "/root/template_editor_reviewer",
+    "disposition": "ship_preview_scope",
+    "hostSha256": "08abf70f1049a8abbaadf374e2be4912ae11db8fc86935b4c161f912db8c808e",
+    "unverified": [
+      "SAB-UI-043 actual browser opening/rendering",
+      "Production migration/Revit/physical input/OS DPI/install/MSI"
+    ]
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json",
+        "Docs/Ui/DesignSystem/TemplateEditor-Layout.md"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json",
+        "Tools/UiShowcase/TemplateEditor/TemplateEditor.csproj"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/TemplateEditor-Layout.md",
+        "Docs/Ui/DesignSystem/STATUS.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": true,
+      "scope": "preview",
+      "status": "NOT RUN",
+      "reason": "Production migration intentionally deferred until this suite is explicitly approved; source-derived preview does not prove actual production classes.",
+      "evidence": [],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/TemplateEditor-Layout.md"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/provenance.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/provenance.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/input-verification.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-SurfacePatterns.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет строковых Add/Delete icon-actions: добавление/удаление фильтров — исходные текстовые toolbar actions; disclosure дерева отдельно057.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-0.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/property-editor-focus.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет отдельных numeric columns с numeric headers. Масштаб — свойство в общей текстовой колонке Значение.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-SurfacePatterns.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/mixed-selection.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет RadioButton mode-групп; вкладки проверяются023–025.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет скрываемых radio modes.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-6.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-SurfacePatterns.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/TemplateEditor-Layout.md"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-0.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-SurfacePatterns.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет bound ItemsControl с исчезающей оболочкой: пустые DataGrid/ListBox сохраняют контур.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/zero-targets.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет вложенных строк этажей/зон.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-ProjectionLines.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-SurfacePatterns.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет вложенных форм этажей/зон с icon-actions.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-ProjectionLines.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/template-search.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-5.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет исходных Save/Load/Все–Выбранные групп категорий; добавлять функции запрещено.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет импорта/экспорта конфигурации этого модуля.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет row plus или duplicate add routes; исходное добавление фильтров только через toolbar modal picker.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет CategorySelectionControl/режима Все–Выбранные. Extended highlight и IsTarget проверены отдельно053.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет JSON Save/Load выборок в этом модуле.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-1.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-SurfacePatterns.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "scope": "preview",
+      "status": "NOT RUN",
+      "reason": "One footer help per window and exact existing local HTML target verified by source/counts. Actual default-browser opening/rendering not exercised; no Computer Use per user request.",
+      "evidence": [
+        "Docs/PluginInstructions/SAB_HTML_Redaktor_shablonov.html",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/dirty-validation.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tab-6.png",
+        "Tools/UiShowcase/TemplateEditor/source-contract.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-popup.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/input-verification.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/TemplateEditor.csproj",
+        "Docs/Ui/DesignSystem/component-coverage.csv"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет DockablePane.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-editor-SurfacePatterns.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет исходных восьми иконок этажей/зон.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет ClearRowsCommand и blank creation row.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/input-verification.json"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Tools/UiShowcase/TemplateEditor/source-contract.json",
+        "Tools/UiShowcase/TemplateEditor/Preview.cs"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/dirty-validation.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters-validation.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/TemplateEditor-Report.json",
+        "Docs/Ui/DesignSystem/TemplateEditor-Review.md"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/category-expanded.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-5-right.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/long-template-name.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/editor-popup.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет transient notifications в оформляемых трёх окнах; исходный modal command result не мигрируется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет notification copy/ID/support blocks.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет notification lifetime.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет notification stack.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет notification work-area placement.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет изменений result adapter/transaction/notification callbacks.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/launch-verification.json",
+        "Tools/UiShowcase/TemplateEditor/Launch.ps1"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет настройки выносок развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/stretch.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет compact choice helper окон развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет категорий отметок развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет результата создания развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/dirty-validation.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/add-filters-validation.png"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет выбора помещений/направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет ParameterPicker/Sources tab.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет проверки параметров категорий.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет WhatCheck/CheckCategoriesWindow.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет ribbon/hotkey проверки параметров.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет preview направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет выбора направлений развёрток.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-084",
+      "criterion": "ErrorRegistry.md#sab-ui-084",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Нет выбора материалов/синхронизации штриховок.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-085",
+      "criterion": "ErrorRegistry.md#sab-ui-085",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Параллельное изменение группировки и палитры ribbon; в окнах редактора шаблонов ленты нет.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-086",
+      "criterion": "ErrorRegistry.md#sab-ui-086",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/annotation-capabilities.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/analytical-capabilities.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt",
+        "Docs/Ui/DesignSystem/TemplateEditor-Revision2-Layout.md"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-087",
+      "criterion": "ErrorRegistry.md#sab-ui-087",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tree-depth-stress.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/tree-search-path.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    },
+    {
+      "id": "SAB-UI-088",
+      "criterion": "ErrorRegistry.md#sab-ui-088",
+      "applicable": false,
+      "scope": "preview",
+      "status": "N/A",
+      "reason": "Параллельная задача оформления развёрток; этот модуль отсутствует в редакторе шаблонов.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-089",
+      "criterion": "ErrorRegistry.md#sab-ui-089",
+      "applicable": true,
+      "scope": "preview",
+      "status": "PASS",
+      "reason": "",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-0.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/minimum-tab-4.png",
+        "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/verification.txt"
+      ],
+      "unverified": [
+        "Production classes/Revit API operations/transactions, installation, OS DPI transitions and exhaustive accessibility are not verified."
+      ]
+    }
+  ],
+  "productionMigrationAuthorized": false,
+  "installationPerformed": false,
+  "productionSourceChanges": [],
+  "runtimeSummary": "COMPLETED 558 PASS / 52 visible WPF captures; Revit/OS-DPI/install NOT RUN",
+  "limitations": [
+    "Revit2022/2023/2024 operations NOT RUN; target production builds/MSI belong to stage2 after approval.",
+    "Fixture adapters are explicitly isolated; no live Document or ApplyService.",
+    "Per-category granular capabilities are synthetic fixture metadata; actual IsCategoryOverridable/IsCuttable/view probes NOT RUN. Analytical panel fixture is not proof that every real analytical category supports surface/transparency/detail.",
+    "RenderTargetBitmap excludes OS chrome; editor-popup composites actual live popup child at measured position.",
+    "Keyboard tests use WPF routed events/AccessKeyManager; physical OS input and default-browser rendering NOT RUN."
+  ],
+  "concurrentChangesOutsideTask": [
+    "SAB/Cls_MainPanel/MainPanel.cs",
+    "SAB/Cls_ParameterTools/ParameterToolsIcons.cs",
+    "SAB/Helpers/Ribbon/Ribbon.cs",
+    "Tools/Ribbon",
+    "SAB/SAB.csproj (decoration SVG resource only)",
+    "SAB/Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml",
+    "Docs/Ui/DesignSystem/RibbonModules-Layout.md",
+    "Docs/Ui/DesignSystem/screenshots-ribbon-modules"
+  ],
+  "documentValidation": {
+    "taskPacket": {
+      "status": "PASS",
+      "command": "python Tools/UiShowcase/TemplateEditor/Verify.py",
+      "scope": "current registry IDs, evidence files/hashes, original module hashes, unchanged production owners, reviewed host, launch and migration gate"
+    },
+    "globalCanonicalValidator": {
+      "status": "PASS",
+      "command": "python Tools/UiShowcase/ValidateUiDocs.py --report Docs/Ui/DesignSystem/TemplateEditor-Report.json",
+      "reason": "Actual execution17.10:89registryIDs/form checks,51-type coverage accounting unchanged, completed-report/evidence paths valid; document validator is not UI evidence."
+    }
+  }
+}

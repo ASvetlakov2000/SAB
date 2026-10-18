@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-17",
+  "log": "outputs/ui-production-preview/decoration-ribbon-msi-build.txt",
+  "licenseProof": "outputs/ui-production-preview/decoration-ribbon-license-proof.json",
+  "packages": [
+    {
+      "year": 2022,
+      "status": "PASS",
+      "productVersion": "1.1.3",
+      "msi": "Installer/output/SAB_Revit_2022.msi",
+      "msiSha256": "E8F738844F165D632B13BFB9BD2C4226446CDBD9D9421AEB6780638A0CA7C1B5",
+      "assemblySha256": "232DDDD89E42F548AB7DF9813877C26AB9438D996A9B8F6DBFB05497C20BF5B5",
+      "dllXamlHtmlMatchCurrentBuild": true,
+      "iscNoticeExtractedAndMatches": true,
+      "installationPerformed": false
+    },
+    {
+      "year": 2023,
+      "status": "PASS",
+      "productVersion": "1.1.3",
+      "msi": "Installer/output/SAB_Revit_2023.msi",
+      "msiSha256": "D52A6E5C5627BBBF935B543E6BAB9841388A10FDD67D9B11DE47F2EDCF52A636",
+      "assemblySha256": "31DA71CFEBB15F0C0A8C0F548D0142926EF31A8C5D3CB49FA1A6C6A5BA9E3476",
+      "dllXamlHtmlMatchCurrentBuild": true,
+      "iscNoticeExtractedAndMatches": true,
+      "installationPerformed": false
+    },
+    {
+      "year": 2024,
+      "status": "PASS",
+      "productVersion": "1.1.3",
+      "msi": "Installer/output/SAB_Revit_2024.msi",
+      "msiSha256": "55E24F8793AC800510D1E142F56401E2B424B151DA98BC23384EB8E0B0A27D07",
+      "assemblySha256": "12B7D074197E47E3EC14B7AB2062BC5ECEBA25A005B92531E31883487646E181",
+      "dllXamlHtmlMatchCurrentBuild": true,
+      "iscNoticeExtractedAndMatches": true,
+      "installationPerformed": false
+    }
+  ],
+  "entryPoint": "Build-Msi.bat -> Installer/Build-All-Msi.ps1",
+  "publicRelease": false
+}

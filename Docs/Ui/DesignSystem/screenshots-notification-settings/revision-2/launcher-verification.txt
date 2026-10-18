@@ -1,0 +1,6 @@
+PASS: revision 2 interactive window opened
+PASS: repeated Open.cmd from arbitrary cwd returns same single revision 2 process
+PASS: executable hash unchanged after launcher
+INFO: PID 8320
+INFO: SAB — Уведомления · макет 2
+NOT RUN: physical input, OS foreground policies, live Revit

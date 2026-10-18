@@ -1,0 +1,79 @@
+Actual production SAB.dll classes; isolated fixture profiles only. No Revit execution, installation or physical/OS-DPI checks.
+PASS: null settings disabled
+PASS: first launch is OFF and performs no profile write
+PASS: fresh model and all rules are OFF
+PASS: legacy blanket opt-in cannot enable new settings
+PASS: loading legacy does not rewrite user's file
+PASS: corrupt config disabled
+PASS: unknown schema disabled
+PASS: draft changes leave runtime and disk OFF
+PASS: explicit Save enables and persists all preferences
+PASS: stable per-rule actions round trip
+PASS: saved opt-in survives restart
+PASS: failed Save keeps runtime and draft and reports error
+PASS: atomic failure preserves prior settings and removes temporary file
+PASS: protected unknown and no-confirmation cannot select suppression
+PASS: dependent deletion requires explicit consent
+PASS: consent releases validation
+PASS: show revokes deletion consent
+PASS: duration validation
+PASS: drive-relative folder rejected
+PASS: journal reads actual records deduplicates and skips malformed line
+PASS: observed unknown notification is visible and cannot be suppressed
+PASS: export uses committed folder and escapes source text
+PASS: draft rule clicks never manufacture journal entries
+PASS: corrupt settings recovery is OFF and error red
+CAPTURE: 00-corrupt-settings 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: legacy migration notice is neutral and OFF
+CAPTURE: 00-legacy-settings 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: actual window is owned by production SAB assembly
+PASS: exactly Rules and Journal tabs
+PASS: large switch track56x32 knob24 hit64x40
+PASS: rules fit without horizontal scrollbar
+PASS: table header38 and rows44
+PASS: scrollbar begins below header
+PASS: footer fully within viewport
+PASS: table and detail separated
+CAPTURE: 01-default-off 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: keyboard focus ring visible
+CAPTURE: 02-switch-focus 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: native routed Space toggles focused switch
+PASS: disabled switch dims and refuses automation toggle
+CAPTURE: 02-switch-disabled 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: switch toggle edits draft only
+CAPTURE: 03-pending-rule 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: three complete action labels in native dropdown
+CAPTURE: 04-actions-popup 290x95 (96dpi WPF render, not OS-DPI proof)
+PASS: SKETCH action unavailable
+CAPTURE: 05-sketch 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: OWNERSHIP action unavailable
+CAPTURE: 05-ownership 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: NONMODAL action unavailable
+CAPTURE: 05-nonmodal 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: UNKNOWN action unavailable
+CAPTURE: 05-unknown 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: save disabled until deletion consent
+CAPTURE: 06-delete-validation 1144x781 (96dpi WPF render, not OS-DPI proof)
+CAPTURE: 07-delete-consent 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: Enter applies search empty state and clears detail
+CAPTURE: 08-empty 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: context exclusions independent
+CAPTURE: 09-context-options 1144x781 (96dpi WPF render, not OS-DPI proof)
+CAPTURE: 10-journal-empty 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: invalid duration disables save and shows error
+CAPTURE: 11-validation 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: rules fit without horizontal scrollbar
+PASS: table header38 and rows44
+PASS: scrollbar begins below header
+PASS: footer fully within viewport
+PASS: table and detail separated
+CAPTURE: 12-minimum 1024x661 (96dpi WPF render, not OS-DPI proof)
+PASS: long text bounded and detail remains scrollable
+CAPTURE: 13-long-text 1024x661 (96dpi WPF render, not OS-DPI proof)
+PASS: Save commits enabled without closing window
+CAPTURE: 14-saved 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: Cancel closes without saving
+CAPTURE: 15-journal-records 1144x781 (96dpi WPF render, not OS-DPI proof)
+PASS: journal ellipsis retains full accessible tooltip
+PASS: Escape closes draft without saving
+COMPLETED: 56 PASS; 21 PNG. Actual SAB.dll settings window; fixture data outside Revit. Live OK capabilities/installation/physical input/OS DPI NOT RUN.

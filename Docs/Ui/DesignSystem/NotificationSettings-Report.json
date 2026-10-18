@@ -1,0 +1,1428 @@
+{
+  "schemaVersion": 1,
+  "task": "Настройки уведомлений SAB — standalone WPF-макет для согласования",
+  "date": "2026-10-17",
+  "scope": "preview; documentation; standalone synthetic capabilities, no production migration",
+  "sourceRevision": "0d5b17db7f418fa9d837a553cdd1feac0e2cbfc5",
+  "dirtyBaseline": "Existing dirty worktree contains unrelated Ribbon/TemplateEditor/Decoration production changes. Standalone NotificationSettings is new/untracked; this documenter writes only task report, provenance, and standalone README. No reset or overwrite of existing work.",
+  "readFiles": [
+    "AGENTS.md",
+    ".agents/skills/sab-wpf-ui/SKILL.md",
+    "Docs/Ui/DesignSystem/STATUS.json",
+    "Docs/Ui/DesignSystem/Specification.md",
+    "Docs/Ui/DesignSystem/ErrorRegistry.md",
+    "Docs/Ui/DesignSystem/Workflow.md",
+    "Docs/Ui/DesignSystem/ReviewRoles.md",
+    "Docs/Ui/DesignSystem/WorkflowReport.template.json",
+    "Docs/Ui/DesignSystem/NotificationSettings-Layout.md",
+    "Tools/UiShowcase/NotificationSettings/NotificationSettings.csproj",
+    "Tools/UiShowcase/NotificationSettings/Build.ps1",
+    "Tools/UiShowcase/NotificationSettings/Open.cmd",
+    "Tools/UiShowcase/NotificationSettings/Models.cs",
+    "Tools/UiShowcase/NotificationSettings/Window.xaml",
+    "Tools/UiShowcase/NotificationSettings/Window.xaml.cs",
+    "Tools/UiShowcase/NotificationSettings/Program.cs",
+    "Tools/UiShowcase/NotificationSettings/Evidence.cs",
+    "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+    "Tools/UiShowcase/NotificationSettings/Help.html",
+    "SAB/UI/Styles/SABFluentLight.xaml",
+    "outputs/ui-production-preview/notification-settings/capture-build.json",
+    "Docs/Ui/DesignSystem/screenshots-notification-settings/boundary-verification.txt",
+    "Docs/Ui/DesignSystem/screenshots-notification-settings/launcher-verification.txt",
+    "Docs/Ui/DesignSystem/NotificationSettings-Review.md"
+  ],
+  "layoutSpecification": "Docs/Ui/DesignSystem/NotificationSettings-Layout.md",
+  "build": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiShowcase/NotificationSettings/Build.ps1 -Capture",
+      "status": "PASS",
+      "exitCode": 0,
+      "scope": "Standalone net48 x64 compile + original shown-WPF capture; builder result, not rerun by documenter",
+      "assertions": 35,
+      "pngCount": 16,
+      "evidence": "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiShowcase/NotificationSettings/Build.ps1",
+      "status": "PASS",
+      "exitCode": 0,
+      "scope": "Current standalone net48 x64 after F1/F2; builder result; hashes in provenance"
+    },
+    {
+      "command": "outputs/ui-production-preview/notification-settings/SAB.NotificationSettings.Preview.exe --verify-boundaries",
+      "status": "PASS",
+      "exitCode": 0,
+      "assertions": 3,
+      "pngCount": 0,
+      "evidence": "Docs/Ui/DesignSystem/screenshots-notification-settings/boundary-verification.txt"
+    },
+    {
+      "command": "Open.cmd twice, repeated from arbitrary TEMP cwd",
+      "status": "PASS",
+      "assertions": 3,
+      "pngCount": 0,
+      "evidence": "Docs/Ui/DesignSystem/screenshots-notification-settings/launcher-verification.txt",
+      "scope": "Interactive native window, same process, no rebuild. OS foreground policies not verified."
+    }
+  ],
+  "captures": [
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png",
+      "state": "default; all show; automatic OK off",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "956FB58F8372DF65BFFC8EFB0F32FF64DDF99E9B23F33AA3FFF7189F7D86FAB5",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/02-configured.png",
+      "state": "configured selected C01; global enabled",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "0B7EB9C88017E256DD597ECF687FA547C11156BF2A65661449562CB7386AF0E9",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/03-method-dropdown.png",
+      "state": "actual ActionBox PART_Popup.Child only",
+      "viewport": {
+        "widthPx": 274,
+        "heightPx": 95
+      },
+      "renderDpi": 96,
+      "sha256": "3FCFFB614CE13F5A7B5D6BACD61199F6FE4F0641A619D527D9715BB4C853B03E",
+      "surface": "shown native WPF Popup.Child",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/04-deletion-validation.png",
+      "state": "D01 selected automatic journal; missing destructive consent",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "F73126028697EAB7CBA650C647E0180B0D3F18C62C8AD9C17183ACFBEAF8E4C9",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/05-deletion-consent.png",
+      "state": "D01 explicit destructive consent",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "650766E48EDD6889E773F32B35E0C168BBF655C6965F872BE5323A7310EEACB9",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/06-protected-sketch.png",
+      "state": "protected SKETCH; auto action disabled",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "D81622070FE358C283003DEA583AE3C023E908B4668FFFE6B3DD2BC7196C835F",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/07-protected-ownership.png",
+      "state": "protected OWNERSHIP; auto action disabled",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "30F67DDE5D6F73C09139C401DDC9724FB37B86B4314D801A9FCF1708DC90F7CD",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/08-without-ok.png",
+      "state": "NONMODAL without mandatory OK; show only",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "EF6C757FA1B6466F9E265A32BD1DC77D7094BEB51E62B273564879F82EF72192",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/09-unknown.png",
+      "state": "UNKNOWN; show only",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "233ACD5DE4A1EBB51BCA07BFAD96589FB9B0A4C4662726BB159D528C6CD6EC9C",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/10-empty.png",
+      "state": "empty search; no stale selected details",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "56254E58D7C3BAC011D5F7B4CE031C4FA51CD2023300613BDC535E4566933A81",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/11-exceptions.png",
+      "state": "Exceptions tab; fixture flags",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "3366FE58FC34DEB753BCA21335BD7C049822BDEEC523FFD406E6785F20951234",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/12-journal.png",
+      "state": "Journal tab; draft rule choices",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "817C858578E0D592CCC774B48BA9BEE330603701FA38E73CE4428145EAA92CEA",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/13-duration-validation.png",
+      "state": "invalid duration; save disabled",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "BA6D627CB5E91EA3B325B6859BA873268904F93D561CACBF4346E36C1377BBAD",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/14-minimum.png",
+      "state": "minimum outer1040×700 DIP; Rules tab",
+      "viewport": {
+        "widthPx": 1024,
+        "heightPx": 661
+      },
+      "renderDpi": 96,
+      "sha256": "FF28F4CBC80D585B4454ED66CC24A8A4A05CBDC854B6E96DA60E3D419C9649F2",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/15-long-text.png",
+      "state": "minimum; long Russian name/message fixture",
+      "viewport": {
+        "widthPx": 1024,
+        "heightPx": 661
+      },
+      "renderDpi": 96,
+      "sha256": "C1AFEDE7BE188AE44176EA83E8B76FD40D5B11D69D8E63585A5CFA4F95A95A28",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    },
+    {
+      "path": "Docs/Ui/DesignSystem/screenshots-notification-settings/16-saved.png",
+      "state": "saved draft; standalone success status",
+      "viewport": {
+        "widthPx": 1144,
+        "heightPx": 781
+      },
+      "renderDpi": 96,
+      "sha256": "FED86F75C42CD7911C6E2009D3D061B82E30DD1DECE09B5690D115CAA3B746B7",
+      "surface": "shown native WPF Window.Content",
+      "sourceBuild": "originalCaptureBuild"
+    }
+  ],
+  "runtimeDpi": null,
+  "renderDpi": [
+    96
+  ],
+  "independentReview": {
+    "status": "PASS",
+    "reason": "Independent bounded Verdict Pass: F1 journal isolation, F2 repeated launcher and SAB-UI-009 provenance resolved; all16 PNG hashes, preserved source, original/current exe and unchanged visual owners independently matched. Runtime protocols read, not rerun.",
+    "stage": "completed",
+    "disposition": "ship_preview_scope",
+    "scope": "Standalone WPF preview presentation only; no production/Revit/physical/accessibility/OS DPI approval",
+    "report": "Docs/Ui/DesignSystem/NotificationSettings-Review.md",
+    "unverified": [
+      "Actual Revit OK capability and effects",
+      "Physical input and full accessibility traversal",
+      "OS DPI/monitor transitions",
+      "Help/journal browser launch",
+      "Unmeasured geometry/focus/animation matrix"
+    ]
+  },
+  "approvalStatusSource": "Docs/Ui/DesignSystem/STATUS.json",
+  "approval": {
+    "status": "pending_user_approval",
+    "previewAuthorized": true,
+    "productionMigrationAuthorized": false,
+    "msiAuthorized": false,
+    "installationAuthorized": false,
+    "publicationAuthorized": false
+  },
+  "provenance": "Docs/Ui/DesignSystem/screenshots-notification-settings/provenance.json",
+  "limitations": [
+    "C01–C08/D01 OK availability and effects are synthetic demonstration capabilities; actual Revit NOT RUN.",
+    "Production NotificationController callbacks and settings are unchanged/unexecuted.",
+    "Current Save writes only isolated demo-settings.json; journal is fixed under Program.Output/Журнал. Typed external Folder is only a proposed preference; three fresh boundary assertions confirm no external writes.",
+    "Physical keyboard/mouse, full accessibility traversal, OS DPI/monitor transitions NOT RUN.",
+    "Help/journal actual browser invocation NOT RUN; instruction count/file existence checked only.",
+    "Several geometry/focus/animation criteria have partial source/snapshot coverage only; NOT RUN retained."
+  ],
+  "checks": [
+    {
+      "id": "SAB-UI-001",
+      "criterion": "ErrorRegistry.md#sab-ui-001",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Каталог, три действия и исключения сопоставлены с прямым запросом и аудитом; сведения OK явно демонстрационные.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/NotificationSettings-Layout.md",
+        "Tools/UiShowcase/NotificationSettings/Models.cs"
+      ],
+      "unverified": [
+        "Фактическая обязательность и последствия OK для C01–C08/D01 в Revit не проверены."
+      ]
+    },
+    {
+      "id": "SAB-UI-002",
+      "criterion": "ErrorRegistry.md#sab-ui-002",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Окно подключает текущий scoped SABFluentLight.xaml без старого SABWindowStyles.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml.cs",
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-003",
+      "criterion": "ErrorRegistry.md#sab-ui-003",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Общие стили/шаблоны используются непосредственно из существующего словаря; DTO и compose-layout изолированы в проекте макета.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Tools/UiShowcase/NotificationSettings/Window.xaml.cs",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/provenance.json"
+      ],
+      "unverified": [
+        "Общий SAB.dll — вспомогательные presentation helpers, не новая production implementation."
+      ]
+    },
+    {
+      "id": "SAB-UI-004",
+      "criterion": "ErrorRegistry.md#sab-ui-004",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Проверены только новые макетные contracts: выбор правила, draft action, search/filter, consent, save/cancel; существующий production UI не переносился.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/Models.cs"
+      ],
+      "unverified": [
+        "Production bindings/handlers не изменены и не исполнялись."
+      ]
+    },
+    {
+      "id": "SAB-UI-005",
+      "criterion": "ErrorRegistry.md#sab-ui-005",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Standalone net48/x64 без Revit API references/Document/ExternalEvent; сборка проекта успешна по протоколу builder.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/NotificationSettings.csproj",
+        "Tools/UiShowcase/NotificationSettings/Build.ps1",
+        "Tools/UiShowcase/NotificationSettings/Models.cs"
+      ],
+      "unverified": [
+        "Revit2022/2023/2024 runtime и API callbacks NOT RUN."
+      ]
+    },
+    {
+      "id": "SAB-UI-006",
+      "criterion": "ErrorRegistry.md#sab-ui-006",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Прямой запрос разрешает макет для согласования; approval пользователя pending, migration/MSI/installation/publication не разрешены.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/NotificationSettings-Layout.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-007",
+      "criterion": "ErrorRegistry.md#sab-ui-007",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Переноса в рабочий модуль в этой задаче нет.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-008",
+      "criterion": "ErrorRegistry.md#sab-ui-008",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Master–Detail + Tabbed Workspace выбран после сравнения двух структур; назначение, функции, wireframe и размеры записаны до макета.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/NotificationSettings-Layout.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-009",
+      "criterion": "ErrorRegistry.md#sab-ui-009",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "16 PNG — RenderTargetBitmap настоящего показанного WPF; synthetic data/capabilities обозначены, хеши и клиентские размеры приведены в provenance.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/provenance.json",
+        "Tools/UiShowcase/NotificationSettings/Evidence.cs"
+      ],
+      "unverified": [
+        "Кадры исключают OS titlebar; повторный post-fix capture не выполнялся, original/current builds разделены."
+      ]
+    },
+    {
+      "id": "SAB-UI-010",
+      "criterion": "ErrorRegistry.md#sab-ui-010",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Render96dpi явно отделён от runtime/OS DPI; preview не объявлен Revit proof.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/provenance.json"
+      ],
+      "unverified": [
+        "Runtime DPI не записан; OS monitor/DPI transitions и physical input NOT RUN."
+      ]
+    },
+    {
+      "id": "SAB-UI-011",
+      "criterion": "ErrorRegistry.md#sab-ui-011",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Есть default/selected/disabled/empty/validation/save и routed Enter/automation Invoke/Toggle, но полная матрица hover/pressed/focus/keyboard/accessibility не проверена.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "Полный focus traversal, physical Enter/Escape, hover/pressed и accessibility."
+      ]
+    },
+    {
+      "id": "SAB-UI-012",
+      "criterion": "ErrorRegistry.md#sab-ui-012",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Source uses existing Fluent Light palette and Segoe UI; primary Save shared blue, secondary actions neutral; снимки подтверждают применённое оформление.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png"
+      ],
+      "unverified": [
+        "Это узкий source/visual scope, не полный аудит всех состояний общего словаря."
+      ]
+    },
+    {
+      "id": "SAB-UI-013",
+      "criterion": "ErrorRegistry.md#sab-ui-013",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "RulesGrid row44/header38 измерены runtime, две колонки и общие DataGrid styles; визуально проверены normal/minimum.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/14-minimum.png"
+      ],
+      "unverified": [
+        "JournalGrid не проходил отдельные измерения всех cell/selection states."
+      ]
+    },
+    {
+      "id": "SAB-UI-014",
+      "criterion": "ErrorRegistry.md#sab-ui-014",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "В строках нет icon action buttons/add/delete.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-015",
+      "criterion": "ErrorRegistry.md#sab-ui-015",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Обе DataGrid read-only; resting rows не имеют постоянных cell outline по снимкам и общему стилю.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/12-journal.png"
+      ],
+      "unverified": [
+        "Cell editing N/A, таблицы read-only."
+      ]
+    },
+    {
+      "id": "SAB-UI-016",
+      "criterion": "ErrorRegistry.md#sab-ui-016",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Оси заголовков и видимых cell text не измерялись с допуском1DIP; source margin10 и снимок дают лишь частичное evidence.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png"
+      ],
+      "unverified": [
+        "Actual header/cell axis geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-017",
+      "criterion": "ErrorRegistry.md#sab-ui-017",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет numeric DataGrid editor/№/масштаба; Duration — отдельное поле формы.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-018",
+      "criterion": "ErrorRegistry.md#sab-ui-018",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Minimum1040×700 снят; footer visible и no overlap проверены, но полная доступность всех metadata/последних строк и всех вкладок на minimum не проверена.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/14-minimum.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "Last row, journal/exceptions minimum, physical navigation."
+      ]
+    },
+    {
+      "id": "SAB-UI-019",
+      "criterion": "ErrorRegistry.md#sab-ui-019",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "RulesGrid ScrollableWidth<1 проверен normal/minimum; обычные две колонки помещаются.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "Другие динамические данные/ширины не проверялись."
+      ]
+    },
+    {
+      "id": "SAB-UI-020",
+      "criterion": "ErrorRegistry.md#sab-ui-020",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Вкладки остаются native TabControl/TabItem; независимые global/exception flags — ToggleButton/CheckBox, не radio.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": [
+        "Reopen indicator и animation не измерены; см.023–025."
+      ]
+    },
+    {
+      "id": "SAB-UI-021",
+      "criterion": "ErrorRegistry.md#sab-ui-021",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет mode capsule, wrapped mode segments; короткие native tabs оцениваются023–025.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-022",
+      "criterion": "ErrorRegistry.md#sab-ui-022",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет условно скрываемых mode segments.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-023",
+      "criterion": "ErrorRegistry.md#sab-ui-023",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Native tabs используют общий capsule; нормальные кадры показывают выбранные Правила/Исключения/Журнал, но geometry track/indicator не измерена.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/11-exceptions.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/12-journal.png"
+      ],
+      "unverified": [
+        "Actual indicator bounds/track width."
+      ]
+    },
+    {
+      "id": "SAB-UI-024",
+      "criterion": "ErrorRegistry.md#sab-ui-024",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Gap от вкладок до поверхности не измерен; общий template/source margin сам по себе runtime PASS не даёт.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": [
+        "Actual12DIP±1 на всех tabs."
+      ]
+    },
+    {
+      "id": "SAB-UI-025",
+      "criterion": "ErrorRegistry.md#sab-ui-025",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Evidence.Pump ждёт250ms перед кадрами, что покрывает static settle; animation clock/ClientAreaAnimation/physical motion отдельно не проверялись.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Evidence.cs"
+      ],
+      "unverified": [
+        "Animation clock/easing/runtime preference."
+      ]
+    },
+    {
+      "id": "SAB-UI-026",
+      "criterion": "ErrorRegistry.md#sab-ui-026",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Смысловые заголовки текстовые, декоративных header glyphs нет.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-027",
+      "criterion": "ErrorRegistry.md#sab-ui-027",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Rules master/detail и separate exception/journal sections соответствуют записанному pattern; карточек каждой строки нет.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/NotificationSettings-Layout.md",
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-028",
+      "criterion": "ErrorRegistry.md#sab-ui-028",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Shared collection style подключён, но actual RectangleGeometry всех4 углов в данном окне не измерялась.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": [
+        "Native clip geometry at all corners."
+      ]
+    },
+    {
+      "id": "SAB-UI-029",
+      "criterion": "ErrorRegistry.md#sab-ui-029",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Long message bounded <=150; ScrollViewer viewport>0; footer inside client bounds и master/detail no overlap подтверждены normal/minimum.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/15-long-text.png"
+      ],
+      "unverified": [
+        "Reachability всех длинных деталей физическим scroll и fade not checked."
+      ]
+    },
+    {
+      "id": "SAB-UI-030",
+      "criterion": "ErrorRegistry.md#sab-ui-030",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет bound ItemsControl wrapper с условно пустым содержимым; пустая DataGrid сохраняет frame/empty state.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-031",
+      "criterion": "ErrorRegistry.md#sab-ui-031",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Source подключает shared outlines для RulesGrid/JournalGrid, normal/journal/empty кадры имеются; actual1DIP/radius6/inset измерения отсутствуют.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/10-empty.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/12-journal.png"
+      ],
+      "unverified": [
+        "Actual border/radius/inset geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-032",
+      "criterion": "ErrorRegistry.md#sab-ui-032",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет вложенных строк этажей/двойных floor frames.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-033",
+      "criterion": "ErrorRegistry.md#sab-ui-033",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Labels/поля собраны vertical StackPanel, но actual left/right axes с допуском1DIP не измерены.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": [
+        "Field/container axes."
+      ]
+    },
+    {
+      "id": "SAB-UI-034",
+      "criterion": "ErrorRegistry.md#sab-ui-034",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет nested form с action28 рядом с field34.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-035",
+      "criterion": "ErrorRegistry.md#sab-ui-035",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Shared fields/buttons и spacing используются по source; actual высоты/центры/все gaps не измерялись.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml"
+      ],
+      "unverified": [
+        "Height/vertical-center/spacing measurements."
+      ]
+    },
+    {
+      "id": "SAB-UI-036",
+      "criterion": "ErrorRegistry.md#sab-ui-036",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Подписанный поиск непосредственно над RulesGrid; новый поиск нужен конкретному каталогу правил.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/NotificationSettings-Layout.md"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-037",
+      "criterion": "ErrorRegistry.md#sab-ui-037",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет selection batch/action groups Выборки/Выделение; фильтр Показать одиночный.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-038",
+      "criterion": "ErrorRegistry.md#sab-ui-038",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Импорт/экспорт конфигурации отсутствуют в согласуемом функциональном scope.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-039",
+      "criterion": "ErrorRegistry.md#sab-ui-039",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Пользовательский add-row отсутствует, каталог fixed fixtures.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-040",
+      "criterion": "ErrorRegistry.md#sab-ui-040",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Single rule selection, нет категорий/multiple Selected/highlight inclusion.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-041",
+      "criterion": "ErrorRegistry.md#sab-ui-041",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет импорта выборок SAB.CategorySelection и unknown selection IDs.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-042",
+      "criterion": "ErrorRegistry.md#sab-ui-042",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Visible text состоит из labels, исходных сообщений, последствий выбранного правила, errors/status и честной маркировки демо; учебная инструкция вынесена в Help.html.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Tools/UiShowcase/NotificationSettings/Models.cs"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-043",
+      "criterion": "ErrorRegistry.md#sab-ui-043",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Ровно одна footer Инструкция и наличие local Help.html runtime PASS; actual shell/browser launch не запускался.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/Models.cs",
+        "Tools/UiShowcase/NotificationSettings/Help.html"
+      ],
+      "unverified": [
+        "Actual browser invocation."
+      ]
+    },
+    {
+      "id": "SAB-UI-044",
+      "criterion": "ErrorRegistry.md#sab-ui-044",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Выбранное полное сообщение, тип, исходный текст, код и эффект доступны в detail; validation/save связаны с draft; no-OK/unknown честно описаны.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/04-deletion-validation.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/08-without-ok.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/09-unknown.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/16-saved.png"
+      ],
+      "unverified": [
+        "Production failure GUID matching and actual modal capabilities unverified."
+      ]
+    },
+    {
+      "id": "SAB-UI-045",
+      "criterion": "ErrorRegistry.md#sab-ui-045",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "RulesGrid vertical bar top >= header bottom−1 измерено normal/minimum; grouped row scenario отсутствует.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "JournalGrid scrollbar и после scrolling отдельно не измерялись."
+      ]
+    },
+    {
+      "id": "SAB-UI-046",
+      "criterion": "ErrorRegistry.md#sab-ui-046",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Normal/minimum выглядят без gutter в header, но actual header span geometry не проверялась.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/14-minimum.png"
+      ],
+      "unverified": [
+        "Header span measurement; group caps N/A."
+      ]
+    },
+    {
+      "id": "SAB-UI-047",
+      "criterion": "ErrorRegistry.md#sab-ui-047",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Capture03 — реальный открытый PART_Popup.Child; IsOpen/IsVisible и3 action items проверены. Это отдельный popup snapshot, не снимок окна с наложением.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Evidence.cs",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/03-method-dropdown.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "FilterBox popup и keyboard popup interaction не сняты."
+      ]
+    },
+    {
+      "id": "SAB-UI-048",
+      "criterion": "ErrorRegistry.md#sab-ui-048",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Standalone csproj явно Compile Models/Window.xaml.cs/Program/Evidence +Page Window.xaml; helpers SAB.dll раскрыты отдельно от production.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/NotificationSettings.csproj",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/provenance.json"
+      ],
+      "unverified": [
+        "Общая галерея и другие проекты не переоценивались."
+      ]
+    },
+    {
+      "id": "SAB-UI-049",
+      "criterion": "ErrorRegistry.md#sab-ui-049",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "DockablePane отсутствует; fixed footer/bounded window покрываются029.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-050",
+      "criterion": "ErrorRegistry.md#sab-ui-050",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "Выбранный Tabbed Workspace имеет fixed footer; кадры нужных Правила/Исключения/Журнал и save/validation показывают рабочие actions.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/01-default.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/11-exceptions.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/12-journal.png"
+      ],
+      "unverified": [
+        "Другие6 layout patterns N/A."
+      ]
+    },
+    {
+      "id": "SAB-UI-051",
+      "criterion": "ErrorRegistry.md#sab-ui-051",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет source icon add/delete actions; текстовые кнопки имеют content, поля automation names.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-052",
+      "criterion": "ErrorRegistry.md#sab-ui-052",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Нет ClearRowsCommand; пустой фильтр не изменяет каталог.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-053",
+      "criterion": "ErrorRegistry.md#sab-ui-053",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Routed Enter search, case-insensitive matching, selected rule/filter и independent exception toggles проверены; physical keyboard/Escape/focus traversal не исполнены.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt",
+        "Tools/UiShowcase/NotificationSettings/Window.xaml.cs"
+      ],
+      "unverified": [
+        "Physical/full keyboard traversal and popup Escape."
+      ]
+    },
+    {
+      "id": "SAB-UI-054",
+      "criterion": "ErrorRegistry.md#sab-ui-054",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Сохранены исходный текст сообщения и результат Save; схемы/лист/декоративный preview не добавлены.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Tools/UiShowcase/NotificationSettings/Models.cs"
+      ],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-055",
+      "criterion": "ErrorRegistry.md#sab-ui-055",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Status row0/actions row1 есть source; footer visible measured and validation captures exist, но actual equal heights/gap8/status non-overlap полного набора не измерены.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/13-duration-validation.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "Status/button bounds incl long status at minimum."
+      ]
+    },
+    {
+      "id": "SAB-UI-056",
+      "criterion": "ErrorRegistry.md#sab-ui-056",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "documentation",
+      "reason": "Переиспользованы существующий канон/роли; отчёт включает applicability каждого текущего001–090; preview approval не подменён.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/NotificationSettings-Report.json",
+        "Docs/Ui/DesignSystem/NotificationSettings-Layout.md"
+      ],
+      "unverified": [
+        "Независимый verdict фиксируется отдельно, не заменяется documenter."
+      ]
+    },
+    {
+      "id": "SAB-UI-057",
+      "criterion": "ErrorRegistry.md#sab-ui-057",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Реальный ComboBox popup снят; Expander Код сообщения closed/open направление и filter chevron не проверены runtime.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/03-method-dropdown.png"
+      ],
+      "unverified": [
+        "Expander open/closed and ComboBox disclosure geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-058",
+      "criterion": "ErrorRegistry.md#sab-ui-058",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Длинное русское имя/текст показаны на minimum и доступны detail scroll; полный header clipping/tooltip/last-column matrix не проверен.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/15-long-text.png",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "Arbitrary long headers, full accessibility/physical tooltip."
+      ]
+    },
+    {
+      "id": "SAB-UI-059",
+      "criterion": "ErrorRegistry.md#sab-ui-059",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Transient NotificationCard отсутствует; это settings window.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-060",
+      "criterion": "ErrorRegistry.md#sab-ui-060",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Notification clipboard/ID/support blocks отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-061",
+      "criterion": "ErrorRegistry.md#sab-ui-061",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Notification lifetime timer не реализуется; Duration — draft setting.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-062",
+      "criterion": "ErrorRegistry.md#sab-ui-062",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "NotificationStack отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-063",
+      "criterion": "ErrorRegistry.md#sab-ui-063",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "NotificationStack monitor/work-area placement не меняется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-064",
+      "criterion": "ErrorRegistry.md#sab-ui-064",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Production notification adapters/ReportWindow/transactions не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-065",
+      "criterion": "ErrorRegistry.md#sab-ui-065",
+      "applicable": true,
+      "status": "PASS",
+      "scope": "preview",
+      "reason": "После F2 текущий launcher открывает готовый exe, второй Open.cmd из TEMP возвращает тот же один процесс без rebuild. Missing-artifact fallback остаётся source-only.",
+      "evidence": [
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/launcher-verification.txt",
+        "Tools/UiShowcase/NotificationSettings/Program.cs",
+        "Tools/UiShowcase/NotificationSettings/Open.cmd"
+      ],
+      "unverified": [
+        "Missing-artifact fallback build; OS foreground restrictions; physical input."
+      ]
+    },
+    {
+      "id": "SAB-UI-066",
+      "criterion": "ErrorRegistry.md#sab-ui-066",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation decoration ComboBox/выноска отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-067",
+      "criterion": "ErrorRegistry.md#sab-ui-067",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Star name column + fixed action column есть source; normal/minimum no horizontal scroll измерены, но wide last-column edge<=2DIP не проверен.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/verification.txt"
+      ],
+      "unverified": [
+        "Wide viewport/last-column edge geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-068",
+      "criterion": "ErrorRegistry.md#sab-ui-068",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Это resizable settings window, не compact choice helper.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-069",
+      "criterion": "ErrorRegistry.md#sab-ui-069",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation spot category selection отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-070",
+      "criterion": "ErrorRegistry.md#sab-ui-070",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation final result adapter отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-071",
+      "criterion": "ErrorRegistry.md#sab-ui-071",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Shared NotificationCard resource/fallback regression вне изменяемой поверхности.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-072",
+      "criterion": "ErrorRegistry.md#sab-ui-072",
+      "applicable": true,
+      "status": "NOT RUN",
+      "scope": "preview",
+      "reason": "Generic status/actions separate rows есть source; footer visibility normal/minimum verified, но long nonempty status all bounds не измерены.",
+      "evidence": [
+        "Tools/UiShowcase/NotificationSettings/Window.xaml",
+        "Docs/Ui/DesignSystem/screenshots-notification-settings/13-duration-validation.png"
+      ],
+      "unverified": [
+        "Long status at minimum exact geometry."
+      ]
+    },
+    {
+      "id": "SAB-UI-073",
+      "criterion": "ErrorRegistry.md#sab-ui-073",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation footer/room list отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-074",
+      "criterion": "ErrorRegistry.md#sab-ui-074",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "ParameterPicker отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-075",
+      "criterion": "ErrorRegistry.md#sab-ui-075",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Parameter check category catalog отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-076",
+      "criterion": "ErrorRegistry.md#sab-ui-076",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "WhatCheck/CheckCategoriesWindow отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-077",
+      "criterion": "ErrorRegistry.md#sab-ui-077",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Parameter hotkey/ribbon/check workflow не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-078",
+      "criterion": "ErrorRegistry.md#sab-ui-078",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation numbering prefix/suffix отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-079",
+      "criterion": "ErrorRegistry.md#sab-ui-079",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation preview geometry/family/lifecycle не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-080",
+      "criterion": "ErrorRegistry.md#sab-ui-080",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Document identity/picking preview callbacks отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-081",
+      "criterion": "ErrorRegistry.md#sab-ui-081",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Open-contour virtual closure geometry не меняется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-082",
+      "criterion": "ErrorRegistry.md#sab-ui-082",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "DirectionsWindow/guide revision не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-083",
+      "criterion": "ErrorRegistry.md#sab-ui-083",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Elevation selection guidance не меняется.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-084",
+      "criterion": "ErrorRegistry.md#sab-ui-084",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Material selection picker отсутствует.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-085",
+      "criterion": "ErrorRegistry.md#sab-ui-085",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Ribbon colors/split-button не меняются.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-086",
+      "criterion": "ErrorRegistry.md#sab-ui-086",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "ViewTemplate category capabilities отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-087",
+      "criterion": "ErrorRegistry.md#sab-ui-087",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Category tree guides/chevrons отсутствуют.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-088",
+      "criterion": "ErrorRegistry.md#sab-ui-088",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Сценарий отсутствует в standalone макете.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-089",
+      "criterion": "ErrorRegistry.md#sab-ui-089",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Три короткие вкладки помещаются на minimum; wrapping tabs/new responsive adapter не добавлены и не менялись.",
+      "evidence": [],
+      "unverified": []
+    },
+    {
+      "id": "SAB-UI-090",
+      "criterion": "ErrorRegistry.md#sab-ui-090",
+      "applicable": false,
+      "status": "N/A",
+      "scope": "preview",
+      "reason": "Specific ViewTemplateGraphicsWindow bottom-gap regression вне standalone уведомлений; general footer spacing остаётся035/055.",
+      "evidence": [],
+      "unverified": []
+    }
+  ],
+  "currentEvidenceSummary": {
+    "originalVisualAssertions": 35,
+    "originalVisualPng": 16,
+    "currentBoundaryAssertions": 3,
+    "currentLauncherAssertions": 3,
+    "registryStatusCounts": {
+      "PASS": 27,
+      "N/A": 45,
+      "NOT RUN": 18
+    }
+  },
+  "documentationValidation": {
+    "status": "PASS",
+    "exitCode": 0,
+    "command": "Bundled Python Tools/UiShowcase/ValidateUiDocs.py --report Docs/Ui/DesignSystem/NotificationSettings-Report.json",
+    "scope": "90ID report structure, references, existing coverage and evidence-file integrity only; no new UI execution or visual verdict"
+  }
+}

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using SAB.ViewTemplateGraphics.Models;
@@ -444,13 +444,14 @@ namespace SAB.ViewTemplateGraphics.Services
                 }
 
                 ElementId categoryId = new ElementId(row.CategoryIdValue);
+                CategoryCapabilities capability = CategoryCapabilities.Read(targetTemplate, categoryId, categoryTab.Group);
 
                 if (row.IsVisibilityModified)
                 {
                     bool canHideCategory = false;
                     try
                     {
-                        canHideCategory = targetTemplate.CanCategoryBeHidden(categoryId);
+                        canHideCategory = capability.Visibility && row.AllowsVisibilityControl;
                     }
                     catch
                     {
@@ -475,15 +476,24 @@ namespace SAB.ViewTemplateGraphics.Services
                     OverrideGraphicSettings targetOverrides = null;
                     try
                     {
+                        if (!capability.Projection) {
+                            AddUniqueWarning(warnings, "Шаблон «" + targetTemplate.Name + "»: графика категории «" + row.Name + "» недоступна.");
+                            continue;
+                        }
                         targetOverrides = targetTemplate.GetCategoryOverrides(categoryId);
-                        changedSettingCount += ApplyGraphicChanges(
+                        int appliedCount = ApplyGraphicChanges(
                             targetOverrides,
                             row.Graphics,
-                            row.SupportsCut,
-                            row.SupportsSurfacePatterns,
-                            row.SupportsTransparency,
-                            row.SupportsDetailLevel);
-                        targetTemplate.SetCategoryOverrides(categoryId, targetOverrides);
+                            row.SupportsCut && capability.Cut,
+                            row.SupportsSurfacePatterns && capability.Surface,
+                            row.SupportsTransparency && capability.Transparency,
+                            row.SupportsDetailLevel && capability.Detail,
+                            row.SupportsProjectionLines && capability.Projection,
+                            row.SupportsHalftone && capability.Halftone);
+                        if (appliedCount > 0) {
+                            targetTemplate.SetCategoryOverrides(categoryId, targetOverrides);
+                            changedSettingCount += appliedCount;
+                        }
                     }
                     catch (Autodesk.Revit.Exceptions.ArgumentException)
                     {
@@ -685,7 +695,9 @@ namespace SAB.ViewTemplateGraphics.Services
             bool supportsCut,
             bool supportsSurfacePatterns,
             bool supportsTransparency,
-            bool supportsDetailLevel)
+            bool supportsDetailLevel,
+            bool supportsProjectionLines = true,
+            bool supportsHalftone = true)
         {
             if (target == null || patch == null)
             {
@@ -694,19 +706,19 @@ namespace SAB.ViewTemplateGraphics.Services
 
             int changedSettingCount = 0;
 
-            if (patch.IsPropertyModified(GraphicOverrideData.ProjectionLineWeightProperty))
+            if (supportsProjectionLines && patch.IsPropertyModified(GraphicOverrideData.ProjectionLineWeightProperty))
             {
                 target.SetProjectionLineWeight(patch.ProjectionLineWeight);
                 changedSettingCount++;
             }
 
-            if (patch.IsPropertyModified(GraphicOverrideData.ProjectionLineColorValueProperty))
+            if (supportsProjectionLines && patch.IsPropertyModified(GraphicOverrideData.ProjectionLineColorValueProperty))
             {
                 target.SetProjectionLineColor(CreateColor(patch.ProjectionLineColorValue));
                 changedSettingCount++;
             }
 
-            if (patch.IsPropertyModified(GraphicOverrideData.ProjectionLinePatternIdProperty))
+            if (supportsProjectionLines && patch.IsPropertyModified(GraphicOverrideData.ProjectionLinePatternIdProperty))
             {
                 target.SetProjectionLinePatternId(new ElementId(patch.ProjectionLinePatternId));
                 changedSettingCount++;
@@ -814,7 +826,7 @@ namespace SAB.ViewTemplateGraphics.Services
                 }
             }
 
-            if (patch.IsPropertyModified(GraphicOverrideData.HalftoneProperty))
+            if (supportsHalftone && patch.IsPropertyModified(GraphicOverrideData.HalftoneProperty))
             {
                 target.SetHalftone(patch.Halftone);
                 changedSettingCount++;

@@ -1,0 +1,11 @@
+﻿PASS Actual production class, no presentation substitution
+PASS normal full catalog caption and available action
+PASS normal title and catalog button bounded, gap16
+PASS normal catalog caption not clipped
+PASS minimum full catalog caption and available action
+PASS minimum title and catalog button bounded, gap16
+PASS minimum catalog caption not clipped
+PASS Catalog roundtrip preserves unfinished draft text
+PASS Actual routed Catalog elements click requests catalog through original modal handler
+PASS Catalog request retains raw draft input
+COMPLETED 10 checks; actual WPF window with null Document, render96DPI; Revit/model picking/OS DPI/physical input NOT RUN

@@ -1,0 +1,24 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <PropertyGroup>
+    <Configuration>Debug</Configuration><Platform>AnyCPU</Platform><OutputType>WinExe</OutputType>
+    <AssemblyName>SAB.TemplateEditor.Preview</AssemblyName><TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <PlatformTarget>x64</PlatformTarget><LangVersion>latest</LangVersion><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <OutputPath>..\..\..\outputs\ui-production-preview\template-editor\</OutputPath>
+    <IntermediateOutputPath>..\..\..\outputs\ui-production-preview\template-editor\obj\</IntermediateOutputPath>
+    <ApplicationManifest>..\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Xaml"/>
+    <Reference Include="System.Drawing"/><Reference Include="System.Windows.Forms"/><Reference Include="System.Web.Extensions"/>
+    <Reference Include="WindowsBase"/><Reference Include="PresentationCore"/><Reference Include="PresentationFramework"/>
+    <Reference Include="SAB"><HintPath>..\..\..\outputs\ui-production-preview\plugin\SAB.dll</HintPath></Reference>
+    <Reference Include="RevitAPI"><HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPI.dll</HintPath></Reference>
+    <Reference Include="RevitAPIUI"><HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Preview.cs"/><Compile Include="Evidence.cs"/><Compile Include="Presentation.cs"/>
+    <Compile Include="..\..\..\outputs\ui-production-preview\template-editor\source\*.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

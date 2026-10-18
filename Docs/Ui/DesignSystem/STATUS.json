@@ -1,4 +1,31 @@
 {
+  "currentReleaseCandidate": {
+    "version": "1.1.4",
+    "tag": "v1.1.4-notifications",
+    "status": "prepared",
+    "authorizationEvidence": "Запрос18.10 отправить изменения на GitHub и обновить установочник; затем исправить нижний статус редактора шаблонов перед отправкой",
+    "installerEvidence": "Docs/Ui/DesignSystem/NotificationSettings-Installer.json",
+    "footerEvidence": "Docs/Ui/DesignSystem/TemplateEditorFooter-Report.json",
+    "firstLaunchEnabled": false,
+    "automaticConfirmationsImplemented": false,
+    "installationPerformed": false
+  },
+  "templateEditorFooter": {
+    "productionMigrationAuthorized": true,
+    "authorizationEvidence": "Прямой снимок и запрос18.10: исправить воздух нижней строки состояния редактора шаблонов перед отправкой на Git",
+    "scope": "Opt-in shared footer status styles, внутренние bounds и сохранение внешних gaps; функции и Revit transactions без изменений",
+    "installationAuthorized": false,
+    "report": "Docs/Ui/DesignSystem/TemplateEditorFooter-Report.json"
+  },
+  "notificationSettingsProduction": {
+    "productionMigrationAuthorized": true,
+    "scope": "Первый этап окна Уведомления: master/detail, отдельные pending rules, атомарное сохранение и реальный журнал; автоподтверждение Revit ещё не реализовано",
+    "approvalEvidence": "Прямой запрос17.10 увеличить главный переключатель и начать реализацию окна в плагине;18.10 первая установка OFF, включение пользователем в настройках",
+    "firstLaunchEnabled": false,
+    "installationAuthorized": false,
+    "releaseAuthorized": true,
+    "releaseAuthorizationEvidence": "Прямой запрос18.10: отправить изменения на GitHub и обновить установочник, после исправления footer"
+  },
   "version": "1.1.0-redesign",
   "status": "approved_for_production_migration",
   "recommendedConcept": "FluentLightSource",
@@ -259,5 +286,56 @@
     "release": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.3",
     "releaseEvidence": "Docs/Ui/DesignSystem/Release-1.1.3.json",
     "sourceCommit": "f74191cef0a7fef5a651b385b6a0c41fa1727ccd"
+  },
+  "templateEditorPreview": {
+    "stage": "approved_and_migrated",
+    "date": "2026-10-17",
+    "previewAuthorized": true,
+    "productionMigrationAuthorized": true,
+    "installationAuthorized": false,
+    "scope": "ViewTemplateGraphicsWindow, GraphicOverrideEditorWindow, AddFiltersWindow — isolated source-derived WPF preview only",
+    "layout": "Docs/Ui/DesignSystem/TemplateEditor-Revision2-Layout.md",
+    "report": "Docs/Ui/DesignSystem/TemplateEditor-Report.json",
+    "independentReview": "Docs/Ui/DesignSystem/TemplateEditor-Review.md",
+    "previewProject": "Tools/UiShowcase/TemplateEditor/TemplateEditor.csproj",
+    "launch": "Tools/UiShowcase/TemplateEditor/Open.cmd",
+    "approvalRequired": "Gate fulfilled by direct user request: Начни вносить изменения в рабочее окно плагина. Historical558/52 evidence remains preview only.",
+    "computerUse": "Further Computer Use disabled by user; final verification uses WPF harness, routed events and live visual captures.",
+    "revision": 2,
+    "tabs": 7,
+    "feedback": "User17.10: vertical template sidebar; remove per-link settings unless template visibility API exists; capability-aware categories; readable parent/subcategory tree.",
+    "evidence": "Docs/Ui/DesignSystem/screenshots-template-editor/revision-2/provenance.json",
+    "sidebarWidthDip": 345.6,
+    "sidebarWidthIncreasePercent": 20,
+    "responsiveTabRows": "normal1/minimum2; one frame; stable order; active indicator height and XY follow one tab",
+    "independentVerdict": "ship_preview_scope",
+    "nativeAssertions": 558,
+    "captures": 52,
+    "approvedAt": "2026-10-17"
+  },
+  "templateEditorProduction": {
+    "stage": "production_ui_and_msi_verified",
+    "approvedAt": "2026-10-17",
+    "authority": "Direct user: Начни вносить изменения в рабочее окно плагина; screenshot requests corrected bottom spacing.",
+    "productionMigrationAuthorized": true,
+    "installationAuthorized": false,
+    "publicationAuthorized": false,
+    "scope": "three actual TemplateEditor windows; approved revision2 layout plus bottom gap16; shared opt-in wrapping tabs and capability/tree adapters",
+    "layout": "Docs/Ui/DesignSystem/TemplateEditor-Production-Layout.md",
+    "nativeAssertions": 624,
+    "captures": 54,
+    "report": "Docs/Ui/DesignSystem/TemplateEditor-Production-Report.json",
+    "evidence": "Docs/Ui/DesignSystem/screenshots-template-editor-production/provenance.json",
+    "installerEvidence": "Docs/Ui/DesignSystem/TemplateEditor-Production-Installer.json",
+    "independentReview": "Docs/Ui/DesignSystem/TemplateEditor-Production-Review.md",
+    "independentVerdict": "scoped_ship",
+    "installationPerformed": false,
+    "publicationPerformed": false,
+    "commitPushPerformed": false,
+    "unverified": [
+      "Live Revit operations/category probes/granular surface/transparency applicability",
+      "Physical input/OS DPI/default-browser rendering",
+      "Installation/publication"
+    ]
   }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Autodesk.Revit.DB;
@@ -70,7 +70,8 @@ namespace SAB.ViewTemplateGraphics.Services
                 FillCategoryTabs(document, sourceTemplate, data);
                 FillFilters(document, sourceTemplate, data.Filters);
                 FillWorksets(document, sourceTemplate, data.Worksets);
-                FillRevitLinks(document, sourceTemplate, data);
+                // Per-link settings are not exposed by the template editor.
+                data.SupportsRevitLinkOverrides = false;
             }
             else
             {
@@ -193,7 +194,8 @@ namespace SAB.ViewTemplateGraphics.Services
 
             foreach (ElementId parameterId in templateParameterIds)
             {
-                if (parameterId == null || IsScaleParameter(parameterId.IntegerValue))
+                if (parameterId == null || IsScaleParameter(parameterId.IntegerValue) ||
+                    parameterId.IntegerValue == (int)BuiltInParameter.VIS_GRAPHICS_RVT_LINKS)
                 {
                     continue;
                 }
@@ -737,6 +739,8 @@ namespace SAB.ViewTemplateGraphics.Services
 
             if (!AreGraphicsOverridesAllowed(sourceTemplate))
             {
+                foreach (var tab in new[] { aggregate.ModelCategories, aggregate.AnnotationCategories, aggregate.AnalyticalCategories, aggregate.ImportedCategories })
+                    foreach (var row in tab.Rows) CategoryCapabilities.Read(sourceTemplate, new ElementId(row.CategoryIdValue), tab.Group).ApplyTo(row, true);
                 MarkAllGraphicsAsMixed(aggregate);
                 return;
             }
@@ -807,9 +811,18 @@ namespace SAB.ViewTemplateGraphics.Services
             {
                 CategoryOverrideRow row = tab.Rows[i];
                 ElementId categoryId = new ElementId(row.CategoryIdValue);
+                CategoryCapabilities.Read(sourceTemplate, categoryId, tab.Group).ApplyTo(row, true);
                 try
                 {
                     row.MergeVisibility(!sourceTemplate.GetCategoryHidden(categoryId));
+                }
+                catch
+                {
+                    row.AllowsVisibilityControl = false;
+                    row.MergeVisibility(!row.IsVisible);
+                }
+                try
+                {
                     OverrideGraphicSettings overrides = sourceTemplate.GetCategoryOverrides(categoryId);
                     GraphicOverrideData otherGraphics = new GraphicOverrideData();
                     LoadGraphicOverrides(overrides, otherGraphics);
@@ -821,7 +834,7 @@ namespace SAB.ViewTemplateGraphics.Services
                 }
                 catch
                 {
-                    row.MergeVisibility(!row.IsVisible);
+                    CategoryCapabilities.FromMetadata(false, false, row.AllowsVisibilityControl, false, false, tab.Group).ApplyTo(row, true);
                     row.Graphics.MergeValues(null);
                 }
             }
@@ -1264,6 +1277,7 @@ namespace SAB.ViewTemplateGraphics.Services
             }
 
             OverrideGraphicSettings overrides;
+            bool graphicsRead = true;
             try
             {
                 overrides = sourceTemplate.GetCategoryOverrides(category.Id);
@@ -1276,6 +1290,7 @@ namespace SAB.ViewTemplateGraphics.Services
                 }
 
                 overrides = new OverrideGraphicSettings();
+                graphicsRead = false;
             }
 
             CategoryOverrideRow row = new CategoryOverrideRow();
@@ -1283,10 +1298,9 @@ namespace SAB.ViewTemplateGraphics.Services
             row.Name = category.Name;
             row.IndentLevel = indentLevel;
             row.AllowsVisibilityControl = allowsVisibilityControl;
-            row.SupportsCut = group == CategoryGraphicsGroup.Model || group == CategoryGraphicsGroup.AnalyticalModel;
-            row.SupportsSurfacePatterns = group != CategoryGraphicsGroup.Annotation;
-            row.SupportsTransparency = group == CategoryGraphicsGroup.Model || group == CategoryGraphicsGroup.AnalyticalModel;
-            row.SupportsDetailLevel = group == CategoryGraphicsGroup.Model || group == CategoryGraphicsGroup.AnalyticalModel;
+            CategoryCapabilities.Read(sourceTemplate, category, group).ApplyTo(row, false);
+            if (!graphicsRead)
+                CategoryCapabilities.FromMetadata(false, false, allowsVisibilityControl, false, false, group).ApplyTo(row, true);
 
             try
             {

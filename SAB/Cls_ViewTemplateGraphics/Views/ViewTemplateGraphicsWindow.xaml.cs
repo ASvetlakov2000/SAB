@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -15,7 +15,7 @@ using Autodesk.Revit.DB;
 using SAB.UI;
 using SAB.ViewTemplateGraphics.Models;
 using SAB.ViewTemplateGraphics.ViewModels;
-using RevitTaskDialog = Autodesk.Revit.UI.TaskDialog;
+using RevitTaskDialog = SAB.ViewTemplateGraphics.Views.TemplateEditorPresentation;
 
 namespace SAB.ViewTemplateGraphics.Views
 {
@@ -41,6 +41,7 @@ namespace SAB.ViewTemplateGraphics.Views
 
             InitializeWindowFromXamlFile();
             DataContext = _viewModel;
+            TemplateEditorPresentation.Attach(this);
 
             AddHandler(Button.ClickEvent, new RoutedEventHandler(Button_Click));
             AddHandler(ComboBox.SelectionChangedEvent, new SelectionChangedEventHandler(ComboBox_SelectionChanged));
@@ -122,7 +123,7 @@ namespace SAB.ViewTemplateGraphics.Views
                 _templatesListBox.SelectionMode = SelectionMode.Extended;
             }
 
-            WindowSizeSettingsService.Apply(this, "ViewTemplateGraphics.MainWindow");
+            if (TemplateEditorPresentation.PersistenceEnabled) WindowSizeSettingsService.Apply(this, "ViewTemplateGraphics.MainWindow");
             Dispatcher.BeginInvoke(new Action(RefreshVisibleDataGrids), DispatcherPriority.Background);
         }
 
@@ -255,6 +256,7 @@ namespace SAB.ViewTemplateGraphics.Views
                 if (categoryRow != null)
                 {
                     List<CategoryOverrideRow> selectedRows = GetSelectedRows(button, categoryRow);
+                    selectedRows.RemoveAll(row => !CategoryPresentation.SupportsEditor(row, GetEditorSection(action)));
                     List<GraphicOverrideData> graphics = new List<GraphicOverrideData>();
                     bool supportsCut = true;
                     bool supportsSurfacePatterns = true;
@@ -713,7 +715,7 @@ namespace SAB.ViewTemplateGraphics.Views
                     List<CategoryOverrideRow> selected = GetSelectedRows(checkBox, current);
                     for (int i = 0; i < selected.Count; i++)
                     {
-                        selected[i].Graphics.HalftoneState = value;
+                        if (selected[i].SupportsHalftone) selected[i].Graphics.HalftoneState = value;
                     }
                 }
                 else if (string.Equals(action, "BatchFilterIncluded", StringComparison.Ordinal) ||

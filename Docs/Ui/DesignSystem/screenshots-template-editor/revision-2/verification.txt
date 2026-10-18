@@ -1,0 +1,614 @@
+Scope: source-derived preview; synthetic Document adapter; original models/handlers. Production/Revit not executed.
+PASS clean Application resources
+Runtime DPI 96
+PASS seven tabs; per-link entity removed by user request
+PASS clean Apply disabled
+PASS template sidebar measured width345.6 increased20percent (pixel rounding tolerance1)
+PASS vertical template sidebar left of wide workspace
+PASS tab 0 settled indicator position
+PASS tab 0 measured content gap12
+PASS tab 0 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab0 footer reachable
+PASS normal tab0 one footer help
+PASS normal tab0 header38 row44
+PASS normal tab0 measured header38
+PASS normal tab0 full header Параметр
+PASS normal tab0 text/header axis Параметр
+PASS normal tab0 full header Значение
+PASS normal tab0 text/header axis Значение
+PASS normal tab0 full header Включить
+PASS normal tab0 bounded table before actions
+PASS normal tab0 last column fills row viewport (or horizontal overflow)
+PASS normal tab0 normal columns fit without horizontal bar
+PASS normal tab0 no spontaneous popup
+PASS normal tab0 no spontaneous popup
+PASS normal tab0 no spontaneous popup
+PASS normal tab0 no spontaneous popup
+PASS normal tab0 no spontaneous popup
+PASS normal tab0 no spontaneous popup
+PASS normal tab0 search min34
+CAPTURE tab-0 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab 1 animation follows system preference
+PASS tab 1 settled indicator position
+PASS tab 1 measured content gap12
+PASS tab 1 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab1 footer reachable
+PASS normal tab1 one footer help
+PASS normal tab1 header38 row44
+PASS normal tab1 measured header38
+PASS normal tab1 full header Видимость
+PASS normal tab1 full header Категория
+PASS normal tab1 full header Проекция/Линии
+PASS normal tab1 text/header axis Проекция/Линии
+PASS normal tab1 full header Проекция/Штриховки
+PASS normal tab1 text/header axis Проекция/Штриховки
+PASS normal tab1 full header Прозрачность
+PASS normal tab1 text/header axis Прозрачность
+PASS normal tab1 full header Сечение/Линии
+PASS normal tab1 text/header axis Сечение/Линии
+PASS normal tab1 full header Сечение/Штриховки
+PASS normal tab1 text/header axis Сечение/Штриховки
+PASS normal tab1 full header Полутона
+PASS normal tab1 full header Детализация
+PASS normal tab1 text/header axis Детализация
+PASS normal tab1 full header Статус
+PASS normal tab1 vertical scrollbar below header
+PASS normal tab1 bounded table before actions
+PASS normal tab1 last column fills row viewport (or horizontal overflow)
+PASS normal tab1 normal columns fit without horizontal bar
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 no spontaneous popup
+PASS normal tab1 search min34
+CAPTURE tab-1 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab 2 animation follows system preference
+PASS tab 2 settled indicator position
+PASS tab 2 measured content gap12
+PASS tab 2 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab2 footer reachable
+PASS normal tab2 one footer help
+PASS normal tab2 header38 row44
+PASS normal tab2 measured header38
+PASS normal tab2 full header Видимость
+PASS normal tab2 full header Категория
+PASS normal tab2 full header Проекция/Линии
+PASS normal tab2 text/header axis Проекция/Линии
+PASS normal tab2 full header Полутона
+PASS normal tab2 full header Статус
+PASS normal tab2 bounded table before actions
+PASS normal tab2 last column fills row viewport (or horizontal overflow)
+PASS normal tab2 normal columns fit without horizontal bar
+PASS normal tab2 no spontaneous popup
+PASS normal tab2 search min34
+CAPTURE tab-2 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab 3 animation follows system preference
+PASS tab 3 settled indicator position
+PASS tab 3 measured content gap12
+PASS tab 3 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab3 footer reachable
+PASS normal tab3 one footer help
+PASS normal tab3 header38 row44
+PASS normal tab3 measured header38
+PASS normal tab3 full header Видимость
+PASS normal tab3 full header Категория
+PASS normal tab3 full header Проекция/Линии
+PASS normal tab3 text/header axis Проекция/Линии
+PASS normal tab3 full header Проекция/Штриховки
+PASS normal tab3 full header Прозрачность
+PASS normal tab3 full header Полутона
+PASS normal tab3 full header Детализация
+PASS normal tab3 full header Статус
+PASS normal tab3 bounded table before actions
+PASS normal tab3 last column fills row viewport (or horizontal overflow)
+PASS normal tab3 normal columns fit without horizontal bar
+PASS normal tab3 no spontaneous popup
+PASS normal tab3 no spontaneous popup
+PASS normal tab3 search min34
+CAPTURE tab-3 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab 4 animation follows system preference
+PASS tab 4 settled indicator position
+PASS tab 4 measured content gap12
+PASS tab 4 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab4 footer reachable
+PASS normal tab4 one footer help
+PASS normal tab4 header38 row44
+PASS normal tab4 measured header38
+PASS normal tab4 full header Видимость
+PASS normal tab4 full header Категория
+PASS normal tab4 full header Проекция/Линии
+PASS normal tab4 text/header axis Проекция/Линии
+PASS normal tab4 full header Полутона
+PASS normal tab4 full header Статус
+PASS normal tab4 bounded table before actions
+PASS normal tab4 last column fills row viewport (or horizontal overflow)
+PASS normal tab4 normal columns fit without horizontal bar
+PASS normal tab4 no spontaneous popup
+PASS normal tab4 search min34
+CAPTURE tab-4 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab 5 animation follows system preference
+PASS tab 5 settled indicator position
+PASS tab 5 measured content gap12
+PASS tab 5 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab5 footer reachable
+PASS normal tab5 one footer help
+PASS normal tab5 header38 row44
+PASS normal tab5 measured header38
+PASS normal tab5 full header Включён
+PASS normal tab5 full header Видимость
+PASS normal tab5 full header Фильтр
+PASS normal tab5 text/header axis Фильтр
+PASS normal tab5 full header Проекция/Линии
+PASS normal tab5 text/header axis Проекция/Линии
+PASS normal tab5 full header Проекция/Штриховки
+PASS normal tab5 text/header axis Проекция/Штриховки
+PASS normal tab5 full header Прозрачность
+PASS normal tab5 text/header axis Прозрачность
+PASS normal tab5 full header Сечение/Линии
+PASS normal tab5 text/header axis Сечение/Линии
+PASS normal tab5 full header Сечение/Штриховки
+PASS normal tab5 text/header axis Сечение/Штриховки
+PASS normal tab5 full header Полутона
+PASS normal tab5 full header Статус
+PASS normal tab5 bounded table before actions
+PASS normal tab5 last column fills row viewport (or horizontal overflow)
+PASS normal tab5 normal columns fit without horizontal bar
+PASS normal tab5 no spontaneous popup
+PASS normal tab5 search min34
+PASS normal tab5 search min34
+CAPTURE tab-5 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab 6 animation follows system preference
+PASS tab 6 settled indicator position
+PASS tab 6 measured content gap12
+PASS tab 6 visible min40
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 1 expected 1
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS normal tab6 footer reachable
+PASS normal tab6 one footer help
+PASS normal tab6 header38 row44
+PASS normal tab6 measured header38
+PASS normal tab6 full header Рабочий набор
+PASS normal tab6 text/header axis Рабочий набор
+PASS normal tab6 full header Видимость
+PASS normal tab6 text/header axis Видимость
+PASS normal tab6 full header Статус
+PASS normal tab6 bounded table before actions
+PASS normal tab6 last column fills row viewport (or horizontal overflow)
+PASS normal tab6 normal columns fit without horizontal bar
+PASS normal tab6 no spontaneous popup
+PASS normal tab6 no spontaneous popup
+PASS normal tab6 no spontaneous popup
+PASS normal tab6 no spontaneous popup
+PASS normal tab6 no spontaneous popup
+PASS normal tab6 search min34
+PASS normal tab6 search min34
+CAPTURE tab-6 visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab0 footer reachable
+PASS minimum tab0 one footer help
+PASS minimum tab0 header38 row44
+PASS minimum tab0 measured header38
+PASS minimum tab0 full header Параметр
+PASS minimum tab0 text/header axis Параметр
+PASS minimum tab0 full header Значение
+PASS minimum tab0 text/header axis Значение
+PASS minimum tab0 full header Включить
+PASS minimum tab0 vertical scrollbar below header
+PASS minimum tab0 bounded table before actions
+PASS minimum tab0 last column fills row viewport (or horizontal overflow)
+PASS minimum tab0 no spontaneous popup
+PASS minimum tab0 no spontaneous popup
+PASS minimum tab0 no spontaneous popup
+PASS minimum tab0 no spontaneous popup
+PASS minimum tab0 no spontaneous popup
+PASS minimum tab0 no spontaneous popup
+PASS minimum tab0 search min34
+CAPTURE minimum-tab-0 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab1 footer reachable
+PASS minimum tab1 one footer help
+PASS minimum tab1 header38 row44
+PASS minimum tab1 measured header38
+PASS minimum tab1 full header Видимость
+PASS minimum tab1 full header Категория
+PASS minimum tab1 full header Проекция/Линии
+PASS minimum tab1 text/header axis Проекция/Линии
+PASS minimum tab1 full header Проекция/Штриховки
+PASS minimum tab1 text/header axis Проекция/Штриховки
+PASS minimum tab1 full header Прозрачность
+PASS minimum tab1 text/header axis Прозрачность
+PASS minimum tab1 full header Сечение/Линии
+PASS minimum tab1 text/header axis Сечение/Линии
+PASS minimum tab1 full header Сечение/Штриховки
+PASS minimum tab1 text/header axis Сечение/Штриховки
+PASS minimum tab1 full header Полутона
+PASS minimum tab1 full header Детализация
+PASS minimum tab1 text/header axis Детализация
+PASS minimum tab1 full header Статус
+PASS minimum tab1 vertical scrollbar below header
+PASS minimum tab1 bounded table before actions
+PASS minimum tab1 last column fills row viewport (or horizontal overflow)
+PASS minimum tab1 no spontaneous popup
+PASS minimum tab1 no spontaneous popup
+PASS minimum tab1 no spontaneous popup
+PASS minimum tab1 no spontaneous popup
+PASS minimum tab1 no spontaneous popup
+PASS minimum tab1 search min34
+CAPTURE minimum-tab-1 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum tab1 native horizontal right end reached
+PASS minimum tab1 last column fully reachable
+CAPTURE minimum-tab-1-right visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab2 footer reachable
+PASS minimum tab2 one footer help
+PASS minimum tab2 header38 row44
+PASS minimum tab2 measured header38
+PASS minimum tab2 full header Видимость
+PASS minimum tab2 full header Категория
+PASS minimum tab2 full header Проекция/Линии
+PASS minimum tab2 text/header axis Проекция/Линии
+PASS minimum tab2 full header Полутона
+PASS minimum tab2 full header Статус
+PASS minimum tab2 bounded table before actions
+PASS minimum tab2 last column fills row viewport (or horizontal overflow)
+PASS minimum tab2 no spontaneous popup
+PASS minimum tab2 search min34
+CAPTURE minimum-tab-2 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab3 footer reachable
+PASS minimum tab3 one footer help
+PASS minimum tab3 header38 row44
+PASS minimum tab3 measured header38
+PASS minimum tab3 full header Видимость
+PASS minimum tab3 full header Категория
+PASS minimum tab3 full header Проекция/Линии
+PASS minimum tab3 text/header axis Проекция/Линии
+PASS minimum tab3 full header Проекция/Штриховки
+PASS minimum tab3 full header Прозрачность
+PASS minimum tab3 full header Полутона
+PASS minimum tab3 full header Детализация
+PASS minimum tab3 full header Статус
+PASS minimum tab3 bounded table before actions
+PASS minimum tab3 last column fills row viewport (or horizontal overflow)
+PASS minimum tab3 no spontaneous popup
+PASS minimum tab3 no spontaneous popup
+PASS minimum tab3 search min34
+CAPTURE minimum-tab-3 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum tab3 native horizontal right end reached
+PASS minimum tab3 last column fully reachable
+CAPTURE minimum-tab-3-right visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab4 footer reachable
+PASS minimum tab4 one footer help
+PASS minimum tab4 header38 row44
+PASS minimum tab4 measured header38
+PASS minimum tab4 full header Видимость
+PASS minimum tab4 full header Категория
+PASS minimum tab4 full header Проекция/Линии
+PASS minimum tab4 text/header axis Проекция/Линии
+PASS minimum tab4 full header Полутона
+PASS minimum tab4 full header Статус
+PASS minimum tab4 bounded table before actions
+PASS minimum tab4 last column fills row viewport (or horizontal overflow)
+PASS minimum tab4 no spontaneous popup
+PASS minimum tab4 search min34
+CAPTURE minimum-tab-4 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab5 footer reachable
+PASS minimum tab5 one footer help
+PASS minimum tab5 header38 row44
+PASS minimum tab5 measured header38
+PASS minimum tab5 full header Включён
+PASS minimum tab5 full header Видимость
+PASS minimum tab5 full header Фильтр
+PASS minimum tab5 text/header axis Фильтр
+PASS minimum tab5 full header Проекция/Линии
+PASS minimum tab5 text/header axis Проекция/Линии
+PASS minimum tab5 full header Проекция/Штриховки
+PASS minimum tab5 text/header axis Проекция/Штриховки
+PASS minimum tab5 full header Прозрачность
+PASS minimum tab5 text/header axis Прозрачность
+PASS minimum tab5 full header Сечение/Линии
+PASS minimum tab5 text/header axis Сечение/Линии
+PASS minimum tab5 full header Сечение/Штриховки
+PASS minimum tab5 text/header axis Сечение/Штриховки
+PASS minimum tab5 full header Полутона
+PASS minimum tab5 full header Статус
+PASS minimum tab5 bounded table before actions
+PASS minimum tab5 last column fills row viewport (or horizontal overflow)
+PASS minimum tab5 no spontaneous popup
+PASS minimum tab5 search min34
+PASS minimum tab5 search min34
+CAPTURE minimum-tab-5 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum tab5 native horizontal right end reached
+PASS minimum tab5 last column fully reachable
+CAPTURE minimum-tab-5-right visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tab capsule follows active row in two dimensions
+PASS tab capsule height equals one tab, not entire wrapped group
+PASS tab header rows 2 expected 2
+PASS tab order retained left to right then top to bottom
+PASS one shared frame around all tab rows
+PASS minimum tab6 footer reachable
+PASS minimum tab6 one footer help
+PASS minimum tab6 header38 row44
+PASS minimum tab6 measured header38
+PASS minimum tab6 full header Рабочий набор
+PASS minimum tab6 text/header axis Рабочий набор
+PASS minimum tab6 full header Видимость
+PASS minimum tab6 text/header axis Видимость
+PASS minimum tab6 full header Статус
+PASS minimum tab6 bounded table before actions
+PASS minimum tab6 last column fills row viewport (or horizontal overflow)
+PASS minimum tab6 no spontaneous popup
+PASS minimum tab6 no spontaneous popup
+PASS minimum tab6 no spontaneous popup
+PASS minimum tab6 no spontaneous popup
+PASS minimum tab6 no spontaneous popup
+PASS minimum tab6 search min34
+PASS minimum tab6 search min34
+CAPTURE minimum-tab-6 visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS real WPF property editor focus
+CAPTURE property-editor-focus visible WPF 1240x760 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS stretch footer reachable
+PASS stretch one footer help
+PASS stretch header38 row44
+PASS stretch measured header38
+PASS stretch full header Параметр
+PASS stretch text/header axis Параметр
+PASS stretch full header Значение
+PASS stretch text/header axis Значение
+PASS stretch full header Включить
+PASS stretch bounded table before actions
+PASS stretch last column fills row viewport (or horizontal overflow)
+PASS stretch normal columns fit without horizontal bar
+PASS stretch no spontaneous popup
+PASS stretch no spontaneous popup
+PASS stretch no spontaneous popup
+PASS stretch no spontaneous popup
+PASS stretch no spontaneous popup
+PASS stretch no spontaneous popup
+PASS stretch search min34
+CAPTURE stretch visible WPF 1800x1000 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS annotation unsupported column absent: Проекция/Штриховки
+PASS annotation unsupported column absent: Прозрачность
+PASS annotation unsupported column absent: Сечение/Линии
+PASS annotation unsupported column absent: Сечение/Штриховки
+PASS annotation unsupported column absent: Детализация
+PASS annotation halftone retained
+PASS annotation halftone source handler editable
+CAPTURE annotation-capabilities visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS analytical non-cuttable fixture hides cut column
+PASS analytical panel capability retains surface column
+PASS analytical node unsupported surface editor absent
+CAPTURE analytical-capabilities visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS tree measured depth increments24
+PASS tree rail continuation and last sibling termination
+PASS tree guides rendered in native rows44
+CAPTURE tree-depth-stress visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS parent collapse hides descendants recursively
+PASS search preserves ancestor path through collapsed root
+PASS tree search hides unrelated siblings
+CAPTURE tree-search-path visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS global Revit links category visibility retained in Model
+CAPTURE global-link-category visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS mixed capability projection batch edits supported row only
+PASS mixed capability surface batch edits supported row only
+PASS mixed capability halftone batch preserves unsupported row
+PASS capability scenario resets fixture baseline before target selection tests
+PASS template highlight independent of inclusion
+PASS template name search source handler
+CAPTURE template-search visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS real WPF search focus
+PASS search Enter handled before default Apply
+PASS routed Enter invokes original search
+CAPTURE search-enter-focus visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS template type filter
+PASS mixed aggregate fixture
+CAPTURE mixed-selection visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS source category collapse
+PASS source category expansion
+CAPTURE category-expanded visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS source batch category visibility
+PASS dirty Apply enabled
+PASS dirty target guard restores original selection
+CAPTURE dirty-validation visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS projection editor footer reachable
+PASS projection editor one footer help
+PASS projection editor no spontaneous popup
+PASS projection editor no spontaneous popup
+CAPTURE editor-projection visible WPF 760x420 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS graphics Cancel leaves original data
+PASS graphics Apply commits through original handler
+PASS editor All footer reachable
+PASS editor All one footer help
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+PASS editor All no spontaneous popup
+CAPTURE editor-All visible WPF 760x720 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum editor All footer reachable
+PASS minimum editor All one footer help
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+PASS minimum editor All no spontaneous popup
+CAPTURE minimum-editor-All visible WPF 680x340 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS editor ProjectionLines footer reachable
+PASS editor ProjectionLines one footer help
+PASS editor ProjectionLines no spontaneous popup
+PASS editor ProjectionLines no spontaneous popup
+CAPTURE editor-ProjectionLines visible WPF 760x420 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum editor ProjectionLines footer reachable
+PASS minimum editor ProjectionLines one footer help
+PASS minimum editor ProjectionLines no spontaneous popup
+PASS minimum editor ProjectionLines no spontaneous popup
+CAPTURE minimum-editor-ProjectionLines visible WPF 680x340 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS editor SurfacePatterns footer reachable
+PASS editor SurfacePatterns one footer help
+PASS editor SurfacePatterns no spontaneous popup
+PASS editor SurfacePatterns no spontaneous popup
+CAPTURE editor-SurfacePatterns visible WPF 760x560 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS open popup contains real fill pattern names
+PASS capture contains live Popup child
+POPUP editor-popup captured actual separate WPF popup at measured offset 243;209; no drawn substitute
+CAPTURE editor-popup visible WPF 760x560 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS routed Escape closes real popup
+PASS popup Escape keeps editor open
+PASS minimum editor SurfacePatterns footer reachable
+PASS minimum editor SurfacePatterns one footer help
+PASS minimum editor SurfacePatterns no spontaneous popup
+PASS minimum editor SurfacePatterns no spontaneous popup
+CAPTURE minimum-editor-SurfacePatterns visible WPF 680x340 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS editor Transparency footer reachable
+PASS editor Transparency one footer help
+CAPTURE editor-Transparency visible WPF 760x380 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum editor Transparency footer reachable
+PASS minimum editor Transparency one footer help
+CAPTURE minimum-editor-Transparency visible WPF 680x340 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS editor CutLines footer reachable
+PASS editor CutLines one footer help
+PASS editor CutLines no spontaneous popup
+PASS editor CutLines no spontaneous popup
+CAPTURE editor-CutLines visible WPF 760x420 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum editor CutLines footer reachable
+PASS minimum editor CutLines one footer help
+PASS minimum editor CutLines no spontaneous popup
+PASS minimum editor CutLines no spontaneous popup
+CAPTURE minimum-editor-CutLines visible WPF 680x340 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS editor CutPatterns footer reachable
+PASS editor CutPatterns one footer help
+PASS editor CutPatterns no spontaneous popup
+PASS editor CutPatterns no spontaneous popup
+CAPTURE editor-CutPatterns visible WPF 760x560 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum editor CutPatterns footer reachable
+PASS minimum editor CutPatterns one footer help
+PASS minimum editor CutPatterns no spontaneous popup
+PASS minimum editor CutPatterns no spontaneous popup
+CAPTURE minimum-editor-CutPatterns visible WPF 680x340 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS filter picker footer reachable
+PASS filter picker one footer help
+PASS filter picker header38 row44
+PASS filter picker measured header38
+PASS filter picker full header Выбор
+PASS filter picker full header Фильтр
+PASS filter picker text/header axis Фильтр
+PASS filter picker full header Статус
+PASS filter picker text/header axis Статус
+PASS filter picker bounded table before actions
+PASS filter picker last column fills row viewport (or horizontal overflow)
+PASS filter picker search min34
+CAPTURE add-filters visible WPF 680x620 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS minimum filter picker footer reachable
+PASS minimum filter picker one footer help
+PASS minimum filter picker header38 row44
+PASS minimum filter picker measured header38
+PASS minimum filter picker full header Выбор
+PASS minimum filter picker full header Фильтр
+PASS minimum filter picker text/header axis Фильтр
+PASS minimum filter picker full header Статус
+PASS minimum filter picker text/header axis Статус
+PASS minimum filter picker vertical scrollbar below header
+PASS minimum filter picker bounded table before actions
+PASS minimum filter picker last column fills row viewport (or horizontal overflow)
+PASS minimum filter picker search min34
+CAPTURE minimum-add-filters visible WPF 560x460 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS empty filter selection validation
+CAPTURE add-filters-validation visible WPF 560x460 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS source AddFilters roundtrip
+PASS source filter reorder
+CAPTURE filter-reordered visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS source filter remove
+CAPTURE workset-edited visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS empty worksets footer reachable
+PASS empty worksets one footer help
+PASS empty worksets header38 row44
+PASS empty worksets measured header38
+PASS empty worksets full header Рабочий набор
+PASS empty worksets full header Видимость
+PASS empty worksets full header Статус
+PASS empty worksets bounded table before actions
+PASS empty worksets last column fills row viewport (or horizontal overflow)
+PASS empty worksets no spontaneous popup
+PASS empty worksets search min34
+PASS empty worksets search min34
+CAPTURE empty-worksets visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+CAPTURE empty-template-search visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+CAPTURE long-template-name visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS zero targets disables Apply
+CAPTURE zero-targets visible WPF 1780x940 DIP; RenderTargetBitmap96; not OS150/Revit
+PASS main modal Apply accepts fixture DTO
+PASS WPF Escape access key cancels main dialog
+COMPLETED 558 PASS / 52 visible WPF captures; Revit/OS-DPI/install NOT RUN

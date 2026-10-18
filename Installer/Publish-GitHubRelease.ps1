@@ -4,6 +4,8 @@ param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
     [string]$Version,
     [string]$ReleaseName = '',
+    [ValidatePattern('^(?:[a-z0-9][a-z0-9-]*)?$')]
+    [string]$TagSuffix = '',
     [ValidatePattern('^v\d+\.\d+\.\d+$')]
     [string]$ReplaceTag = '',
     [switch]$PrepareOnly
@@ -15,7 +17,8 @@ $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $outputFolder = Join-Path $PSScriptRoot 'output'
 $repository = 'ASvetlakov2000/SAB'
 $api = "https://api.github.com/repos/$repository"
-$tag = "v$Version"
+# Preserve historical tags when an earlier incorrectly numbered release occupied the semantic tag.
+$tag = if ([string]::IsNullOrWhiteSpace($TagSuffix)) { "v$Version" } else { "v$Version-$TagSuffix" }
 $assetNames = @('SAB_Revit_2022.msi', 'SAB_Revit_2023.msi', 'SAB_Revit_2024.msi')
 $notes = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'ReleaseNotes.md') -Raw -Encoding UTF8
 foreach ($name in $assetNames) {
@@ -100,7 +103,7 @@ try {
     $previousReleases = @(Invoke-RestMethod -Uri "$api/releases?per_page=100" -Headers $headers | ForEach-Object { $_ })
     $previousRelease = $previousReleases | Where-Object { -not $_.draft -and -not $_.prerelease -and $_.tag_name -ne $ReplaceTag } |
         Sort-Object published_at -Descending | Select-Object -First 1
-    if ($previousRelease -and $previousRelease.tag_name -match '^v(\d+)\.(\d+)\.(\d+)$') {
+    if ($previousRelease -and $previousRelease.tag_name -match '^v(\d+)\.(\d+)\.(\d+)(?:-[a-z0-9][a-z0-9-]*)?$') {
         $expectedVersion = '{0}.{1}.{2}' -f $Matches[1], $Matches[2], (1 + [int]$Matches[3])
         if ($Version -ne $expectedVersion) { throw "После $($previousRelease.tag_name) следующий выпуск должен иметь номер $expectedVersion." }
     }

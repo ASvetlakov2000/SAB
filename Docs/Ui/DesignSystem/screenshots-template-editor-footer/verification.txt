@@ -1,0 +1,123 @@
+Actual ViewTemplateGraphicsWindow from SAB.dll with detached DTO loader. No live Revit, installation, physical input or OS-DPI verification.
+PASS actual production window class
+PASS StatusText binding retained
+PASS normal native glyph ink found
+PASS normal text layout clears all four frame edges
+PASS normal actual glyph ink clears frame
+PASS normal both cards to status gap16
+PASS normal footer boundary to status gap12
+PASS normal status min44 padding12,10
+PASS normal actions clear status and bottom padding12
+PASS normal native text line and wrap settings
+BOUNDS normal: panel=24,799,1716,44 text=37,811,1690,20 ink=37.193359375,816.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+CAPTURE normal 1764x901 WPF96dpi
+PASS minimum native glyph ink found
+PASS minimum text layout clears all four frame edges
+PASS minimum actual glyph ink clears frame
+PASS minimum both cards to status gap16
+PASS minimum footer boundary to status gap12
+PASS minimum status min44 padding12,10
+PASS minimum actions clear status and bottom padding12
+PASS minimum native text line and wrap settings
+BOUNDS minimum: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+CAPTURE minimum 1224x721 WPF96dpi
+PASS tall native glyph ink found
+PASS tall text layout clears all four frame edges
+PASS tall actual glyph ink clears frame
+PASS tall both cards to status gap16
+PASS tall footer boundary to status gap12
+PASS tall status min44 padding12,10
+PASS tall actions clear status and bottom padding12
+PASS tall native text line and wrap settings
+BOUNDS tall: panel=24,979,1836,44 text=37,991,1810,20 ink=37.193359375,996.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+CAPTURE tall 1884x1081 WPF96dpi
+PASS long-status native glyph ink found
+PASS long-status text layout clears all four frame edges
+PASS long-status actual glyph ink clears frame
+PASS long-status both cards to status gap16
+PASS long-status footer boundary to status gap12
+PASS long-status status min44 padding12,10
+PASS long-status actions clear status and bottom padding12
+PASS long-status native text line and wrap settings
+BOUNDS long-status: panel=24,521,1176,142 text=37,532,1150,120 ink=36.1142578125,537.527447916667,1149.5145,114.7587890625 innerTop=16.53 innerBottom=10.71 cardGap=16.00
+CAPTURE long-status 1224x721 WPF96dpi
+PASS long status grows automatically
+PASS validation native glyph ink found
+PASS validation text layout clears all four frame edges
+PASS validation actual glyph ink clears frame
+PASS validation both cards to status gap16
+PASS validation footer boundary to status gap12
+PASS validation status min44 padding12,10
+PASS validation actions clear status and bottom padding12
+PASS validation native text line and wrap settings
+BOUNDS validation: panel=24,555.13,1176,44 text=37,567.13,1150,20 ink=37.193359375,572.657447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+CAPTURE validation 1224x721 WPF96dpi
+PASS long error wraps and remains visible
+PASS status to error gap12
+PASS error to actions gap12
+PASS tab-0 native glyph ink found
+PASS tab-0 text layout clears all four frame edges
+PASS tab-0 actual glyph ink clears frame
+PASS tab-0 both cards to status gap16
+PASS tab-0 footer boundary to status gap12
+PASS tab-0 status min44 padding12,10
+PASS tab-0 actions clear status and bottom padding12
+PASS tab-0 native text line and wrap settings
+BOUNDS tab-0: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS tab-1 native glyph ink found
+PASS tab-1 text layout clears all four frame edges
+PASS tab-1 actual glyph ink clears frame
+PASS tab-1 both cards to status gap16
+PASS tab-1 footer boundary to status gap12
+PASS tab-1 status min44 padding12,10
+PASS tab-1 actions clear status and bottom padding12
+PASS tab-1 native text line and wrap settings
+BOUNDS tab-1: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS tab-2 native glyph ink found
+PASS tab-2 text layout clears all four frame edges
+PASS tab-2 actual glyph ink clears frame
+PASS tab-2 both cards to status gap16
+PASS tab-2 footer boundary to status gap12
+PASS tab-2 status min44 padding12,10
+PASS tab-2 actions clear status and bottom padding12
+PASS tab-2 native text line and wrap settings
+BOUNDS tab-2: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS tab-3 native glyph ink found
+PASS tab-3 text layout clears all four frame edges
+PASS tab-3 actual glyph ink clears frame
+PASS tab-3 both cards to status gap16
+PASS tab-3 footer boundary to status gap12
+PASS tab-3 status min44 padding12,10
+PASS tab-3 actions clear status and bottom padding12
+PASS tab-3 native text line and wrap settings
+BOUNDS tab-3: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS tab-4 native glyph ink found
+PASS tab-4 text layout clears all four frame edges
+PASS tab-4 actual glyph ink clears frame
+PASS tab-4 both cards to status gap16
+PASS tab-4 footer boundary to status gap12
+PASS tab-4 status min44 padding12,10
+PASS tab-4 actions clear status and bottom padding12
+PASS tab-4 native text line and wrap settings
+BOUNDS tab-4: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS tab-5 native glyph ink found
+PASS tab-5 text layout clears all four frame edges
+PASS tab-5 actual glyph ink clears frame
+PASS tab-5 both cards to status gap16
+PASS tab-5 footer boundary to status gap12
+PASS tab-5 status min44 padding12,10
+PASS tab-5 actions clear status and bottom padding12
+PASS tab-5 native text line and wrap settings
+BOUNDS tab-5: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS tab-6 native glyph ink found
+PASS tab-6 text layout clears all four frame edges
+PASS tab-6 actual glyph ink clears frame
+PASS tab-6 both cards to status gap16
+PASS tab-6 footer boundary to status gap12
+PASS tab-6 status min44 padding12,10
+PASS tab-6 actions clear status and bottom padding12
+PASS tab-6 native text line and wrap settings
+BOUNDS tab-6: panel=24,619,1176,44 text=37,631,1150,20 ink=37.193359375,636.527447916667,292.64425,14.68896484375 innerTop=17.53 innerBottom=11.78 cardGap=16.00
+PASS all seven tabs retained
+CAPTURE footer-detail 1764x114 WPF96dpi
+COMPLETED 103 PASS / 6 PNG; actual WPF at96 render DPI, not OS scaling.

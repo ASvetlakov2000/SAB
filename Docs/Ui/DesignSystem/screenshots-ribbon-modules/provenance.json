@@ -1,0 +1,8 @@
+﻿{
+    "scope":  "Actual production icon factories only, outside Revit",
+    "renderDpi":  96,
+    "assembly":  "C:\\Users\\svetl\\Desktop\\Codex\\Projects\\SAB\\SAB\\bin\\Revit2023\\SAB.dll",
+    "sha256":  "31DA71CFEBB15F0C0A8C0F548D0142926EF31A8C5D3CB49FA1A6C6A5BA9E3476",
+    "screenshot":  "production-icons.png",
+    "nativeRevit":  "NOT RUN"
+}

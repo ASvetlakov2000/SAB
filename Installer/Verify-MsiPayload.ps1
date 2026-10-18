@@ -88,6 +88,12 @@ try {
         if ((Get-PayloadHash $builtStyle) -ne (Get-PayloadHash $sourceStyle)) { throw "$Year build contains outdated source style: $style" }
     }
     $required = @{'SAB.dll'=(Join-Path $BinFolder 'SAB.dll'); 'SABFluentLight.xaml'=(Join-Path $BinFolder 'UI\Styles\SABFluentLight.xaml'); 'SABWindowStyles.xaml'=(Join-Path $BinFolder 'UI\Styles\SABWindowStyles.xaml'); 'Nice3point.Revit.Toolkit.dll'=(Join-Path $BinFolder 'Nice3point.Revit.Toolkit.dll')}
+    foreach ($windowFile in @('ViewTemplateGraphicsWindow.xaml','GraphicOverrideEditorWindow.xaml','AddFiltersWindow.xaml')) {
+        $sourceWindow = Join-Path $repositoryRoot "SAB\Cls_ViewTemplateGraphics\Views\$windowFile"
+        $builtWindow = Join-Path $BinFolder "Cls_ViewTemplateGraphics\Views\$windowFile"
+        if ((Get-PayloadHash $builtWindow) -ne (Get-PayloadHash $sourceWindow)) { throw "$Year build contains outdated template editor window: $windowFile" }
+        $required[$windowFile] = $sourceWindow
+    }
     foreach ($module in @('Cls_InteriorElevations','Cls_CreateViewsAndSheets')) {
         foreach ($sourceView in (Get-ChildItem -LiteralPath (Join-Path $repositoryRoot "SAB\$module\Views") -Filter '*.xaml' -File)) {
             $builtView = Join-Path $BinFolder "$module\Views\$($sourceView.Name)"
@@ -118,16 +124,33 @@ try {
     $api = @($assembly.GetReferencedAssemblies() | Where-Object { $_.Name -in @('RevitAPI','RevitAPIUI') })
     if ($api.Count -ne 2 -or @($api | Where-Object { $_.Version.Major -ne ([int]$Year-2000) }).Count -gt 0) { throw "$Year payload has incorrect Revit API references" }
     $metadata = [Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes($assemblyPath))
+    foreach ($type in @('CategoryCapabilities','CategoryPresentation','TemplateEditorPresentation','get_SupportsProjectionLines','get_SupportsHalftone')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing template editor component: $type" } }
     foreach ($type in @('MaterialSelectionWindow','MaterialSelectionItem','FluentResourceDictionary','get_SelectedMaterialUniqueIds','BuildSelectionRows')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing material selection component: $type" } }
     $resources = $assembly.GetManifestResourceStream('SAB.g.resources')
     $resourceReader = New-Object System.Resources.ResourceReader($resources)
     try {
         $keys = @($resourceReader.GetEnumerator() | ForEach-Object { $_.Key })
         if ($keys -notcontains 'cls_filledregionfrommaterial/materialselectionwindow.baml') { throw "$Year MSI missing compiled material selection window" }
+        if ($keys -notcontains 'notifications/settingswindow.baml') { throw "$Year MSI missing compiled notification settings window" }
     } finally { $resourceReader.Close(); $resources.Close() }
     foreach ($type in @('ElevationDirectionPreviewWindow','ElevationDirectionPreviewController','ElevationDirectionPreviewService','ElevationSelectionGuidance','ContourDirectionGeometry','ContourLineOrientationService','get_PlannedDetailNumber')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing direction preview component: $type" } }
     foreach ($type in @('NotificationCard','NotificationStack','ParameterNotifications','CategorySelectionControl','CreateViewsAndSheetsWindow','ElevationCreationNotificationData','BuildNotification','get_PlaceFloorSpots','get_PlaceCeilingSpots','get_PlaceSlabSpots','ElevationAnnotationOwnershipService','ElevationSelectionListWindow','ElevationSelectionListItem','DeliverNotificationSafely','CheckSettingsCommand','CheckSettings','CheckCategories','ArmSearch')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing compiled UI component: $type" } }
-    [ordered]@{ year=$Year; status='PASS'; productVersion=$properties.ProductVersion; productCode=$properties.ProductCode; upgradeCode=$properties.UpgradeCode; msi=[IO.Path]::GetFullPath($MsiPath); msiSha256=(Get-PayloadHash $MsiPath); sourceBin=[IO.Path]::GetFullPath($BinFolder); assemblyVersion=$assembly.GetName().Version.ToString(); apiReferences=@($api | ForEach-Object { $_.FullName }); verifiedPayload=$verified; installationPerformed=$false } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $work 'verification.json') -Encoding UTF8
+    foreach ($type in @('NotificationSettingsStore','SettingsModel','SetRuntimeError')) { if (-not $metadata.Contains($type)) { throw "$Year MSI missing notification settings component: $type" } }
+    # Instantiate only the pure settings/store classes from the extracted shipping DLL.
+    # No Revit process, controller Start, installer execution or user's profile is involved.
+    $runtimeAssembly = [Reflection.Assembly]::LoadFrom($assemblyPath)
+    $settingsType = $runtimeAssembly.GetType('SAB.Notifications.Settings', $true)
+    $defaults = [Activator]::CreateInstance($settingsType)
+    if ($settingsType.GetField('Enabled').GetValue($defaults)) { throw "$Year MSI enables suppression by default" }
+    $storeType = $runtimeAssembly.GetType('SAB.Notifications.NotificationSettingsStore', $true)
+    $freshProfile = Join-Path $work 'notification-fresh-profile'
+    if (Test-Path -LiteralPath $freshProfile) { throw "$Year fresh-profile check path unexpectedly exists" }
+    $storeConstructor = $storeType.GetConstructor([type[]]@([string]))
+    if ($null -eq $storeConstructor) { throw "$Year notification settings store constructor missing" }
+    $store = $storeConstructor.Invoke([object[]]@([string]$freshProfile))
+    $loaded = $storeType.GetMethod('Load').Invoke($store, @())
+    if ($settingsType.GetField('Enabled').GetValue($loaded) -or (Test-Path -LiteralPath $freshProfile)) { throw "$Year first launch must stay OFF without writing a profile" }
+    [ordered]@{ year=$Year; status='PASS'; productVersion=$properties.ProductVersion; productCode=$properties.ProductCode; upgradeCode=$properties.UpgradeCode; msi=[IO.Path]::GetFullPath($MsiPath); msiSha256=(Get-PayloadHash $MsiPath); sourceBin=[IO.Path]::GetFullPath($BinFolder); assemblyVersion=$assembly.GetName().Version.ToString(); apiReferences=@($api | ForEach-Object { $_.FullName }); verifiedPayload=$verified; notificationSettingsBaml=$true; notificationDefaultEnabled=$false; firstLaunchDefaultCheck='PASS'; installationPerformed=$false } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $work 'verification.json') -Encoding UTF8
     Write-Host "PASS Revit $Year MSI: extracted DLL, Fluent styles, Toolkit and all instructions match current build; notifications compiled; API references correct."
 }
 finally {

@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-17",
+  "scope": "Read-only current installed Revit2023 file comparison; no installer run or application change by agent",
+  "agentInstallationPerformed": false,
+  "installedDirectory": "C:\\Users\\svetl\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2023\\SAB",
+  "files": [
+    {
+      "file": "SAB.dll",
+      "status": "PASS",
+      "installedPath": "C:\\Users\\svetl\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2023\\SAB\\SAB.dll",
+      "expectedSha256": "31da71cfebb15f0c0a8c0f548d0142926ef31a8c5d3cb49fa1a6c6a5ba9e3476",
+      "installedSha256": "31da71cfebb15f0c0a8c0f548d0142926ef31a8c5d3cb49fa1a6c6a5ba9e3476"
+    },
+    {
+      "file": "Cls_InteriorElevations/Views/ElevationDecorationWindow.xaml",
+      "status": "PASS",
+      "installedPath": "C:\\Users\\svetl\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2023\\SAB\\Cls_InteriorElevations\\Views\\ElevationDecorationWindow.xaml",
+      "expectedSha256": "a4599af652369e84781ad8fa708074bd8451fd6cdc774b5e59a7a55a6df2c0a8",
+      "installedSha256": "a4599af652369e84781ad8fa708074bd8451fd6cdc774b5e59a7a55a6df2c0a8"
+    },
+    {
+      "file": "Docs/PluginInstructions/SAB_HTML_Oformlenie_razvertok.html",
+      "status": "PASS",
+      "installedPath": "C:\\Users\\svetl\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2023\\SAB\\Docs\\PluginInstructions\\SAB_HTML_Oformlenie_razvertok.html",
+      "expectedSha256": "80d151df5a80255a7926017a6f703bab87b2c5c6e7902224e5ea7f9d107950aa",
+      "installedSha256": "80d151df5a80255a7926017a6f703bab87b2c5c6e7902224e5ea7f9d107950aa"
+    },
+    {
+      "file": "Resources/RibbonIcons-Credits.md",
+      "status": "PASS",
+      "installedPath": "C:\\Users\\svetl\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2023\\SAB\\Resources\\RibbonIcons-Credits.md",
+      "expectedSha256": "b2f329818f5c0cfe9fc8a9a13b6b0864868668e4c490811db20fb780aa6f5f7d",
+      "installedSha256": "b2f329818f5c0cfe9fc8a9a13b6b0864868668e4c490811db20fb780aa6f5f7d"
+    }
+  ],
+  "nativeUiStatus": "NOT RUN",
+  "nativeUiReason": "Revit process running but no Revit app/window returned by sky.list_apps/list_windows; user asked to expose Revit SAB tab",
+  "revitProcessIdObserved": 11416
+}

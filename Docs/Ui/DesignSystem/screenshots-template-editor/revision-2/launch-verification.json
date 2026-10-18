@@ -1,0 +1,8 @@
+{
+  "noRebuild": true,
+  "method": "two Launch.ps1 calls; process identity and EXE modification time; no Computer Use",
+  "hostSha256": "08ABF70F1049A8ABBAADF374E2BE4912AE11DB8FC86935B4C161F912DB8C808E",
+  "date": "2026-10-17",
+  "singleInstance": true,
+  "processId": 34552
+}

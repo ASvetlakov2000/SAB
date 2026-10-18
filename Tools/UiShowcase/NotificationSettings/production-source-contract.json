@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-18",
+  "scope": "first-stage production settings source",
+  "uiSourceOverrides": false,
+  "historicalProof": "Tools/UiShowcase/TemplateEditor/production-source-contract.json",
+  "historicalProofSha256": "6ad261be667071618956726d002e6a21d9d143f395cbe50687bd202d64acf44f",
+  "source": {
+    "SAB/UI/Styles/SABFluentLight.xaml": {
+      "beforePath": "outputs/ui-production-preview/notification-settings/pre-production-source/SAB__UI__Styles__SABFluentLight.xaml",
+      "before": "a587065f9d926cba3b5b261939621070da905b0351c187250bcbc0a6c3b22510",
+      "after": "671639ca98f6e1de249de08c488127f5b5cd3093eb4ae96f432caa8f27fbafa9"
+    },
+    "SAB/SAB.csproj": {
+      "beforePath": "outputs/ui-production-preview/notification-settings/pre-production-source/SAB__SAB.csproj",
+      "before": "dfd9f535d8f8c42768c7b0fbd0f54425029fb70e3e372cad7b35455b3eb81c16",
+      "after": "2f44683d251ef57231ce4f556c28e4a80b885b10e61de2db629ed4762b7fcf94"
+    }
+  },
+  "currentFiles": {
+    "SAB/Notifications/NotificationController.cs": "669d303fa6ed31fdbd3396c40e947791da4e14aa2d2bef2fd7392217ff0ca86d",
+    "SAB/Notifications/NotificationSettingsStore.cs": "1ef7a3616270e6035b0b62209a54e540eff478c69d48a29afeb5c1e9e1a40268",
+    "SAB/Notifications/NotificationSettingsModel.cs": "f48754675ddfd5cd8f70ecbca4f12cec5b1ff5762ac991af9cb62bd73738e538",
+    "SAB/Notifications/SettingsWindow.xaml": "1d4ebef4270a19d0081e186925f6c275b0661c5baae84dab4fabc3c4da7d83e9",
+    "SAB/Notifications/SettingsWindow.xaml.cs": "8f736d920863e79880000d5becb0a8d4fe3aeb2ed4899f88bc624e2400a750fc",
+    "SAB/UI/Styles/SABFluentLight.xaml": "671639ca98f6e1de249de08c488127f5b5cd3093eb4ae96f432caa8f27fbafa9",
+    "SAB/SAB.csproj": "2f44683d251ef57231ce4f556c28e4a80b885b10e61de2db629ed4762b7fcf94",
+    "Docs/PluginInstructions/SAB_HTML_Uvedomleniya.html": "4d35544baafd0607bb950ed36743888280c8657f21e528a7c250e4d1eebad1ed",
+    "Tools/UiShowcase/NotificationSettings/ProductionHarness.cs": "4ddb7aff92db4e2f44e10a6889430ed0eacb9b2e5b35372e8c2a9cd783af5295",
+    "Tools/UiShowcase/NotificationSettings/ProductionHarness.csproj": "726fe5549eed28fb282024f06f755472470ee9c2c6ba9601c732bae0aceebca2",
+    "Tools/UiShowcase/NotificationSettings/Build-Production.ps1": "875bcc687aff0b89d19b51049f1831444392bef0a3169566b9f7a48a35289080",
+    "Tools/UiShowcase/NotificationSettings/Open-Production.cmd": "6b9b05139cff6438f9d56eb307d953b243f14329b4c82695c3e0c5afe19d23db",
+    "Tools/UiShowcase/NotificationSettings/Open.cmd": "d59a740f41a5f9c6af87e6d947061ce1388774b0aeb64e912ff416eb2cc71ab2"
+  },
+  "checks": {
+    "no_failure_mutation_or_automatic_dialog_answer_in_controller": true,
+    "settings_vm_contains_no_revit_objects": true,
+    "window_does_not_replace_host_application_main_window": true,
+    "master_default_requires_explicit_save": true,
+    "legacy_toggle_opens_settings_instead_of_enabling": true,
+    "production_window_compiled_page": true,
+    "local_instruction_in_existing_distribution_content_glob": true
+  },
+  "actualWindow": "SAB.Notifications.SettingsWindow from SAB.dll",
+  "activeAutomaticConfirmations": 0,
+  "firstLaunchEnabled": false,
+  "limitations": [
+    "live Revit handlers and OK capabilities NOT RUN",
+    "no MSI/installation/release",
+    "physical input/OS DPI NOT RUN"
+  ]
+}

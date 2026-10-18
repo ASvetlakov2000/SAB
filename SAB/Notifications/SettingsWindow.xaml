@@ -1,0 +1,133 @@
+<Window x:Class="SAB.Notifications.SettingsWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="SAB — Уведомления" Width="1160" Height="820" MinWidth="1040" MinHeight="700"
+ WindowStartupLocation="CenterScreen" FontFamily="Segoe UI" FontSize="13"
+ Background="{DynamicResource SabBrush.WindowBackground}" Foreground="{DynamicResource SabBrush.Text}"
+ UseLayoutRounding="True" SnapsToDevicePixels="True">
+ <Grid Background="{DynamicResource SabBrush.WindowBackground}">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid Margin="24,20,24,16">
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <TextBlock Text="Уведомления" Style="{DynamicResource SabWindowTitleTextStyle}" VerticalAlignment="Center"/>
+   <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+    <TextBlock Text="Подавление уведомлений" VerticalAlignment="Center" Margin="0,0,12,0"/>
+    <ToggleButton x:Name="EnabledToggle" IsChecked="{Binding Enabled}" Template="{DynamicResource SabLargeSwitchTemplate}" Width="64" Height="40" ToolTip="Включить подавление по выбранным правилам" AutomationProperties.Name="Подавление уведомлений"/>
+   </StackPanel>
+  </Grid>
+  <TabControl x:Name="Tabs" Grid.Row="1" Margin="24,0,24,16">
+   <TabItem Header="Правила">
+    <Grid>
+     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <Border Style="{DynamicResource SabInformationBorderStyle}" Padding="12,6" Margin="0,0,0,12">
+      <DockPanel LastChildFill="True">
+       <TextBlock Text="Не подавлять также" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,24,0"/>
+       <WrapPanel VerticalAlignment="Center">
+        <CheckBox x:Name="FamilyException" Content="В редакторе семейств" IsChecked="{Binding FamilyException}" Margin="0,0,24,0" VerticalAlignment="Center"/>
+        <CheckBox x:Name="GroupException" Content="При редактировании группы" IsChecked="{Binding GroupException}" Margin="0,0,24,0" VerticalAlignment="Center"/>
+        <CheckBox x:Name="WorksharedException" Content="В совместных моделях целиком" IsChecked="{Binding WorksharedException}" VerticalAlignment="Center"/>
+       </WrapPanel>
+      </DockPanel>
+     </Border>
+     <Grid Grid.Row="1" Margin="0,0,0,12">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="200"/></Grid.ColumnDefinitions>
+      <StackPanel><TextBlock Text="Поиск сообщений" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+       <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="8"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <TextBox x:Name="SearchBox" Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Поиск сообщений"/>
+        <Button x:Name="SearchButton" Grid.Column="2" Content="Найти" Command="{Binding SearchCommand}"/>
+       </Grid>
+      </StackPanel>
+      <StackPanel Grid.Column="2"><TextBlock Text="Показать" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+       <ComboBox x:Name="FilterBox" ItemsSource="{Binding Filters}" SelectedItem="{Binding Filter}" AutomationProperties.Name="Фильтр сообщений"/>
+      </StackPanel>
+     </Grid>
+     <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="20"/><ColumnDefinition Width="336"/></Grid.ColumnDefinitions>
+      <Border x:Name="RulesFrame" Style="{DynamicResource SabDataGridContainerBorderStyle}">
+       <Grid>
+        <DataGrid x:Name="RulesGrid" ItemsSource="{Binding View}" SelectedItem="{Binding Selected}" SelectionMode="Single" SelectionUnit="FullRow" IsReadOnly="True" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserResizeColumns="False" AutomationProperties.Name="Правила обработки уведомлений">
+         <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Уведомление" Width="*" MinWidth="260">
+           <DataGridTemplateColumn.CellTemplate><DataTemplate>
+            <StackPanel VerticalAlignment="Center" Margin="10,0">
+             <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/>
+             <Border Style="{DynamicResource SabNotificationTypeBadgeStyle}" Margin="0,2,0,0"><TextBlock Text="{Binding Meaning}" FontSize="11" Foreground="{Binding KindForeground}"/></Border>
+            </StackPanel>
+           </DataTemplate></DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTextColumn Header="Действие" Width="240" Binding="{Binding ActionShort}" ElementStyle="{DynamicResource SabDataGridTextBlockStyle}"/>
+         </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel x:Name="EmptyPanel" Visibility="{Binding EmptyVisibility}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20,38,20,0">
+         <TextBlock Text="Сообщения не найдены" FontSize="16" FontWeight="SemiBold" TextAlignment="Center"/>
+         <Button Content="Сбросить поиск" Command="{Binding ResetSearchCommand}" Margin="0,12,0,0" HorizontalAlignment="Center"/>
+        </StackPanel>
+       </Grid>
+      </Border>
+      <Border Grid.Column="2" Style="{DynamicResource SabPanelBorderStyle}">
+       <ScrollViewer x:Name="DetailScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel x:Name="DetailPanel" DataContext="{Binding Selected}" Visibility="{Binding DataContext.DetailVisibility,RelativeSource={RelativeSource AncestorType=Window}}">
+         <TextBlock Text="Выбранное уведомление" Style="{DynamicResource SabPanelHeaderTextStyle}" Margin="0,0,0,16"/>
+         <TextBlock x:Name="MessageName" Text="{Binding Name}" TextWrapping="Wrap" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+         <Border Style="{DynamicResource SabNotificationTypeBadgeStyle}" Margin="0,0,0,16"><TextBlock Text="{Binding Meaning}" Foreground="{Binding KindForeground}" TextWrapping="Wrap"/></Border>
+         <TextBlock Text="Подтверждение" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+         <TextBlock x:Name="ConfirmationText" Text="{Binding ConfirmationLabel}" Foreground="{DynamicResource SabBrush.TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,16"/>
+         <TextBlock Text="Действие" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+         <ComboBox x:Name="ActionBox" ItemsSource="{Binding Actions}" SelectedItem="{Binding Action}" IsEnabled="{Binding CanEdit}" Margin="0,0,0,12" AutomationProperties.Name="Действие для выбранного уведомления"/>
+         <TextBlock Text="{Binding Effect}" TextWrapping="Wrap" Foreground="{DynamicResource SabBrush.TextSecondary}" Margin="0,0,0,16"/>
+         <StackPanel Visibility="{Binding ConsentVisibility}">
+          <Border Background="{DynamicResource SabBrush.TableHeaderBackground}" BorderBrush="{DynamicResource SabBrush.Border}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12">
+           <TextBlock Text="OK подтверждает удаление зависимых элементов." Foreground="{DynamicResource SabBrush.Warning}" TextWrapping="Wrap"/>
+          </Border>
+          <CheckBox x:Name="ConsentCheck" IsChecked="{Binding Consent}" Margin="0,0,0,12"><TextBlock Text="Разрешить зависимое удаление" TextWrapping="Wrap"/></CheckBox>
+          <TextBlock x:Name="RuleValidation" Text="{Binding Validation}" Visibility="{Binding ValidationVisibility}" Foreground="{DynamicResource SabBrush.Error}" TextWrapping="Wrap" Margin="0,0,0,12"/>
+         </StackPanel>
+         <TextBlock Text="Сообщение Revit" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+         <TextBox Text="{Binding Description,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" Height="Auto" MinHeight="78" MaxHeight="150" VerticalScrollBarVisibility="Auto" Padding="10" Margin="0,0,0,16" AutomationProperties.Name="Полный текст сообщения Revit"/>
+         <TextBlock Text="{Binding CapabilityNote}" Foreground="{DynamicResource SabBrush.TextSecondary}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,16"/>
+         <Expander Header="Код сообщения"><TextBox Text="{Binding Identifier,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" Height="Auto" Margin="0,8,0,0" AutomationProperties.Name="Код сообщения"/></Expander>
+        </StackPanel>
+       </ScrollViewer>
+      </Border>
+     </Grid>
+     <TextBlock Grid.Row="3" Text="{Binding Summary}" Foreground="{DynamicResource SabBrush.TextSecondary}" Margin="0,12,0,0"/>
+    </Grid>
+   </TabItem>
+   <TabItem Header="Журнал">
+    <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+     <Border Style="{DynamicResource SabPanelBorderStyle}" Margin="0,0,0,16"><Grid>
+      <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="20"/><ColumnDefinition Width="210"/></Grid.ColumnDefinitions>
+      <StackPanel><TextBlock Text="Папка журнала" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+       <TextBox x:Name="FolderBox" Text="{Binding Folder,UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Папка журнала"/>
+      </StackPanel>
+      <StackPanel Grid.Column="2"><TextBlock Text="Уведомление SAB, секунд" Style="{DynamicResource SabFieldLabelTextStyle}" Margin="0,0,0,6"/>
+       <TextBox x:Name="DurationBox" Text="{Binding Duration,UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Длительность уведомления SAB"/>
+      </StackPanel>
+     </Grid></Border>
+     <Border Grid.Row="1" Style="{DynamicResource SabPanelBorderStyle}"><Grid>
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+      <Grid Margin="0,0,0,16"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+       <TextBlock Text="Последние сообщения Revit" Style="{DynamicResource SabPanelHeaderTextStyle}" VerticalAlignment="Center"/>
+       <Button Grid.Column="1" Content="Открыть журнал" Command="{Binding JournalCommand}"/>
+      </Grid>
+      <Border Grid.Row="1" Style="{DynamicResource SabDataGridContainerBorderStyle}"><Grid><DataGrid x:Name="JournalGrid" ItemsSource="{Binding Log}" IsReadOnly="True" CanUserReorderColumns="False" CanUserSortColumns="False">
+       <DataGrid.Columns><DataGridTextColumn Header="Время" Width="126" Binding="{Binding DisplayTime}" ElementStyle="{DynamicResource SabDataGridTextBlockStyle}"/>
+        <DataGridTextColumn Header="Уведомление" Width="*" Binding="{Binding Name}" ElementStyle="{DynamicResource SabDataGridTextBlockStyle}"/>
+        <DataGridTextColumn Header="Действие" Width="310" Binding="{Binding Action}" ElementStyle="{DynamicResource SabDataGridTextBlockStyle}"/>
+       </DataGrid.Columns>
+      </DataGrid><TextBlock Text="Сообщений в журнале пока нет" Visibility="{Binding JournalEmptyVisibility}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource SabBrush.TextSecondary}"/></Grid></Border>
+     </Grid></Border>
+    </Grid>
+   </TabItem>
+  </TabControl>
+  <Border Grid.Row="2" Background="{DynamicResource SabBrush.PanelBackground}" BorderBrush="{DynamicResource SabBrush.BorderWeak}" BorderThickness="0,1,0,0" Padding="24,12">
+   <Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <TextBlock x:Name="FooterStatus" Text="{Binding Status}" Foreground="{Binding StatusBrush}" Visibility="{Binding StatusVisibility}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+    <Grid Grid.Row="1"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="8"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <Button x:Name="InstructionButton" Content="Инструкция" Command="{Binding HelpCommand}"/>
+     <Button x:Name="CancelButton" Grid.Column="2" Content="Отмена" IsCancel="True" Command="{Binding CancelCommand}" MinWidth="90"/>
+     <Button x:Name="SaveButton" Grid.Column="4" Content="Сохранить" Style="{DynamicResource SabPrimaryButtonStyle}" Command="{Binding SaveCommand}" MinWidth="110"/>
+    </Grid>
+   </Grid>
+  </Border>
+ </Grid>
+</Window>
