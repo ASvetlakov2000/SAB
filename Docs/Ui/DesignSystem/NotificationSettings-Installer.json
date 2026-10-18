@@ -693,6 +693,7 @@
     "commit": "8b6979551c123892b3a790030139edb15495f966"
   },
   "baseLatestRelease": "v1.1.3",
-  "publicationStatus": "pending",
-  "scope": "current cumulative approved source; footer fix included; MSI extracted-payload checks only"
+  "publicationStatus": "published",
+  "scope": "current cumulative approved source; footer fix included; MSI extracted-payload checks only",
+  "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.4-notifications.json"
 }

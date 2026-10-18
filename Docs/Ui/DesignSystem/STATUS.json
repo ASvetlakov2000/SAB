@@ -2,20 +2,24 @@
   "currentReleaseCandidate": {
     "version": "1.1.4",
     "tag": "v1.1.4-notifications",
-    "status": "prepared",
+    "status": "published",
     "authorizationEvidence": "Запрос18.10 отправить изменения на GitHub и обновить установочник; затем исправить нижний статус редактора шаблонов перед отправкой",
     "installerEvidence": "Docs/Ui/DesignSystem/NotificationSettings-Installer.json",
     "footerEvidence": "Docs/Ui/DesignSystem/TemplateEditorFooter-Report.json",
     "firstLaunchEnabled": false,
     "automaticConfirmationsImplemented": false,
-    "installationPerformed": false
+    "installationPerformed": false,
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.4-notifications.json"
   },
   "templateEditorFooter": {
     "productionMigrationAuthorized": true,
     "authorizationEvidence": "Прямой снимок и запрос18.10: исправить воздух нижней строки состояния редактора шаблонов перед отправкой на Git",
     "scope": "Opt-in shared footer status styles, внутренние bounds и сохранение внешних gaps; функции и Revit transactions без изменений",
     "installationAuthorized": false,
-    "report": "Docs/Ui/DesignSystem/TemplateEditorFooter-Report.json"
+    "report": "Docs/Ui/DesignSystem/TemplateEditorFooter-Report.json",
+    "publicationPerformed": true,
+    "commitPushPerformed": true,
+    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.4-notifications"
   },
   "notificationSettingsProduction": {
     "productionMigrationAuthorized": true,
@@ -24,7 +28,10 @@
     "firstLaunchEnabled": false,
     "installationAuthorized": false,
     "releaseAuthorized": true,
-    "releaseAuthorizationEvidence": "Прямой запрос18.10: отправить изменения на GitHub и обновить установочник, после исправления footer"
+    "releaseAuthorizationEvidence": "Прямой запрос18.10: отправить изменения на GitHub и обновить установочник, после исправления footer",
+    "publicationPerformed": true,
+    "commitPushPerformed": true,
+    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.4-notifications"
   },
   "version": "1.1.0-redesign",
   "status": "approved_for_production_migration",
@@ -121,16 +128,14 @@
     "productionMigrationCompleted": true
   },
   "release": {
-    "version": "1.1.2",
-    "name": "Подсказки выбора развёрток",
-    "installationAuthorized": false,
+    "version": "1.1.4",
     "status": "published",
-    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.2",
-    "sourceCommit": "a60afdf7c7e63cd8bc7f3eebae385144d4d89383",
-    "tag": "v1.1.2",
-    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.2.json",
-    "assetsSha256Verified": true,
-    "sequentialPredecessor": "v1.1.1"
+    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.4-notifications",
+    "tag": "v1.1.4-notifications",
+    "sourceCommit": "c3b7a322b87a2519226899300068aedd3312fc34",
+    "publicationVerified": true,
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.4-notifications.json",
+    "installationAuthorized": false
   },
   "historicalInstaller1_1_0": {
     "entryPoint": "Build-Msi.bat",
@@ -330,12 +335,25 @@
     "independentReview": "Docs/Ui/DesignSystem/TemplateEditor-Production-Review.md",
     "independentVerdict": "scoped_ship",
     "installationPerformed": false,
-    "publicationPerformed": false,
-    "commitPushPerformed": false,
     "unverified": [
       "Live Revit operations/category probes/granular surface/transparency applicability",
       "Physical input/OS DPI/default-browser rendering",
-      "Installation/publication"
-    ]
+      "Installation"
+    ],
+    "publicationPerformed": true,
+    "commitPushPerformed": true,
+    "publicationUrl": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.4-notifications"
+  },
+  "historicalRelease1_1_2": {
+    "version": "1.1.2",
+    "name": "Подсказки выбора развёрток",
+    "installationAuthorized": false,
+    "status": "published",
+    "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.2",
+    "sourceCommit": "a60afdf7c7e63cd8bc7f3eebae385144d4d89383",
+    "tag": "v1.1.2",
+    "publicationEvidence": "Docs/Ui/DesignSystem/Release-1.1.2.json",
+    "assetsSha256Verified": true,
+    "sequentialPredecessor": "v1.1.1"
   }
 }

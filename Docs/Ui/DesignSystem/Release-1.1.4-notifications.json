@@ -1,0 +1,48 @@
+{
+  "version": "1.1.4",
+  "name": "SAB 1.1.4 — Настройки уведомлений и обновление интерфейса",
+  "url": "https://github.com/ASvetlakov2000/SAB/releases/tag/v1.1.4-notifications",
+  "tag": "v1.1.4-notifications",
+  "sourceCommit": "c3b7a322b87a2519226899300068aedd3312fc34",
+  "tagCommit": "c3b7a322b87a2519226899300068aedd3312fc34",
+  "status": "published",
+  "latestAtVerification": true,
+  "publishedAt": "2026-10-18T09:50:32Z",
+  "verifiedAt": "2026-10-18T09:51:24.4139603Z",
+  "assets": [
+    {
+      "name": "SAB_Revit_2022.msi",
+      "size": 16475411,
+      "digest": "sha256:6b43a104ede17346544a954336b0494581bdbf31ad324980a727a49d67c1bd90",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4-notifications/SAB_Revit_2022.msi"
+    },
+    {
+      "name": "SAB_Revit_2023.msi",
+      "size": 16856605,
+      "digest": "sha256:c52269325cce4e1057bf12b9225a8239027b366ba9febcc40af339a99c0905b1",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4-notifications/SAB_Revit_2023.msi"
+    },
+    {
+      "name": "SAB_Revit_2024.msi",
+      "size": 16856605,
+      "digest": "sha256:7479267825f3389fcb6a242b0198cc98cbf11c33e901e468bd9af485cbdd536e",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4-notifications/SAB_Revit_2024.msi"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 258,
+      "digest": "sha256:f9ffe0057df51183111a865a0166a272143f870dfe43b75c0407b8fde115d5cc",
+      "url": "https://github.com/ASvetlakov2000/SAB/releases/download/v1.1.4-notifications/SHA256SUMS.txt"
+    }
+  ],
+  "assetsSha256Verified": true,
+  "checksumContentVerifiedByDigest": true,
+  "historicalTagPreserved": "v1.1.4",
+  "historicalTagCommit": "8b6979551c123892b3a790030139edb15495f966",
+  "installerEvidence": "Docs/Ui/DesignSystem/NotificationSettings-Installer.json",
+  "independentReview": "Docs/Ui/DesignSystem/TemplateEditorFooter-Review.md",
+  "firstLaunchEnabled": false,
+  "automaticConfirmationsImplemented": false,
+  "installationPerformed": false,
+  "liveRevitValidation": "NOT RUN"
+}
